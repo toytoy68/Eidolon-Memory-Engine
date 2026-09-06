@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python3 "$(dirname "$0")/memory_mechanism_classifier.py" "$@"
