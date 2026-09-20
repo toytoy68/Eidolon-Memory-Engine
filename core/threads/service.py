@@ -1,10 +1,12 @@
 """Application service for Eidolon Threads."""
 
 from __future__ import annotations
-from .requests import ThreadRequest
+
 from .manager import ThreadManager
 from .models import Thread
 from .queries import ThreadQuery
+from .request_mapping import build_thread_query
+from .requests import ThreadRequest
 from .storage import ThreadStorage
 
 
@@ -35,4 +37,4 @@ class ThreadService:
         request: ThreadRequest,
     ) -> list[Thread] | list[tuple[Thread, object]]:
         """Execute a deterministic Thread request."""
-        return self.query(request.query)
+        return self.query(build_thread_query(request))
