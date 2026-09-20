@@ -67,3 +67,52 @@ def test_execute_thread_request(tmp_path):
 
     assert len(result) == 1
     assert result[0].thread_id == "thread-service-001"
+
+
+
+
+def test_execute_envelope(tmp_path):
+    from core.requests import RequestEnvelope
+
+    storage = ThreadStorage(tmp_path)
+    thread = make_thread()
+    storage.create(thread)
+
+    service = ThreadService(storage)
+
+    envelope = RequestEnvelope(
+        domain="THREAD",
+        intent="LIST_OPEN_THREADS",
+    )
+
+    result = service.execute_envelope(envelope)
+
+    assert len(result) == 1
+    assert result[0].thread_id == "thread-service-001"
+
+
+def test_execute_parsed_json_request(tmp_path):
+    from core.request_parser import parse_request
+
+    storage = ThreadStorage(tmp_path)
+    thread = make_thread()
+    storage.create(thread)
+
+    service = ThreadService(storage)
+
+    payload = """
+    {
+        "request": {
+            "schema_version": "0.1",
+            "domain": "THREAD",
+            "intent": "LIST_OPEN_THREADS",
+            "filters": {}
+        }
+    }
+    """
+
+    envelope = parse_request(payload)
+    result = service.execute_envelope(envelope)
+
+    assert len(result) == 1
+    assert result[0].thread_id == "thread-service-001"

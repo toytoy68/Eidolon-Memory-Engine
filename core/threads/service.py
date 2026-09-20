@@ -38,3 +38,11 @@ class ThreadService:
     ) -> list[Thread] | list[tuple[Thread, object]]:
         """Execute a deterministic Thread request."""
         return self.query(build_thread_query(request))
+
+
+    def execute_envelope(self, envelope):
+        """Execute an external request envelope targeting Threads."""
+        from .request_envelope import build_thread_request
+
+        request = build_thread_request(envelope)
+        return self.execute(request)
