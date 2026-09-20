@@ -29,3 +29,14 @@ def test_thread_request_requires_matching_intent():
             intent=ThreadQueryType.LIST_THREADS,
             query=query,
         )
+
+def test_thread_request_from_intent():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.GET_THREAD,
+        thread_id="thread-001",
+    )
+
+    assert request.domain == "THREAD"
+    assert request.intent == ThreadQueryType.GET_THREAD
+    assert request.query.query_type == ThreadQueryType.GET_THREAD
+    assert request.query.thread_id == "thread-001"
