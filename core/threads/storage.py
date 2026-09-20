@@ -402,3 +402,37 @@ class ThreadStorage:
         """Return whether a Thread exists."""
 
         return self._path(thread_id).exists()
+
+    def update(self, thread: Thread) -> None:
+        """Update an existing persistent Thread."""
+        self._validate_id(thread.thread_id)
+        path = self._path(thread.thread_id)
+
+        if not path.exists():
+            raise ThreadStorageError(
+                f"Thread not found: {thread.thread_id}"
+            )
+
+        content = self._serialize(thread)
+        self._atomic_write(path, content)
+
+    def delete(self, thread_id: str) -> None:
+        """Delete a persistent Thread."""
+        path = self._path(thread_id)
+
+        if not path.exists():
+            raise ThreadStorageError(
+                f"Thread not found: {thread_id}"
+            )
+
+        path.unlink()
+
+    def list(self) -> list[Thread]:
+        """Return all persisted Threads."""
+        threads: list[Thread] = []
+
+        for path in sorted(self.threads_root.glob("*.md")):
+            text = path.read_text(encoding="utf-8")
+            threads.append(self._deserialize(text))
+
+        return threads
