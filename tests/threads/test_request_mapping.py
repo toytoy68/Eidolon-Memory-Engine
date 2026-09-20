@@ -174,3 +174,16 @@ def test_updated_date_filters_mapping():
     assert query.query_type == ThreadQueryType.LIST_THREADS
     assert query.updated_after == "2026-09-10T00:00:00+02:00"
     assert query.updated_before == "2026-09-20T23:59:59+02:00"
+
+def test_started_date_filters_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        started_after="2026-09-15T00:00:00+02:00",
+        started_before="2026-09-20T23:59:59+02:00",
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.started_after == "2026-09-15T00:00:00+02:00"
+    assert query.started_before == "2026-09-20T23:59:59+02:00"
