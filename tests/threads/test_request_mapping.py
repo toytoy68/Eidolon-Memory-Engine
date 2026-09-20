@@ -200,3 +200,16 @@ def test_include_status_filters_mapping():
     assert query.query_type == ThreadQueryType.LIST_THREADS
     assert query.include_completed is True
     assert query.include_cancelled is True
+
+def test_sort_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        sort_by=ThreadSortField.TITLE,
+        sort_order=ThreadSortOrder.ASC,
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.sort_by == ThreadSortField.TITLE
+    assert query.sort_order == ThreadSortOrder.ASC
