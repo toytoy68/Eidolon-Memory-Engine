@@ -6,6 +6,12 @@ from dataclasses import replace
 from datetime import datetime, timezone
 
 from .models import ActionStatus, Thread, ThreadAction, ThreadStatus
+from .queries import (
+    ThreadQuery,
+    ThreadQueryType,
+    ThreadSortField,
+    ThreadSortOrder,
+)
 
 
 class ThreadError(Exception):
@@ -265,3 +271,198 @@ class ThreadManager:
         cls.validate(updated)
 
         return updated
+
+    @classmethod
+    def query(
+        cls,
+        threads: list[Thread],
+        query: ThreadQuery,
+    ) -> list[Thread] | list[tuple[Thread, ThreadAction]]:
+        """Execute a read-only Thread query."""
+
+        query.validate()
+
+        if query.query_type == ThreadQueryType.GET_THREAD:
+            return [
+                thread
+                for thread in threads
+                if thread.thread_id == query.thread_id
+            ]
+
+        results = list(threads)
+
+        if query.query_type == ThreadQueryType.LIST_OPEN_THREADS:
+            results = [
+                thread
+                for thread in results
+                if thread.status
+                not in {
+                    ThreadStatus.COMPLETED,
+                    ThreadStatus.CANCELLED,
+                }
+            ]
+
+        if query.query_type == ThreadQueryType.LIST_THREADS_BY_STATUS:
+            statuses = set(query.normalized_statuses())
+            results = [
+                thread
+                for thread in results
+                if thread.status in statuses
+            ]
+
+        if query.title is not None:
+            results = [
+                thread
+                for thread in results
+                if thread.title == query.title
+            ]
+
+        if query.title_contains is not None:
+            needle = query.title_contains.casefold()
+            results = [
+                thread
+                for thread in results
+                if needle in thread.title.casefold()
+            ]
+
+        if query.relation_type is not None:
+            results = [
+                thread
+                for thread in results
+                if any(
+                    relation.get("type") == query.relation_type
+                    for relation in thread.relations
+                )
+            ]
+
+        if query.related_to is not None:
+            results = [
+                thread
+                for thread in results
+                if any(
+                    relation.get("target_id") == query.related_to
+                    or relation.get("source_id") == query.related_to
+                    for relation in thread.relations
+                )
+            ]
+
+        if query.provenance:
+            results = [
+                thread
+                for thread in results
+                if all(
+                    thread.provenance.get(key) == value
+                    for key, value in query.provenance.items()
+                )
+            ]
+
+        if query.created_after is not None:
+            results = [
+                thread
+                for thread in results
+                if thread.created_at > query.created_after
+            ]
+
+        if query.created_before is not None:
+            results = [
+                thread
+                for thread in results
+                if thread.created_at < query.created_before
+            ]
+
+        if query.updated_after is not None:
+            results = [
+                thread
+                for thread in results
+                if thread.updated_at > query.updated_after
+            ]
+
+        if query.updated_before is not None:
+            results = [
+                thread
+                for thread in results
+                if thread.updated_at < query.updated_before
+            ]
+
+        if query.started_after is not None:
+            results = [
+                thread
+                for thread in results
+                if thread.started_at is not None
+                and thread.started_at > query.started_after
+            ]
+
+        if query.started_before is not None:
+            results = [
+                thread
+                for thread in results
+                if thread.started_at is not None
+                and thread.started_at < query.started_before
+            ]
+
+        if query.query_type == ThreadQueryType.LIST_OPEN_ACTIONS:
+            action_statuses = set(
+                query.normalized_action_statuses()
+            )
+
+            if not action_statuses:
+                action_statuses = {
+                    ActionStatus.PLANNED,
+                    ActionStatus.IN_PROGRESS,
+                    ActionStatus.BLOCKED,
+                }
+
+            action_results: list[tuple[Thread, ThreadAction]] = []
+
+            for thread in results:
+                for action in thread.actions:
+                    if action.status in action_statuses:
+                        action_results.append((thread, action))
+
+            return action_results[
+                query.offset : query.offset + query.limit
+            ]
+
+        if query.query_type == ThreadQueryType.LIST_THREAD_ACTIONS:
+            action_results = []
+
+            for thread in results:
+                for action in thread.actions:
+                    if query.action_id is not None:
+                        if action.action_id != query.action_id:
+                            continue
+
+                    action_statuses = set(
+                        query.normalized_action_statuses()
+                    )
+
+                    if action_statuses and action.status not in action_statuses:
+                        continue
+
+                    action_results.append((thread, action))
+
+            return action_results[
+                query.offset : query.offset + query.limit
+            ]
+
+        sort_key_map = {
+            ThreadSortField.CREATED_AT: lambda thread: thread.created_at,
+            ThreadSortField.UPDATED_AT: lambda thread: thread.updated_at,
+            ThreadSortField.STARTED_AT: lambda thread: (
+                thread.started_at or ""
+            ),
+            ThreadSortField.TITLE: lambda thread: thread.title.casefold(),
+            ThreadSortField.REVISION: lambda thread: thread.revision,
+            ThreadSortField.STATUS: lambda thread: thread.status.value,
+        }
+
+        sort_key = sort_key_map[query.sort_by]
+
+        results.sort(
+            key=sort_key,
+            reverse=query.sort_order == ThreadSortOrder.DESC,
+        )
+
+        return results[
+            query.offset : query.offset + query.limit
+        ]
