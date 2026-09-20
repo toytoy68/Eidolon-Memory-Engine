@@ -38,7 +38,7 @@ def test_dispatch_thread_request(tmp_path):
     assert result.intent == "LIST_OPEN_THREADS"
     assert result.status == "OK"
     assert len(result.data) == 1
-    assert result.data[0].thread_id == "thread-dispatch-001"
+    assert result.data[0]["thread_id"] == "thread-dispatch-001"
 
 
 def test_dispatch_rejects_unknown_domain(tmp_path):
@@ -53,3 +53,34 @@ def test_dispatch_rejects_unknown_domain(tmp_path):
 
     with pytest.raises(ValueError):
         dispatcher.execute(envelope)
+
+
+def test_json_request_to_json_response(tmp_path):
+    from core.request_parser import parse_request
+
+    storage = ThreadStorage(tmp_path)
+    storage.create(make_thread())
+
+    service = ThreadService(storage)
+    dispatcher = RequestDispatcher(service)
+
+    payload = """
+    {
+        "request": {
+            "schema_version": "0.1",
+            "domain": "THREAD",
+            "intent": "LIST_OPEN_THREADS",
+            "filters": {}
+        }
+    }
+    """
+
+    envelope = parse_request(payload)
+    response = dispatcher.execute(envelope)
+    output = response.to_json()
+
+    assert '"schema_version": "0.1"' in output
+    assert '"domain": "THREAD"' in output
+    assert '"intent": "LIST_OPEN_THREADS"' in output
+    assert '"status": "OK"' in output
+    assert '"thread_id": "thread-dispatch-001"' in output
