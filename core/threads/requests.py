@@ -1,8 +1,10 @@
 """Request contracts for Eidolon Threads."""
 
+
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from .queries import ThreadQuery, ThreadQueryType
 
@@ -25,3 +27,21 @@ class ThreadRequest:
             raise ValueError(
                 "ThreadRequest intent must match query type"
             )
+
+    @classmethod
+    def from_intent(
+        cls,
+        intent: ThreadQueryType,
+        **filters: Any,
+    ) -> ThreadRequest:
+        """Build a ThreadRequest from a deterministic Thread intent."""
+
+        query = ThreadQuery(
+            query_type=intent,
+            **filters,
+        )
+
+        return cls(
+            intent=intent,
+            query=query,
+        )
