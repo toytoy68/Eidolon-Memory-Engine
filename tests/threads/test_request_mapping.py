@@ -1,4 +1,4 @@
-from core.threads.models import ThreadStatus
+from core.threads.models import ActionStatus, ThreadStatus
 from core.threads.queries import (
     ThreadQueryType,
     ThreadSortField,
@@ -86,3 +86,16 @@ def test_title_filter_mapping():
 
     assert query.query_type == ThreadQueryType.LIST_THREADS
     assert query.title_contains == "Eidolon"
+
+def test_action_status_filter_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREAD_ACTIONS,
+        thread_id="thread-001",
+        action_status=ActionStatus.IN_PROGRESS,
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREAD_ACTIONS
+    assert query.thread_id == "thread-001"
+    assert query.action_status == ActionStatus.IN_PROGRESS
