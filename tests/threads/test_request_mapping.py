@@ -99,3 +99,22 @@ def test_action_status_filter_mapping():
     assert query.query_type == ThreadQueryType.LIST_THREAD_ACTIONS
     assert query.thread_id == "thread-001"
     assert query.action_status == ActionStatus.IN_PROGRESS
+
+def test_action_statuses_filter_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREAD_ACTIONS,
+        thread_id="thread-001",
+        action_statuses=[
+            ActionStatus.PLANNED,
+            ActionStatus.IN_PROGRESS,
+        ],
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREAD_ACTIONS
+    assert query.thread_id == "thread-001"
+    assert query.action_statuses == [
+        ActionStatus.PLANNED,
+        ActionStatus.IN_PROGRESS,
+    ]
