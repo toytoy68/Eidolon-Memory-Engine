@@ -75,3 +75,14 @@ def test_list_open_actions_mapping():
 
     assert query.query_type == ThreadQueryType.LIST_OPEN_ACTIONS
     assert query.thread_id == "thread-001"
+
+def test_title_filter_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        title_contains="Eidolon",
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.title_contains == "Eidolon"
