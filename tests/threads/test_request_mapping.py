@@ -148,3 +148,29 @@ def test_provenance_filter_mapping():
         "source": "conversation",
         "origin": "eidolon",
     }
+
+def test_created_date_filters_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        created_after="2026-09-01T00:00:00+02:00",
+        created_before="2026-09-20T23:59:59+02:00",
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.created_after == "2026-09-01T00:00:00+02:00"
+    assert query.created_before == "2026-09-20T23:59:59+02:00"
+
+def test_updated_date_filters_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        updated_after="2026-09-10T00:00:00+02:00",
+        updated_before="2026-09-20T23:59:59+02:00",
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.updated_after == "2026-09-10T00:00:00+02:00"
+    assert query.updated_before == "2026-09-20T23:59:59+02:00"
