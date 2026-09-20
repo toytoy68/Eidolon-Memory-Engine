@@ -5,6 +5,7 @@ from core.threads.queries import (
 )
 from core.threads.service import ThreadService
 from core.threads.storage import ThreadStorage
+from core.threads.requests import ThreadRequest
 
 
 def make_thread() -> Thread:
@@ -45,6 +46,33 @@ def test_query_threads(tmp_path):
     )
 
     result = service.query(query)
+
+    assert len(result) == 1
+    assert result[0].thread_id == "thread-service-001"
+
+    def execute(
+        self,
+        request: ThreadRequest,
+    ) -> list[Thread] | list[tuple[Thread, object]]:
+        """Execute a deterministic Thread request."""
+        return self.query(request.query)
+
+
+def test_execute_thread_request(tmp_path):
+    storage = ThreadStorage(tmp_path)
+    thread = make_thread()
+    storage.create(thread)
+
+    service = ThreadService(storage)
+
+    request = ThreadRequest(
+        intent=ThreadQueryType.LIST_OPEN_THREADS,
+        query=ThreadQuery(
+            query_type=ThreadQueryType.LIST_OPEN_THREADS,
+        ),
+    )
+
+    result = service.execute(request)
 
     assert len(result) == 1
     assert result[0].thread_id == "thread-service-001"
