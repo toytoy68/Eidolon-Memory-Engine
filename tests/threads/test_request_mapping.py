@@ -42,3 +42,36 @@ def test_status_mapping():
 
     assert query.query_type == ThreadQueryType.LIST_THREADS_BY_STATUS
     assert query.statuses == [ThreadStatus.IMPLEMENTATION]
+
+def test_list_threads_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+
+
+def test_list_thread_actions_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREAD_ACTIONS,
+        thread_id="thread-001",
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREAD_ACTIONS
+    assert query.thread_id == "thread-001"
+
+
+def test_list_open_actions_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_OPEN_ACTIONS,
+        thread_id="thread-001",
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_OPEN_ACTIONS
+    assert query.thread_id == "thread-001"
