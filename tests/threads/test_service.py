@@ -50,12 +50,6 @@ def test_query_threads(tmp_path):
     assert len(result) == 1
     assert result[0].thread_id == "thread-service-001"
 
-    def execute(
-        self,
-        request: ThreadRequest,
-    ) -> list[Thread] | list[tuple[Thread, object]]:
-        """Execute a deterministic Thread request."""
-        return self.query(request.query)
 
 
 def test_execute_thread_request(tmp_path):
@@ -65,11 +59,8 @@ def test_execute_thread_request(tmp_path):
 
     service = ThreadService(storage)
 
-    request = ThreadRequest(
-        intent=ThreadQueryType.LIST_OPEN_THREADS,
-        query=ThreadQuery(
-            query_type=ThreadQueryType.LIST_OPEN_THREADS,
-        ),
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_OPEN_THREADS,
     )
 
     result = service.execute(request)
