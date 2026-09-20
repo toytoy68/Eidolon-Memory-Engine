@@ -131,3 +131,20 @@ def test_relation_filter_mapping():
     assert query.query_type == ThreadQueryType.LIST_THREADS
     assert query.relation_type == "DEPENDS_ON"
     assert query.related_to == "thread-002"
+
+def test_provenance_filter_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        provenance={
+            "source": "conversation",
+            "origin": "eidolon",
+        },
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.provenance == {
+        "source": "conversation",
+        "origin": "eidolon",
+    }
