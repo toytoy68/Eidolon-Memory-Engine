@@ -33,8 +33,12 @@ def test_dispatch_thread_request(tmp_path):
 
     result = dispatcher.execute(envelope)
 
-    assert len(result) == 1
-    assert result[0].thread_id == "thread-dispatch-001"
+    assert result.schema_version == "0.1"
+    assert result.domain == "THREAD"
+    assert result.intent == "LIST_OPEN_THREADS"
+    assert result.status == "OK"
+    assert len(result.data) == 1
+    assert result.data[0].thread_id == "thread-dispatch-001"
 
 
 def test_dispatch_rejects_unknown_domain(tmp_path):
