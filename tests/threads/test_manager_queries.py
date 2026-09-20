@@ -4,12 +4,16 @@ from core.threads.models import (
     ThreadAction,
     ThreadStatus,
 )
+
 from core.threads.queries import (
     ThreadQuery,
     ThreadQueryType,
     ThreadSortField,
     ThreadSortOrder,
 )
+
+from core.threads.storage import ThreadStorage
+
 from core.threads.manager import ThreadManager
 
 
@@ -256,3 +260,32 @@ def test_list_open_actions():
 
     assert len(result) == 1
     assert result[0][1].action_id == "a1"
+
+def test_query_persisted_threads(tmp_path):
+    storage = ThreadStorage(tmp_path)
+
+    thread = Thread(
+        thread_id="thread-persisted-001",
+        title="Persistent Thread",
+        objective="Test persisted query",
+        status=ThreadStatus.IMPLEMENTATION,
+        revision=1,
+        created_at="2026-09-20T10:00:00+02:00",
+        updated_at="2026-09-20T11:00:00+02:00",
+    )
+
+    storage.create(thread)
+
+    loaded_threads = storage.list()
+
+    query = ThreadQuery(
+        query_type=ThreadQueryType.LIST_OPEN_THREADS,
+    )
+
+    result = ThreadManager.query(
+        loaded_threads,
+        query,
+    )
+
+    assert len(result) == 1
+    assert result[0].thread_id == "thread-persisted-001"
