@@ -41,3 +41,25 @@ class ResponseEnvelope:
             raise ValueError(
                 f"Unsupported response status: {self.status!r}."
             )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the response envelope to a JSON-compatible dictionary."""
+        return {
+            "response": {
+                "schema_version": self.schema_version,
+                "domain": self.domain,
+                "intent": self.intent,
+                "status": self.status,
+                "data": self.data,
+            }
+        }
+
+    def to_json(self) -> str:
+        """Serialize the response envelope to JSON."""
+        import json
+
+        return json.dumps(
+            self.to_dict(),
+            ensure_ascii=False,
+            sort_keys=True,
+        )

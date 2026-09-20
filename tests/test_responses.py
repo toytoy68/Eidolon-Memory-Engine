@@ -79,3 +79,39 @@ def test_response_envelope_rejects_unknown_status():
             intent="LIST_OPEN_THREADS",
             status="UNKNOWN",
         )
+
+
+def test_response_envelope_to_dict():
+    response = ResponseEnvelope(
+        domain="THREAD",
+        intent="LIST_OPEN_THREADS",
+        status="OK",
+        data=[
+            {"thread_id": "thread-001"},
+        ],
+    )
+
+    payload = response.to_dict()
+
+    assert payload["response"]["schema_version"] == "0.1"
+    assert payload["response"]["domain"] == "THREAD"
+    assert payload["response"]["intent"] == "LIST_OPEN_THREADS"
+    assert payload["response"]["status"] == "OK"
+    assert payload["response"]["data"][0]["thread_id"] == "thread-001"
+
+
+def test_response_envelope_to_json():
+    response = ResponseEnvelope(
+        domain="THREAD",
+        intent="GET_THREAD",
+        status="OK",
+        data={"thread_id": "thread-001"},
+    )
+
+    payload = response.to_json()
+
+    assert '"schema_version": "0.1"' in payload
+    assert '"domain": "THREAD"' in payload
+    assert '"intent": "GET_THREAD"' in payload
+    assert '"status": "OK"' in payload
+    assert '"thread_id": "thread-001"' in payload
