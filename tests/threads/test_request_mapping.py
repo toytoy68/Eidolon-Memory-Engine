@@ -213,3 +213,16 @@ def test_sort_mapping():
     assert query.query_type == ThreadQueryType.LIST_THREADS
     assert query.sort_by == ThreadSortField.TITLE
     assert query.sort_order == ThreadSortOrder.ASC
+
+def test_pagination_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        limit=50,
+        offset=100,
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.limit == 50
+    assert query.offset == 100
