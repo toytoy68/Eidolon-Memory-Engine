@@ -1,3 +1,4 @@
+from core.threads.models import ThreadStatus
 from core.threads.queries import (
     ThreadQueryType,
     ThreadSortField,
@@ -34,9 +35,10 @@ def test_get_thread_mapping():
 def test_status_mapping():
     request = ThreadRequest.from_intent(
         ThreadQueryType.LIST_THREADS_BY_STATUS,
-        statuses=[],
+        statuses=[ThreadStatus.IMPLEMENTATION],
     )
 
     query = build_thread_query(request)
 
     assert query.query_type == ThreadQueryType.LIST_THREADS_BY_STATUS
+    assert query.statuses == [ThreadStatus.IMPLEMENTATION]
