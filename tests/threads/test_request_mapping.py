@@ -118,3 +118,16 @@ def test_action_statuses_filter_mapping():
         ActionStatus.PLANNED,
         ActionStatus.IN_PROGRESS,
     ]
+
+def test_relation_filter_mapping():
+    request = ThreadRequest.from_intent(
+        ThreadQueryType.LIST_THREADS,
+        relation_type="DEPENDS_ON",
+        related_to="thread-002",
+    )
+
+    query = build_thread_query(request)
+
+    assert query.query_type == ThreadQueryType.LIST_THREADS
+    assert query.relation_type == "DEPENDS_ON"
+    assert query.related_to == "thread-002"
