@@ -11,6 +11,7 @@ from typing import Any
 
 from core.config import PERSISTENT_ROOT, HISTORY_ROOT, ensure_directories
 
+from .interface import MemoryBackend
 from .errors import (
     InvalidMemory,
     MemoryAlreadyExists,
@@ -20,7 +21,7 @@ from .errors import (
 from .models import DeleteResult, Memory, SearchResult, StoreResult, UpdateResult
 
 
-class FilesystemBackend:
+class FilesystemBackend(MemoryBackend):
     """Canonical Markdown-based filesystem backend."""
 
     def __init__(
