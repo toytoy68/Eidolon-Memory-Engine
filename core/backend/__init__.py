@@ -16,6 +16,7 @@ from .models import (
     UpdateResult,
 )
 from .interface import MemoryBackend
+from .filesystem import FilesystemBackend
 
 __all__ = [
     "Memory",
@@ -24,6 +25,7 @@ __all__ = [
     "DeleteResult",
     "SearchResult",
     "MemoryBackend",
+    "FilesystemBackend",
     "BackendError",
     "BackendUnavailable",
     "InvalidMemory",
