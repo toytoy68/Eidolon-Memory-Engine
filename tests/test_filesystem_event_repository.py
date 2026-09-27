@@ -1,0 +1,207 @@
+import pytest
+
+from core.events.errors import EventAlreadyExists
+from core.events.filesystem import FilesystemEventRepository
+from core.events.models import (
+    Cause,
+    CauseType,
+    Event,
+    EventRelation,
+    EventType,
+    Provenance,
+    RelationType,
+    StateTransition,
+    Validation,
+    ValidationMode,
+    ValidationStatus,
+)
+
+
+def test_save_and_get_event(tmp_path):
+    repository = FilesystemEventRepository(
+        events_root=tmp_path / "events",
+    )
+
+    event = Event(
+        event_id="event-test-001",
+        information_id="info-test-001",
+        revision=2,
+        event_type=EventType.UPDATED,
+        state_transition=StateTransition(
+            before={
+                "epistemic_status": "UNVERIFIED",
+                "operational_state": "ACTIVE",
+            },
+            after={
+                "epistemic_status": "CONFIRMED",
+                "operational_state": "ACTIVE",
+            },
+        ),
+        cause=Cause(
+            type=CauseType.USER_VALIDATION,
+            description="Validation test.",
+        ),
+        provenance=Provenance(
+            source_type="USER_STATEMENT",
+            source="test",
+            actor="tester",
+            timestamp="2026-09-28T00:00:00+02:00",
+        ),
+        validation=Validation(
+            mode=ValidationMode.HUMAN,
+            status=ValidationStatus.ACCEPTED,
+        ),
+        relations=[
+            EventRelation(
+                type=RelationType.CONCERNS,
+                target="info-test-001",
+            )
+        ],
+    )
+
+    saved = repository.save(event)
+
+    assert saved is event
+
+    loaded = repository.get("event-test-001")
+
+    assert loaded is not None
+    assert loaded == event
+
+
+def test_save_rejects_duplicate_event_id(tmp_path):
+    repository = FilesystemEventRepository(
+        events_root=tmp_path / "events",
+    )
+
+    event = Event(
+        event_id="event-test-002",
+        information_id="info-test-002",
+        revision=1,
+        event_type=EventType.CREATED,
+    )
+
+    repository.save(event)
+
+    with pytest.raises(EventAlreadyExists):
+        repository.save(event)
+
+
+def test_list_for_information_target(tmp_path):
+    repository = FilesystemEventRepository(
+        events_root=tmp_path / "events",
+    )
+
+    repository.save(
+        Event(
+            event_id="event-test-003",
+            information_id="info-target",
+            revision=1,
+            event_type=EventType.CREATED,
+        )
+    )
+
+    repository.save(
+        Event(
+            event_id="event-test-004",
+            information_id="info-other",
+            revision=1,
+            event_type=EventType.CREATED,
+        )
+    )
+
+    events = repository.list_for_target("info-target")
+
+    assert [event.event_id for event in events] == ["event-test-003"]
+
+
+def test_list_for_thread_target(tmp_path):
+    repository = FilesystemEventRepository(
+        events_root=tmp_path / "events",
+    )
+
+    repository.save(
+        Event(
+            event_id="event-test-005",
+            thread_id="thread-target",
+            revision=2,
+            event_type=EventType.STATUS_CHANGED,
+            state_transition=StateTransition(
+                before={"status": "IMPLEMENTATION"},
+                after={"status": "TESTING"},
+            ),
+        )
+    )
+
+    events = repository.list_for_target("thread-target")
+
+    assert [event.event_id for event in events] == ["event-test-005"]
+
+
+def test_get_returns_none_for_missing_event(tmp_path):
+    repository = FilesystemEventRepository(
+        events_root=tmp_path / "events",
+    )
+
+    assert repository.get("event-missing") is None
+
+
+def test_rejects_invalid_event_id(tmp_path):
+    from core.events.errors import InvalidEvent
+
+    repository = FilesystemEventRepository(
+        events_root=tmp_path / "events",
+    )
+
+    event = Event(
+        event_id="../event-invalid",
+        information_id="info-test",
+        revision=1,
+        event_type=EventType.CREATED,
+    )
+
+    with pytest.raises(InvalidEvent):
+        repository.save(event)
+
+
+def test_get_rejects_corrupted_event(tmp_path):
+    from core.events.errors import InvalidEvent
+
+    events_root = tmp_path / "events"
+    repository = FilesystemEventRepository(
+        events_root=events_root,
+    )
+
+    corrupted = events_root / "event-corrupted.md"
+    corrupted.write_text(
+        "# Eidolon Memory Event\n\n"
+        "Version: 0.2\n\n"
+        "```json\n"
+        "{this is not valid json}\n"
+        "```\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(InvalidEvent):
+        repository.get("event-corrupted")
+
+
+def test_list_for_target_rejects_corrupted_event(tmp_path):
+    from core.events.errors import InvalidEvent
+
+    events_root = tmp_path / "events"
+    repository = FilesystemEventRepository(
+        events_root=events_root,
+    )
+
+    (events_root / "event-corrupted.md").write_text(
+        "# Eidolon Memory Event\n\n"
+        "Version: 0.2\n\n"
+        "```json\n"
+        "{this is not valid json}\n"
+        "```\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(InvalidEvent):
+        repository.list_for_target("info-test")
