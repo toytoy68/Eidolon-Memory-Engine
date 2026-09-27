@@ -81,7 +81,10 @@ def test_update_thread(tmp_path: Path):
     thread.revision = 2
     thread.updated_at = "2026-09-20T11:00:00+02:00"
 
-    storage.update(thread)
+    storage.update(
+        thread,
+        previous_revision=1,
+    )
 
     loaded = storage.get("thread-test-001")
 
@@ -139,6 +142,7 @@ import pytest
 from core.threads.storage import (
     InvalidThreadStorageId,
     ThreadAlreadyExists,
+    ThreadRevisionConflict,
     ThreadStorageError,
 )
 
@@ -177,7 +181,10 @@ def test_update_missing_thread(tmp_path):
     thread = make_thread()
 
     with pytest.raises(ThreadStorageError):
-        storage.update(thread)
+        storage.update(
+            thread,
+            previous_revision=1,
+        )
 
 
 def test_delete_missing_thread(tmp_path):
@@ -185,3 +192,37 @@ def test_delete_missing_thread(tmp_path):
 
     with pytest.raises(ThreadStorageError):
         storage.delete("does-not-exist")
+
+
+def test_update_rejects_stale_previous_revision(tmp_path):
+    storage = ThreadStorage(tmp_path)
+
+    thread = make_thread()
+    storage.create(thread)
+
+    updated = make_thread()
+    updated.title = "Updated Thread"
+    updated.revision = 2
+
+    with pytest.raises(ThreadRevisionConflict):
+        storage.update(
+            updated,
+            previous_revision=0,
+        )
+
+
+def test_update_rejects_invalid_next_revision(tmp_path):
+    storage = ThreadStorage(tmp_path)
+
+    thread = make_thread()
+    storage.create(thread)
+
+    updated = make_thread()
+    updated.title = "Updated Thread"
+    updated.revision = 3
+
+    with pytest.raises(ThreadRevisionConflict):
+        storage.update(
+            updated,
+            previous_revision=1,
+        )

@@ -23,6 +23,10 @@ class ThreadAlreadyExists(ThreadStorageError):
     """Raised when attempting to create an existing Thread."""
 
 
+class ThreadRevisionConflict(ThreadStorageError):
+    """Raised when the persisted Thread revision has changed."""
+
+
 class ThreadStorage:
     """Canonical Markdown filesystem storage for Threads."""
 
@@ -403,18 +407,42 @@ class ThreadStorage:
 
         return self._path(thread_id).exists()
 
-    def update(self, thread: Thread) -> None:
-        """Update an existing persistent Thread."""
+    def update(
+        self,
+        thread: Thread,
+        previous_revision: int,
+    ) -> None:
+        """Update a Thread using optimistic revision control."""
         self._validate_id(thread.thread_id)
-        path = self._path(thread.thread_id)
 
-        if not path.exists():
+        current = self.get(thread.thread_id)
+
+        if current is None:
             raise ThreadStorageError(
                 f"Thread not found: {thread.thread_id}"
             )
 
+        if current.revision != previous_revision:
+            raise ThreadRevisionConflict(
+                f"{thread.thread_id}: expected revision "
+                f"{previous_revision}, current revision "
+                f"{current.revision}"
+            )
+
+        expected_revision = previous_revision + 1
+
+        if thread.revision != expected_revision:
+            raise ThreadRevisionConflict(
+                f"{thread.thread_id}: new revision must be "
+                f"{expected_revision}, got {thread.revision}"
+            )
+
         content = self._serialize(thread)
-        self._atomic_write(path, content)
+
+        self._atomic_write(
+            self._path(thread.thread_id),
+            content,
+        )
 
     def delete(self, thread_id: str) -> None:
         """Delete a persistent Thread."""
