@@ -37,3 +37,28 @@ def test_operation_rejects_invalid_revision_transition():
             revision=3,
             execution_plan_hash="sha256-test",
         )
+
+
+def test_operation_rejects_invalid_status_transition():
+    from core.operations.models import validate_status_transition
+
+    with pytest.raises(ValueError):
+        validate_status_transition(
+            OperationStatus.APPLYING,
+            OperationStatus.PREPARED,
+        )
+
+
+@pytest.mark.parametrize(
+    ("current", "new"),
+    [
+        (OperationStatus.PREPARED, OperationStatus.APPLYING),
+        (OperationStatus.PREPARED, OperationStatus.FAILED),
+        (OperationStatus.APPLYING, OperationStatus.COMMITTED),
+        (OperationStatus.APPLYING, OperationStatus.FAILED),
+    ],
+)
+def test_operation_accepts_valid_status_transitions(current, new):
+    from core.operations.models import validate_status_transition
+
+    validate_status_transition(current, new)

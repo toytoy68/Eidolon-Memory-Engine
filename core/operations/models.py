@@ -38,3 +38,28 @@ class OperationRecord:
             raise ValueError(
                 "revision must equal previous_revision + 1"
             )
+
+
+def validate_status_transition(
+    current: OperationStatus,
+    new: OperationStatus,
+) -> None:
+    """Validate an Operation lifecycle transition."""
+
+    allowed = {
+        OperationStatus.PREPARED: {
+            OperationStatus.APPLYING,
+            OperationStatus.FAILED,
+        },
+        OperationStatus.APPLYING: {
+            OperationStatus.COMMITTED,
+            OperationStatus.FAILED,
+        },
+        OperationStatus.COMMITTED: set(),
+        OperationStatus.FAILED: set(),
+    }
+
+    if new not in allowed[current]:
+        raise ValueError(
+            f"invalid Operation status transition: {current.value} -> {new.value}"
+        )
