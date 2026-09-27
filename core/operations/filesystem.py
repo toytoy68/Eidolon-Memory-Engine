@@ -16,9 +16,11 @@ from core.operations.models import (
     OperationRecord,
     OperationStatus,
     OperationType,
+    ThreadStatusChangePlan,
     validate_status_transition,
 )
 from core.operations.repository import OperationRepository
+from core.threads.models import ThreadStatus
 
 
 class FilesystemOperationRepository(OperationRepository):
@@ -57,6 +59,14 @@ class FilesystemOperationRepository(OperationRepository):
                 revision=data["revision"],
                 execution_plan_hash=data["execution_plan_hash"],
                 status=OperationStatus(data["status"]),
+                plan=(
+                    ThreadStatusChangePlan(
+                        new_status=ThreadStatus(data["plan"]["new_status"]),
+                        event_id=data["plan"]["event_id"],
+                    )
+                    if data.get("plan") is not None
+                    else None
+                ),
             )
         except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
             raise InvalidOperationRecord(operation_id) from exc
@@ -96,6 +106,14 @@ class FilesystemOperationRepository(OperationRepository):
             "revision": operation.revision,
             "execution_plan_hash": operation.execution_plan_hash,
             "status": operation.status.value,
+            "plan": (
+                {
+                    "new_status": operation.plan.new_status.value,
+                    "event_id": operation.plan.event_id,
+                }
+                if operation.plan is not None
+                else None
+            ),
         }
 
         with temp_path.open("w", encoding="utf-8") as handle:

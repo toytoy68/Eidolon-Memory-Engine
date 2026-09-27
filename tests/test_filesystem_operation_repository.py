@@ -13,7 +13,9 @@ from core.operations.models import (
     OperationRecord,
     OperationStatus,
     OperationType,
+    ThreadStatusChangePlan,
 )
+from core.threads.models import ThreadStatus
 
 
 def test_create_and_get_operation(tmp_path):
@@ -27,6 +29,10 @@ def test_create_and_get_operation(tmp_path):
         revision=2,
         execution_plan_hash="sha256-test",
         status=OperationStatus.PREPARED,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     repository.create(operation)
@@ -34,6 +40,9 @@ def test_create_and_get_operation(tmp_path):
     loaded = repository.get("op-test-001")
 
     assert loaded == operation
+    assert loaded.plan is not None
+    assert loaded.plan.new_status is ThreadStatus.IMPLEMENTATION
+    assert loaded.plan.event_id == "event-test-001"
 
 
 def test_create_rejects_duplicate_operation_id(tmp_path):
@@ -46,6 +55,10 @@ def test_create_rejects_duplicate_operation_id(tmp_path):
         previous_revision=1,
         revision=2,
         execution_plan_hash="sha256-test",
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     repository.create(operation)
@@ -71,6 +84,10 @@ def test_update_existing_operation(tmp_path):
         revision=2,
         execution_plan_hash="sha256-test",
         status=OperationStatus.PREPARED,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     repository.create(operation)
@@ -83,6 +100,10 @@ def test_update_existing_operation(tmp_path):
         revision=operation.revision,
         execution_plan_hash=operation.execution_plan_hash,
         status=OperationStatus.APPLYING,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     repository.update(updated)
@@ -101,6 +122,10 @@ def test_update_rejects_missing_operation(tmp_path):
         revision=2,
         execution_plan_hash="sha256-test",
         status=OperationStatus.APPLYING,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     with pytest.raises(OperationNotFound):
@@ -118,6 +143,10 @@ def test_list_incomplete_excludes_committed_operations(tmp_path):
         revision=2,
         execution_plan_hash="hash-prepared",
         status=OperationStatus.PREPARED,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     applying = OperationRecord(
@@ -128,6 +157,10 @@ def test_list_incomplete_excludes_committed_operations(tmp_path):
         revision=3,
         execution_plan_hash="hash-applying",
         status=OperationStatus.APPLYING,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     committed = OperationRecord(
@@ -138,6 +171,10 @@ def test_list_incomplete_excludes_committed_operations(tmp_path):
         revision=4,
         execution_plan_hash="hash-committed",
         status=OperationStatus.COMMITTED,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     repository.create(prepared)
@@ -196,6 +233,10 @@ def test_update_rejects_changed_execution_plan(tmp_path):
         revision=2,
         execution_plan_hash="hash-original",
         status=OperationStatus.PREPARED,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     repository.create(original)
@@ -208,6 +249,10 @@ def test_update_rejects_changed_execution_plan(tmp_path):
         revision=original.revision,
         execution_plan_hash="hash-modified",
         status=OperationStatus.APPLYING,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     with pytest.raises(OperationConflict):
@@ -225,6 +270,10 @@ def test_update_rejects_invalid_status_transition(tmp_path):
         revision=2,
         execution_plan_hash="sha256-test",
         status=OperationStatus.PREPARED,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
     repository.create(prepared)
 
@@ -236,6 +285,10 @@ def test_update_rejects_invalid_status_transition(tmp_path):
         revision=prepared.revision,
         execution_plan_hash=prepared.execution_plan_hash,
         status=OperationStatus.APPLYING,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
     repository.update(applying)
 
@@ -247,6 +300,10 @@ def test_update_rejects_invalid_status_transition(tmp_path):
         revision=applying.revision,
         execution_plan_hash=applying.execution_plan_hash,
         status=OperationStatus.PREPARED,
+        plan=ThreadStatusChangePlan(
+            new_status=ThreadStatus.IMPLEMENTATION,
+            event_id="event-test-001",
+        ),
     )
 
     with pytest.raises(ValueError):

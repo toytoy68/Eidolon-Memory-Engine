@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from core.threads.models import ThreadStatus
+
 
 class OperationStatus(str, Enum):
     """Lifecycle states of a persistent operation."""
@@ -21,6 +23,14 @@ class OperationType(str, Enum):
     THREAD_STATUS_CHANGE = "THREAD_STATUS_CHANGE"
 
 
+@dataclass(frozen=True)
+class ThreadStatusChangePlan:
+    """Recoverable plan for a Thread status change."""
+
+    new_status: ThreadStatus
+    event_id: str
+
+
 @dataclass
 class OperationRecord:
     """Technical record for a recoverable persistent operation."""
@@ -32,11 +42,20 @@ class OperationRecord:
     revision: int
     execution_plan_hash: str
     status: OperationStatus = OperationStatus.PREPARED
+    plan: ThreadStatusChangePlan | None = None
 
     def __post_init__(self) -> None:
         if self.revision != self.previous_revision + 1:
             raise ValueError(
                 "revision must equal previous_revision + 1"
+            )
+
+        if (
+            self.operation_type is OperationType.THREAD_STATUS_CHANGE
+            and self.plan is None
+        ):
+            raise ValueError(
+                "THREAD_STATUS_CHANGE requires a recovery plan"
             )
 
 
