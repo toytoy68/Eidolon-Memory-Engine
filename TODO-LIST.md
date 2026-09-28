@@ -40,7 +40,7 @@ Eidolon-Memory-Engine/
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
 ├── schemas/                      contrats Information, Thread, Event… (existant)
 ├── services/                     CLI historiques à auditer/migrer (existant)
-├── desktop/                      interface graphique locale (prévu, à valider)
+├── web/                          tableau de bord HTML sur réseau local (prévu)
 ├── docs/                         format, reprise, déploiement (existant)
 │   ├── ARCHITECTURE.md           contrats et frontières de composants (prévu)
 │   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
@@ -70,7 +70,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 217 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 219 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -85,6 +85,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-029a — Mesures locales de RAM hôte, volume disque et taille des
   données du moteur, avec hôte et heure de mesure ; voir `core/monitoring/metrics.py`
   et `docs/MONITORING.md` (tests isolés, 2026-09-28).
+- **【FAIT】** T-029b — Comptage en lecture seule des Threads par statut et des
+  opérations en attente, avec signalement des fichiers inconnus ; voir
+  `core/monitoring/overview.py` (tests isolés, 2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -132,15 +135,16 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   couvrent l'arrêt de processus, pas une panne d'alimentation.
 - **【À FAIRE】** T-028 — Documenter les décisions validées dans
   `docs/ARCHITECTURE.md`, puis adapter l'arborescence cible ci-dessus.
-- **【À VALIDER】** T-029 — Définir une interface graphique de bureau : tableau de
-  bord (volumes, statuts, opérations en attente, erreurs), RAM utilisée/disponible,
+- **【À FAIRE】** T-029 — Construire un tableau de bord HTML servi sur le réseau
+  local depuis la VM, consultable sur le PC principal : volumes, statuts,
+  opérations en attente et erreurs, RAM utilisée/disponible,
   disque utilisé/libre sur le volume des données, taille des fichiers du moteur
   et, si raccordé, de l'index Qdrant ; recherche et ouverture des fichiers
   Markdown en lecture seule. Préciser machine mesurée et date de rafraîchissement.
-  Choisir si l'interface réside dans ce dépôt
-  ou dans une application distincte, et si elle lit une API locale ou distante.
+  Prévoir accès restreint au réseau local et contrôle d'accès avant exposition.
+  Valider port, adresse et intégration aux services de la VM lors du déploiement.
   Tester la fraîcheur des statistiques, les permissions et les gros volumes.
-  T-029a fournit les mesures locales mais aucune interface ni accès distant.
+  T-029a/b fournissent les mesures locales mais aucune interface ni accès distant.
   L'édition éventuelle devra passer par les services et leurs révisions ; ne
   jamais écrire directement dans les fichiers du moteur.
 

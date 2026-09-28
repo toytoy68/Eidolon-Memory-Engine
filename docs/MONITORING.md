@@ -22,3 +22,17 @@ Cette commande n'ouvre pas le contenu des mémoires et n'écrit rien. Elle ne
 constitue pas encore une API réseau ni une interface graphique. Sur un bureau
 distinct de la VM, l'exécuter localement mesurerait **le bureau** ; pour afficher
 le serveur il faudra plus tard un adaptateur distant authentifié.
+
+Pour les statuts du moteur, la commande suivante lit les Threads core 0.2 et
+les opérations de changement de statut dans leurs journaux isolés :
+
+```sh
+python -m core.monitoring.overview --root /chemin/vers/eidolon-memory-engine
+```
+
+Elle compte les Threads par statut et les opérations `PREPARED`/`APPLYING` en
+attente. Les documents core 0.1, inconnus ou malformés sont signalés par leur
+chemin dans `needs_review`, sans afficher leur contenu. Ce n'est ni une lecture
+transactionnelle de plusieurs fichiers ni un indicateur des anciens journaux
+CLI. Un relevé pendant une écriture peut être provisoire : le tableau de bord
+devra afficher l'heure et rafraîchir après reprise.
