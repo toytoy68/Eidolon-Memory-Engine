@@ -70,7 +70,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 244 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 245 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -105,6 +105,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-021b — Le contrôle préalable des Informations anciennes signale
   aussi les valeurs de type/état inconnues et les blocs YAML de forme incompatible
   avec le modèle ; test de régression (2026-09-28).
+- **【FAIT】** T-021c — Le contrôle préalable bloque aussi les métadonnées et
+  sous-champs de révision inconnus pour éviter leur perte lors d'une conversion
+  future ; rapport sans valeurs privées et test isolé (2026-09-28).
 - **【FAIT】** T-022c — Audit en lecture seule des relations `CONCERNS` vers une
   Information absente ou illisible ; voir `core/threads/link_audit.py`, deux tests
   sur données isolées (2026-09-28).
@@ -143,7 +146,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【À FAIRE】** T-021 — Concevoir une migration explicite, réexécutable et
   vérifiable des documents CLI/front-matter et des anciens journaux. Prévoir
   simulation, sauvegarde, rapport de rejets, contrôle des identifiants/révisions
-  et tests sur copies anonymisées. T-021a/b couvrent seulement le contrôle préalable
+  et tests sur copies anonymisées. T-021a/b/c couvrent seulement le contrôle
   préalable ; aucune conversion n'est autorisée. Ne jamais migrer silencieusement
   au démarrage.
 - **【À FAIRE】** T-022 — Tester le parcours complet Information → Thread →

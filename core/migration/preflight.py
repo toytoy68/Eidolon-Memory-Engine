@@ -53,10 +53,19 @@ def inspect_legacy_information(path: Path) -> list[str]:
         return ["invalid_mapping"]
 
     reasons = []
+    known_fields = {
+        "id", "revision", "type", "epistemic_status", "operational_state",
+        "confidence", "importance", "context", "provenance", "evidence",
+        "time", "relations", "triggers", "retention",
+    }
+    if data.keys() - known_fields:
+        reasons.append("unknown_metadata_fields")
     if not isinstance(data.get("id"), str) or data["id"] != path.stem:
         reasons.append("identity_mismatch")
     revision = data.get("revision")
     if isinstance(revision, dict):
+        if revision.keys() - {"number", "is_revision", "previous_revision"}:
+            reasons.append("unknown_revision_fields")
         revision = revision.get("number")
     if type(revision) is not int or revision < 1:
         reasons.append("invalid_revision")

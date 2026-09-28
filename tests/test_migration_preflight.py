@@ -57,3 +57,19 @@ def test_preflight_flags_unsupported_enums_and_container_shapes(tmp_path):
         "path": "memory/persistent/info-4.md",
         "reasons": ["invalid_type", "invalid_confidence", "invalid_context", "invalid_relations"],
     }]
+
+
+def test_preflight_blocks_unknown_metadata_without_exposing_its_value(tmp_path):
+    path = document(tmp_path, "info-5",
+                    "id: info-5\nrevision:\n  number: 2\n  private_flag: secret\n"
+                    "type: FACT\nepistemic_status: UNVERIFIED\n"
+                    "operational_state: ACTIVE\nprivate_field: secret\n")
+    original = path.read_bytes()
+
+    report = preflight(tmp_path)
+    assert report == {"legacy_candidates": 0, "already_core": 0, "blocked": [{
+        "path": "memory/persistent/info-5.md",
+        "reasons": ["unknown_metadata_fields", "unknown_revision_fields"],
+    }]}
+    assert "secret" not in json.dumps(report)
+    assert path.read_bytes() == original
