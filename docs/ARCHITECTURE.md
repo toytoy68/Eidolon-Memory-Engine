@@ -105,7 +105,8 @@ laisser une demande `PENDING_DELETE` sans fichier.
 La demande en attente n'est plus remplacée par une autre demande ; un rejeu
 identique est accepté sans écriture. Une demande `CANCELLED` peut toutefois être
 remplacée par une nouvelle demande sur le même identifiant : ce fichier n'est
-pas un historique complet des décisions.
+pas un historique complet des décisions. L'approbation et l'annulation refusent
+un reçu dont l'identité Information ne correspond pas au fichier demandé.
 
 Sur une copie arrêtée :
 

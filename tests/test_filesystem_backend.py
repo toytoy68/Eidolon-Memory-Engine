@@ -160,3 +160,20 @@ def test_invalid_delete_request_receipt_is_not_overwritten(tmp_path):
     with pytest.raises(InvalidMemory, match="unreadable"):
         backend.delete_request("info-test", "human", "reason", 1, "op-1")
     assert path.read_text() == "broken"
+
+
+@pytest.mark.parametrize("decision", ["approve_delete", "cancel_delete"])
+def test_delete_decision_rejects_receipt_with_wrong_information_id(tmp_path, decision):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test", content="keep"))
+    backend.delete_request("info-test", "human", "reason", 1, "op-1")
+    path = tmp_path / "history/pending-delete/info-test.json"
+    record = json.loads(path.read_text())
+    record["information_id"] = "other-info"
+    path.write_text(json.dumps(record))
+    before = path.read_bytes()
+
+    with pytest.raises(InvalidMemory, match="identity mismatch"):
+        getattr(backend, decision)("info-test", "op-1")
+    assert backend.get("info-test").content == "keep"
+    assert path.read_bytes() == before

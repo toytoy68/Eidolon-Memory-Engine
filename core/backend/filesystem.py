@@ -353,6 +353,9 @@ class FilesystemBackend(MemoryBackend):
             request_path.read_text(encoding="utf-8")
         )
 
+        if not isinstance(request, dict) or request.get("information_id") != information_id:
+            raise InvalidMemory("pending delete request identity mismatch")
+
         if request.get("operation_id") != operation_id:
             raise RevisionConflict(
                 "operation_id does not match pending delete request"
@@ -406,6 +409,9 @@ class FilesystemBackend(MemoryBackend):
         request = json.loads(
             request_path.read_text(encoding="utf-8")
         )
+
+        if not isinstance(request, dict) or request.get("information_id") != information_id:
+            raise InvalidMemory("pending delete request identity mismatch")
 
         if request.get("operation_id") != operation_id:
             raise RevisionConflict(
