@@ -1,3 +1,10 @@
+import pytest
+
+from core.backend.filesystem import FilesystemBackend
+from core.backend.models import Memory
+from core.events.filesystem import FilesystemEventRepository
+from core.operations.filesystem import FilesystemOperationRepository
+from core.operations.thread_create import FilesystemLinkedThreadCreation
 from core.threads.models import Thread, ThreadStatus
 from core.threads.queries import (
     ThreadQuery,
@@ -116,3 +123,29 @@ def test_execute_parsed_json_request(tmp_path):
 
     assert len(result) == 1
     assert result[0].thread_id == "thread-service-001"
+
+
+def test_create_linked_requires_coordinator(tmp_path):
+    service = ThreadService(ThreadStorage(tmp_path))
+    with pytest.raises(RuntimeError, match="operation coordinator"):
+        service.create_linked(make_thread(), "info-1", operation_id="op-1", event_id="event-1")
+
+
+def test_create_linked_through_service_records_event(tmp_path):
+    persistent = tmp_path / "persistent"
+    history = tmp_path / "history"
+    backend = FilesystemBackend(persistent, history)
+    backend.store(Memory("info-1"))
+    storage = ThreadStorage(persistent)
+    events = FilesystemEventRepository(history / "events/thread-create-v1")
+    operations = FilesystemOperationRepository(history / "operations/thread-create-v1")
+    creation = FilesystemLinkedThreadCreation(backend, storage, events, operations)
+    service = ThreadService(storage, creation=creation)
+
+    linked = service.create_linked(make_thread(), "info-1",
+                                   operation_id="op-1", event_id="event-1")
+    assert storage.get(linked.thread_id) == linked
+    assert linked.relations == [{"type": "CONCERNS", "target_id": "info-1"}]
+    assert events.get("event-1").thread_id == linked.thread_id
+    assert service.create_linked(make_thread(), "info-1",
+                                 operation_id="op-1", event_id="event-1") == linked

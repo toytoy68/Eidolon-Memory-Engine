@@ -42,7 +42,8 @@ sous-répertoires `thread-status-v1` ; les reçus historiques Information dans
 coordinateur.
 
 La création liée récupérable passe par `FilesystemLinkedThreadCreation.create`
-ou le CLI `python -m core.operations.cli create-linked` :
+via `ThreadService.create_linked` ou le CLI
+`python -m core.operations.cli create-linked` :
 elle prépare un snapshot et un journal dans `thread-create-v1`, puis écrit le
 Thread et son Event `CREATED`. Après interruption, exécuter
 `python -m core.operations.cli recover-all` : la commande reprend les créations,

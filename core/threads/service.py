@@ -13,9 +13,10 @@ from .storage import ThreadStorage
 class ThreadService:
     """Coordinate Thread persistence and domain queries."""
 
-    def __init__(self, storage: ThreadStorage, operations=None) -> None:
+    def __init__(self, storage: ThreadStorage, operations=None, creation=None) -> None:
         self.storage = storage
         self.operations = operations
+        self.creation = creation
 
     def get(self, thread_id: str) -> Thread | None:
         """Load a Thread from persistent storage."""
@@ -56,6 +57,14 @@ class ThreadService:
             thread_id, new_status, previous_revision=previous_revision,
             operation_id=operation_id, event_id=event_id,
         )
+
+    def create_linked(self, thread: Thread, information_id: str, *,
+                      operation_id: str, event_id: str) -> Thread:
+        """Create a linked Thread through the recoverable coordinator."""
+        if self.creation is None:
+            raise RuntimeError("linked Thread creation requires an operation coordinator")
+        return self.creation.create(thread, information_id,
+                                    operation_id=operation_id, event_id=event_id)
 
     def recover(self):
         if self.operations is None:

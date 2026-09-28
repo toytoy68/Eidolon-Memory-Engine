@@ -49,7 +49,7 @@ def main():
             return int(any(record["status"] == "BLOCKED" for record in result.values()))
         if args.command == "create-linked":
             event_id = args.event_id or "created-" + hashlib.sha256(args.operation_id.encode()).hexdigest()
-            result = creation.create(
+            result = ThreadService(storage, creation=creation).create_linked(
                 Thread(args.thread_id, args.title, args.objective,
                        created_at=args.created_at, updated_at=args.created_at),
                 args.information_id, operation_id=args.operation_id, event_id=event_id,
