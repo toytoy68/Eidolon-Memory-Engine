@@ -305,19 +305,8 @@ class FilesystemBackend(MemoryBackend):
 
         path = self.pending_delete_root / f"{information_id}.json"
 
-        if path.is_symlink():
-            raise InvalidMemory("pending delete request is a symlink")
-        if path.exists():
-            try:
-                current_request = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-                raise InvalidMemory("pending delete request is unreadable") from exc
-            if (not isinstance(current_request, dict)
-                    or current_request.get("information_id") != information_id
-                    or current_request.get("status") not in {
-                        "PENDING_DELETE", "CANCELLED", "DELETED",
-                    }):
-                raise InvalidMemory("pending delete request is invalid")
+        if path.is_symlink() or path.exists():
+            current_request = self._load_delete_request(path, information_id)
             if current_request["status"] == "PENDING_DELETE":
                 if current_request == request:
                     return DeleteResult(information_id, "PENDING_DELETE")
@@ -335,6 +324,23 @@ class FilesystemBackend(MemoryBackend):
             status="PENDING_DELETE",
         )
 
+    @staticmethod
+    def _load_delete_request(path: Path, information_id: str) -> dict:
+        if path.is_symlink():
+            raise InvalidMemory("pending delete request is a symlink")
+        try:
+            request = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            raise InvalidMemory("pending delete request is unreadable") from exc
+        if (not isinstance(request, dict)
+                or request.get("information_id") != information_id
+                or request.get("status") not in {"PENDING_DELETE", "CANCELLED", "DELETED"}
+                or type(request.get("revision")) is not int or request["revision"] < 1
+                or not isinstance(request.get("operation_id"), str)
+                or not request["operation_id"]):
+            raise InvalidMemory("pending delete request is invalid or has an identity mismatch")
+        return request
+
     @serialized_write("persistent_root")
     def approve_delete(
         self,
@@ -349,12 +355,7 @@ class FilesystemBackend(MemoryBackend):
                 f"pending delete request not found: {information_id}"
             )
 
-        request = json.loads(
-            request_path.read_text(encoding="utf-8")
-        )
-
-        if not isinstance(request, dict) or request.get("information_id") != information_id:
-            raise InvalidMemory("pending delete request identity mismatch")
+        request = self._load_delete_request(request_path, information_id)
 
         if request.get("operation_id") != operation_id:
             raise RevisionConflict(
@@ -406,12 +407,7 @@ class FilesystemBackend(MemoryBackend):
                 f"pending delete request not found: {information_id}"
             )
 
-        request = json.loads(
-            request_path.read_text(encoding="utf-8")
-        )
-
-        if not isinstance(request, dict) or request.get("information_id") != information_id:
-            raise InvalidMemory("pending delete request identity mismatch")
+        request = self._load_delete_request(request_path, information_id)
 
         if request.get("operation_id") != operation_id:
             raise RevisionConflict(
