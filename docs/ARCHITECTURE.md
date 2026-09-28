@@ -50,6 +50,10 @@ puis la commande `recover` pour ceux-ci. Un Thread ou Event divergent bloque la
 reprise sans écrasement. La création directe via `ThreadInformationLinkService`
 reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
 création restent à adapter.
+Le CLI de changement de statut vérifie les journaux de création en attente et
+refuse la mutation du Thread concerné avant `recover-creations`. Les appels
+Python qui construisent `FilesystemThreadOperations` doivent lui passer le
+dépôt d'opérations de création pour bénéficier du même contrôle.
 
 Exemple sur une racine core isolée (l'Information cible doit déjà exister) :
 

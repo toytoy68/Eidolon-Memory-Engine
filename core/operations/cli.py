@@ -57,6 +57,7 @@ def main():
     service = ThreadService(storage, FilesystemThreadOperations(
         storage, FilesystemEventRepository(EVENTS_ROOT / "thread-status-v1"),
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-status-v1"),
+        FilesystemOperationRepository(OPERATIONS_ROOT / "thread-create-v1"),
     ))
     if args.command == "recover":
         result = service.recover()

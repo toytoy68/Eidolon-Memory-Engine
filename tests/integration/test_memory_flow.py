@@ -28,7 +28,8 @@ def open_engine(root):
     threads = ThreadStorage(persistent)
     operations = FilesystemOperationRepository(history / "operations" / "thread-status-v1")
     events = FilesystemEventRepository(history / "events" / "thread-status-v1")
-    return backend, FilesystemThreadOperations(threads, events, operations)
+    creations = FilesystemOperationRepository(history / "operations" / "thread-create-v1")
+    return backend, FilesystemThreadOperations(threads, events, operations, creations)
 
 
 def open_creation(root):
@@ -254,3 +255,30 @@ def test_linked_creation_blocks_second_operation_for_pending_thread(tmp_path, mo
         restarted.create(thread, "info-1", operation_id="create-2", event_id="created-2")
     assert restarted.operations.get("create-2") is None
     assert restarted.recover() == {"create-1": {"status": "COMMITTED"}}
+
+
+def test_status_change_waits_for_interrupted_thread_creation(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    create = creation.storage.create
+
+    def interrupt_after_thread(value):
+        create(value)
+        raise InterruptedError("interrupted after Thread write")
+
+    monkeypatch.setattr(creation.storage, "create", interrupt_after_thread)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+
+    _, status = open_engine(tmp_path)
+    with pytest.raises(OperationConflict, match="recover Thread creation"):
+        status.change_status("thread-1", ThreadStatus.VALIDATED,
+                             previous_revision=1, operation_id="status-1", event_id="status-event-1")
+    assert status.operations.get("status-1") is None
+    _, restarted = open_creation(tmp_path)
+    assert restarted.recover() == {"create-1": {"status": "COMMITTED"}}
+    assert status.change_status("thread-1", ThreadStatus.VALIDATED,
+                                previous_revision=1, operation_id="status-1",
+                                event_id="status-event-1").status is ThreadStatus.VALIDATED
