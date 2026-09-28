@@ -291,6 +291,32 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   jamais écrire directement dans les fichiers du moteur. Reprendre uniquement
   après la priorité donnée au noyau mémoire (demande du 2026-09-28).
 
+## Pistes d'intégration avec Eidolon Core
+
+Ces éléments sont volontairement **hors du noyau Memory Engine**. Ils sont suivis
+ici uniquement parce qu'ils définissent les futurs contrats d'intégration et les
+informations que le moteur de mémoire devra pouvoir fournir ou recevoir. Voir
+[docs/CORE-INTEGRATION-NOTES.md](docs/CORE-INTEGRATION-NOTES.md).
+
+- **【À VALIDER】** T-036 — Définir le contrat avec un futur **Decision Engine** :
+  décisions/scorings rapides et structurés utilisables par Classifier, Router ou
+  Validator, sans imposer un modèle particulier au Memory Engine.
+- **【À VALIDER】** T-037 — Formaliser la frontière **Agents / Skills** : leur
+  définition, sélection, orchestration et exécution appartiennent à Eidolon Core ;
+  Memory Engine peut conserver leur mémoire, résultats, événements, provenance et
+  historique, mais ne doit pas devenir leur runtime.
+- **【À VALIDER】** T-038 — Préparer les contrats mémoire nécessaires à une
+  orchestration **Planner → Workers → Validator → Reviewer**, sans introduire
+  cette orchestration dans le moteur de mémoire.
+- **【À VALIDER】** T-039 — Définir les besoins d'un futur **Policy/Safety Engine**
+  côté Core : permissions explicites, sandbox, validation des actions sensibles,
+  journalisation et traçabilité. Le Memory Engine doit pouvoir enregistrer les
+  décisions et preuves utiles sans être lui-même le moteur d'autorisation.
+- **【À VALIDER】** T-040 — Prévoir l'intégration à une interface EidolonOS
+  **AI-first** et à des tâches autonomes/cadencées : API stable, événements,
+  statuts et opérations observables, tout en gardant le scheduler général hors
+  du Memory Engine.
+
 ## Critère de livraison
 
 Le noyau sera considéré déployable lorsque la migration nécessaire sera décidée,
