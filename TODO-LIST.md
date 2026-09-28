@@ -35,12 +35,11 @@ Eidolon-Memory-Engine/
 │   ├── persistence.py            verrous et écritures durables (existant)
 │   ├── storage_format.py         documents Markdown/JSON versionnés (existant)
 │   ├── migration/                inventaire seul ; convertisseur prévu
-│   ├── monitoring/               mesures locales en lecture seule (existant)
+│   ├── monitoring/               mesures et première page HTML (existant)
 │   ├── indexing/                 interface d'index dérivé/reconstructible (prévu)
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
 ├── schemas/                      contrats Information, Thread, Event… (existant)
 ├── services/                     CLI historiques à auditer/migrer (existant)
-├── web/                          tableau de bord HTML sur réseau local (prévu)
 ├── docs/                         format, reprise, déploiement (existant)
 │   ├── ARCHITECTURE.md           contrats et frontières de composants (prévu)
 │   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
@@ -70,7 +69,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 219 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 221 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -88,6 +87,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-029b — Comptage en lecture seule des Threads par statut et des
   opérations en attente, avec signalement des fichiers inconnus ; voir
   `core/monitoring/overview.py` (tests isolés, 2026-09-28).
+- **【FAIT】** T-029c — Première page HTML avec accès HTTP Basic, écoute locale
+  par défaut, mesures et statuts ; voir `core/monitoring/dashboard.py`. Rendu et
+  authentification testés sans socket, 2026-09-28. Accès LAN à valider sur VM.
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -144,7 +146,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Prévoir accès restreint au réseau local et contrôle d'accès avant exposition.
   Valider port, adresse et intégration aux services de la VM lors du déploiement.
   Tester la fraîcheur des statistiques, les permissions et les gros volumes.
-  T-029a/b fournissent les mesures locales mais aucune interface ni accès distant.
+  T-029a/b fournissent les mesures locales et T-029c une première page HTML.
+  L'accès LAN, le parcours `.md` et le déploiement
+  restent à valider/développer.
   L'édition éventuelle devra passer par les services et leurs révisions ; ne
   jamais écrire directement dans les fichiers du moteur.
 

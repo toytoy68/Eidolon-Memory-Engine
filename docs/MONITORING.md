@@ -36,3 +36,27 @@ chemin dans `needs_review`, sans afficher leur contenu. Ce n'est ni une lecture
 transactionnelle de plusieurs fichiers ni un indicateur des anciens journaux
 CLI. Un relevé pendant une écriture peut être provisoire : le tableau de bord
 devra afficher l'heure et rafraîchir après reprise.
+
+## Première page HTML
+
+Le serveur intégré fournit une page de synthèse en lecture seule à la racine
+`/`. Il exige un mot de passe transmis par variable d'environnement, puis une
+authentification HTTP Basic (identifiant `eidolon`). Exemple local :
+
+```sh
+export EIDOLON_DASHBOARD_TOKEN='un-secret-long-et-aleatoire'
+python -m core.monitoring.dashboard --root /opt/eidolon-memory-engine
+```
+
+Ouvrir `http://127.0.0.1:8765/` sur la machine serveur. Sur la VM 110 indiquée
+à l'adresse locale `192.168.1.110`, après validation, lancer avec
+`--host 192.168.1.110` puis ouvrir `http://192.168.1.110:8765/` depuis le PC
+principal, si le pare-feu l'autorise. **HTTP Basic sur HTTP ne
+chiffre pas le mot de passe** ; pour un accès régulier au-delà d'un réseau local
+de confiance, placer un proxy HTTPS authentifié devant le service. Ne pas
+publier le port sur Internet. La valeur du secret ne doit pas être committée.
+
+La page est rafraîchie toutes les 30 secondes ; aucun navigateur ni socket
+réseau n'a encore été testé dans l'environnement de développement. La lecture
+des fichiers Markdown et les vues détaillées restent à développer. Aucun
+service systemd ni lancement automatique n'est installé.
