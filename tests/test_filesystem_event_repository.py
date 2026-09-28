@@ -1,6 +1,6 @@
 import pytest
 
-from core.events.errors import EventAlreadyExists
+from core.events.errors import EventAlreadyExists, InvalidEvent
 from core.events.filesystem import FilesystemEventRepository
 from core.events.models import (
     Cause,
@@ -205,3 +205,37 @@ def test_list_for_target_rejects_corrupted_event(tmp_path):
 
     with pytest.raises(InvalidEvent):
         repository.list_for_target("info-test")
+
+
+@pytest.mark.parametrize("corruption", [
+    '"event_id": "event-corrupted", "event_id": "other", "revision": 1',
+    '"event_id": "event-corrupted", "revision": NaN',
+    '"event_id": "event-corrupted", "revision": 1, '
+    '"state_transition": {"before": {"other": 1}}',
+])
+def test_rejects_ambiguous_or_invalid_persisted_event(tmp_path, corruption):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    (repository.events_root / "event-corrupted.md").write_text(
+        "# Eidolon Memory Event\n\nVersion: 0.2\n\n```json\n"
+        "{" + corruption + ', "information_id": "info", '
+        '"event_type": "UPDATED"}' + "\n```\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(InvalidEvent):
+        repository.get("event-corrupted")
+    with pytest.raises(InvalidEvent):
+        repository.list_for_target("info")
+
+
+def test_save_rejects_nonfinite_event_data_without_creating_file(tmp_path):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    event = Event(
+        event_id="nonfinite", information_id="info", revision=1,
+        event_type=EventType.UPDATED,
+        state_transition=StateTransition(after={"epistemic_status": float("nan")}),
+    )
+
+    with pytest.raises(InvalidEvent, match="serialized"):
+        repository.save(event)
+    assert repository.get("nonfinite") is None

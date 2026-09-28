@@ -187,6 +187,7 @@ class FilesystemEventRepository(EventRepository):
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
+            allow_nan=False,
         )
 
         return (
@@ -205,7 +206,21 @@ class FilesystemEventRepository(EventRepository):
             raise InvalidEvent("invalid Event header or unsupported version")
         try:
             payload = normalized[len(prefix):].lstrip()
-            data, end = json.JSONDecoder().raw_decode(payload)
+            def unique_object(pairs):
+                result = {}
+                for key, value in pairs:
+                    if key in result:
+                        raise InvalidEvent(f"duplicate Event JSON key: {key}")
+                    result[key] = value
+                return result
+
+            def invalid_constant(value):
+                raise InvalidEvent(f"invalid Event JSON constant: {value}")
+
+            data, end = json.JSONDecoder(
+                object_pairs_hook=unique_object,
+                parse_constant=invalid_constant,
+            ).raw_decode(payload)
             if payload[end:].strip() != "```":
                 raise InvalidEvent("invalid Event JSON boundary")
         except json.JSONDecodeError as exc:
@@ -214,7 +229,11 @@ class FilesystemEventRepository(EventRepository):
         if not isinstance(data, dict):
             raise InvalidEvent("Event JSON must be an object")
 
-        return cls._from_dict(data)
+        event = cls._from_dict(data)
+        errors = validate_event(event)
+        if errors:
+            raise InvalidEvent("; ".join(errors))
+        return event
 
     # ------------------------------------------------------------------
     # Atomic filesystem operations
@@ -255,10 +274,11 @@ class FilesystemEventRepository(EventRepository):
         if path.exists():
             raise EventAlreadyExists(event.event_id)
 
-        self._atomic_write(
-            path,
-            self._serialize(event),
-        )
+        try:
+            content = self._serialize(event)
+        except (TypeError, ValueError) as exc:
+            raise InvalidEvent("Event cannot be serialized as JSON") from exc
+        self._atomic_write(path, content)
 
         return event
 
