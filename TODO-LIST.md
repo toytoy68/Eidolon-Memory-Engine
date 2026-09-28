@@ -39,6 +39,7 @@ Eidolon-Memory-Engine/
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
 ├── schemas/                      contrats Information, Thread, Event… (existant)
 ├── services/                     CLI historiques à auditer/migrer (existant)
+├── desktop/                      interface graphique locale (prévu, à valider)
 ├── docs/                         format, reprise, déploiement (existant)
 │   ├── ARCHITECTURE.md           contrats et frontières de composants (prévu)
 │   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
@@ -117,6 +118,16 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   couvrent l'arrêt de processus, pas une panne d'alimentation.
 - **【À FAIRE】** T-028 — Documenter les décisions validées dans
   `docs/ARCHITECTURE.md`, puis adapter l'arborescence cible ci-dessus.
+- **【À VALIDER】** T-029 — Définir une interface graphique de bureau : tableau de
+  bord (volumes, statuts, opérations en attente, erreurs), RAM utilisée/disponible,
+  disque utilisé/libre sur le volume des données, taille des fichiers du moteur
+  et, si raccordé, de l'index Qdrant ; recherche et ouverture des fichiers
+  Markdown en lecture seule. Préciser machine mesurée et date de rafraîchissement.
+  Choisir si l'interface réside dans ce dépôt
+  ou dans une application distincte, et si elle lit une API locale ou distante.
+  Tester la fraîcheur des statistiques, les permissions et les gros volumes.
+  L'édition éventuelle devra passer par les services et leurs révisions ; ne
+  jamais écrire directement dans les fichiers du moteur.
 
 ## Critère de livraison
 
