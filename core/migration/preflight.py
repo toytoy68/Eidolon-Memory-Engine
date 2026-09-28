@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -62,6 +63,8 @@ def inspect_legacy_information(path: Path) -> list[str]:
         reasons.append("unknown_metadata_fields")
     if not isinstance(data.get("id"), str) or data["id"] != path.stem:
         reasons.append("identity_mismatch")
+    if not re.fullmatch(r"[A-Za-z0-9._-]+", path.stem):
+        reasons.append("invalid_backend_id")
     revision = data.get("revision")
     if isinstance(revision, dict):
         if revision.keys() - {"number", "is_revision", "previous_revision"}:

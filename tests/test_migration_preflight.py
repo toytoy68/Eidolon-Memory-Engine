@@ -73,3 +73,12 @@ def test_preflight_blocks_unknown_metadata_without_exposing_its_value(tmp_path):
     }]}
     assert "secret" not in json.dumps(report)
     assert path.read_bytes() == original
+
+
+def test_preflight_blocks_identity_backend_cannot_address(tmp_path):
+    document(tmp_path, "bad id", "id: bad id\nrevision: 1\ntype: FACT\n"
+             "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n")
+
+    assert preflight(tmp_path)["blocked"] == [{
+        "path": "memory/persistent/bad id.md", "reasons": ["invalid_backend_id"],
+    }]

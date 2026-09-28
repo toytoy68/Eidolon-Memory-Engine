@@ -30,7 +30,8 @@ python -m core.migration.preflight --root /chemin/vers/copie/du/moteur
 ```
 
 Ce second outil reste en lecture seule. Il vérifie la fermeture du front matter,
-les clés YAML dupliquées, l'identité fichier/objet, la révision simple ou
+les clés YAML dupliquées, l'identité fichier/objet et les caractères admis par
+le backend dans l'identifiant, la révision simple ou
 `revision.number`, les valeurs des types/états/niveaux connus du modèle,
 les champs de premier niveau ou de révision inconnus, la forme des blocs de
 métadonnées et relations, et la présence d'un corps. Il
