@@ -56,7 +56,13 @@ chiffre pas le mot de passe** ; pour un accès régulier au-delà d'un réseau l
 de confiance, placer un proxy HTTPS authentifié devant le service. Ne pas
 publier le port sur Internet. La valeur du secret ne doit pas être committée.
 
-La page est rafraîchie toutes les 30 secondes ; aucun navigateur ni socket
-réseau n'a encore été testé dans l'environnement de développement. La lecture
-des fichiers Markdown et les vues détaillées restent à développer. Aucun
-service systemd ni lancement automatique n'est installé.
+La page de synthèse est rafraîchie toutes les 30 secondes. Le lien « Parcourir
+les fichiers Markdown » donne une liste paginée de `working`, `information`,
+`threads`, `events`, `thread-events` et `reviews`. Un document est affiché en
+texte échappé, sans exécuter son HTML et sans possibilité de modification.
+Seuls les noms de fichiers `.md` simples des répertoires autorisés sont acceptés ;
+les liens symboliques sont ignorés et l'aperçu est limité à 1 MiB par fichier.
+Les opérations JSON et les fichiers hors de ces répertoires ne sont pas exposés.
+
+Aucun navigateur ni socket réseau n'a encore été testé dans l'environnement de
+développement. Aucun service systemd ni lancement automatique n'est installé.

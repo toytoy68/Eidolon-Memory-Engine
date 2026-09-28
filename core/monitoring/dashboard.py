@@ -10,7 +10,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import os
 from pathlib import Path
 from secrets import compare_digest
+from urllib.parse import parse_qs, quote, urlsplit
 
+from core.monitoring.files import DIRECTORIES, PAGE_SIZE, list_documents, read_document
 from core.monitoring.metrics import collect_metrics
 from core.monitoring.overview import overview
 
@@ -47,7 +49,8 @@ h1{{color:#8bd8ff}}main{{display:grid;grid-template-columns:repeat(auto-fit,minm
 section{{background:#1d2b3e;border:1px solid #3b5369;border-radius:12px;padding:1rem}}
 table{{width:100%;border-collapse:collapse}}td{{padding:.4rem;border-bottom:1px solid #3b5369}}
 td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}</style></head>
-<body><h1>Eidolon Memory Engine</h1><p>Machine : <strong>{escape(str(metrics['host']))}</strong><br>
+<body><h1>Eidolon Memory Engine</h1><p><a href="/files">Parcourir les fichiers Markdown</a></p>
+<p>Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(str(metrics['measured_at']))} UTC · rafraîchissement 30 s</small></p>
 <main><section><h2>RAM hôte</h2><p>Utilisée : {_size(ram['used'])}<br>Disponible : {_size(ram['available'])}<br>
 Total : {_size(ram['total'])}</p></section>
@@ -64,6 +67,40 @@ Liens ignorés : {int(data['symlinks_skipped'])}</p></section>
 </body></html>"""
 
 
+def render_files(root: Path, category: str | None, offset: int = 0) -> str:
+    links = " · ".join(f'<a href="/files?category={quote(key)}">{escape(key)}</a>'
+                       for key in DIRECTORIES)
+    body = "<p>Sélectionner une catégorie.</p>"
+    if category is not None:
+        names = list_documents(root, category, offset)
+        items = "".join(
+            f'<li><a href="/view?category={quote(category)}&name={quote(name)}">'
+            f'{escape(name)}</a></li>' for name in names
+        ) or "<li>Aucun fichier sur cette page.</li>"
+        next_link = (f'<a href="/files?category={quote(category)}&offset={offset + PAGE_SIZE}">'
+                     "Page suivante</a>") if len(names) == PAGE_SIZE else ""
+        previous = (f'<a href="/files?category={quote(category)}&offset={max(0, offset-PAGE_SIZE)}">'
+                    "Page précédente</a>") if offset else ""
+        body = f"<h2>{escape(category)}</h2><ul>{items}</ul><p>{previous} {next_link}</p>"
+    return ("<!doctype html><html lang=fr><head><meta charset=utf-8>"
+            "<meta name=viewport content='width=device-width,initial-scale=1'>"
+            "<title>Fichiers Eidolon</title><style>body{font:16px system-ui;max-width:950px;"
+            "margin:auto;padding:2rem;background:#101827;color:#eef3fa}a{color:#8bd8ff}"
+            "li{margin:.5rem 0}</style></head><body><a href='/'>Tableau de bord</a>"
+            f"<h1>Fichiers Markdown</h1><p>{links}</p>{body}</body></html>")
+
+
+def render_document(category: str, name: str, content: str) -> str:
+    return ("<!doctype html><html lang=fr><head><meta charset=utf-8>"
+            "<meta name=viewport content='width=device-width,initial-scale=1'>"
+            "<title>Document Eidolon</title><style>body{font:16px system-ui;max-width:1050px;"
+            "margin:auto;padding:2rem;background:#101827;color:#eef3fa}a{color:#8bd8ff}"
+            "pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#1d2b3e;padding:1rem}"
+            "</style></head><body>"
+            f'<a href="/files?category={quote(category)}">Retour aux fichiers</a>'
+            f"<h1>{escape(name)}</h1><pre>{escape(content)}</pre></body></html>")
+
+
 def handler_factory(engine_root: Path, token: str):
     class DashboardHandler(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -73,13 +110,27 @@ def handler_factory(engine_root: Path, token: str):
                 self.send_header("Cache-Control", "no-store")
                 self.end_headers()
                 return
-            if self.path != "/":
-                self.send_error(404)
-                return
             try:
-                body = render_dashboard(collect_metrics(engine_root), overview(engine_root)).encode("utf-8")
+                url = urlsplit(self.path)
+                if url.path == "/" and not url.query:
+                    page = render_dashboard(collect_metrics(engine_root), overview(engine_root))
+                elif url.path == "/files":
+                    query = parse_qs(url.query)
+                    category = query.get("category", [None])[0]
+                    offset = int(query.get("offset", ["0"])[0])
+                    page = render_files(engine_root, category, offset)
+                elif url.path == "/view":
+                    query = parse_qs(url.query)
+                    category = query["category"][0]
+                    name = query["name"][0]
+                    page = render_document(category, name,
+                                           read_document(engine_root, category, name))
+                else:
+                    self.send_error(404)
+                    return
+                body = page.encode("utf-8")
             except (OSError, ValueError, KeyError, TypeError):
-                self.send_error(503, "Dashboard data unavailable")
+                self.send_error(404, "Page or document unavailable")
                 return
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")

@@ -69,7 +69,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 221 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 223 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -90,6 +90,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-029c — Première page HTML avec accès HTTP Basic, écoute locale
   par défaut, mesures et statuts ; voir `core/monitoring/dashboard.py`. Rendu et
   authentification testés sans socket, 2026-09-28. Accès LAN à valider sur VM.
+- **【FAIT】** T-029d — Parcours paginé et aperçu texte des Markdown autorisés,
+  avec échappement HTML, blocage des liens et limite de taille ; voir
+  `core/monitoring/files.py` (tests isolés, 2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -147,7 +150,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Valider port, adresse et intégration aux services de la VM lors du déploiement.
   Tester la fraîcheur des statistiques, les permissions et les gros volumes.
   T-029a/b fournissent les mesures locales et T-029c une première page HTML.
-  L'accès LAN, le parcours `.md` et le déploiement
+  L'accès LAN, le test navigateur, le déploiement et les vues plus détaillées
   restent à valider/développer.
   L'édition éventuelle devra passer par les services et leurs révisions ; ne
   jamais écrire directement dans les fichiers du moteur.
