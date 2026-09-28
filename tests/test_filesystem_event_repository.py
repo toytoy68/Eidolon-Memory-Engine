@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from core.events.errors import EventAlreadyExists, InvalidEvent
@@ -239,3 +241,31 @@ def test_save_rejects_nonfinite_event_data_without_creating_file(tmp_path):
     with pytest.raises(InvalidEvent, match="serialized"):
         repository.save(event)
     assert repository.get("nonfinite") is None
+
+
+@pytest.mark.parametrize("overrides", [
+    {"revision": "2"},
+    {"revision": True},
+    {"information_id": 42},
+    {"state_transition": {"before": [], "after": {}}},
+    {"relations": ["not an object"]},
+])
+def test_read_rejects_wrong_event_field_types(tmp_path, overrides):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    payload = {"event_id": "bad-types", "information_id": "info", "revision": 2,
+               "event_type": "UPDATED"}
+    payload.update(overrides)
+    (repository.events_root / "bad-types.md").write_text(
+        "# Eidolon Memory Event\n\nVersion: 0.2\n\n```json\n"
+        + json.dumps(payload) + "\n```\n", encoding="utf-8",
+    )
+    with pytest.raises(InvalidEvent):
+        repository.get("bad-types")
+
+
+def test_save_rejects_mutated_boolean_revision(tmp_path):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    event = Event("bad-revision", 1, EventType.CREATED, information_id="info")
+    event.revision = True
+    with pytest.raises(InvalidEvent, match="revision"):
+        repository.save(event)

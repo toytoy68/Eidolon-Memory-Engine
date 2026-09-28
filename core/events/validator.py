@@ -8,11 +8,26 @@ from .models import Event, EventType
 def validate_event(event: Event) -> list[str]:
     errors: list[str] = []
 
-    if not event.event_id:
-        errors.append("event_id vide")
+    if not isinstance(event.event_id, str) or not event.event_id:
+        errors.append("event_id invalide")
 
-    if event.revision < 1:
-        errors.append("revision doit être >= 1")
+    if type(event.revision) is not int or event.revision < 1:
+        errors.append("revision doit être un entier >= 1")
+
+    if event.information_id is not None and (
+        not isinstance(event.information_id, str) or not event.information_id
+    ):
+        errors.append("information_id invalide")
+    if event.thread_id is not None and (
+        not isinstance(event.thread_id, str) or not event.thread_id
+    ):
+        errors.append("thread_id invalide")
+
+    if not isinstance(event.state_transition.before, dict) or not isinstance(
+        event.state_transition.after, dict
+    ):
+        errors.append("state_transition invalide")
+        return errors
 
     has_information = event.information_id is not None
     has_thread = event.thread_id is not None

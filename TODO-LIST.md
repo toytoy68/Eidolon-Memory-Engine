@@ -13,6 +13,7 @@ sauvegardes et index reconstruisibles restent hors Git.
 - **【À FAIRE】** : prochaine action identifiée, non terminée.
 - **【À VALIDER】** : décision d'architecture ou vérification sur données/VM réelles.
 - **【BLOQUÉ】** : action impossible avant la condition indiquée.
+- **【EN ATTENTE】** : travail volontairement suspendu à la demande du projet.
 
 Lorsqu'une tâche est terminée, remplacer son statut par **【FAIT】**, ajouter le
 commit ou la preuve du test et la date. Garder la tâche dans le fichier afin de
@@ -69,7 +70,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 223 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 229 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -95,6 +96,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   `core/monitoring/files.py` (tests isolés, 2026-09-28).
 - **【FAIT】** T-023a / T-028a — Frontières des écrivains et protocole Thread
   documentés dans `docs/ARCHITECTURE.md` (revue du code, 2026-09-28).
+- **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
+  implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
+  type ; six tests de régression (2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -145,7 +149,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   `docs/ARCHITECTURE.md`, puis adapter l'arborescence cible ci-dessus. T-028a
   couvre l'architecture existante ; les choix futurs doivent être ajoutés après
   validation.
-- **【À FAIRE】** T-029 — Construire un tableau de bord HTML servi sur le réseau
+- **【EN ATTENTE】** T-029 — Construire un tableau de bord HTML servi sur le réseau
   local depuis la VM, consultable sur le PC principal : volumes, statuts,
   opérations en attente et erreurs, RAM utilisée/disponible,
   disque utilisé/libre sur le volume des données, taille des fichiers du moteur
@@ -158,7 +162,8 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   L'accès LAN, le test navigateur, le déploiement et les vues plus détaillées
   restent à valider/développer.
   L'édition éventuelle devra passer par les services et leurs révisions ; ne
-  jamais écrire directement dans les fichiers du moteur.
+  jamais écrire directement dans les fichiers du moteur. Reprendre uniquement
+  après la priorité donnée au noyau mémoire (demande du 2026-09-28).
 
 ## Critère de livraison
 

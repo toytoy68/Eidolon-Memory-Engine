@@ -129,11 +129,27 @@ class FilesystemEventRepository(EventRepository):
             validation_data = data.get("validation")
             relations_data = data.get("relations") or []
 
+            if (not isinstance(data.get("event_id"), str)
+                    or type(data.get("revision")) is not int
+                    or any(value is not None and not isinstance(value, str)
+                           for value in (data.get("information_id"), data.get("thread_id")))
+                    or not isinstance(state_data, dict)
+                    or not isinstance(state_data.get("before", {}), dict)
+                    or not isinstance(state_data.get("after", {}), dict)
+                    or not isinstance(evidence_data, dict)
+                    or not isinstance(evidence_data.get("supporting", []), list)
+                    or not isinstance(evidence_data.get("contradicting", []), list)
+                    or not isinstance(relations_data, list)
+                    or any(not isinstance(item, dict) for item in relations_data)
+                    or any(value is not None and not isinstance(value, dict)
+                           for value in (cause_data, provenance_data, validation_data))):
+                raise InvalidEvent("invalid serialized Event shape")
+
             return Event(
                 event_id=data["event_id"],
                 information_id=data.get("information_id"),
                 thread_id=data.get("thread_id"),
-                revision=int(data["revision"]),
+                revision=data["revision"],
                 event_type=EventType(data["event_type"]),
                 state_transition=StateTransition(
                     before=state_data.get("before") or {},
@@ -177,7 +193,7 @@ class FilesystemEventRepository(EventRepository):
                     for relation in relations_data
                 ],
             )
-        except (KeyError, TypeError, ValueError) as exc:
+        except (KeyError, TypeError, ValueError, AttributeError) as exc:
             raise InvalidEvent("invalid serialized Event") from exc
 
     @classmethod
