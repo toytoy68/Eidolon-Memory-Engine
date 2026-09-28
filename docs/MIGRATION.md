@@ -23,6 +23,21 @@ rencontrés dans les catégories inventoriées ; examiner aussi la structure de 
 copie avant de l'utiliser. Les fichiers portant d'autres extensions et les
 sous-dossiers non listés ne sont pas inventoriés.
 
+Pour un premier contrôle structurel des Informations historiques persistantes :
+
+```sh
+python -m core.migration.preflight --root /chemin/vers/copie/du/moteur
+```
+
+Ce second outil reste en lecture seule. Il vérifie la fermeture du front matter,
+les clés YAML dupliquées, l'identité fichier/objet, la révision simple ou
+`revision.number`, trois champs d'état de base et la présence d'un corps. Il
+compte les documents core déjà présents et liste les fichiers bloqués avec des
+codes de raison, sans inclure le contenu. Code retour 1 en présence de blocages.
+Un `legacy_candidate` signifie seulement **structure minimale analysable** :
+la conversion, la validité métier, les références et la conservation de tous les
+champs ne sont pas encore garanties. Aucun fichier n'est converti.
+
 ## Correspondance des fichiers constatée dans le code
 
 Chemins relatifs à `MEMORY_ENGINE_ROOT` ; la variable peut modifier cette racine.
