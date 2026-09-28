@@ -1,5 +1,13 @@
 # Eidolon Memory Engine — feuille de route
 
+**Avancement prévisionnel : ≈ 45 % (estimation au 2026-09-28).** Ce chiffre
+représente la maturité estimée de la cible complète, pas le rapport entre les
+tâches cochées et leur nombre. Le noyau Information/Thread/Event et la reprise
+de certains parcours sont testés dans le dépôt ; migration des données anciennes,
+intégration à Eidolon Core et à l'index, validation sur la VM et tableau de bord
+restent à terminer ou à décider. Réévaluer ce pourcentage après chaque phase
+majeure validée ; la cible peut encore évoluer.
+
 Dernière mise à jour : 2026-09-28. Branche suivie : `refactor/architecture-v1`.
 Cette arborescence décrit une **cible supposée**, pas une architecture figée. Les
 emplacements marqués `prévu` sont des propositions à confirmer avant création.
