@@ -41,7 +41,8 @@ sous-répertoires `thread-status-v1` ; les reçus historiques Information dans
 `history/operations/*.json` ne sont **pas** des opérations récupérables par ce
 coordinateur.
 
-La création liée récupérable passe par `FilesystemLinkedThreadCreation.create` :
+La création liée récupérable passe par `FilesystemLinkedThreadCreation.create`
+ou le CLI `python -m core.operations.cli create-linked` :
 elle prépare un snapshot et un journal dans `thread-create-v1`, puis écrit le
 Thread et son Event `CREATED`. Après interruption, exécuter
 `python -m core.operations.cli recover-creations` avant les changements de statut,
@@ -49,6 +50,18 @@ puis la commande `recover` pour ceux-ci. Un Thread ou Event divergent bloque la
 reprise sans écrasement. La création directe via `ThreadInformationLinkService`
 reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
 création restent à adapter.
+
+Exemple sur une racine core isolée (l'Information cible doit déjà exister) :
+
+```sh
+python -m core.operations.cli create-linked thread-1 info-1 \
+  --title "Examen" --objective "Vérifier info-1" \
+  --created-at "2026-09-28T08:00:00+02:00" \
+  --operation-id creation-thread-1
+```
+
+Rejouer la même commande exige les mêmes champs et la même date ; un identifiant
+d'opération réutilisé avec un autre contenu est refusé.
 
 ## Avant la coexistence sur VM 110
 

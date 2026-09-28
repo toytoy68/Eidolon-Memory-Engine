@@ -1,6 +1,10 @@
 """Exercise real repositories together on an isolated memory tree."""
 
 from dataclasses import replace
+import json
+import os
+import subprocess
+import sys
 
 import pytest
 
@@ -162,3 +166,23 @@ def test_linked_thread_creation_recovery_refuses_divergent_thread(tmp_path, monk
     assert restarted.recover()["create-1"]["status"] == "BLOCKED"
     assert restarted.storage.get("thread-1").title == "different"
     assert restarted.events.get("created-1") is None
+
+
+def test_create_linked_cli_writes_event_and_replays_idempotently(tmp_path):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    command = [
+        sys.executable, "-m", "core.operations.cli", "create-linked",
+        "thread-1", "info-1", "--title", "Title", "--objective", "Objective",
+        "--created-at", "2026-09-28T08:00:00+02:00", "--operation-id", "create-1",
+    ]
+    environment = {**os.environ, "MEMORY_ENGINE_ROOT": str(tmp_path),
+                   "PYTHONDONTWRITEBYTECODE": "1"}
+    first = subprocess.run(command, env=environment, capture_output=True, text=True, check=True)
+    second = subprocess.run(command, env=environment, capture_output=True, text=True, check=True)
+
+    assert json.loads(first.stdout) == json.loads(second.stdout)
+    assert creation.storage.get("thread-1") is not None
+    event, = creation.events.list_for_target("thread-1")
+    assert event.event_type.value == "CREATED"
+    assert creation.operations.get("create-1").status is OperationStatus.COMMITTED
