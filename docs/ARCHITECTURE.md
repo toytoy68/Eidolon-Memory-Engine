@@ -98,9 +98,17 @@ leur adaptation.
 
 ## Suppression interrompue
 
-La suppression du backend retire actuellement le fichier Information puis
-marque la demande `DELETED`. Une interruption entre ces deux écritures peut
-laisser une demande `PENDING_DELETE` sans fichier.
+La suppression du backend inscrit `APPLYING_DELETE` avec une empreinte SHA-256
+du fichier avant de le retirer, puis marque la demande `DELETED`. Un nouvel
+appel `approve_delete` avec le même identifiant d'opération reprend une demande
+`APPLYING_DELETE`, sous les verrous et après contrôle des liens Thread. Si le
+fichier existe encore, son empreinte doit correspondre ; s'il est absent, le
+reçu est finalisé. Une annulation ou une nouvelle demande ne peut pas remplacer
+une opération commencée. La reprise est explicite, jamais automatique.
+
+Les anciennes demandes `PENDING_DELETE` sans fichier restent ambiguës et ne
+sont pas reprises. Le journal ne protège pas contre les écrivains historiques
+qui ignorent ces verrous, ni contre une recréation externe avec les mêmes octets.
 
 La demande en attente n'est plus remplacée par une autre demande ; un rejeu
 identique est accepté sans écriture. Une demande `CANCELLED` peut toutefois être
@@ -114,11 +122,12 @@ Sur une copie arrêtée :
 python -m core.information.deletion_audit --root /chemin/vers/copie/du/moteur
 ```
 
-L'audit signale les demandes malformées, `PENDING_DELETE` sans Information et
+L'audit signale les demandes `APPLYING_DELETE` à reprendre, les demandes
+malformées, `PENDING_DELETE` sans Information et
 `DELETED` avec un fichier présent. Il ne lit pas le contenu des Informations,
 n'écrit rien et ne répare pas la situation. Une réapparition du même identifiant
 après suppression exige une analyse humaine ; le rapport n'en déduit pas la
-cause. Un journal récupérable pour la suppression reste à concevoir.
+cause.
 
 ## Audit des liens existants
 

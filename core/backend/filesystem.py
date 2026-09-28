@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import re
 from pathlib import Path
@@ -311,7 +312,7 @@ class FilesystemBackend(MemoryBackend):
                 if current_request == request:
                     return DeleteResult(information_id, "PENDING_DELETE")
                 raise RevisionConflict("another deletion request is pending")
-            if current_request["status"] == "DELETED":
+            if current_request["status"] in {"DELETED", "APPLYING_DELETE"}:
                 raise RevisionConflict("previous deletion requires review")
 
         self._atomic_write(
@@ -334,10 +335,13 @@ class FilesystemBackend(MemoryBackend):
             raise InvalidMemory("pending delete request is unreadable") from exc
         if (not isinstance(request, dict)
                 or request.get("information_id") != information_id
-                or request.get("status") not in {"PENDING_DELETE", "CANCELLED", "DELETED"}
+                or request.get("status") not in {"PENDING_DELETE", "APPLYING_DELETE", "CANCELLED", "DELETED"}
                 or type(request.get("revision")) is not int or request["revision"] < 1
                 or not isinstance(request.get("operation_id"), str)
-                or not request["operation_id"]):
+                or not request["operation_id"]
+                or (request.get("status") == "APPLYING_DELETE"
+                    and (not isinstance(request.get("content_sha256"), str)
+                         or not re.fullmatch(r"[0-9a-f]{64}", request["content_sha256"])))):
             raise InvalidMemory("pending delete request is invalid or has an identity mismatch")
         return request
 
@@ -362,13 +366,8 @@ class FilesystemBackend(MemoryBackend):
                 "operation_id does not match pending delete request"
             )
 
-        if request.get("status") != "PENDING_DELETE":
+        if request.get("status") not in {"PENDING_DELETE", "APPLYING_DELETE"}:
             raise RevisionConflict("deletion request is not pending")
-        current = self.get(information_id)
-        if current is None:
-            raise MemoryNotFound(information_id)
-        if current.revision != request.get("revision"):
-            raise RevisionConflict("memory changed since deletion was requested")
 
         threads_root = self.persistent_root / "threads"
         if threads_root.is_symlink():
@@ -377,9 +376,28 @@ class FilesystemBackend(MemoryBackend):
         with exclusive_write(threads_root):
             ensure_no_thread_links(threads_root, information_id)
             memory_path = self._path(information_id)
-
+            if memory_path.is_symlink():
+                raise InvalidMemory("Information file is a symlink")
+            if request["status"] == "PENDING_DELETE":
+                current = self.get(information_id)
+                if current is None:
+                    raise MemoryNotFound(information_id)
+                if current.revision != request["revision"]:
+                    raise RevisionConflict("memory changed since deletion was requested")
+                content_hash = hashlib.sha256(memory_path.read_bytes()).hexdigest()
+                request["content_sha256"] = content_hash
+                request["status"] = "APPLYING_DELETE"
+                self._atomic_write(request_path, self._json(request) + "\n")
             if memory_path.exists():
+                if hashlib.sha256(memory_path.read_bytes()).hexdigest() != request["content_sha256"]:
+                    raise RevisionConflict("Information changed during deletion")
                 memory_path.unlink()
+                # Persist the directory update before recording completion.
+                descriptor = os.open(memory_path.parent, os.O_RDONLY)
+                try:
+                    os.fsync(descriptor)
+                finally:
+                    os.close(descriptor)
 
             request["status"] = "DELETED"
 

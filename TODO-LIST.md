@@ -86,8 +86,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
    les API bas niveau et les anciens services restent à examiner. Vérifier sur
    une copie que deux écrivains ne partagent pas une famille de fichiers.
 3. **【À FAIRE】** T-032 — Concevoir et tester une suppression Information
-   récupérable : journal avant retrait, reprise idempotente, protection des
-   relations et résolution des demandes déjà incohérentes. Garder l'audit
+   récupérable : journal avant retrait et reprise explicite par `approve_delete`
+   sont en place pour les nouvelles demandes ; restent la résolution des
+   demandes historiques incohérentes et les essais d'interruption sur VM.
+   Garder l'audit
    actuel en lecture seule tant que la politique de réparation n'est pas fixée.
    T-032a protège déjà les demandes en attente contre l'écrasement.
 4. **【À FAIRE】** T-033 — Produire une simulation de migration **sans écriture**

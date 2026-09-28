@@ -191,3 +191,54 @@ def test_delete_decision_rejects_unreadable_receipt(tmp_path, decision):
         getattr(backend, decision)("info-test", "op-1")
     assert backend.get("info-test").content == "keep"
     assert path.read_text() == "broken"
+
+
+@pytest.mark.parametrize("interrupt_after", ["marker", "unlink"])
+def test_approve_delete_recovers_interruption(tmp_path, monkeypatch, interrupt_after):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test", content="keep"))
+    backend.delete_request("info-test", "human", "reason", 1, "op-1")
+    receipt = tmp_path / "history/pending-delete/info-test.json"
+    original_write = backend._atomic_write
+    if interrupt_after == "marker":
+        def interrupted_write(path, content):
+            original_write(path, content)
+            if path == receipt and '"APPLYING_DELETE"' in content:
+                raise RuntimeError("simulated stop after journal")
+        monkeypatch.setattr(backend, "_atomic_write", interrupted_write)
+    else:
+        original_unlink = type(backend._path("info-test")).unlink
+        def interrupted_unlink(path, *args, **kwargs):
+            result = original_unlink(path, *args, **kwargs)
+            if path == backend._path("info-test"):
+                raise RuntimeError("simulated stop after unlink")
+            return result
+        monkeypatch.setattr(type(backend._path("info-test")), "unlink", interrupted_unlink)
+    with pytest.raises(RuntimeError, match="simulated stop"):
+        backend.approve_delete("info-test", "op-1")
+    monkeypatch.undo()
+    assert json.loads(receipt.read_text())["status"] == "APPLYING_DELETE"
+    assert backend.approve_delete("info-test", "op-1").status == "DELETED"
+    assert not backend.exists("info-test")
+
+
+def test_approve_delete_recovery_rejects_changed_information(tmp_path, monkeypatch):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test", content="keep"))
+    backend.delete_request("info-test", "human", "reason", 1, "op-1")
+    receipt = tmp_path / "history/pending-delete/info-test.json"
+    original_write = backend._atomic_write
+    def stop_at_marker(path, content):
+        original_write(path, content)
+        if path == receipt and '"APPLYING_DELETE"' in content:
+            raise RuntimeError("stop")
+    monkeypatch.setattr(backend, "_atomic_write", stop_at_marker)
+    with pytest.raises(RuntimeError):
+        backend.approve_delete("info-test", "op-1")
+    monkeypatch.undo()
+    backend._path("info-test").write_text("replacement")
+    with pytest.raises(RevisionConflict, match="changed during deletion"):
+        backend.approve_delete("info-test", "op-1")
+    assert backend._path("info-test").read_text() == "replacement"
+    with pytest.raises(RevisionConflict, match="not pending"):
+        backend.cancel_delete("info-test", "op-1")

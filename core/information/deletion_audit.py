@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -33,16 +34,21 @@ def audit_deletions(engine_root: Path) -> dict:
                 record = json.loads(path.read_text(encoding="utf-8"))
                 if (not isinstance(record, dict)
                         or record.get("information_id") != path.stem
-                        or record.get("status") not in {"PENDING_DELETE", "DELETED", "CANCELLED"}
+                        or record.get("status") not in {"PENDING_DELETE", "APPLYING_DELETE", "DELETED", "CANCELLED"}
                         or type(record.get("revision")) is not int
                         or record["revision"] < 1
                         or not isinstance(record.get("operation_id"), str)
-                        or not record["operation_id"]):
+                        or not record["operation_id"]
+                        or (record.get("status") == "APPLYING_DELETE"
+                            and (not isinstance(record.get("content_sha256"), str)
+                                 or not re.fullmatch(r"[0-9a-f]{64}", record["content_sha256"])))):
                     raise ValueError("invalid deletion request")
                 report["requests_checked"] += 1
                 information = persistent / f"{path.stem}.md"
                 if information.is_symlink():
                     reason = "symlink_skipped"
+                elif record["status"] == "APPLYING_DELETE":
+                    reason = "deletion_requires_resume"
                 elif record["status"] == "PENDING_DELETE" and not information.is_file():
                     reason = "pending_without_information"
                 elif record["status"] == "DELETED" and information.exists():

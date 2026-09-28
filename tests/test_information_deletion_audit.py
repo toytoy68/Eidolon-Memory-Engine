@@ -7,6 +7,19 @@ from core.backend.models import Memory
 from core.information.deletion_audit import audit_deletions, main
 
 
+def test_audit_reports_deletion_waiting_for_resume(tmp_path):
+    root = tmp_path
+    requests = root / "memory/history/pending-delete"
+    requests.mkdir(parents=True)
+    (requests / "info-1.json").write_text(json.dumps({
+        "information_id": "info-1", "operation_id": "op-1", "revision": 1,
+        "status": "APPLYING_DELETE", "content_sha256": "a" * 64,
+    }))
+    report = audit_deletions(root)
+    assert report["requests_checked"] == 1
+    assert report["issues"][0]["reason"] == "deletion_requires_resume"
+
+
 def backend(root):
     return FilesystemBackend(root / "memory/persistent", root / "memory/history")
 
