@@ -310,3 +310,35 @@ def test_recover_all_cli_resumes_pending_creation(tmp_path, monkeypatch):
     _, restarted = open_creation(tmp_path)
     assert restarted.storage.get("thread-1") is not None
     assert restarted.events.get("created-1") is not None
+
+
+def test_recover_all_cli_reports_blocked_creation_without_overwrite(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    create = creation.storage.create
+
+    def interrupt_after_thread(value):
+        create(value)
+        raise InterruptedError("interrupted after Thread write")
+
+    monkeypatch.setattr(creation.storage, "create", interrupt_after_thread)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+    path = creation.storage._path("thread-1")
+    path.write_text(creation.storage._serialize(replace(creation.storage.get("thread-1"),
+                                                     title="changed externally")))
+    before = path.read_bytes()
+
+    result = subprocess.run(
+        [sys.executable, "-m", "core.operations.cli", "recover-all"],
+        env={**os.environ, "MEMORY_ENGINE_ROOT": str(tmp_path), "PYTHONDONTWRITEBYTECODE": "1"},
+        capture_output=True, text=True,
+    )
+    assert result.returncode == 1
+    report = json.loads(result.stdout)
+    assert report["creations"]["create-1"]["status"] == "BLOCKED"
+    assert report["status_changes"] == {}
+    assert path.read_bytes() == before
+    assert creation.events.get("created-1") is None
