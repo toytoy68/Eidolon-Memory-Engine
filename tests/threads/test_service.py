@@ -149,3 +149,9 @@ def test_create_linked_through_service_records_event(tmp_path):
     assert events.get("event-1").thread_id == linked.thread_id
     assert service.create_linked(make_thread(), "info-1",
                                  operation_id="op-1", event_id="event-1") == linked
+
+
+def test_recover_all_requires_both_coordinators(tmp_path):
+    service = ThreadService(ThreadStorage(tmp_path))
+    with pytest.raises(RuntimeError, match="both coordinators"):
+        service.recover_all()

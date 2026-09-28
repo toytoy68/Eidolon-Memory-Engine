@@ -56,19 +56,17 @@ def main():
             )
             print(json.dumps(thread_to_dict(result), ensure_ascii=False, indent=2))
             return 0
-        creation_results = creation.recover()
     service = ThreadService(storage, FilesystemThreadOperations(
         storage, FilesystemEventRepository(EVENTS_ROOT / "thread-status-v1"),
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-status-v1"),
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-create-v1"),
-    ))
+    ), creation=creation if args.command == "recover-all" else None)
     if args.command == "recover":
         result = service.recover()
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(any(record["status"] == "BLOCKED" for record in result.values()))
     if args.command == "recover-all":
-        status_results = service.recover()
-        result = {"creations": creation_results, "status_changes": status_results}
+        result = service.recover_all()
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(any(record["status"] == "BLOCKED"
                    for group in result.values() for record in group.values()))

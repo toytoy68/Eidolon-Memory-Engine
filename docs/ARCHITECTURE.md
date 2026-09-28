@@ -53,6 +53,8 @@ chaque famille. Un Thread ou Event divergent bloque la
 reprise sans écrasement. La création directe via `ThreadInformationLinkService`
 reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
 création restent à adapter.
+`ThreadService.recover_all` fournit le même ordre de reprise aux appelants
+Python lorsque les deux coordinateurs lui sont injectés.
 Le CLI de changement de statut vérifie les journaux de création en attente et
 refuse la mutation du Thread concerné avant `recover-creations`. Les appels
 Python qui construisent `FilesystemThreadOperations` doivent lui passer le

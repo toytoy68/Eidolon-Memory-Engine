@@ -82,7 +82,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 2. **【À FAIRE】** T-031 — Définir le chemin canonique d'écriture Thread et
    Information : recenser tous les appels directs à `ThreadStorage`, au backend
    et aux anciens CLI ; adapter ou isoler ceux qui contournent les journaux,
-   verrous ou Events. T-031a raccorde la création liée du service et du CLI ;
+   verrous ou Events. T-031a/b raccordent création et reprise dans le service ;
    les API bas niveau et les anciens services restent à examiner. Vérifier sur
    une copie que deux écrivains ne partagent pas une famille de fichiers.
 3. **【À FAIRE】** T-032 — Concevoir et tester une suppression Information
@@ -112,7 +112,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 267 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 268 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -147,6 +147,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-031a — `ThreadService.create_linked` exige le coordinateur
   récupérable ; le CLI passe par ce service. Rejeu idempotent et Event contrôlés
   dans deux tests isolés (2026-09-28).
+- **【FAIT】** T-031b — `ThreadService.recover_all` reprend les créations avant
+  les changements de statut ; le CLI l'utilise et l'absence d'un des deux
+  coordinateurs est refusée (2026-09-28).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).

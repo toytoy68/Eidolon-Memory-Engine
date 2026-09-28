@@ -70,3 +70,11 @@ class ThreadService:
         if self.operations is None:
             raise RuntimeError("Thread recovery requires an operation coordinator")
         return self.operations.recover()
+
+    def recover_all(self):
+        """Resume linked creations before status changes."""
+        if self.creation is None or self.operations is None:
+            raise RuntimeError("full Thread recovery requires both coordinators")
+        creations = self.creation.recover()
+        status_changes = self.operations.recover()
+        return {"creations": creations, "status_changes": status_changes}
