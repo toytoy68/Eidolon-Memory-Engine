@@ -100,7 +100,14 @@ leur adaptation.
 
 La suppression du backend retire actuellement le fichier Information puis
 marque la demande `DELETED`. Une interruption entre ces deux écritures peut
-laisser une demande `PENDING_DELETE` sans fichier. Sur une copie arrêtée :
+laisser une demande `PENDING_DELETE` sans fichier.
+
+La demande en attente n'est plus remplacée par une autre demande ; un rejeu
+identique est accepté sans écriture. Une demande `CANCELLED` peut toutefois être
+remplacée par une nouvelle demande sur le même identifiant : ce fichier n'est
+pas un historique complet des décisions.
+
+Sur une copie arrêtée :
 
 ```sh
 python -m core.information.deletion_audit --root /chemin/vers/copie/du/moteur

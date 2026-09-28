@@ -1,6 +1,8 @@
+import json
+
 import pytest
 
-from core.backend.errors import RevisionConflict
+from core.backend.errors import InvalidMemory, RevisionConflict
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 
@@ -123,3 +125,38 @@ def test_delete_request_creates_pending_delete(tmp_path):
     assert pending.exists()
 
     assert backend.exists("info-test")
+
+
+def test_pending_delete_request_replay_does_not_write_again(tmp_path, monkeypatch):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test"))
+    backend.delete_request("info-test", "human", "reason", 1, "op-1")
+
+    def unexpected_write(*args):
+        raise AssertionError("identical request should not write")
+
+    monkeypatch.setattr(backend, "_atomic_write", unexpected_write)
+    assert backend.delete_request("info-test", "human", "reason", 1, "op-1").status == "PENDING_DELETE"
+
+
+def test_second_pending_delete_request_cannot_replace_first(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test"))
+    backend.delete_request("info-test", "human", "reason", 1, "op-1")
+    path = tmp_path / "history/pending-delete/info-test.json"
+    before = path.read_bytes()
+
+    with pytest.raises(RevisionConflict, match="another deletion request"):
+        backend.delete_request("info-test", "other", "new reason", 1, "op-2")
+    assert path.read_bytes() == before
+    assert json.loads(path.read_text())["operation_id"] == "op-1"
+
+
+def test_invalid_delete_request_receipt_is_not_overwritten(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test"))
+    path = tmp_path / "history/pending-delete/info-test.json"
+    path.write_text("broken")
+    with pytest.raises(InvalidMemory, match="unreadable"):
+        backend.delete_request("info-test", "human", "reason", 1, "op-1")
+    assert path.read_text() == "broken"

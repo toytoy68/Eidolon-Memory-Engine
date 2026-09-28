@@ -89,6 +89,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
    récupérable : journal avant retrait, reprise idempotente, protection des
    relations et résolution des demandes déjà incohérentes. Garder l'audit
    actuel en lecture seule tant que la politique de réparation n'est pas fixée.
+   T-032a protège déjà les demandes en attente contre l'écrasement.
 4. **【À FAIRE】** T-033 — Produire une simulation de migration **sans écriture**
    des Informations historiques : correspondance champ par champ, liste des
    pertes ou blocages, inventaire Events/Reviews, rapport déterministe ; décider
@@ -112,7 +113,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 268 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 271 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -150,6 +151,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-031b — `ThreadService.recover_all` reprend les créations avant
   les changements de statut ; le CLI l'utilise et l'absence d'un des deux
   coordinateurs est refusée (2026-09-28).
+- **【FAIT】** T-032a — Une demande `PENDING_DELETE` ne peut plus être écrasée
+  par une autre ; le rejeu strictement identique est sans écriture, un reçu
+  illisible bloque la demande (trois tests, 2026-09-28).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).

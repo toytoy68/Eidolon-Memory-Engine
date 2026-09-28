@@ -305,6 +305,26 @@ class FilesystemBackend(MemoryBackend):
 
         path = self.pending_delete_root / f"{information_id}.json"
 
+        if path.is_symlink():
+            raise InvalidMemory("pending delete request is a symlink")
+        if path.exists():
+            try:
+                current_request = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                raise InvalidMemory("pending delete request is unreadable") from exc
+            if (not isinstance(current_request, dict)
+                    or current_request.get("information_id") != information_id
+                    or current_request.get("status") not in {
+                        "PENDING_DELETE", "CANCELLED", "DELETED",
+                    }):
+                raise InvalidMemory("pending delete request is invalid")
+            if current_request["status"] == "PENDING_DELETE":
+                if current_request == request:
+                    return DeleteResult(information_id, "PENDING_DELETE")
+                raise RevisionConflict("another deletion request is pending")
+            if current_request["status"] == "DELETED":
+                raise RevisionConflict("previous deletion requires review")
+
         self._atomic_write(
             path,
             self._json(request) + "\n",
