@@ -34,9 +34,10 @@ def main():
     change.add_argument("--event-id")
     commands.add_parser("recover")
     commands.add_parser("recover-creations")
+    commands.add_parser("recover-all")
     args = parser.parse_args()
     storage = ThreadStorage(PERSISTENT_ROOT)
-    if args.command in {"recover-creations", "create-linked"}:
+    if args.command in {"recover-creations", "recover-all", "create-linked"}:
         creation = FilesystemLinkedThreadCreation(
             FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT), storage,
             FilesystemEventRepository(EVENTS_ROOT / "thread-create-v1"),
@@ -46,14 +47,16 @@ def main():
             result = creation.recover()
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return int(any(record["status"] == "BLOCKED" for record in result.values()))
-        event_id = args.event_id or "created-" + hashlib.sha256(args.operation_id.encode()).hexdigest()
-        result = creation.create(
-            Thread(args.thread_id, args.title, args.objective,
-                   created_at=args.created_at, updated_at=args.created_at),
-            args.information_id, operation_id=args.operation_id, event_id=event_id,
-        )
-        print(json.dumps(thread_to_dict(result), ensure_ascii=False, indent=2))
-        return 0
+        if args.command == "create-linked":
+            event_id = args.event_id or "created-" + hashlib.sha256(args.operation_id.encode()).hexdigest()
+            result = creation.create(
+                Thread(args.thread_id, args.title, args.objective,
+                       created_at=args.created_at, updated_at=args.created_at),
+                args.information_id, operation_id=args.operation_id, event_id=event_id,
+            )
+            print(json.dumps(thread_to_dict(result), ensure_ascii=False, indent=2))
+            return 0
+        creation_results = creation.recover()
     service = ThreadService(storage, FilesystemThreadOperations(
         storage, FilesystemEventRepository(EVENTS_ROOT / "thread-status-v1"),
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-status-v1"),
@@ -63,6 +66,12 @@ def main():
         result = service.recover()
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(any(record["status"] == "BLOCKED" for record in result.values()))
+    if args.command == "recover-all":
+        status_results = service.recover()
+        result = {"creations": creation_results, "status_changes": status_results}
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return int(any(record["status"] == "BLOCKED"
+                   for group in result.values() for record in group.values()))
     event_id = args.event_id or "event-" + hashlib.sha256(args.operation_id.encode()).hexdigest()
     result = service.change_status(
         args.thread_id, ThreadStatus(args.status), previous_revision=args.previous_revision,

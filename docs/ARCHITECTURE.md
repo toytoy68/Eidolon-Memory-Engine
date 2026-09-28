@@ -45,8 +45,10 @@ La création liée récupérable passe par `FilesystemLinkedThreadCreation.creat
 ou le CLI `python -m core.operations.cli create-linked` :
 elle prépare un snapshot et un journal dans `thread-create-v1`, puis écrit le
 Thread et son Event `CREATED`. Après interruption, exécuter
-`python -m core.operations.cli recover-creations` avant les changements de statut,
-puis la commande `recover` pour ceux-ci. Un Thread ou Event divergent bloque la
+`python -m core.operations.cli recover-all` : la commande reprend les créations,
+puis les changements de statut, et renvoie un code non nul si un journal reste
+bloqué. Les commandes `recover-creations` et `recover` restent disponibles pour
+chaque famille. Un Thread ou Event divergent bloque la
 reprise sans écrasement. La création directe via `ThreadInformationLinkService`
 reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
 création restent à adapter.

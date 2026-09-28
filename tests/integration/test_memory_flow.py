@@ -282,3 +282,31 @@ def test_status_change_waits_for_interrupted_thread_creation(tmp_path, monkeypat
     assert status.change_status("thread-1", ThreadStatus.VALIDATED,
                                 previous_revision=1, operation_id="status-1",
                                 event_id="status-event-1").status is ThreadStatus.VALIDATED
+
+
+def test_recover_all_cli_resumes_pending_creation(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    save = creation.operations.create
+
+    def interrupt_after_journal(operation):
+        save(operation)
+        raise InterruptedError("interrupted after journal write")
+
+    monkeypatch.setattr(creation.operations, "create", interrupt_after_journal)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+
+    result = subprocess.run(
+        [sys.executable, "-m", "core.operations.cli", "recover-all"],
+        env={**os.environ, "MEMORY_ENGINE_ROOT": str(tmp_path), "PYTHONDONTWRITEBYTECODE": "1"},
+        capture_output=True, text=True, check=True,
+    )
+    assert json.loads(result.stdout) == {
+        "creations": {"create-1": {"status": "COMMITTED"}}, "status_changes": {},
+    }
+    _, restarted = open_creation(tmp_path)
+    assert restarted.storage.get("thread-1") is not None
+    assert restarted.events.get("created-1") is not None
