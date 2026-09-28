@@ -34,14 +34,14 @@ Eidolon-Memory-Engine/
 │   ├── request_dispatcher.py     routage actuellement limité aux Threads (existant)
 │   ├── persistence.py            verrous et écritures durables (existant)
 │   ├── storage_format.py         documents Markdown/JSON versionnés (existant)
-│   ├── migration/                migration explicite des anciens formats (prévu)
+│   ├── migration/                inventaire seul ; convertisseur prévu
 │   ├── indexing/                 interface d'index dérivé/reconstructible (prévu)
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
 ├── schemas/                      contrats Information, Thread, Event… (existant)
 ├── services/                     CLI historiques à auditer/migrer (existant)
 ├── docs/                         format, reprise, déploiement (existant)
 │   ├── ARCHITECTURE.md           contrats et frontières de composants (prévu)
-│   └── MIGRATION.md              inventaire et procédure de migration (prévu)
+│   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
 ├── scripts/                      bootstrap Debian (existant)
 ├── tests/                        tests unitaires et de régression (existant)
 │   ├── integration/              parcours complets isolés (prévu)
@@ -68,9 +68,12 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 208 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 211 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
+- **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
+  CLI, tableau de correspondance et outil de comptage en lecture seule ; voir
+  `docs/MIGRATION.md` et `core/migration/inventory.py` (tests isolés, 2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -93,9 +96,6 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 
 ## Changements de code et tests suivants
 
-- **【À FAIRE】** T-020 — Inventorier les formats et chemins effectivement produits
-  par les anciens CLI (`services/`) et les comparer aux nouveaux dépôts ; écrire
-  le tableau de correspondance et la politique de conflits dans `docs/MIGRATION.md`.
 - **【À FAIRE】** T-021 — Concevoir une migration explicite, réexécutable et
   vérifiable des documents CLI/front-matter et des anciens journaux. Prévoir
   simulation, sauvegarde, rapport de rejets, contrôle des identifiants/révisions
