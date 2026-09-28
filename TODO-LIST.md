@@ -41,7 +41,7 @@ Eidolon-Memory-Engine/
 ├── schemas/                      contrats Information, Thread, Event… (existant)
 ├── services/                     CLI historiques à auditer/migrer (existant)
 ├── docs/                         format, reprise, déploiement (existant)
-│   ├── ARCHITECTURE.md           contrats et frontières de composants (prévu)
+│   ├── ARCHITECTURE.md           frontières actuelles, cible à compléter (existant)
 │   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
 ├── scripts/                      bootstrap Debian (existant)
 ├── tests/                        tests unitaires et de régression (existant)
@@ -93,6 +93,8 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-029d — Parcours paginé et aperçu texte des Markdown autorisés,
   avec échappement HTML, blocage des liens et limite de taille ; voir
   `core/monitoring/files.py` (tests isolés, 2026-09-28).
+- **【FAIT】** T-023a / T-028a — Frontières des écrivains et protocole Thread
+  documentés dans `docs/ARCHITECTURE.md` (revue du code, 2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -128,7 +130,8 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Information/Thread, sa validation et les Events propres à l'Information.
 - **【À FAIRE】** T-023 — Clarifier les frontières entre anciens CLI et nouvelles
   écritures verrouillées ; supprimer ou adapter les chemins d'écriture
-  concurrents avant de les lancer simultanément.
+  concurrents avant de les lancer simultanément. Frontières documentées (T-023a),
+  adaptation effective encore à faire après inventaire de la VM.
 - **【À VALIDER】** T-024 — Définir le contrat de recherche/index Qdrant dérivé,
   sa reconstruction, sa cohérence après mutation et les tests de reconstruction.
 - **【À VALIDER】** T-025 — Définir l'intégration réelle à Eidolon Core : API,
@@ -139,7 +142,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   multi-fichiers et les garanties face à coupure électrique ; les tests actuels
   couvrent l'arrêt de processus, pas une panne d'alimentation.
 - **【À FAIRE】** T-028 — Documenter les décisions validées dans
-  `docs/ARCHITECTURE.md`, puis adapter l'arborescence cible ci-dessus.
+  `docs/ARCHITECTURE.md`, puis adapter l'arborescence cible ci-dessus. T-028a
+  couvre l'architecture existante ; les choix futurs doivent être ajoutés après
+  validation.
 - **【À FAIRE】** T-029 — Construire un tableau de bord HTML servi sur le réseau
   local depuis la VM, consultable sur le PC principal : volumes, statuts,
   opérations en attente et erreurs, RAM utilisée/disponible,
