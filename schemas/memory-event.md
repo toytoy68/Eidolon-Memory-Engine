@@ -313,7 +313,10 @@ ne sont jamais la source de vérité des Events.
 
 # 13. Compatibility
 
-Les Events existants liés aux Informations restent valides.
+Un Event `CREATED` peut aussi cibler un Thread : sa révision vaut 1, son état
+`before` est vide et `after.status` contient le statut initial. Les autres
+Events de Thread restent réservés à `STATUS_CHANGED` ; les Events existants
+liés aux Informations restent valides.
 
 L'ajout des Threads ne doit pas modifier le comportement
 historique existant du Memory Controller.

@@ -143,7 +143,7 @@ class Event:
                 "STATUS_CHANGED est réservé aux Events de Thread"
             )
 
-        if self.event_type is not EventType.STATUS_CHANGED and not has_information:
+        if self.event_type not in {EventType.STATUS_CHANGED, EventType.CREATED} and not has_information:
             raise ValueError(
                 "Les Events d Information doivent cibler une Information"
             )

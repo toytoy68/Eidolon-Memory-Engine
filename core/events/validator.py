@@ -56,6 +56,14 @@ def validate_event(event: Event) -> list[str]:
                 "STATUS_CHANGED nécessite status dans state_transition.after"
             )
 
+    elif event.event_type is EventType.CREATED and has_thread:
+        if event.revision != 1:
+            errors.append("CREATED Thread nécessite revision 1")
+        if event.state_transition.before:
+            errors.append("CREATED Thread nécessite un état avant vide")
+        if "status" not in event.state_transition.after:
+            errors.append("CREATED Thread nécessite status dans state_transition.after")
+
     else:
         if not has_information:
             errors.append(

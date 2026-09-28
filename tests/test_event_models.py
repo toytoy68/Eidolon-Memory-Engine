@@ -250,3 +250,19 @@ def test_validator_accepts_information_event_without_transition():
     )
 
     assert is_valid(event)
+
+
+def test_thread_created_event_requires_initial_status_and_revision():
+    from core.events.validator import is_valid, validate_event
+
+    event = Event(
+        event_id="thread-created", thread_id="thread-1", revision=1,
+        event_type=EventType.CREATED,
+        state_transition=StateTransition(after={"status": "PROPOSED"}),
+    )
+    assert is_valid(event)
+    assert "CREATED Thread nécessite revision 1" in validate_event(
+        Event("bad-created", 2, EventType.CREATED, thread_id="thread-1",
+              state_transition=StateTransition(after={"status": "PROPOSED"})))
+    assert "CREATED Thread nécessite status dans state_transition.after" in validate_event(
+        Event("bad-status", 1, EventType.CREATED, thread_id="thread-1"))
