@@ -35,7 +35,8 @@ le backend dans l'identifiant, la révision simple ou
 `revision.number`, les valeurs des types/états/niveaux connus du modèle,
 les champs de premier niveau ou de révision inconnus, la forme des blocs de
 métadonnées et relations, et la présence d'un corps. Il
-compte les documents core déjà présents et liste les fichiers bloqués avec des
+valide aussi la lecture et l'identité des documents core reconnus avant de les
+compter comme déjà présents, et liste les fichiers bloqués avec des
 codes de raison, sans inclure le contenu. Code retour 1 en présence de blocages.
 Un `legacy_candidate` signifie seulement **structure minimale analysable** :
 la conversion, la validité métier, les références et la conservation de tous les

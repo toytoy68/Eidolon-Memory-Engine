@@ -1,5 +1,7 @@
 import json
 
+from core.backend.filesystem import FilesystemBackend
+from core.backend.models import Memory
 from core.migration.preflight import main, preflight
 
 
@@ -39,7 +41,7 @@ def test_preflight_skips_core_and_rejects_empty_body(tmp_path):
     document(tmp_path, "empty", "id: empty\nrevision: 1\ntype: FACT\n"
              "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n", body="\n")
     core = tmp_path / "memory/persistent/core.md"
-    core.write_text("# Eidolon Information Object\n\nVersion: 0.2\n", encoding="utf-8")
+    core.write_text(FilesystemBackend._serialize(Memory("core")), encoding="utf-8")
     report = preflight(tmp_path)
     assert report["already_core"] == 1
     assert report["blocked"] == [
@@ -82,3 +84,20 @@ def test_preflight_blocks_identity_backend_cannot_address(tmp_path):
     assert preflight(tmp_path)["blocked"] == [{
         "path": "memory/persistent/bad id.md", "reasons": ["invalid_backend_id"],
     }]
+
+
+def test_preflight_rejects_recognized_but_invalid_core_documents(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    (persistent / "broken.md").write_text("# Eidolon Information Object\n\nVersion: 0.2\n")
+    (persistent / "wrong.md").write_text(
+        FilesystemBackend._serialize(Memory("different", content="private content")))
+    (persistent / "valid.md").write_text(FilesystemBackend._serialize(Memory("valid")))
+
+    report = preflight(tmp_path)
+    assert report == {"legacy_candidates": 0, "already_core": 1, "blocked": [
+        {"path": "memory/persistent/broken.md", "reasons": ["invalid_core_information"]},
+        {"path": "memory/persistent/wrong.md", "reasons": ["invalid_core_information"]},
+    ]}
+    assert "private content" not in json.dumps(report)
+    assert not (persistent / ".write.lock").exists()

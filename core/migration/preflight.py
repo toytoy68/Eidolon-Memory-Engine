@@ -9,6 +9,8 @@ from pathlib import Path
 
 import yaml
 
+from core.backend.errors import InvalidMemory
+from core.backend.filesystem import FilesystemBackend
 from core.information.models import (
     Confidence, EpistemicStatus, Importance, InformationType, OperationalState, Retention,
 )
@@ -99,6 +101,19 @@ def inspect_legacy_information(path: Path) -> list[str]:
     return reasons
 
 
+def inspect_core_information(path: Path) -> list[str]:
+    """Verify a recognized core document can be read without creating directories."""
+    try:
+        memory = FilesystemBackend._deserialize(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, InvalidMemory, ValueError, TypeError):
+        return ["invalid_core_information"]
+    if (memory.information_id != path.stem
+            or not re.fullmatch(r"[A-Za-z0-9._-]+", path.stem)
+            or type(memory.revision) is not int or memory.revision < 1):
+        return ["invalid_core_information"]
+    return []
+
+
 def preflight(engine_root: Path) -> dict:
     root = Path(engine_root)
     if not root.is_dir():
@@ -116,7 +131,11 @@ def preflight(engine_root: Path) -> dict:
         relative = path.relative_to(root).as_posix()
         kind = classify(path, "information")
         if kind in {"core_information_0.1", "core_information_0.2"}:
-            report["already_core"] += 1
+            reasons = inspect_core_information(path)
+            if reasons:
+                report["blocked"].append({"path": relative, "reasons": reasons})
+            else:
+                report["already_core"] += 1
             continue
         if kind != "legacy_front_matter":
             report["blocked"].append({"path": relative, "reasons": [kind]})
