@@ -36,6 +36,8 @@ class FilesystemLinkedThreadCreation:
     def create(self, thread: Thread, information_id: str, *,
                operation_id: str, event_id: str) -> Thread:
         linked = self.links.prepare(thread, information_id)
+        if linked.revision != 1:
+            raise OperationConflict("new Thread must start at revision 1")
         self.storage._path(linked.thread_id)
         self.backend._path(information_id)
         self.operations._path(operation_id)
@@ -60,6 +62,10 @@ class FilesystemLinkedThreadCreation:
                 raise MissingLinkedInformation(information_id)
             if self.storage.get(linked.thread_id) is not None:
                 raise OperationConflict("Thread already exists")
+            for path in sorted(self.operations.root.glob("*.json")):
+                prior = self.operations.get(path.stem)
+                if prior is not None and prior.target_id == linked.thread_id:
+                    raise OperationConflict("Thread already has a creation operation")
             operation = OperationRecord(
                 operation_id, OperationType.THREAD_CREATE, linked.thread_id,
                 0, 1, "", plan=ThreadCreatePlan(information_id, event_id, snapshot),

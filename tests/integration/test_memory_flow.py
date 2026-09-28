@@ -219,3 +219,38 @@ def test_recorded_creation_then_interrupted_status_keeps_both_events(tmp_path, m
     assert creation_event.event_type.value == "CREATED"
     assert status_event.event_type.value == "STATUS_CHANGED"
     assert creation_event.relations[0].target == "info-1"
+
+
+def test_linked_creation_rejects_noninitial_revision_before_journal(tmp_path):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", revision=2,
+                    created_at="2026-09-28", updated_at="2026-09-28")
+
+    with pytest.raises(OperationConflict, match="revision 1"):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+    assert creation.storage.get("thread-1") is None
+    assert creation.operations.get("create-1") is None
+
+
+def test_linked_creation_blocks_second_operation_for_pending_thread(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    save = creation.operations.create
+
+    def interrupt_after_journal(operation):
+        save(operation)
+        raise InterruptedError("interrupted after journal write")
+
+    monkeypatch.setattr(creation.operations, "create", interrupt_after_journal)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+
+    _, restarted = open_creation(tmp_path)
+    assert restarted.storage.get("thread-1") is None
+    with pytest.raises(OperationConflict, match="creation operation"):
+        restarted.create(thread, "info-1", operation_id="create-2", event_id="created-2")
+    assert restarted.operations.get("create-2") is None
+    assert restarted.recover() == {"create-1": {"status": "COMMITTED"}}
