@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from .models import ActionStatus, Thread, ThreadAction, ThreadStatus
 from .queries import (
     ThreadQuery,
+    parse_timestamp,
     ThreadQueryType,
     ThreadSortField,
     ThreadSortOrder,
@@ -294,15 +295,12 @@ class ThreadManager:
         results = [thread for thread in threads
                    if query.thread_id is None or thread.thread_id == query.thread_id]
 
-        if query.query_type == ThreadQueryType.LIST_OPEN_THREADS:
+        if query.query_type in {ThreadQueryType.LIST_OPEN_THREADS, ThreadQueryType.LIST_OPEN_ACTIONS}:
             results = [
                 thread
                 for thread in results
-                if thread.status
-                not in {
-                    ThreadStatus.COMPLETED,
-                    ThreadStatus.CANCELLED,
-                }
+                if (thread.status != ThreadStatus.COMPLETED or query.include_completed)
+                and (thread.status != ThreadStatus.CANCELLED or query.include_cancelled)
             ]
 
         if query.query_type == ThreadQueryType.LIST_THREADS_BY_STATUS:
@@ -363,28 +361,28 @@ class ThreadManager:
             results = [
                 thread
                 for thread in results
-                if thread.created_at > query.created_after
+                if parse_timestamp(thread.created_at) > parse_timestamp(query.created_after)
             ]
 
         if query.created_before is not None:
             results = [
                 thread
                 for thread in results
-                if thread.created_at < query.created_before
+                if parse_timestamp(thread.created_at) < parse_timestamp(query.created_before)
             ]
 
         if query.updated_after is not None:
             results = [
                 thread
                 for thread in results
-                if thread.updated_at > query.updated_after
+                if parse_timestamp(thread.updated_at) > parse_timestamp(query.updated_after)
             ]
 
         if query.updated_before is not None:
             results = [
                 thread
                 for thread in results
-                if thread.updated_at < query.updated_before
+                if parse_timestamp(thread.updated_at) < parse_timestamp(query.updated_before)
             ]
 
         if query.started_after is not None:
@@ -392,7 +390,7 @@ class ThreadManager:
                 thread
                 for thread in results
                 if thread.started_at is not None
-                and thread.started_at > query.started_after
+                and parse_timestamp(thread.started_at) > parse_timestamp(query.started_after)
             ]
 
         if query.started_before is not None:
@@ -400,8 +398,29 @@ class ThreadManager:
                 thread
                 for thread in results
                 if thread.started_at is not None
-                and thread.started_at < query.started_before
+                and parse_timestamp(thread.started_at) < parse_timestamp(query.started_before)
             ]
+
+        def date_key(value):
+            return parse_timestamp(value) if value else datetime.min.replace(tzinfo=timezone.utc)
+
+        sort_key_map = {
+            ThreadSortField.CREATED_AT: lambda thread: date_key(thread.created_at),
+            ThreadSortField.UPDATED_AT: lambda thread: date_key(thread.updated_at),
+            ThreadSortField.STARTED_AT: lambda thread: (
+                date_key(thread.started_at)
+            ),
+            ThreadSortField.TITLE: lambda thread: thread.title.casefold(),
+            ThreadSortField.REVISION: lambda thread: thread.revision,
+            ThreadSortField.STATUS: lambda thread: thread.status.value,
+        }
+
+        sort_key = sort_key_map[query.sort_by]
+
+        results.sort(
+            key=sort_key,
+            reverse=query.sort_order == ThreadSortOrder.DESC,
+        )
 
         if query.query_type == ThreadQueryType.LIST_OPEN_ACTIONS:
             action_statuses = set(
@@ -419,7 +438,8 @@ class ThreadManager:
 
             for thread in results:
                 for action in thread.actions:
-                    if action.status in action_statuses:
+                    if (action.status in action_statuses
+                            and (query.action_id is None or action.action_id == query.action_id)):
                         action_results.append((thread, action))
 
             return action_results[
@@ -447,24 +467,6 @@ class ThreadManager:
             return action_results[
                 query.offset : query.offset + query.limit
             ]
-
-        sort_key_map = {
-            ThreadSortField.CREATED_AT: lambda thread: thread.created_at,
-            ThreadSortField.UPDATED_AT: lambda thread: thread.updated_at,
-            ThreadSortField.STARTED_AT: lambda thread: (
-                thread.started_at or ""
-            ),
-            ThreadSortField.TITLE: lambda thread: thread.title.casefold(),
-            ThreadSortField.REVISION: lambda thread: thread.revision,
-            ThreadSortField.STATUS: lambda thread: thread.status.value,
-        }
-
-        sort_key = sort_key_map[query.sort_by]
-
-        results.sort(
-            key=sort_key,
-            reverse=query.sort_order == ThreadSortOrder.DESC,
-        )
 
         return results[
             query.offset : query.offset + query.limit

@@ -199,17 +199,15 @@ class FilesystemEventRepository(EventRepository):
 
     @classmethod
     def _deserialize(cls, text: str) -> Event:
-        match = re.search(
-            r"```json\s+(.*?)\s*```",
-            text,
-            flags=re.DOTALL,
-        )
-
-        if not match:
-            raise InvalidEvent("missing Event JSON block")
-
+        normalized = text.replace("\r\n", "\n")
+        prefix = "# Eidolon Memory Event\n\nVersion: 0.2\n\n```json\n"
+        if not normalized.startswith(prefix):
+            raise InvalidEvent("invalid Event header or unsupported version")
         try:
-            data = json.loads(match.group(1))
+            payload = normalized[len(prefix):].lstrip()
+            data, end = json.JSONDecoder().raw_decode(payload)
+            if payload[end:].strip() != "```":
+                raise InvalidEvent("invalid Event JSON boundary")
         except json.JSONDecodeError as exc:
             raise InvalidEvent("invalid Event JSON") from exc
 

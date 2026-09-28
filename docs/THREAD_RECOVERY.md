@@ -53,8 +53,8 @@ Only coordinated new repository writers participate in locks. Legacy writers
 must not run concurrently against the same data. Direct low-level Thread writes
 after a crash can cause a recovery conflict; they cannot silently be overwritten.
 
-Arbitrary Markdown round-trip support remains a separate migration task. A new
-operation refuses snapshots that cannot round-trip through current Thread storage.
+Storage format 0.2 preserves arbitrary Markdown strings. Legacy 0.1 snapshots
+remain readable. A new operation still verifies its snapshots round-trip exactly.
 The service does not change the previous deletion protocol or promise multi-file
 crash recovery for Information deletion.
 

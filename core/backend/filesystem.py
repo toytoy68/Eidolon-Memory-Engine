@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
+from dataclasses import asdict
+from core.storage_format import encode_document, decode_document
 
 from core.persistence import serialized_write, durable_replace
 
@@ -83,71 +85,7 @@ class FilesystemBackend(MemoryBackend):
 
     @classmethod
     def _serialize(cls, memory: Memory) -> str:
-        """Serialize a Memory object into canonical human-readable Markdown."""
-
-        metadata = memory.metadata or {}
-
-        lines = [
-            "# Eidolon Information Object",
-            "",
-            "Version: 0.1",
-            "",
-            "---",
-            "",
-            "## Identity",
-            "",
-            f"id: {memory.information_id}",
-            f"revision: {memory.revision}",
-            "",
-            "---",
-            "",
-            "## Content",
-            "",
-            str(memory.content if memory.content is not None else ""),
-            "",
-            "---",
-            "",
-            "## Metadata",
-            "",
-            "```json",
-            cls._json(metadata),
-            "```",
-            "",
-            "---",
-            "",
-            "## Provenance",
-            "",
-            "```json",
-            cls._json(memory.provenance),
-            "```",
-            "",
-            "---",
-            "",
-            "## Temporal",
-            "",
-            "```json",
-            cls._json(memory.temporal),
-            "```",
-            "",
-            "---",
-            "",
-            "## Verification",
-            "",
-            "```json",
-            cls._json(memory.verification),
-            "```",
-            "",
-            "---",
-            "",
-            "## Relations",
-            "",
-            "```json",
-            cls._json(memory.relations),
-            "```",
-            "",
-        ]
-
-        return "\n".join(lines)
+        return encode_document("Information", asdict(memory))
 
     @staticmethod
     def _extract_json_block(text: str, section: str) -> Any:
@@ -172,6 +110,21 @@ class FilesystemBackend(MemoryBackend):
 
     @classmethod
     def _deserialize(cls, text: str) -> Memory:
+        try:
+            payload = decode_document(text, "Information")
+            if payload is not None:
+                if not isinstance(payload.get("information_id"), str):
+                    raise ValueError("invalid Information identity")
+                if type(payload.get("revision")) is not int or payload["revision"] < 1:
+                    raise ValueError("invalid Information revision")
+                for name in ("metadata", "provenance", "temporal", "verification"):
+                    if not isinstance(payload.get(name), dict):
+                        raise ValueError(f"invalid Information {name}")
+                if not isinstance(payload.get("relations"), list):
+                    raise ValueError("invalid Information relations")
+                return Memory(**payload)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise InvalidMemory("invalid Information document") from exc
         identity = re.search(
             r"^id:\s*(.+)$",
             text,
@@ -268,9 +221,10 @@ class FilesystemBackend(MemoryBackend):
             return None
 
         try:
-            return self._deserialize(
-                path.read_text(encoding="utf-8")
-            )
+            memory = self._deserialize(path.read_text(encoding="utf-8"))
+            if memory.information_id != information_id:
+                raise InvalidMemory("Information identity does not match filename")
+            return memory
         except OSError as exc:
             raise InvalidMemory(
                 f"unable to read memory: {information_id}"

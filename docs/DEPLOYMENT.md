@@ -49,7 +49,7 @@ before deciding to restore data. The Git tag alone rolls back code, not data.
 
 - Operational rollout of explicit Thread recovery (implemented; see THREAD_RECOVERY.md).
 - Explicit migration between legacy CLI formats and new repositories.
-- Lossless Markdown serialization for arbitrary content.
+- Editable note views and migration of legacy CLI front-matter documents.
 - Directory fsync and crash consistency across multi-file operations.
-- Thread query inclusion flags, date normalization and action sorting.
+- Integration tests using representative user datasets.
 - Debian validation and application smoke tests on the actual host.

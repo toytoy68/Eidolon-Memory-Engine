@@ -4,8 +4,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from datetime import datetime, timezone
 
 from .models import ActionStatus, ThreadStatus
+
+
+def parse_timestamp(value: str) -> datetime:
+    """Interpret ISO dates/times without an offset as UTC for legacy records."""
+    if not isinstance(value, str):
+        raise ValueError("timestamp must be an ISO string")
+    result = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if result.tzinfo is None:
+        result = result.replace(tzinfo=timezone.utc)
+    return result.astimezone(timezone.utc)
 
 
 class ThreadQueryType(str, Enum):
@@ -84,6 +95,18 @@ class ThreadQuery:
         if not isinstance(self.query_type, ThreadQueryType):
             raise ValueError("invalid query_type")
 
+        for field_name in ("created_after", "created_before", "updated_after", "updated_before",
+                           "started_after", "started_before"):
+            value = getattr(self, field_name)
+            if value is not None:
+                parse_timestamp(value)
+        for flag in (self.include_completed, self.include_cancelled):
+            if type(flag) is not bool:
+                raise ValueError("inclusion flags must be booleans")
+        if type(self.limit) is not int or type(self.offset) is not int:
+            raise ValueError("pagination must use integers")
+        if self.sort_by not in ThreadSortField or self.sort_order not in ThreadSortOrder:
+            raise ValueError("invalid sort field or order")
         if self.limit < 1:
             raise ValueError("limit must be >= 1")
 

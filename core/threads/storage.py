@@ -10,6 +10,9 @@ from tempfile import NamedTemporaryFile
 
 from core.persistence import serialized_write, durable_replace
 
+from core.storage_format import encode_document, decode_document
+from .serialization import thread_to_dict
+
 from .models import ActionStatus, Thread, ThreadAction, ThreadStatus
 
 
@@ -32,7 +35,7 @@ class ThreadRevisionConflict(ThreadStorageError):
 class ThreadStorage:
     """Canonical Markdown filesystem storage for Threads."""
 
-    FORMAT_VERSION = "0.1"
+    FORMAT_VERSION = "0.2"
 
     def __init__(self, persistent_root: Path) -> None:
         self.persistent_root = Path(persistent_root)
@@ -82,86 +85,35 @@ class ThreadStorage:
 
     @classmethod
     def _serialize(cls, thread: Thread) -> str:
-        actions = [
-            {
-                "action_id": action.action_id,
-                "description": action.description,
-                "status": action.status.value,
-                "metadata": action.metadata,
-            }
-            for action in thread.actions
-        ]
+        return encode_document("Thread", thread_to_dict(thread))
 
-        temporal = {
-            "created_at": thread.created_at,
-            "updated_at": thread.updated_at,
-            "started_at": thread.started_at,
-            "completed_at": thread.completed_at,
-        }
-
-        lines = [
-            "# Eidolon Thread Object",
-            "",
-            f"Version: {cls.FORMAT_VERSION}",
-            "",
-            "---",
-            "",
-            "## Identity",
-            "",
-            f"thread_id: {thread.thread_id}",
-            f"revision: {thread.revision}",
-            f"title: {thread.title}",
-            f"status: {thread.status.value}",
-            "",
-            "---",
-            "",
-            "## Objective",
-            "",
-            thread.objective,
-            "",
-            "---",
-            "",
-            "## Context",
-            "",
-            "```json",
-            cls._json(thread.context),
-            "```",
-            "",
-            "---",
-            "",
-            "## Actions",
-            "",
-            "```json",
-            cls._json(actions),
-            "```",
-            "",
-            "---",
-            "",
-            "## Relations",
-            "",
-            "```json",
-            cls._json(thread.relations),
-            "```",
-            "",
-            "---",
-            "",
-            "## Temporal",
-            "",
-            "```json",
-            cls._json(temporal),
-            "```",
-            "",
-            "---",
-            "",
-            "## Provenance",
-            "",
-            "```json",
-            cls._json(thread.provenance),
-            "```",
-            "",
-        ]
-
-        return "\n".join(lines)
+    @staticmethod
+    def _from_payload(data) -> Thread:
+        if type(data.get("revision")) is not int or data["revision"] < 1:
+            raise ValueError("invalid Thread revision")
+        for name in ("thread_id", "title", "objective", "created_at", "updated_at"):
+            if not isinstance(data.get(name), str):
+                raise ValueError(f"invalid Thread {name}")
+        for name in ("started_at", "completed_at"):
+            if data.get(name) is not None and not isinstance(data[name], str):
+                raise ValueError(f"invalid Thread {name}")
+        for name in ("context", "provenance"):
+            if not isinstance(data.get(name), dict):
+                raise ValueError(f"invalid Thread {name}")
+        for name in ("actions", "relations"):
+            if not isinstance(data.get(name), list):
+                raise ValueError(f"invalid Thread {name}")
+        values = dict(data)
+        values["status"] = ThreadStatus(values["status"])
+        actions = []
+        for item in values["actions"]:
+            if (not isinstance(item, dict) or not isinstance(item.get("action_id"), str)
+                    or not isinstance(item.get("description"), str)
+                    or not isinstance(item.get("metadata"), dict)):
+                raise ValueError("invalid Thread action")
+            actions.append(ThreadAction(**dict(item, status=ActionStatus(item["status"]))))
+        values["actions"] = actions
+        return Thread(**values)
 
     @staticmethod
     def _extract_json_block(
@@ -193,6 +145,12 @@ class ThreadStorage:
 
     @classmethod
     def _deserialize(cls, text: str) -> Thread:
+        try:
+            payload = decode_document(text, "Thread")
+            if payload is not None:
+                return cls._from_payload(payload)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ThreadStorageError("invalid Thread document") from exc
         identity = re.search(
             r"^thread_id:\s*(.+)$",
             text,
@@ -403,7 +361,10 @@ class ThreadStorage:
             encoding="utf-8",
         )
 
-        return self._deserialize(text)
+        thread = self._deserialize(text)
+        if thread.thread_id != thread_id:
+            raise ThreadStorageError("Thread identity does not match filename")
+        return thread
 
     def exists(self, thread_id: str) -> bool:
         """Return whether a Thread exists."""
@@ -466,6 +427,9 @@ class ThreadStorage:
 
         for path in sorted(self.threads_root.glob("*.md")):
             text = path.read_text(encoding="utf-8")
-            threads.append(self._deserialize(text))
+            thread = self._deserialize(text)
+            if thread.thread_id != path.stem:
+                raise ThreadStorageError("Thread identity does not match filename")
+            threads.append(thread)
 
         return threads
