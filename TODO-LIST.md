@@ -70,7 +70,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 239 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 241 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -111,6 +111,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-022d — Chemin protégé d'approbation de suppression : bloque une
   Information liée ou des Threads illisibles, sans effacer la demande en attente ;
   voir `core/information/deletion_service.py`, trois tests isolés (2026-09-28).
+- **【FAIT】** T-027a — Audit en lecture seule des suppressions interrompues et
+  demandes incohérentes ; voir `core/information/deletion_audit.py`, deux tests
+  isolés (2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -158,7 +161,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   comment traduire ses modifications en changements contrôlés par révision.
 - **【À VALIDER】** T-027 — Étudier la cohérence lecteur pendant une opération
   multi-fichiers et les garanties face à coupure électrique ; les tests actuels
-  couvrent l'arrêt de processus, pas une panne d'alimentation.
+  couvrent l'arrêt de processus, pas une panne d'alimentation. T-027a détecte
+  certains états de suppression interrompue mais ne les répare pas ; prévoir
+  un protocole récupérable avant d'annoncer une garantie de suppression.
 - **【À FAIRE】** T-028 — Documenter les décisions validées dans
   `docs/ARCHITECTURE.md`, puis adapter l'arborescence cible ci-dessus. T-028a
   couvre l'architecture existante ; les choix futurs doivent être ajoutés après

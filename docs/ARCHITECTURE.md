@@ -62,6 +62,22 @@ pendant la vérification et l'approbation. Une demande de suppression peut reste
 directs à `FilesystemBackend.approve_delete` ou les écrivains historiques : ne
 pas la présenter comme une garantie générale avant leur raccordement.
 
+## Suppression interrompue
+
+La suppression du backend retire actuellement le fichier Information puis
+marque la demande `DELETED`. Une interruption entre ces deux écritures peut
+laisser une demande `PENDING_DELETE` sans fichier. Sur une copie arrêtée :
+
+```sh
+python -m core.information.deletion_audit --root /chemin/vers/copie/du/moteur
+```
+
+L'audit signale les demandes malformées, `PENDING_DELETE` sans Information et
+`DELETED` avec un fichier présent. Il ne lit pas le contenu des Informations,
+n'écrit rien et ne répare pas la situation. Une réapparition du même identifiant
+après suppression exige une analyse humaine ; le rapport n'en déduit pas la
+cause. Un journal récupérable pour la suppression reste à concevoir.
+
 ## Audit des liens existants
 
 Sur une copie de la racine du moteur, lancer :
