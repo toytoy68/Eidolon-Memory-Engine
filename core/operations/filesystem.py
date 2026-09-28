@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+
+from core.persistence import serialized_write
 
 from core.operations.errors import (
     InvalidOperationRecord,
@@ -30,8 +34,18 @@ class FilesystemOperationRepository(OperationRepository):
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
 
+    def _path(self, operation_id: str) -> Path:
+        if (not isinstance(operation_id, str)
+                or not re.fullmatch(r"[A-Za-z0-9._-]+", operation_id)):
+            raise InvalidOperationRecord("invalid operation_id")
+        path = self.root / f"{operation_id}.json"
+        if path.resolve().parent != self.root.resolve():
+            raise InvalidOperationRecord("operation path escapes repository")
+        return path
+
+    @serialized_write("root")
     def create(self, operation: OperationRecord) -> None:
-        path = self.root / f"{operation.operation_id}.json"
+        path = self._path(operation.operation_id)
 
         if path.exists():
             raise OperationAlreadyExists(operation.operation_id)
@@ -39,7 +53,7 @@ class FilesystemOperationRepository(OperationRepository):
         self._write(operation, path)
 
     def get(self, operation_id: str) -> OperationRecord | None:
-        path = self.root / f"{operation_id}.json"
+        path = self._path(operation_id)
 
         if not path.exists():
             return None
@@ -48,7 +62,7 @@ class FilesystemOperationRepository(OperationRepository):
             with path.open("r", encoding="utf-8") as handle:
                 data = json.load(handle)
 
-            if data.get("operation_id") != operation_id:
+            if not isinstance(data, dict) or data.get("operation_id") != operation_id:
                 raise InvalidOperationRecord(operation_id)
 
             return OperationRecord(
@@ -71,8 +85,9 @@ class FilesystemOperationRepository(OperationRepository):
         except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
             raise InvalidOperationRecord(operation_id) from exc
 
+    @serialized_write("root")
     def update(self, operation: OperationRecord) -> None:
-        path = self.root / f"{operation.operation_id}.json"
+        path = self._path(operation.operation_id)
 
         if not path.exists():
             raise OperationNotFound(operation.operation_id)
@@ -86,6 +101,7 @@ class FilesystemOperationRepository(OperationRepository):
             and current.previous_revision == operation.previous_revision
             and current.revision == operation.revision
             and current.execution_plan_hash == operation.execution_plan_hash
+            and current.plan == operation.plan
         )
 
         if not immutable_fields_match:
@@ -96,8 +112,6 @@ class FilesystemOperationRepository(OperationRepository):
         self._write(operation, path)
 
     def _write(self, operation: OperationRecord, path: Path) -> None:
-        temp_path = path.with_suffix(".json.tmp")
-
         data = {
             "operation_id": operation.operation_id,
             "operation_type": operation.operation_type.value,
@@ -116,7 +130,11 @@ class FilesystemOperationRepository(OperationRepository):
             ),
         }
 
-        with temp_path.open("w", encoding="utf-8") as handle:
+        with NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent,
+            prefix=f".{path.name}.", suffix=".tmp", delete=False,
+        ) as handle:
+            temp_path = Path(handle.name)
             json.dump(data, handle, ensure_ascii=False, indent=2)
             handle.flush()
             os.fsync(handle.fileno())

@@ -9,6 +9,8 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
+from core.persistence import serialized_write
+
 from core.config import EVENTS_ROOT, ensure_directories
 
 from .errors import EventAlreadyExists, InvalidEvent
@@ -27,13 +29,15 @@ from .models import (
     ValidationStatus,
 )
 from .repository import EventRepository
+from .validator import validate_event
 
 
 class FilesystemEventRepository(EventRepository):
     """Append-only filesystem repository for Memory Events."""
 
     def __init__(self, events_root: Path | None = None) -> None:
-        ensure_directories()
+        if events_root is None:
+            ensure_directories()
 
         self.events_root = (
             Path(events_root)
@@ -241,8 +245,12 @@ class FilesystemEventRepository(EventRepository):
     # Repository contract
     # ------------------------------------------------------------------
 
+    @serialized_write("events_root")
     def save(self, event: Event) -> Event:
         self._validate_id(event.event_id)
+        errors = validate_event(event)
+        if errors:
+            raise InvalidEvent("; ".join(errors))
 
         path = self._path(event.event_id)
 
@@ -263,9 +271,10 @@ class FilesystemEventRepository(EventRepository):
             return None
 
         try:
-            return self._deserialize(
-                path.read_text(encoding="utf-8")
-            )
+            event = self._deserialize(path.read_text(encoding="utf-8"))
+            if event.event_id != event_id:
+                raise InvalidEvent("Event identity does not match filename")
+            return event
         except OSError as exc:
             raise InvalidEvent(
                 f"unable to read Event: {event_id}"
@@ -286,6 +295,9 @@ class FilesystemEventRepository(EventRepository):
                 raise InvalidEvent(
                     f"unable to read Event file: {path.name}"
                 ) from exc
+
+            if event.event_id != path.stem:
+                raise InvalidEvent("Event identity does not match filename")
 
             if (
                 event.information_id == target_id

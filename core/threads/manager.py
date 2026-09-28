@@ -289,7 +289,8 @@ class ThreadManager:
                 if thread.thread_id == query.thread_id
             ]
 
-        results = list(threads)
+        results = [thread for thread in threads
+                   if query.thread_id is None or thread.thread_id == query.thread_id]
 
         if query.query_type == ThreadQueryType.LIST_OPEN_THREADS:
             results = [

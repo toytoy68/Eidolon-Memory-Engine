@@ -9,6 +9,8 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
+from core.persistence import serialized_write
+
 from core.config import PERSISTENT_ROOT, HISTORY_ROOT, ensure_directories
 
 from .interface import MemoryBackend
@@ -29,7 +31,8 @@ class FilesystemBackend(MemoryBackend):
         persistent_root: Path | None = None,
         history_root: Path | None = None,
     ) -> None:
-        ensure_directories()
+        if persistent_root is None or history_root is None:
+            ensure_directories()
 
         self.persistent_root = (
             Path(persistent_root)
@@ -239,6 +242,7 @@ class FilesystemBackend(MemoryBackend):
     # Backend contract
     # ------------------------------------------------------------------
 
+    @serialized_write("persistent_root")
     def store(self, memory: Memory) -> StoreResult:
         self._validate_id(memory.information_id)
 
@@ -275,6 +279,7 @@ class FilesystemBackend(MemoryBackend):
     def exists(self, information_id: str) -> bool:
         return self._path(information_id).exists()
 
+    @serialized_write("persistent_root")
     def update(
         self,
         information_id: str,
@@ -312,6 +317,7 @@ class FilesystemBackend(MemoryBackend):
             revision=new_revision,
         )
 
+    @serialized_write("persistent_root")
     def delete_request(
         self,
         information_id: str,
@@ -353,11 +359,13 @@ class FilesystemBackend(MemoryBackend):
             status="PENDING_DELETE",
         )
 
+    @serialized_write("persistent_root")
     def approve_delete(
         self,
         information_id: str,
         operation_id: str,
     ) -> DeleteResult:
+        self._validate_id(information_id)
         request_path = self.pending_delete_root / f"{information_id}.json"
 
         if not request_path.exists():
@@ -373,6 +381,14 @@ class FilesystemBackend(MemoryBackend):
             raise RevisionConflict(
                 "operation_id does not match pending delete request"
             )
+
+        if request.get("status") != "PENDING_DELETE":
+            raise RevisionConflict("deletion request is not pending")
+        current = self.get(information_id)
+        if current is None:
+            raise MemoryNotFound(information_id)
+        if current.revision != request.get("revision"):
+            raise RevisionConflict("memory changed since deletion was requested")
 
         memory_path = self._path(information_id)
 
@@ -391,11 +407,13 @@ class FilesystemBackend(MemoryBackend):
             status="DELETED",
         )
 
+    @serialized_write("persistent_root")
     def cancel_delete(
         self,
         information_id: str,
         operation_id: str,
     ) -> DeleteResult:
+        self._validate_id(information_id)
         request_path = self.pending_delete_root / f"{information_id}.json"
 
         if not request_path.exists():
@@ -411,6 +429,9 @@ class FilesystemBackend(MemoryBackend):
             raise RevisionConflict(
                 "operation_id does not match pending delete request"
             )
+
+        if request.get("status") != "PENDING_DELETE":
+            raise RevisionConflict("deletion request is not pending")
 
         request["status"] = "CANCELLED"
 
@@ -461,11 +482,10 @@ class FilesystemBackend(MemoryBackend):
         filters: dict[str, Any],
     ) -> bool:
         for key, expected in filters.items():
-            if key == "revision" and memory.revision != expected:
-                return False
-
-            if key == "information_id" and memory.information_id != expected:
-                return False
+            if key in {"revision", "information_id"}:
+                if getattr(memory, key) != expected:
+                    return False
+                continue
 
             if key in memory.metadata:
                 if memory.metadata[key] != expected:

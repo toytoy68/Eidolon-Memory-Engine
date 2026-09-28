@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from core.persistence import serialized_write
+
 from .models import ActionStatus, Thread, ThreadAction, ThreadStatus
 
 
@@ -371,6 +373,7 @@ class ThreadStorage:
     # Basic storage operations
     # ------------------------------------------------------------------
 
+    @serialized_write("threads_root")
     def create(self, thread: Thread) -> None:
         """Create a new persistent Thread."""
 
@@ -407,6 +410,7 @@ class ThreadStorage:
 
         return self._path(thread_id).exists()
 
+    @serialized_write("threads_root")
     def update(
         self,
         thread: Thread,
@@ -444,6 +448,7 @@ class ThreadStorage:
             content,
         )
 
+    @serialized_write("threads_root")
     def delete(self, thread_id: str) -> None:
         """Delete a persistent Thread."""
         path = self._path(thread_id)
