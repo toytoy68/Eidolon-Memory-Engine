@@ -35,6 +35,7 @@ Eidolon-Memory-Engine/
 │   ├── persistence.py            verrous et écritures durables (existant)
 │   ├── storage_format.py         documents Markdown/JSON versionnés (existant)
 │   ├── migration/                inventaire seul ; convertisseur prévu
+│   ├── monitoring/               mesures locales en lecture seule (existant)
 │   ├── indexing/                 interface d'index dérivé/reconstructible (prévu)
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
 ├── schemas/                      contrats Information, Thread, Event… (existant)
@@ -69,7 +70,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 214 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 217 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -81,6 +82,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-021a — Contrôle structurel en lecture seule des Informations
   historiques persistantes, avec rapport de blocages sans contenu utilisateur ;
   voir `core/migration/preflight.py` (tests isolés, 2026-09-28).
+- **【FAIT】** T-029a — Mesures locales de RAM hôte, volume disque et taille des
+  données du moteur, avec hôte et heure de mesure ; voir `core/monitoring/metrics.py`
+  et `docs/MONITORING.md` (tests isolés, 2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -136,6 +140,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Choisir si l'interface réside dans ce dépôt
   ou dans une application distincte, et si elle lit une API locale ou distante.
   Tester la fraîcheur des statistiques, les permissions et les gros volumes.
+  T-029a fournit les mesures locales mais aucune interface ni accès distant.
   L'édition éventuelle devra passer par les services et leurs révisions ; ne
   jamais écrire directement dans les fichiers du moteur.
 
