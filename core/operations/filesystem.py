@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from core.persistence import serialized_write
+from core.persistence import serialized_write, durable_replace
 
 from core.operations.errors import (
     InvalidOperationRecord,
@@ -77,6 +77,8 @@ class FilesystemOperationRepository(OperationRepository):
                     ThreadStatusChangePlan(
                         new_status=ThreadStatus(data["plan"]["new_status"]),
                         event_id=data["plan"]["event_id"],
+                        before_state=data["plan"].get("before_state"),
+                        after_state=data["plan"].get("after_state"),
                     )
                     if data.get("plan") is not None
                     else None
@@ -124,6 +126,8 @@ class FilesystemOperationRepository(OperationRepository):
                 {
                     "new_status": operation.plan.new_status.value,
                     "event_id": operation.plan.event_id,
+                    "before_state": operation.plan.before_state,
+                    "after_state": operation.plan.after_state,
                 }
                 if operation.plan is not None
                 else None
@@ -139,7 +143,7 @@ class FilesystemOperationRepository(OperationRepository):
             handle.flush()
             os.fsync(handle.fileno())
 
-        os.replace(temp_path, path)
+        durable_replace(temp_path, path)
 
     def list_incomplete(self) -> list[OperationRecord]:
         incomplete_statuses = {

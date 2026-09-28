@@ -146,6 +146,8 @@ class ThreadManager:
         cls,
         thread: Thread,
         new_status: ThreadStatus,
+        *,
+        timestamp: str | None = None,
     ) -> Thread:
         """Apply a validated status transition."""
 
@@ -167,7 +169,7 @@ class ThreadManager:
                 f"{thread.status.value} -> {new_status.value}"
             )
 
-        now = cls.now_iso()
+        now = timestamp if timestamp is not None else cls.now_iso()
 
         updated = replace(
             thread,

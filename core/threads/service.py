@@ -13,8 +13,9 @@ from .storage import ThreadStorage
 class ThreadService:
     """Coordinate Thread persistence and domain queries."""
 
-    def __init__(self, storage: ThreadStorage) -> None:
+    def __init__(self, storage: ThreadStorage, operations=None) -> None:
         self.storage = storage
+        self.operations = operations
 
     def get(self, thread_id: str) -> Thread | None:
         """Load a Thread from persistent storage."""
@@ -46,3 +47,17 @@ class ThreadService:
 
         request = build_thread_request(envelope)
         return self.execute(request)
+
+    def change_status(self, thread_id, new_status, *, previous_revision, operation_id, event_id):
+        """Execute a recoverable mutation when a coordinator is configured."""
+        if self.operations is None:
+            raise RuntimeError("Thread mutations require an operation coordinator")
+        return self.operations.change_status(
+            thread_id, new_status, previous_revision=previous_revision,
+            operation_id=operation_id, event_id=event_id,
+        )
+
+    def recover(self):
+        if self.operations is None:
+            raise RuntimeError("Thread recovery requires an operation coordinator")
+        return self.operations.recover()

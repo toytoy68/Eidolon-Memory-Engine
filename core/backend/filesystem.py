@@ -9,7 +9,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
-from core.persistence import serialized_write
+from core.persistence import serialized_write, durable_replace
 
 from core.config import PERSISTENT_ROOT, HISTORY_ROOT, ensure_directories
 
@@ -236,7 +236,7 @@ class FilesystemBackend(MemoryBackend):
             handle.flush()
             os.fsync(handle.fileno())
 
-        os.replace(temporary_path, path)
+        durable_replace(temporary_path, path)
 
     # ------------------------------------------------------------------
     # Backend contract

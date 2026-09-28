@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from core.persistence import serialized_write
+from core.persistence import serialized_write, durable_replace
 
 from .models import ActionStatus, Thread, ThreadAction, ThreadStatus
 
@@ -364,7 +364,7 @@ class ThreadStorage:
             handle.flush()
             os.fsync(handle.fileno())
 
-        os.replace(
+        durable_replace(
             temporary_path,
             path,
         )

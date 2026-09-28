@@ -29,6 +29,8 @@ class ThreadStatusChangePlan:
 
     new_status: ThreadStatus
     event_id: str
+    before_state: str | None = None
+    after_state: str | None = None
 
 
 @dataclass

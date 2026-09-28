@@ -9,7 +9,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
-from core.persistence import serialized_write
+from core.persistence import serialized_write, durable_replace
 
 from core.config import EVENTS_ROOT, ensure_directories
 
@@ -239,7 +239,7 @@ class FilesystemEventRepository(EventRepository):
             handle.flush()
             os.fsync(handle.fileno())
 
-        os.replace(temporary_path, path)
+        durable_replace(temporary_path, path)
 
     # ------------------------------------------------------------------
     # Repository contract

@@ -1,10 +1,11 @@
-# Deployment and rollback — first audit correction batch
+# Deployment and rollback â€” first audit correction batch
 
 ## Scope
 
 This batch protects cooperative filesystem writers, Operation identities and
 immutable plans, pending deletion decisions, Event validation, and query filters.
-It does not migrate historical data or enable automatic Thread recovery.
+Historical data is not migrated. A subsequent batch adds explicit Thread recovery;
+see THREAD_RECOVERY.md. No automatic background recovery job is installed.
 
 The old CLI controller does not participate in repository locks. Do not run it
 concurrently with repository writers. Shared network filesystems are not a
@@ -46,7 +47,7 @@ before deciding to restore data. The Git tag alone rolls back code, not data.
 
 ## Remaining work
 
-- Integrated Thread/Event/Operation recovery and interruption tests.
+- Operational rollout of explicit Thread recovery (implemented; see THREAD_RECOVERY.md).
 - Explicit migration between legacy CLI formats and new repositories.
 - Lossless Markdown serialization for arbitrary content.
 - Directory fsync and crash consistency across multi-file operations.

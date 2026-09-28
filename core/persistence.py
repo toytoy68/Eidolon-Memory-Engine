@@ -7,10 +7,13 @@ from contextlib import contextmanager
 from functools import wraps
 import os
 import time
+from threading import local
+
+_held_locks = local()
 
 
 @contextmanager
-def exclusive_write(root):
+def _exclusive_write(root):
     # Keep the lock file: unlinking it could split waiters across two inodes.
     with (root / ".write.lock").open("a+b") as handle:
         if os.name == "nt":
@@ -39,6 +42,35 @@ def exclusive_write(root):
                 yield
             finally:
                 fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+@contextmanager
+def exclusive_write(root):
+    """Reentrant within a thread; other threads/processes still acquire the OS lock."""
+    key = str(root.resolve())
+    held = getattr(_held_locks, "roots", None)
+    if held is None:
+        held = _held_locks.roots = set()
+    if key in held:
+        yield
+        return
+    with _exclusive_write(root):
+        held.add(key)
+        try:
+            yield
+        finally:
+            held.remove(key)
+
+
+def durable_replace(source, destination):
+    """Publish a flushed file, then persist its directory entry on POSIX."""
+    os.replace(source, destination)
+    if os.name != "nt":
+        descriptor = os.open(destination.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
 
 def serialized_write(root_attribute):
