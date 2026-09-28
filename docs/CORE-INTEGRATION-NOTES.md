@@ -93,3 +93,20 @@ la stabilité et le coût matériel, pas seulement les benchmarks QCM.
 Ces pistes doivent rester indépendantes des tâches de fiabilisation actuellement
 prioritaires du Memory Engine. Elles seront converties en spécifications ou en
 projets Core séparés uniquement après validation d'architecture.
+
+## Référence à étudier : CasaOS / ZimaOS
+
+Pour la future couche EidolonOS, en particulier **Duo**, étudier CasaOS et ZimaOS
+avant de développer l'administration système et l'App Manager. L'objectif n'est
+pas d'en faire une dépendance architecturale du Memory Engine ou du Core, mais
+d'évaluer ce qui peut être réutilisé ou adapté au lieu d'être réinventé.
+
+Points à examiner : modèle d'applications/conteneurs et catalogue, installation
+simplifiée, dashboard et monitoring, gestion des services et du stockage, UX pour
+un utilisateur non spécialiste, mécanismes de mise à jour et séparation entre
+interface d'administration et OS sous-jacent.
+
+Principe cible : **CasaOS/ZimaOS = références ou composants potentiels, pas
+fondation imposée d'Eidolon**. Les besoins spécifiques à Eidolon (Core, Memory
+Engine, agents, skills, Policy/Safety Engine, GPU/IA et robotique) doivent rester
+modulaires et indépendants.
