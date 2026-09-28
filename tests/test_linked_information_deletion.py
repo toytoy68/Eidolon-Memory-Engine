@@ -89,3 +89,21 @@ def test_direct_backend_approval_rejects_untrusted_thread(tmp_path, thread_file)
     assert backend.get("info-1").content == "keep"
     request = json.loads((tmp_path / "history/pending-delete/info-1.json").read_text())
     assert request["status"] == "PENDING_DELETE"
+
+
+@pytest.mark.parametrize("relation", [
+    {"type": "CONCERNS"},
+    {"type": "CONCERNS", "target_id": "info-2", "target": "info-1"},
+])
+def test_direct_backend_approval_rejects_ambiguous_concerns_relation(tmp_path, relation):
+    backend, threads, _ = stores(tmp_path)
+    backend.store(Memory("info-1", content="keep"))
+    threads.create(Thread("thread-1", "Title", "Objective", relations=[relation],
+                          created_at="2026-09-28", updated_at="2026-09-28"))
+    backend.delete_request("info-1", "human", "reason", 1, "delete-1")
+
+    with pytest.raises(InformationDeletionBlocked, match="Thread CONCERNS target"):
+        backend.approve_delete("info-1", "delete-1")
+    assert backend.get("info-1").content == "keep"
+    request = json.loads((tmp_path / "history/pending-delete/info-1.json").read_text())
+    assert request["status"] == "PENDING_DELETE"

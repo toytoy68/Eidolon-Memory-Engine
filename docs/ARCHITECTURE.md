@@ -88,8 +88,10 @@ les lecteurs d'un répertoire Event n'agrègent pas les sous-répertoires.
 La suppression du backend prend les verrous `persistent/` puis `threads/`
 pendant la vérification et l'approbation. Une demande de suppression peut rester
 `PENDING_DELETE` si un lien existe. Cette protection couvre les appels directs
-à `FilesystemBackend.approve_delete`, mais pas les écrivains historiques : ne
-pas la présenter comme une garantie générale avant leur adaptation.
+à `FilesystemBackend.approve_delete` ; elle bloque aussi une relation `CONCERNS`
+sans cible fiable ou avec deux cibles contradictoires. Elle ne couvre pas les
+écrivains historiques : ne pas la présenter comme une garantie générale avant
+leur adaptation.
 
 ## Suppression interrompue
 

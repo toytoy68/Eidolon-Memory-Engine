@@ -42,8 +42,13 @@ def audit_links(engine_root: Path) -> dict:
             if not isinstance(relation, dict) or relation.get("type") != "CONCERNS":
                 continue
             report["links_checked"] += 1
-            target = relation.get("target_id", relation.get("target"))
-            if (not isinstance(target, str)
+            target_id = relation.get("target_id")
+            legacy_target = relation.get("target")
+            target = target_id if target_id is not None else legacy_target
+            if (target_id is not None and legacy_target is not None
+                    and target_id != legacy_target):
+                reason = "invalid_target_id"
+            elif (not isinstance(target, str)
                     or not re.fullmatch(r"[A-Za-z0-9._-]+", target)):
                 reason = "invalid_target_id"
             else:

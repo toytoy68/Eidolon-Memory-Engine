@@ -29,8 +29,17 @@ def ensure_no_thread_links(threads_root: Path, information_id: str) -> None:
         for relation in thread.relations:
             if not isinstance(relation, dict):
                 raise InformationDeletionBlocked("invalid Thread relation")
-            if (relation.get("type") == "CONCERNS"
-                    and relation.get("target_id", relation.get("target")) == information_id):
+            if relation.get("type") != "CONCERNS":
+                continue
+            target_id = relation.get("target_id")
+            legacy_target = relation.get("target")
+            if (target_id is not None and legacy_target is not None
+                    and target_id != legacy_target):
+                raise InformationDeletionBlocked("ambiguous Thread CONCERNS target")
+            target = target_id if target_id is not None else legacy_target
+            if not isinstance(target, str) or not target:
+                raise InformationDeletionBlocked("invalid Thread CONCERNS target")
+            if target == information_id:
                 raise InformationDeletionBlocked(
                     f"Information is linked by Thread {thread.thread_id}"
                 )
