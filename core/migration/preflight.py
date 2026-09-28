@@ -8,6 +8,9 @@ from pathlib import Path
 
 import yaml
 
+from core.information.models import (
+    Confidence, EpistemicStatus, Importance, InformationType, OperationalState, Retention,
+)
 from core.migration.inventory import classify
 
 
@@ -57,9 +60,28 @@ def inspect_legacy_information(path: Path) -> list[str]:
         revision = revision.get("number")
     if type(revision) is not int or revision < 1:
         reasons.append("invalid_revision")
-    for field in ("type", "epistemic_status", "operational_state"):
-        if not isinstance(data.get(field), str) or not data[field]:
-            reasons.append(f"missing_{field}")
+    enumerations = {
+        "type": InformationType,
+        "epistemic_status": EpistemicStatus,
+        "operational_state": OperationalState,
+        "confidence": Confidence,
+        "importance": Importance,
+        "retention": Retention,
+    }
+    for field, allowed in enumerations.items():
+        value = data.get(field)
+        if value is None:
+            if field in {"type", "epistemic_status", "operational_state"}:
+                reasons.append(f"missing_{field}")
+        elif not isinstance(value, str) or value not in {item.value for item in allowed}:
+            reasons.append(f"invalid_{field}")
+    for field in ("context", "provenance", "evidence", "time"):
+        if field in data and not isinstance(data[field], dict):
+            reasons.append(f"invalid_{field}")
+    for field in ("relations", "triggers"):
+        if field in data and (not isinstance(data[field], list)
+                              or any(not isinstance(item, dict) for item in data[field])):
+            reasons.append(f"invalid_{field}")
     if not "".join(lines[end + 1:]).strip():
         reasons.append("empty_body")
     return reasons

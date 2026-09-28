@@ -45,3 +45,15 @@ def test_preflight_skips_core_and_rejects_empty_body(tmp_path):
     assert report["blocked"] == [
         {"path": "memory/persistent/empty.md", "reasons": ["empty_body"]},
     ]
+
+
+def test_preflight_flags_unsupported_enums_and_container_shapes(tmp_path):
+    document(tmp_path, "info-4",
+             "id: info-4\nrevision: 1\ntype: INVENTED\n"
+             "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+             "confidence: MAXIMUM\ncontext: []\nrelations: [not-an-object]\n")
+
+    assert preflight(tmp_path)["blocked"] == [{
+        "path": "memory/persistent/info-4.md",
+        "reasons": ["invalid_type", "invalid_confidence", "invalid_context", "invalid_relations"],
+    }]
