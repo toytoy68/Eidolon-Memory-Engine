@@ -186,3 +186,36 @@ def test_create_linked_cli_writes_event_and_replays_idempotently(tmp_path):
     event, = creation.events.list_for_target("thread-1")
     assert event.event_type.value == "CREATED"
     assert creation.operations.get("create-1").status is OperationStatus.COMMITTED
+
+
+def test_recorded_creation_then_interrupted_status_keeps_both_events(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1", content="kept"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    created = creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+    _, status = open_engine(tmp_path)
+    save = status.events.save
+
+    def interrupt_after_status_event(event):
+        save(event)
+        raise InterruptedError("interrupted after status Event")
+
+    monkeypatch.setattr(status.events, "save", interrupt_after_status_event)
+    with pytest.raises(InterruptedError):
+        status.change_status("thread-1", ThreadStatus.VALIDATED,
+                             previous_revision=1, operation_id="status-1", event_id="status-event-1")
+
+    backend, restarted_creation = open_creation(tmp_path)
+    _, restarted_status = open_engine(tmp_path)
+    assert restarted_creation.recover() == {}
+    assert restarted_status.recover() == {"status-1": {"status": "COMMITTED"}}
+    updated = restarted_status.storage.get("thread-1")
+    assert updated.revision == 2 and updated.status is ThreadStatus.VALIDATED
+    assert updated.relations == created.relations
+    assert backend.get("info-1").content == "kept"
+    creation_event, = restarted_creation.events.list_for_target("thread-1")
+    status_event, = restarted_status.events.list_for_target("thread-1")
+    assert creation_event.event_type.value == "CREATED"
+    assert status_event.event_type.value == "STATUS_CHANGED"
+    assert creation_event.relations[0].target == "info-1"
