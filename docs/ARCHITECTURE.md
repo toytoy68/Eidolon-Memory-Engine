@@ -55,3 +55,19 @@ La conversion des données anciennes, les Events d'Information coordonnés et la
 cohérence globale des lectures multi-fichiers restent à concevoir.
 La création d'un Thread lié ne crée pas encore d'Event `CREATED` ; le scénario
 intégré ne promet donc pas une traçabilité complète de sa création.
+
+## Audit des liens existants
+
+Sur une copie de la racine du moteur, lancer :
+
+```sh
+python -m core.threads.link_audit --root /chemin/vers/copie/du/moteur
+```
+
+Cette commande lit les Threads et leurs relations `CONCERNS`, puis vérifie les
+Informations ciblées. Elle rapporte des comptes et des chemins de Threads avec
+des codes de raison, sans contenu des mémoires, et ne modifie aucun fichier.
+Code retour 1 en cas d'anomalie. Elle accepte les documents core lisibles ; un
+ancien front matter Information est signalé invalide jusqu'à migration. Le
+résultat peut changer si un écrivain intervient pendant l'audit : utiliser une
+copie arrêtée pour une décision de migration ou de suppression.
