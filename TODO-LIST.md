@@ -84,6 +84,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
   CLI, tableau de correspondance et outil de comptage en lecture seule ; voir
   `docs/MIGRATION.md` et `core/migration/inventory.py` (tests isolés, 2026-09-28).
+- **【FAIT】** T-020b — L'inventaire compte aussi les Events et Operations du
+  journal `thread-create-v1`, avec reconnaissance de `THREAD_CREATE` ; test
+  sur arborescence isolée (2026-09-28).
 - **【FAIT】** T-022a — Scénario intégré sur répertoire isolé : Information,
   Thread avec relation, interruption après Event, reprise et rejeu idempotent ;
   voir `tests/integration/test_memory_flow.py` (2026-09-28).

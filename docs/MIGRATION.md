@@ -55,6 +55,7 @@ Chemins relatifs à `MEMORY_ENGINE_ROOT` ; la variable peut modifier cette racin
 | `memory/history/reviews/*.md` | Controller et relations : Reviews YAML, structures différentes | Aucun dépôt Review nouveau | Conserver séparément et définir modèle/états avant migration. |
 | `memory/history/operations/*.json` | Controller : reçu `EXECUTED` avec `result`, `information_id` et hash d'un plan | `FilesystemOperationRepository` attend une opération typée avec snapshots et statuts | Ne pas interpréter un reçu historique comme opération récupérable ; préserver ces reçus et éviter leur lecture par le nouveau dépôt. |
 | `memory/history/{events,operations}/thread-status-v1/*` | Aucun | Journaux isolés du coordinateur Thread | Garder les journaux ensemble ; lancer `recover` après arrêt brutal avant toute écriture. |
+| `memory/history/{events,operations}/thread-create-v1/*` | Aucun | Journaux de création liée récupérable | Garder les journaux ensemble ; lancer `recover-all` après interruption avant toute nouvelle écriture. |
 | `memory/history/pending-delete/*.json` | Aucun identifié | Demandes de suppression du backend | Préserver avec les Informations, vérifier leur statut et révision avant reprise. |
 
 Le router et le classifier lisent le front matter historique ; le validator

@@ -21,6 +21,10 @@ def test_inventory_classifies_both_generations_without_changing_files(tmp_path):
           json.dumps({"operation_id": "old", "result": "STORE"}))
     write(tmp_path, "memory/history/operations/thread-status-v1/new.json",
           json.dumps({"operation_type": "THREAD_STATUS_CHANGE"}))
+    write(tmp_path, "memory/history/operations/thread-create-v1/created.json",
+          json.dumps({"operation_type": "THREAD_CREATE"}))
+    write(tmp_path, "memory/history/events/thread-create-v1/created.md",
+          '# Eidolon Memory Event\n\nVersion: 0.2\n')
     write(tmp_path, "memory/history/events/broken.md", "unexpected\n")
 
     report = inventory(tmp_path)
@@ -32,6 +36,8 @@ def test_inventory_classifies_both_generations_without_changing_files(tmp_path):
     assert report["categories"]["events"] == {"legacy_event_plain": 1, "unknown": 1}
     assert report["categories"]["operations"] == {"legacy_operation": 1}
     assert report["categories"]["thread_status_operations"] == {"core_operation": 1}
+    assert report["categories"]["thread_create_operations"] == {"core_operation": 1}
+    assert report["categories"]["thread_create_events"] == {"core_event_0.2": 1}
     assert report["needs_review"] == [
         {"path": "memory/history/events/broken.md", "reason": "unknown"},
     ]

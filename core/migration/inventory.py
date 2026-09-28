@@ -14,9 +14,11 @@ SOURCES = (
     ("threads", "memory/persistent/threads", "*.md"),
     ("events", "memory/history/events", "*.md"),
     ("thread_status_events", "memory/history/events/thread-status-v1", "*.md"),
+    ("thread_create_events", "memory/history/events/thread-create-v1", "*.md"),
     ("reviews", "memory/history/reviews", "*.md"),
     ("operations", "memory/history/operations", "*.json"),
     ("thread_status_operations", "memory/history/operations/thread-status-v1", "*.json"),
+    ("thread_create_operations", "memory/history/operations/thread-create-v1", "*.json"),
     ("pending_delete", "memory/history/pending-delete", "*.json"),
 )
 
@@ -31,7 +33,7 @@ def classify(path: Path, category: str) -> str:
                 return "unknown"
             if category == "pending_delete":
                 return "pending_delete" if "information_id" in data else "unknown"
-            if data.get("operation_type") == "THREAD_STATUS_CHANGE":
+            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE"}:
                 return "core_operation"
             if "operation_id" in data and "result" in data:
                 return "legacy_operation"
