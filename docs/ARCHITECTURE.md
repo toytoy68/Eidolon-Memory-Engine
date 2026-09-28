@@ -11,6 +11,7 @@ index Qdrant. La forme future des API et de la migration reste ouverte.
 | --- | --- | --- | --- |
 | `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json` | Ces mêmes chemins, sous verrou du dépôt | Seul écrivain nouveau des Informations core ; ne pas lancer le controller historique sur les mêmes fichiers. |
 | `core/threads/ThreadStorage` | `persistent/threads/*.md` | Threads sous verrou, avec contrôle de révision | Les changements de statut doivent passer par le coordinateur d'Operations pour être récupérables. |
+| `core/threads/ThreadInformationLinkService` | Information ciblée | Crée un Thread avec relation `CONCERNS` | Vérifie l'existence sous le verrou partagé de `persistent/` au moment de la création ; ne garantit pas que la cible restera présente après une suppression ultérieure. |
 | `core/operations/FilesystemThreadOperations` | Thread, Event et Operation | Journaux `thread-status-v1`, nouveau Thread ; ordre de verrous Thread → Operation → Event | Exécuter `recover` après redémarrage avant de reprendre les mutations. |
 | `core/events/FilesystemEventRepository` | Events de son répertoire configuré | Nouveaux Events append-only | Le listing d'un dépôt n'agrège pas les autres sous-répertoires ni les Events anciens. |
 | `services/memory-controller` | Working, Persistent, Reviews, anciens plans | YAML en `working/`, `persistent/`, `history/{events,reviews}/` et reçus JSON dans `history/operations/` | Écrivain historique direct, sans les verrous des dépôts core ; arrêter avant toute écriture core sur les mêmes données. |
@@ -52,3 +53,5 @@ coordinateur.
 
 La conversion des données anciennes, les Events d'Information coordonnés et la
 cohérence globale des lectures multi-fichiers restent à concevoir.
+La création d'un Thread lié ne crée pas encore d'Event `CREATED` ; le scénario
+intégré ne promet donc pas une traçabilité complète de sa création.

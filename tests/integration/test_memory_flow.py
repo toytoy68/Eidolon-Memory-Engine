@@ -8,6 +8,7 @@ from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
 from core.operations.models import OperationStatus
 from core.operations.thread_status import FilesystemThreadOperations
+from core.threads.link_service import ThreadInformationLinkService
 from core.threads.models import Thread, ThreadStatus
 from core.threads.storage import ThreadStorage
 
@@ -29,11 +30,10 @@ def test_information_and_thread_survive_interrupted_status_commit(tmp_path, monk
     backend.store(original)
     thread = Thread(
         "thread-1", "Review information", "Validate info-1",
-        relations=[{"type": "CONCERNS", "target_id": "info-1"}],
         created_at="2026-09-28T00:00:00+00:00",
         updated_at="2026-09-28T00:00:00+00:00",
     )
-    engine.storage.create(thread)
+    thread = ThreadInformationLinkService(backend, engine.storage).create(thread, "info-1")
 
     save = engine.events.save
 
