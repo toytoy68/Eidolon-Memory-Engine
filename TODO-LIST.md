@@ -69,12 +69,15 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 211 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 212 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
   CLI, tableau de correspondance et outil de comptage en lecture seule ; voir
   `docs/MIGRATION.md` et `core/migration/inventory.py` (tests isolés, 2026-09-28).
+- **【FAIT】** T-022a — Scénario intégré sur répertoire isolé : Information,
+  Thread avec relation, interruption après Event, reprise et rejeu idempotent ;
+  voir `tests/integration/test_memory_flow.py` (2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
@@ -103,7 +106,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   et tests sur copies anonymisées. Ne jamais migrer silencieusement au démarrage.
 - **【À FAIRE】** T-022 — Tester le parcours complet Information → Thread →
   Operation → Event → reprise après crash sur un répertoire isolé ; vérifier
-  idempotence, conflits et absence de perte de données.
+  idempotence, conflits et absence de perte de données. T-022a couvre une partie
+  du parcours ; il reste à définir et tester la création contrôlée du lien
+  Information/Thread, sa validation et les Events propres à l'Information.
 - **【À FAIRE】** T-023 — Clarifier les frontières entre anciens CLI et nouvelles
   écritures verrouillées ; supprimer ou adapter les chemins d'écriture
   concurrents avant de les lancer simultanément.
