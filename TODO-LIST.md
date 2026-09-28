@@ -70,7 +70,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 250 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 254 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -123,6 +123,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   un ancien écrivain (2026-09-28).
 - **【FAIT】** T-022f — Contrat Event étendu à `CREATED` pour un Thread avec
   révision 1 et statut initial ; validation et schéma adaptés (2026-09-28).
+- **【FAIT】** T-022g — Création liée journalisée avec Event `CREATED`, reprise
+  après interruption et rejet d'un Thread divergent ; commande
+  `recover-creations` et quatre scénarios intégrés (2026-09-28).
 - **【FAIT】** T-027a — Audit en lecture seule des suppressions interrompues et
   demandes incohérentes ; voir `core/information/deletion_audit.py`, deux tests
   isolés (2026-09-28).
@@ -161,8 +164,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Operation → Event → reprise après crash sur un répertoire isolé ; vérifier
   idempotence, conflits et absence de perte de données. T-022a/b couvrent la
   création liée et la reprise d'un statut ; T-022c/d/e détectent les liens
-  orphelins et protègent la suppression core. Il manque encore
-  l'Event de création du Thread, les Events propres à l'Information et le
+  orphelins et protègent la suppression core. T-022f/g ajoutent un chemin
+  journalisé de création avec Event ; il manque encore l'adaptation des autres
+  chemins de création, les Events propres à l'Information et le
   raccordement des anciens chemins de suppression à cette protection.
 - **【À FAIRE】** T-023 — Clarifier les frontières entre anciens CLI et nouvelles
   écritures verrouillées ; supprimer ou adapter les chemins d'écriture

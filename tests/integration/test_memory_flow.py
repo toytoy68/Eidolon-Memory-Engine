@@ -1,5 +1,7 @@
 """Exercise real repositories together on an isolated memory tree."""
 
+from dataclasses import replace
+
 import pytest
 
 from core.backend.filesystem import FilesystemBackend
@@ -7,7 +9,9 @@ from core.backend.models import Memory
 from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
 from core.operations.models import OperationStatus
+from core.operations.errors import OperationConflict
 from core.operations.thread_status import FilesystemThreadOperations
+from core.operations.thread_create import FilesystemLinkedThreadCreation
 from core.threads.link_service import ThreadInformationLinkService
 from core.threads.models import Thread, ThreadStatus
 from core.threads.storage import ThreadStorage
@@ -21,6 +25,16 @@ def open_engine(root):
     operations = FilesystemOperationRepository(history / "operations" / "thread-status-v1")
     events = FilesystemEventRepository(history / "events" / "thread-status-v1")
     return backend, FilesystemThreadOperations(threads, events, operations)
+
+
+def open_creation(root):
+    persistent = root / "memory/persistent"
+    history = root / "memory/history"
+    backend = FilesystemBackend(persistent, history)
+    threads = ThreadStorage(persistent)
+    operations = FilesystemOperationRepository(history / "operations/thread-create-v1")
+    events = FilesystemEventRepository(history / "events/thread-create-v1")
+    return backend, FilesystemLinkedThreadCreation(backend, threads, events, operations)
 
 
 def test_information_and_thread_survive_interrupted_status_commit(tmp_path, monkeypatch):
@@ -64,3 +78,87 @@ def test_information_and_thread_survive_interrupted_status_commit(tmp_path, monk
                                     event_id="event-1") == result
     assert restarted.recover() == {}
     assert len(restarted.events.list_for_target("thread-1")) == 1
+
+
+def test_linked_thread_creation_recovers_after_event_write(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1", content="private content"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    save = creation.events.save
+
+    def interrupt_after_event(event):
+        save(event)
+        raise InterruptedError("interrupted after Event write")
+
+    monkeypatch.setattr(creation.events, "save", interrupt_after_event)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+
+    backend, restarted = open_creation(tmp_path)
+    assert restarted.operations.get("create-1").status is OperationStatus.APPLYING
+    assert restarted.recover() == {"create-1": {"status": "COMMITTED"}}
+    linked = restarted.storage.get("thread-1")
+    assert linked.relations == [{"type": "CONCERNS", "target_id": "info-1"}]
+    assert backend.get("info-1").content == "private content"
+    event, = restarted.events.list_for_target("thread-1")
+    assert event.event_id == "created-1"
+    assert event.state_transition.after == {"status": linked.status.value}
+    assert restarted.create(thread, "info-1", operation_id="create-1", event_id="created-1") == linked
+    assert restarted.recover() == {}
+    assert len(restarted.events.list_for_target("thread-1")) == 1
+
+
+def test_linked_thread_creation_conflicting_replay_is_blocked(tmp_path):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+    with pytest.raises(OperationConflict, match="different command"):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-2")
+
+
+def test_linked_thread_creation_recovers_after_thread_write(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    create = creation.storage.create
+
+    def interrupt_after_thread(value):
+        create(value)
+        raise InterruptedError("interrupted after Thread write")
+
+    monkeypatch.setattr(creation.storage, "create", interrupt_after_thread)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+
+    _, restarted = open_creation(tmp_path)
+    assert restarted.events.get("created-1") is None
+    assert restarted.recover() == {"create-1": {"status": "COMMITTED"}}
+    assert restarted.events.get("created-1") is not None
+
+
+def test_linked_thread_creation_recovery_refuses_divergent_thread(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    create = creation.storage.create
+
+    def interrupt_after_thread(value):
+        create(value)
+        raise InterruptedError("interrupted after Thread write")
+
+    monkeypatch.setattr(creation.storage, "create", interrupt_after_thread)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+
+    _, restarted = open_creation(tmp_path)
+    path = restarted.storage._path("thread-1")
+    path.write_text(restarted.storage._serialize(
+        replace(restarted.storage.get("thread-1"), title="different")))
+    assert restarted.recover()["create-1"]["status"] == "BLOCKED"
+    assert restarted.storage.get("thread-1").title == "different"
+    assert restarted.events.get("created-1") is None

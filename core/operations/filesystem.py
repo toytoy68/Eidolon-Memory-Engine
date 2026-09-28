@@ -20,6 +20,7 @@ from core.operations.models import (
     OperationRecord,
     OperationStatus,
     OperationType,
+    ThreadCreatePlan,
     ThreadStatusChangePlan,
     validate_status_transition,
 )
@@ -74,7 +75,14 @@ class FilesystemOperationRepository(OperationRepository):
                 execution_plan_hash=data["execution_plan_hash"],
                 status=OperationStatus(data["status"]),
                 plan=(
-                    ThreadStatusChangePlan(
+                    ThreadCreatePlan(
+                        information_id=data["plan"]["information_id"],
+                        event_id=data["plan"]["event_id"],
+                        after_state=data["plan"]["after_state"],
+                    )
+                    if data.get("plan") is not None
+                    and data["operation_type"] == OperationType.THREAD_CREATE.value
+                    else ThreadStatusChangePlan(
                         new_status=ThreadStatus(data["plan"]["new_status"]),
                         event_id=data["plan"]["event_id"],
                         before_state=data["plan"].get("before_state"),
@@ -124,6 +132,12 @@ class FilesystemOperationRepository(OperationRepository):
             "status": operation.status.value,
             "plan": (
                 {
+                    "information_id": operation.plan.information_id,
+                    "event_id": operation.plan.event_id,
+                    "after_state": operation.plan.after_state,
+                }
+                if isinstance(operation.plan, ThreadCreatePlan)
+                else {
                     "new_status": operation.plan.new_status.value,
                     "event_id": operation.plan.event_id,
                     "before_state": operation.plan.before_state,

@@ -3,10 +3,12 @@ import argparse
 import hashlib
 import json
 
-from core.config import PERSISTENT_ROOT, OPERATIONS_ROOT, EVENTS_ROOT
+from core.config import PERSISTENT_ROOT, HISTORY_ROOT, OPERATIONS_ROOT, EVENTS_ROOT
+from core.backend.filesystem import FilesystemBackend
 from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
 from core.operations.thread_status import FilesystemThreadOperations
+from core.operations.thread_create import FilesystemLinkedThreadCreation
 from core.threads.models import ThreadStatus
 from core.threads.storage import ThreadStorage
 from core.threads.service import ThreadService
@@ -23,8 +25,18 @@ def main():
     change.add_argument("--operation-id", required=True)
     change.add_argument("--event-id")
     commands.add_parser("recover")
+    commands.add_parser("recover-creations")
     args = parser.parse_args()
     storage = ThreadStorage(PERSISTENT_ROOT)
+    if args.command == "recover-creations":
+        creation = FilesystemLinkedThreadCreation(
+            FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT), storage,
+            FilesystemEventRepository(EVENTS_ROOT / "thread-create-v1"),
+            FilesystemOperationRepository(OPERATIONS_ROOT / "thread-create-v1"),
+        )
+        result = creation.recover()
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return int(any(record["status"] == "BLOCKED" for record in result.values()))
     service = ThreadService(storage, FilesystemThreadOperations(
         storage, FilesystemEventRepository(EVENTS_ROOT / "thread-status-v1"),
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-status-v1"),

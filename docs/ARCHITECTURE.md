@@ -12,6 +12,7 @@ index Qdrant. La forme future des API et de la migration reste ouverte.
 | `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread | Seul écrivain nouveau des Informations core ; ne pas lancer le controller historique sur les mêmes fichiers. |
 | `core/threads/ThreadStorage` | `persistent/threads/*.md` | Threads sous verrou, avec contrôle de révision | Les changements de statut doivent passer par le coordinateur d'Operations pour être récupérables. |
 | `core/threads/ThreadInformationLinkService` | Information ciblée | Crée un Thread avec relation `CONCERNS` | Vérifie l'existence sous le verrou partagé de `persistent/` au moment de la création ; ne garantit pas que la cible restera présente après une suppression ultérieure. |
+| `core/operations/FilesystemLinkedThreadCreation` | Information, Thread, Event et Operation | Journal `thread-create-v1`, Thread lié et Event `CREATED` | Prend les verrous Persistent → Thread → Operation → Event ; reprendre avec `recover-creations` avant d'autres mutations. |
 | `core/information/LinkedInformationDeletionService` | Backend partagé avec les Threads | Délègue l'approbation au backend | Façade de compatibilité ; la protection est appliquée aussi aux appels directs au backend. Les anciens CLI restent indépendants. |
 | `core/operations/FilesystemThreadOperations` | Thread, Event et Operation | Journaux `thread-status-v1`, nouveau Thread ; ordre de verrous Thread → Operation → Event | Exécuter `recover` après redémarrage avant de reprendre les mutations. |
 | `core/events/FilesystemEventRepository` | Events de son répertoire configuré | Nouveaux Events append-only | Le listing d'un dépôt n'agrège pas les autres sous-répertoires ni les Events anciens. |
@@ -40,6 +41,15 @@ sous-répertoires `thread-status-v1` ; les reçus historiques Information dans
 `history/operations/*.json` ne sont **pas** des opérations récupérables par ce
 coordinateur.
 
+La création liée récupérable passe par `FilesystemLinkedThreadCreation.create` :
+elle prépare un snapshot et un journal dans `thread-create-v1`, puis écrit le
+Thread et son Event `CREATED`. Après interruption, exécuter
+`python -m core.operations.cli recover-creations` avant les changements de statut,
+puis la commande `recover` pour ceux-ci. Un Thread ou Event divergent bloque la
+reprise sans écrasement. La création directe via `ThreadInformationLinkService`
+reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
+création restent à adapter.
+
 ## Avant la coexistence sur VM 110
 
 1. Identifier les services et tâches planifiées qui écrivent actuellement ;
@@ -54,8 +64,8 @@ coordinateur.
 
 La conversion des données anciennes, les Events d'Information coordonnés et la
 cohérence globale des lectures multi-fichiers restent à concevoir.
-La création d'un Thread lié ne crée pas encore d'Event `CREATED` ; le scénario
-intégré ne promet donc pas une traçabilité complète de sa création.
+Seul le nouveau chemin de création journalisée produit un Event `CREATED` ;
+les lecteurs d'un répertoire Event n'agrègent pas les sous-répertoires.
 La suppression du backend prend les verrous `persistent/` puis `threads/`
 pendant la vérification et l'approbation. Une demande de suppression peut rester
 `PENDING_DELETE` si un lien existe. Cette protection couvre les appels directs

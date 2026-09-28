@@ -24,6 +24,18 @@ class ThreadInformationLinkService:
 
     def create(self, thread: Thread, information_id: str) -> Thread:
         """Verify the target and persist a CONCERNS link with the new Thread."""
+        linked = self.prepare(thread, information_id)
+        # Backend deletions hold this same root lock. Hold it through Thread
+        # creation so the target cannot disappear between the check and write.
+        with exclusive_write(self.backend.persistent_root):
+            if self.backend.get(information_id) is None:
+                raise MissingLinkedInformation(information_id)
+            self.storage.create(linked)
+        return linked
+
+    @staticmethod
+    def prepare(thread: Thread, information_id: str) -> Thread:
+        """Build a validated linked snapshot without writing to storage."""
         if not isinstance(information_id, str) or not information_id:
             raise ValueError("information_id is required")
         ThreadManager.validate(thread)
@@ -33,11 +45,4 @@ class ThreadInformationLinkService:
         relations = list(thread.relations)
         if link not in relations:
             relations.append(link)
-        linked = replace(thread, relations=relations)
-        # Backend deletions hold this same root lock. Hold it through Thread
-        # creation so the target cannot disappear between the check and write.
-        with exclusive_write(self.backend.persistent_root):
-            if self.backend.get(information_id) is None:
-                raise MissingLinkedInformation(information_id)
-            self.storage.create(linked)
-        return linked
+        return replace(thread, relations=relations)
