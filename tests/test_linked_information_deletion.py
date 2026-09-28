@@ -69,3 +69,23 @@ def test_direct_backend_approval_cannot_bypass_link_guard(tmp_path):
     with pytest.raises(InformationDeletionBlocked, match="linked"):
         backend.approve_delete("info-1", "delete-1")
     assert backend.get("info-1").content == "keep"
+
+
+@pytest.mark.parametrize("thread_file", ["invalid", "symlink"])
+def test_direct_backend_approval_rejects_untrusted_thread(tmp_path, thread_file):
+    backend, threads, _ = stores(tmp_path)
+    backend.store(Memory("info-1", content="keep"))
+    backend.delete_request("info-1", "human", "reason", 1, "delete-1")
+    path = threads.threads_root / "thread-1.md"
+    if thread_file == "symlink":
+        target = tmp_path / "outside.md"
+        target.write_text("outside")
+        path.symlink_to(target)
+    else:
+        path.write_text("invalid Thread")
+
+    with pytest.raises(InformationDeletionBlocked):
+        backend.approve_delete("info-1", "delete-1")
+    assert backend.get("info-1").content == "keep"
+    request = json.loads((tmp_path / "history/pending-delete/info-1.json").read_text())
+    assert request["status"] == "PENDING_DELETE"
