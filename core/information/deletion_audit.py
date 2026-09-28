@@ -14,9 +14,13 @@ def audit_deletions(engine_root: Path) -> dict:
     persistent = root / "memory" / "persistent"
     requests = root / "memory" / "history" / "pending-delete"
     report = {"requests_checked": 0, "issues": []}
-    if persistent.is_symlink() or requests.is_symlink():
+    if persistent.is_symlink():
+        report["issues"].append({"request": "memory/persistent",
+                                 "reason": "symlink_skipped"})
+    if requests.is_symlink():
         report["issues"].append({"request": "memory/history/pending-delete",
                                  "reason": "symlink_skipped"})
+    if report["issues"]:
         return report
     if not requests.is_dir():
         return report
@@ -31,7 +35,9 @@ def audit_deletions(engine_root: Path) -> dict:
                         or record.get("information_id") != path.stem
                         or record.get("status") not in {"PENDING_DELETE", "DELETED", "CANCELLED"}
                         or type(record.get("revision")) is not int
-                        or not isinstance(record.get("operation_id"), str)):
+                        or record["revision"] < 1
+                        or not isinstance(record.get("operation_id"), str)
+                        or not record["operation_id"]):
                     raise ValueError("invalid deletion request")
                 report["requests_checked"] += 1
                 information = persistent / f"{path.stem}.md"

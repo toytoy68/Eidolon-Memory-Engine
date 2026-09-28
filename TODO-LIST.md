@@ -70,7 +70,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 246 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 249 tests exécutables réussis sur la copie de travail le
   2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -124,6 +124,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-027a — Audit en lecture seule des suppressions interrompues et
   demandes incohérentes ; voir `core/information/deletion_audit.py`, deux tests
   isolés (2026-09-28).
+- **【FAIT】** T-027b — Audit des demandes : rejette aussi une révision nulle ou
+  un identifiant d'opération vide, et indique le bon chemin en présence d'un
+  lien symbolique sur le répertoire Information ; trois cas testés (2026-09-28).
 
 ## Prochaines vérifications sur la VM Debian
 
