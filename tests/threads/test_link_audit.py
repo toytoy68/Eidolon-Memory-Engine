@@ -18,8 +18,8 @@ def test_audit_reports_orphan_after_information_deletion(tmp_path, capsys):
                updated_at="2026-09-28"), "info-1")
 
     assert audit_links(tmp_path) == {"threads_checked": 1, "links_checked": 1, "issues": []}
-    backend.delete_request("info-1", "tester", "reason", 1, "delete-1")
-    backend.approve_delete("info-1", "delete-1")
+    # Simulate a legacy writer or damaged copy bypassing the guarded backend.
+    backend._path("info-1").unlink()
 
     assert main(["--root", str(tmp_path)]) == 1
     report = json.loads(capsys.readouterr().out)

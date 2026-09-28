@@ -11,7 +11,9 @@ from typing import Any
 from dataclasses import asdict
 from core.storage_format import encode_document, decode_document
 
-from core.persistence import serialized_write, durable_replace
+from core.persistence import serialized_write, durable_replace, exclusive_write
+from core.information.references import ensure_no_thread_links
+from core.backend.errors import InformationDeletionBlocked
 
 from core.config import PERSISTENT_ROOT, HISTORY_ROOT, ensure_directories
 
@@ -344,17 +346,23 @@ class FilesystemBackend(MemoryBackend):
         if current.revision != request.get("revision"):
             raise RevisionConflict("memory changed since deletion was requested")
 
-        memory_path = self._path(information_id)
+        threads_root = self.persistent_root / "threads"
+        if threads_root.is_symlink():
+            raise InformationDeletionBlocked("Thread directory is a symlink")
+        threads_root.mkdir(parents=True, exist_ok=True)
+        with exclusive_write(threads_root):
+            ensure_no_thread_links(threads_root, information_id)
+            memory_path = self._path(information_id)
 
-        if memory_path.exists():
-            memory_path.unlink()
+            if memory_path.exists():
+                memory_path.unlink()
 
-        request["status"] = "DELETED"
+            request["status"] = "DELETED"
 
-        self._atomic_write(
-            request_path,
-            self._json(request) + "\n",
-        )
+            self._atomic_write(
+                request_path,
+                self._json(request) + "\n",
+            )
 
         return DeleteResult(
             information_id=information_id,

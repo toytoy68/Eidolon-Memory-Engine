@@ -56,3 +56,16 @@ def test_unreadable_thread_blocks_guarded_deletion(tmp_path):
     with pytest.raises(InformationDeletionBlocked, match="unreadable"):
         deletion.approve_delete("info-1", "delete-1")
     assert backend.get("info-1") is not None
+
+
+def test_direct_backend_approval_cannot_bypass_link_guard(tmp_path):
+    backend, threads, _ = stores(tmp_path)
+    backend.store(Memory("info-1", content="keep"))
+    ThreadInformationLinkService(backend, threads).create(
+        Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+               updated_at="2026-09-28"), "info-1")
+    backend.delete_request("info-1", "human", "reason", 1, "delete-1")
+
+    with pytest.raises(InformationDeletionBlocked, match="linked"):
+        backend.approve_delete("info-1", "delete-1")
+    assert backend.get("info-1").content == "keep"

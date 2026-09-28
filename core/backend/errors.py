@@ -23,3 +23,7 @@ class MemoryNotFound(BackendError):
 
 class RevisionConflict(BackendError):
     """Update was based on an outdated revision."""
+
+
+class InformationDeletionBlocked(BackendError):
+    """A linked or unreadable Thread prevents safe Information deletion."""
