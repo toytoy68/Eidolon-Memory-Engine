@@ -1,11 +1,11 @@
-# Deployment and rollback â€” first audit correction batch
+# Deployment and rollback — architecture v1 candidate
 
 ## Scope
 
-This batch protects cooperative filesystem writers, Operation identities and
-immutable plans, pending deletion decisions, Event validation, and query filters.
-Historical data is not migrated. A subsequent batch adds explicit Thread recovery;
-see THREAD_RECOVERY.md. No automatic background recovery job is installed.
+The new repositories coordinate linked Thread creation and status changes with
+isolated journals and explicit recovery; see THREAD_RECOVERY.md. Historical data
+is not migrated. No automatic background recovery job is installed. Information
+deletion is audited and checks Thread links, but is not crash-recoverable yet.
 
 The old CLI controller does not participate in repository locks. Do not run it
 concurrently with repository writers. Shared network filesystems are not a
@@ -34,7 +34,11 @@ updating production.
    dependencies if needed and run `python -m pytest -p no:cacheprovider` with
    `MEMORY_ENGINE_ROOT` pointing to an isolated temporary directory and
    `PYTHONDONTWRITEBYTECODE=1`. Never run regression fixtures on live memory.
-6. Restart only the previously identified services. Check their status/logs and
+6. On the isolated copy, inspect pending Operation records and test
+   `python -m core.operations.cli recover-all` after keeping a restorable copy.
+   The command writes to finish pending records and must not be run on the live
+   tree while old writers are active.
+7. Restart only the previously identified services. Check their status/logs and
    perform a read-only application smoke test before permitting writes.
 
 ## Rollback

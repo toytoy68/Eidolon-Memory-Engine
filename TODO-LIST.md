@@ -1,12 +1,14 @@
 # Eidolon Memory Engine — feuille de route
 
-**Avancement prévisionnel : ≈ 45 % (estimation au 2026-09-28).** Ce chiffre
+**Avancement prévisionnel : ≈ 40 % (estimation révisée au 2026-09-28,
+incertitude d'au moins ± 10 points).** Ce chiffre
 représente la maturité estimée de la cible complète, pas le rapport entre les
 tâches cochées et leur nombre. Le noyau Information/Thread/Event et la reprise
 de certains parcours sont testés dans le dépôt ; migration des données anciennes,
 intégration à Eidolon Core et à l'index, validation sur la VM et tableau de bord
 restent à terminer ou à décider. Réévaluer ce pourcentage après chaque phase
-majeure validée ; la cible peut encore évoluer.
+majeure validée ; la cible peut encore évoluer. Voir le
+[bilan détaillé de l'audit](docs/AUDIT-2026-09-28.md).
 
 Dernière mise à jour : 2026-09-28. Branche suivie : `refactor/architecture-v1`.
 Cette arborescence décrit une **cible supposée**, pas une architecture figée. Les
@@ -32,18 +34,19 @@ ne pas interpréter la présence d'un dossier comme une preuve d'intégration.
 
 ```text
 Eidolon-Memory-Engine/
+├── README.md                     point d'entrée et état de la branche (existant)
 ├── TODO-LIST.md                  suivi du travail (existant)
 ├── core/                         noyau de domaine (existant)
 │   ├── information/              modèle et validation (existant)
 │   ├── backend/                  stockage Information sur fichiers (existant)
 │   ├── threads/                  modèle, stockage, requêtes et service (existant)
 │   ├── events/                   modèle et dépôt append-only (existant)
-│   ├── operations/               journal, CLI et reprise des statuts Thread (existant)
+│   ├── operations/               journaux, CLI et reprise création/statut Thread (existant)
 │   ├── request_parser.py         enveloppes de requête (existant)
 │   ├── request_dispatcher.py     routage actuellement limité aux Threads (existant)
 │   ├── persistence.py            verrous et écritures durables (existant)
 │   ├── storage_format.py         documents Markdown/JSON versionnés (existant)
-│   ├── migration/                inventaire seul ; convertisseur prévu
+│   ├── migration/                inventaire et précontrôle ; convertisseur prévu
 │   ├── monitoring/               mesures et première page HTML (existant)
 │   ├── indexing/                 interface d'index dérivé/reconstructible (prévu)
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
@@ -51,23 +54,53 @@ Eidolon-Memory-Engine/
 ├── services/                     CLI historiques à auditer/migrer (existant)
 ├── docs/                         format, reprise, déploiement (existant)
 │   ├── ARCHITECTURE.md           frontières actuelles, cible à compléter (existant)
+│   ├── AUDIT-2026-09-28.md       bilan vérifié du dépôt (existant)
 │   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
 ├── scripts/                      bootstrap Debian (existant)
 ├── tests/                        tests unitaires et de régression (existant)
-│   ├── integration/              parcours complets isolés (prévu)
+│   ├── integration/              parcours complets isolés (existant, à enrichir)
 │   └── fixtures/                 exemples représentatifs anonymisés (existant/à enrichir)
 └── memory/                       données au runtime, hors Git (créées selon config)
     ├── working/
     ├── persistent/               fichiers source de vérité
     └── history/
-        ├── events/               dont thread-status-v1/
-        ├── operations/           dont thread-status-v1/
+        ├── events/               dont thread-create-v1/ et thread-status-v1/
+        ├── operations/           dont thread-create-v1/ et thread-status-v1/
         └── reviews/
 ```
 
 Qdrant, s'il est raccordé, serait un index **reconstructible** à partir des
 fichiers. Son emplacement et le découpage `indexing/` restent à valider ; aucun
 connecteur Qdrant opérationnel n'est attesté par cette branche.
+
+## Priorités après l'audit du dépôt
+
+1. **【À FAIRE】** T-010 à T-015 — Sur VM, identifier les écrivains et données,
+   sauvegarder et vérifier une restauration sur copie, tester les cinq cas de
+   concurrence et définir l'ordre de `recover-all` au démarrage. Ne pas ouvrir
+   les écritures core sur les données historiques avant cette revue.
+2. **【À FAIRE】** T-031 — Définir le chemin canonique d'écriture Thread et
+   Information : recenser tous les appels directs à `ThreadStorage`, au backend
+   et aux anciens CLI ; adapter ou isoler ceux qui contournent les journaux,
+   verrous ou Events. Vérifier sur une copie que deux écrivains ne partagent pas
+   une famille de fichiers.
+3. **【À FAIRE】** T-032 — Concevoir et tester une suppression Information
+   récupérable : journal avant retrait, reprise idempotente, protection des
+   relations et résolution des demandes déjà incohérentes. Garder l'audit
+   actuel en lecture seule tant que la politique de réparation n'est pas fixée.
+4. **【À FAIRE】** T-033 — Produire une simulation de migration **sans écriture**
+   des Informations historiques : correspondance champ par champ, liste des
+   pertes ou blocages, inventaire Events/Reviews, rapport déterministe ; décider
+   du format cible avant un convertisseur effectif.
+5. **【À VALIDER】** T-034 — Contrats d'intégration Eidolon Core et Qdrant : API,
+   identité/authentification, erreurs, index dérivé, reconstruction et rattrapage
+   après écriture. Tester sur copie anonymisée avant exposition au système réel.
+6. **【À FAIRE】** T-035 — Enrichir les fixtures avec des exemples anonymisés
+   représentatifs de la VM, tester les performances et l'interruption aux
+   frontières de chaque écriture multi-fichiers ; distinguer crash processus et
+   coupure d'alimentation dans les garanties.
+7. **【EN ATTENTE】** T-029 — Reprendre le tableau de bord et son accès LAN lorsque
+   la priorité au noyau sera levée par le projet.
 
 ## État vérifié dans le dépôt
 
@@ -107,6 +140,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   `core/monitoring/files.py` (tests isolés, 2026-09-28).
 - **【FAIT】** T-023a / T-028a — Frontières des écrivains et protocole Thread
   documentés dans `docs/ARCHITECTURE.md` (revue du code, 2026-09-28).
+- **【FAIT】** T-028b — Audit du dépôt, bilan de maturité et priorités revues dans
+  `docs/AUDIT-2026-09-28.md`, entrée `README.md`, et documentation de la reprise
+  synchronisée avec `recover-all` (2026-09-28).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).
@@ -182,7 +218,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 5. **【À FAIRE】** T-014 — Tester en lecture seule sur un échantillon représentatif
    de données réelles (formats, requêtes, fichiers malformés, performances), puis
    vérifier journaux et services. Autoriser les écritures seulement après revue.
-6. **【À VALIDER】** T-015 — Définir comment lancer `recover` avant toute nouvelle
+6. **【À VALIDER】** T-015 — Définir comment lancer `recover-all` avant toute nouvelle
    écriture après redémarrage ; aucun job automatique n'existe actuellement.
 
 ## Changements de code et tests suivants
@@ -197,7 +233,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Operation → Event → reprise après crash sur un répertoire isolé ; vérifier
   idempotence, conflits et absence de perte de données. T-022a/b couvrent la
   création liée et la reprise d'un statut ; T-022c/d/e détectent les liens
-  orphelins et protègent la suppression core. T-022f/g/h/i ajoutent un chemin
+  orphelins et protègent la suppression core. T-022f à T-022m ajoutent un chemin
   journalisé de création avec Event ; il manque encore l'adaptation des autres
   chemins de création, les Events propres à l'Information et le
   raccordement des anciens chemins de suppression à cette protection.
