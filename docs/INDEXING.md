@@ -7,6 +7,8 @@ qu'une empreinte globale calculée sur cette liste. Le corps privé n'est pas
 inclus dans le manifeste.
 
 Un document illisible, mal identifié ou symbolique bloque la construction.
+`diff_manifests(ancien, courant)` prépare, sans écriture, la liste ordonnée des
+IDs à ajouter/actualiser et à retirer. Les doublons d'identifiants sont refusés.
 Comparer deux manifestes permet de détecter qu'une source a changé, mais ne
 prouve pas que Qdrant contient déjà la bonne projection : aucun index ni
 connecteur Qdrant n'est implémenté ici. La lecture n'est pas un instantané

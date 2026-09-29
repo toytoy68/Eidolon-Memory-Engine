@@ -24,6 +24,24 @@ class IndexManifest:
     digest: str
 
 
+@dataclass(frozen=True)
+class IndexDelta:
+    upsert: tuple[SourceEntry, ...]
+    delete_ids: tuple[str, ...]
+
+
+def diff_manifests(previous: IndexManifest, current: IndexManifest) -> IndexDelta:
+    """Plan index changes from two validated source snapshots; perform no writes."""
+    old = {entry.information_id: entry for entry in previous.entries}
+    new = {entry.information_id: entry for entry in current.entries}
+    if len(old) != len(previous.entries) or len(new) != len(current.entries):
+        raise ValueError("manifest contains duplicate Information identities")
+    return IndexDelta(
+        upsert=tuple(new[key] for key in sorted(new) if old.get(key) != new[key]),
+        delete_ids=tuple(sorted(old.keys() - new.keys())),
+    )
+
+
 def build_manifest(persistent_root: Path) -> IndexManifest:
     """Read canonical files once; fail if any Information cannot be indexed safely."""
     root = Path(persistent_root)
