@@ -348,7 +348,10 @@ class FilesystemBackend(MemoryBackend):
                                  parse_constant=invalid_constant)
         except (OSError, UnicodeError, ValueError) as exc:
             raise InvalidMemory("pending delete request is unreadable") from exc
+        receipt_fields = {"information_id", "requested_by", "reason", "revision",
+                          "operation_id", "status", "content_sha256"}
         if (not isinstance(request, dict)
+                or not request.keys() <= receipt_fields
                 or request.get("information_id") != information_id
                 or request.get("status") not in {"PENDING_DELETE", "APPLYING_DELETE", "CANCELLED", "DELETED"}
                 or type(request.get("revision")) is not int or request["revision"] < 1
@@ -358,9 +361,13 @@ class FilesystemBackend(MemoryBackend):
                 or not request["requested_by"]
                 or not isinstance(request.get("reason"), str)
                 or not request["reason"]
+                or ("content_sha256" in request
+                    and (not isinstance(request["content_sha256"], str)
+                         or not re.fullmatch(r"[0-9a-f]{64}", request["content_sha256"])))
                 or (request.get("status") == "APPLYING_DELETE"
-                    and (not isinstance(request.get("content_sha256"), str)
-                         or not re.fullmatch(r"[0-9a-f]{64}", request["content_sha256"])))):
+                    and "content_sha256" not in request)
+                or (request.get("status") in {"PENDING_DELETE", "CANCELLED"}
+                    and "content_sha256" in request)):
             raise InvalidMemory("pending delete request is invalid or has an identity mismatch")
         return request
 

@@ -99,3 +99,22 @@ def test_audit_and_backend_reject_ambiguous_delete_receipt(tmp_path, extra):
         store.approve_delete("info-1", "op-1")
     assert request.read_bytes() == original
     assert store.get("info-1").content == "private"
+
+
+@pytest.mark.parametrize("extra", [
+    {"unexpected": "not preserved on rewrite"},
+    {"content_sha256": "a" * 64},
+])
+def test_audit_and_backend_reject_unexpected_pending_receipt_fields(tmp_path, extra):
+    store = backend(tmp_path)
+    store.store(Memory("info-1", content="private"))
+    store.delete_request("info-1", "human", "reason", 1, "op-1")
+    request = tmp_path / "memory/history/pending-delete/info-1.json"
+    request.write_text(json.dumps({**json.loads(request.read_text()), **extra}))
+    original = request.read_bytes()
+
+    assert audit_deletions(tmp_path)["issues"][0]["reason"] == "invalid_request"
+    with pytest.raises(InvalidMemory):
+        store.approve_delete("info-1", "op-1")
+    assert request.read_bytes() == original
+    assert store.get("info-1").content == "private"
