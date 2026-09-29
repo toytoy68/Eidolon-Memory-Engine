@@ -9,6 +9,16 @@ inclus dans le manifeste.
 Un document illisible, mal identifié ou symbolique bloque la construction.
 `diff_manifests(ancien, courant)` prépare, sans écriture, la liste ordonnée des
 IDs à ajouter/actualiser et à retirer. Les doublons d'identifiants sont refusés.
+Pour deux copies arrêtées, afficher seulement les comptes et empreintes :
+
+```sh
+python -m core.indexing.cli --root /chemin/vers/ancienne-copie \
+  --compare-root /chemin/vers/nouvelle-copie
+```
+
+Chaque racine contient `memory/persistent/`. La commande ne crée ni verrou ni
+fichier. Elle sort avec erreur si une source n'est pas lisible ou correctement
+identifiée ; les contenus des Informations ne figurent pas dans le rapport.
 Comparer deux manifestes permet de détecter qu'une source a changé, mais ne
 prouve pas que Qdrant contient déjà la bonne projection : aucun index ni
 connecteur Qdrant n'est implémenté ici. La lecture n'est pas un instantané
