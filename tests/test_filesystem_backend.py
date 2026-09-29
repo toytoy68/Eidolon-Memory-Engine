@@ -60,6 +60,21 @@ def test_search_considers_information_after_ten_thousand_entries(tmp_path, monke
     assert [result.memory.information_id for result in matches] == ["final"]
 
 
+def test_list_stops_after_requested_filtered_page(tmp_path, monkeypatch):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    visited = []
+
+    def documents():
+        for index in range(100):
+            visited.append(index)
+            yield Memory(f"info-{index}", metadata={"group": "match" if index % 2 else "other"})
+
+    monkeypatch.setattr(backend, "_iter_valid_memories", documents)
+    page = backend.list(offset=2, limit=2, filters={"group": "match"})
+    assert [memory.information_id for memory in page] == ["info-5", "info-7"]
+    assert visited == list(range(8))
+
+
 def test_store_and_get(tmp_path):
     backend = FilesystemBackend(
         persistent_root=tmp_path / "persistent",

@@ -495,15 +495,21 @@ class FilesystemBackend(MemoryBackend):
             raise ValueError("limit must be >= 1")
 
         memories: list[Memory] = []
+        skipped = 0
 
         for memory in self._iter_valid_memories():
 
             if filters and not self._matches_filters(memory, filters):
                 continue
 
+            if skipped < offset:
+                skipped += 1
+                continue
             memories.append(memory)
+            if len(memories) == limit:
+                break
 
-        return memories[offset : offset + limit]
+        return memories
 
     @staticmethod
     def _matches_filters(
