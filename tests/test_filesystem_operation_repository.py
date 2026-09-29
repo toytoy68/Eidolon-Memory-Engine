@@ -70,6 +70,20 @@ def test_operation_rejects_unknown_fields_before_update(tmp_path, location):
     assert path.read_bytes() == original
 
 
+@pytest.mark.parametrize("content", [
+    '{"operation_id":"op","operation_id":"other"}',
+    '{"operation_id":"op","plan":{"event_id":"a","event_id":"b"}}',
+    '{"operation_id":"op","revision":NaN}',
+])
+def test_operation_reader_rejects_ambiguous_json(tmp_path, content):
+    repository = FilesystemOperationRepository(tmp_path)
+    path = tmp_path / "op.json"
+    path.write_text(content)
+    with pytest.raises(InvalidOperationRecord):
+        repository.get("op")
+    assert path.read_text() == content
+
+
 def test_create_and_get_operation(tmp_path):
     repository = FilesystemOperationRepository(tmp_path)
 

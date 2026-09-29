@@ -64,8 +64,20 @@ class FilesystemOperationRepository(OperationRepository):
             return None
 
         try:
+            def unique_object(pairs):
+                result = {}
+                for key, value in pairs:
+                    if key in result:
+                        raise ValueError("duplicate Operation JSON key")
+                    result[key] = value
+                return result
+
+            def invalid_constant(value):
+                raise ValueError("invalid Operation JSON constant")
+
             with path.open("r", encoding="utf-8") as handle:
-                data = json.load(handle)
+                data = json.load(handle, object_pairs_hook=unique_object,
+                                 parse_constant=invalid_constant)
 
             if not isinstance(data, dict) or data.get("operation_id") != operation_id:
                 raise InvalidOperationRecord(operation_id)
