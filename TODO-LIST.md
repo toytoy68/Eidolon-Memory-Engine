@@ -173,12 +173,15 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-036d — L'assembleur accepte un filtre explicite de statuts
   épistémiques, tout inclure par défaut, et poursuit la pagination au-delà
   des résultats écartés ; aucun statut ne change le score (2026-09-29).
+- **【FAIT】** T-036e — Banc de jugements synthétiques ou anonymisés comparant
+  `legacy` et `lexical_v1` par précision, rappel et MRR@k, sans afficher les
+  textes ni les IDs ; voir `docs/RETRIEVAL.md` (2026-09-29).
 - **【FAIT】** T-002 — Changement de statut Thread récupérable avec journal,
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 415 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 420 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
