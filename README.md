@@ -13,6 +13,7 @@ développement et n'est pas encore validée sur la VM.
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
 - [Reprise des opérations Thread](docs/THREAD_RECOVERY.md)
 - [Première interface d'assemblage de contexte](docs/RETRIEVAL.md)
+- [Manifeste de source pour un index dérivé](docs/INDEXING.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
 `core.migration.inventory`, `core.migration.preflight`,

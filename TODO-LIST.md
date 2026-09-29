@@ -49,7 +49,7 @@ Eidolon-Memory-Engine/
 │   ├── migration/                inventaire et précontrôle ; convertisseur prévu
 │   ├── monitoring/               mesures et première page HTML (existant)
 │   ├── retrieval/                assemblage borné du contexte (existant, à enrichir)
-│   ├── indexing/                 interface d'index dérivé/reconstructible (prévu)
+│   ├── indexing/                 manifeste source en lecture seule ; connecteur prévu
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
 ├── schemas/                      contrats Information, Thread, Event… (existant)
 ├── services/                     CLI historiques à auditer/migrer (existant)
@@ -120,7 +120,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 339 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 341 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -223,6 +223,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   structurée, bornée en caractères et traçable par ID/révision ; vérification
   sur fichiers core. Pertinence, budgets en tokens, politique d'accès et
   intégration Core/Qdrant restent à définir (2026-09-29).
+- **【FAIT】** T-024a — Manifeste déterministe en lecture seule des fichiers
+  Information core (ID, révision, empreinte) ; échoue sur source invalide ou
+  symbolique. Aucun index Qdrant n'est écrit (2026-09-29).
 - **【FAIT】** T-028b — Le tableau des écrivains dans `docs/ARCHITECTURE.md`
   décrit les verrous et écritures atomiques des services historiques sans leur
   attribuer une transaction multi-fichiers (2026-09-29).
