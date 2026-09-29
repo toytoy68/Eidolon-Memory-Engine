@@ -50,18 +50,32 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
             retention_key = "invalid"
         retention_counts[retention_key] += 1
 
-        valid_until = memory.temporal.get("valid_until")
-        if valid_until is None or valid_until == "":
-            applicability = "unknown"
-        elif not isinstance(valid_until, str):
-            applicability = "invalid"
-        else:
-            try:
-                applicable_until = _aware_timestamp(valid_until)
-            except ValueError:
-                applicability = "invalid"
+        bounds = []
+        invalid_bound = False
+        for key in ("valid_from", "valid_until"):
+            value = memory.temporal.get(key)
+            if value is None or value == "":
+                bounds.append(None)
+            elif not isinstance(value, str):
+                invalid_bound = True
+                bounds.append(None)
             else:
-                applicability = "ended" if applicable_until < instant else "not_ended"
+                try:
+                    bounds.append(_aware_timestamp(value))
+                except ValueError:
+                    invalid_bound = True
+                    bounds.append(None)
+        valid_from, valid_until = bounds
+        if invalid_bound or (valid_from and valid_until and valid_from > valid_until):
+            applicability = "invalid"
+        elif valid_until and valid_until < instant:
+            applicability = "ended"
+        elif valid_from and valid_from > instant:
+            applicability = "not_started"
+        elif valid_from or valid_until:
+            applicability = "within_known_bounds"
+        else:
+            applicability = "unknown"
         applicability_counts[applicability] += 1
     return {
         "count": len(manifest.entries), "source_digest": manifest.digest,

@@ -179,12 +179,15 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-037a — Audit du cycle de vie sur copie arrêtée : comptes de
   rétention et de période de validité distincts à une date explicite, sans
   suppression ni sortie du contenu ; voir `docs/LIFECYCLE.md` (2026-09-29).
+- **【FAIT】** T-037b — L'audit distingue les périodes non commencées et
+  terminées et signale les bornes temporelles incohérentes ou sans fuseau,
+  sans déduire la vérité ou la suppression (2026-09-29).
 - **【FAIT】** T-002 — Changement de statut Thread récupérable avec journal,
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 423 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 424 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens

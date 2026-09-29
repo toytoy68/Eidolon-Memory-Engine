@@ -19,10 +19,15 @@ La date `--at` doit indiquer son fuseau. L'outil valide le manifeste de
 source, refuse les liens symboliques sur le chemin de stockage, puis compare
 l'empreinte de chaque fichier relu à celle du manifeste. Il rend seulement les
 nombres de politiques de rétention déclarées (`missing` et `invalid` inclus),
-les nombres de périodes `ended`, `not_ended`, `unknown` ou `invalid`, l'heure
+les nombres de périodes `ended`, `not_started`, `within_known_bounds`, `unknown`
+ou `invalid`, l'heure
 de référence et l'empreinte globale. Il n'affiche pas de contenu ni d'ID et
 n'écrit pas de fichier. Ce contrôle n'est pas un instantané atomique si un
 autre processus modifie la copie pendant l'exécution.
+L'outil compare `valid_from` et `valid_until` avec `--at` ; il signale une
+période contradictoire ou une date sans fuseau comme `invalid`. Une seule borne
+connue peut suffire à `within_known_bounds`, ce qui ne prouve pas que
+l'Information est vraie ou applicable dans tous les contextes.
 
 Avant une consolidation ou un oubli, il faudra décider explicitement :
 comment conserver provenance et preuves, comment traiter les relations et
