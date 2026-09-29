@@ -38,6 +38,24 @@ def test_event_repository_rejects_symlinked_paths(tmp_path):
     assert external.read_text() == "private"
 
 
+@pytest.mark.parametrize("location", ["root", "state", "cause", "relation"])
+def test_event_reader_rejects_unknown_structural_fields(location):
+    event = Event("event-1", 1, EventType.CREATED, information_id="info-1")
+    payload = FilesystemEventRepository._to_dict(event)
+    if location == "root":
+        payload["private_extension"] = "value"
+    elif location == "state":
+        payload["state_transition"]["private_extension"] = "value"
+    elif location == "cause":
+        payload["cause"] = {"type": "MANUAL_ACTION", "private_extension": "value"}
+    else:
+        payload["relations"] = [{"type": "CONCERNS", "target": "info-1",
+                                 "private_extension": "value"}]
+    text = "# Eidolon Memory Event\n\nVersion: 0.2\n\n```json\n" + json.dumps(payload) + "\n```\n"
+    with pytest.raises(InvalidEvent, match="unknown serialized Event fields"):
+        FilesystemEventRepository._deserialize(text)
+
+
 def test_save_and_get_event(tmp_path):
     repository = FilesystemEventRepository(
         events_root=tmp_path / "events",

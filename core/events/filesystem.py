@@ -131,6 +131,22 @@ class FilesystemEventRepository(EventRepository):
             validation_data = data.get("validation")
             relations_data = data.get("relations") or []
 
+            def has_unknown(value, allowed):
+                return isinstance(value, dict) and bool(value.keys() - allowed)
+
+            if (has_unknown(data, {
+                    "event_id", "information_id", "thread_id", "revision", "event_type",
+                    "state_transition", "cause", "evidence", "provenance", "validation",
+                    "relations",
+                })
+                    or has_unknown(state_data, {"before", "after"})
+                    or has_unknown(cause_data, {"type", "description"})
+                    or has_unknown(evidence_data, {"supporting", "contradicting"})
+                    or has_unknown(provenance_data, {"source_type", "source", "actor", "timestamp"})
+                    or has_unknown(validation_data, {"mode", "status"})
+                    or any(has_unknown(item, {"type", "target"}) for item in relations_data)):
+                raise InvalidEvent("unknown serialized Event fields")
+
             if (not isinstance(data.get("event_id"), str)
                     or type(data.get("revision")) is not int
                     or any(value is not None and not isinstance(value, str)

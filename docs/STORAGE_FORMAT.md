@@ -10,6 +10,8 @@ Readers continue to support the old core Markdown format 0.1. No existing file
 is rewritten by deployment or by reading. Updating an object writes version 0.2.
 Unknown versions fail explicitly. Historical CLI YAML/front-matter documents are
 not the core format 0.1 and are not automatically migrated by this release.
+The Event 0.2 reader rejects unknown structural JSON fields rather than
+silently dropping them. Transition values and evidence items remain free data.
 
 Older engine versions cannot read new 0.2 documents. Before rollback, preserve
 new data and use a compatible reader or an explicitly reviewed conversion. A Git
