@@ -151,6 +151,35 @@ def test_context_skips_nontext_empty_and_duplicate_search_hits():
     assert bundle.used_chars == 6
 
 
+def test_structured_context_is_explicit_bounded_and_identified(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("structured", content={"z": "pompe", "a": ["cuivre", 2]},
+                         metadata={"epistemic_status": "REFUTED"}))
+    assembler = ContextAssembler(backend)
+    assert assembler.assemble("pompe cuivre", ranking="lexical_v1").items == ()
+    bundle = assembler.assemble("pompe cuivre", ranking="lexical_v1",
+                                include_structured_content=True, max_chars=14,
+                                max_tokens=14, token_counter=len)
+    assert len(bundle.items) == 1
+    item = bundle.items[0]
+    assert item.content == '{"a":["cuivre"'
+    assert item.content_format == "json" and item.truncated
+    assert item.epistemic_status == "REFUTED"
+    assert bundle.used_chars == bundle.used_tokens == 14
+    assert backend.get("structured").content == {"z": "pompe", "a": ["cuivre", 2]}
+
+
+def test_structured_context_skips_non_json_values_without_exposing_them():
+    class Backend:
+        def search(self, query, options):
+            return [SearchResult(Memory("broken", content={"x": float("nan")}), 1),
+                    SearchResult(Memory("valid", content="answer"), 0.5)]
+
+    bundle = ContextAssembler(Backend()).assemble(
+        "query", include_structured_content=True)
+    assert [item.information_id for item in bundle.items] == ["valid"]
+
+
 def test_context_pages_past_full_page_of_unusable_hits():
     class PagedBackend:
         def search(self, query, options):

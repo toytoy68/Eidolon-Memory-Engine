@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from typing import Callable
 
 from core.backend.interface import MemoryBackend
@@ -25,6 +26,7 @@ class ContextItem:
     retention: str | None = None
     valid_from: str | None = None
     valid_until: str | None = None
+    content_format: str = "text"
 
 
 @dataclass(frozen=True)
@@ -45,7 +47,8 @@ class ContextAssembler:
                  max_chars: int = 4000, max_item_chars: int = 1000,
                  ranking: str | None = None, max_tokens: int | None = None,
                  token_counter: Callable[[str], int] | None = None,
-                 allowed_epistemic_statuses: set[str | None] | frozenset[str | None] | None = None) -> ContextBundle:
+                 allowed_epistemic_statuses: set[str | None] | frozenset[str | None] | None = None,
+                 include_structured_content: bool = False) -> ContextBundle:
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be nonempty text")
         if any(type(value) is not int or value < 1
@@ -53,6 +56,8 @@ class ContextAssembler:
             raise ValueError("context limits must be positive integers")
         if ranking not in (None, "lexical_v1"):
             raise ValueError("unknown context ranking")
+        if type(include_structured_content) is not bool:
+            raise ValueError("include_structured_content must be a boolean")
         if (max_tokens is None) != (token_counter is None):
             raise ValueError("max_tokens and token_counter must be provided together")
         if max_tokens is not None and (type(max_tokens) is not int or max_tokens < 1
@@ -87,28 +92,37 @@ class ContextAssembler:
             seen_pages.add(page_ids)
             for result in candidates:
                 memory = result.memory
-                if memory.information_id in seen or not isinstance(memory.content, str):
+                if memory.information_id in seen:
                     continue
                 seen.add(memory.information_id)
                 if (selected_statuses is not None
                         and self._label(memory.metadata, "epistemic_status")
                         not in selected_statuses):
                     continue
-                if not memory.content:
+                content = memory.content
+                content_format = "text"
+                if include_structured_content and isinstance(content, (dict, list)):
+                    try:
+                        content = json.dumps(content, ensure_ascii=False, sort_keys=True,
+                                             separators=(",", ":"), allow_nan=False)
+                    except (TypeError, ValueError):
+                        continue
+                    content_format = "json"
+                if not isinstance(content, str) or not content:
                     continue
-                length = min(len(memory.content), max_item_chars, remaining)
+                length = min(len(content), max_item_chars, remaining)
                 token_count = None
                 if remaining_tokens is not None:
                     length, token_count = self._fit_tokens(
-                        memory.content, length, remaining_tokens, token_counter)
+                        content, length, remaining_tokens, token_counter)
                     if length == 0:
                         continue
                 items.append(ContextItem(
                     information_id=memory.information_id,
                     revision=memory.revision,
-                    content=memory.content[:length],
+                    content=content[:length],
                     score=result.score,
-                    truncated=length < len(memory.content),
+                    truncated=length < len(content),
                     epistemic_status=self._label(memory.metadata, "epistemic_status"),
                     operational_state=self._label(memory.metadata, "operational_state"),
                     confidence=self._label(memory.metadata, "confidence"),
@@ -118,6 +132,7 @@ class ContextAssembler:
                     retention=self._label(memory.metadata, "retention"),
                     valid_from=self._label(memory.temporal, "valid_from"),
                     valid_until=self._label(memory.temporal, "valid_until"),
+                    content_format=content_format,
                 ))
                 remaining -= length
                 if remaining_tokens is not None:

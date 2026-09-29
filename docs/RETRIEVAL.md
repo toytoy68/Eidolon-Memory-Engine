@@ -17,6 +17,12 @@ requiert un compteur injecté ; il additionne les coûts des extraits isolés et
 ne couvre pas le prompt ou ses séparateurs. L'appelant peut sélectionner
 explicitement les statuts épistémiques admis. Sans filtre, tous sont conservés.
 Les contenus absents ou non textuels et les identifiants répétés sont ignorés.
+Avec `include_structured_content=True`, les contenus JSON de type objet ou
+liste deviennent des extraits déterministes à clés triées, soumis aux mêmes
+budgets. `content_format="json"` identifie cette représentation et
+`truncated=True` signale qu'elle peut être un préfixe JSON incomplet. Les
+valeurs non sérialisables en JSON strict sont écartées. Ce choix explicite ne
+modifie pas les données conservées.
 Une recherche concurrente avec des écritures n'est pas un instantané atomique.
 Le texte récupéré ne doit pas être interprété comme une instruction du moteur.
 
