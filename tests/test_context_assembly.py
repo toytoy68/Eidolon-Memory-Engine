@@ -83,6 +83,21 @@ def test_context_stops_if_backend_repeats_a_full_page():
     assert backend.calls == 2
 
 
+def test_context_stops_if_backend_alternates_full_pages():
+    class BrokenPagination:
+        calls = 0
+
+        def search(self, query, options):
+            self.calls += 1
+            prefix = "a" if self.calls % 2 else "b"
+            return [SearchResult(Memory(f"{prefix}-{i}", content=""), 1.0)
+                    for i in range(100)]
+
+    backend = BrokenPagination()
+    assert ContextAssembler(backend).assemble("query").items == ()
+    assert backend.calls == 3
+
+
 def test_filesystem_search_offset_pages_ranked_results(tmp_path):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     for index in range(3):

@@ -46,13 +46,13 @@ class ContextAssembler:
         # Page past hits with no usable text while bounding each search response.
         page_size = 100
         offset = 0
-        previous_page = None
+        seen_pages = set()
         while remaining and len(items) < max_items:
             candidates = self.backend.search(query, {"limit": page_size, "offset": offset})
             page_ids = tuple(result.memory.information_id for result in candidates)
-            if page_ids == previous_page:
+            if page_ids in seen_pages:
                 break
-            previous_page = page_ids
+            seen_pages.add(page_ids)
             for result in candidates:
                 memory = result.memory
                 if memory.information_id in seen or not isinstance(memory.content, str):
