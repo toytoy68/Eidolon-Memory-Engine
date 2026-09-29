@@ -69,6 +69,20 @@ class FilesystemOperationRepository(OperationRepository):
 
             if not isinstance(data, dict) or data.get("operation_id") != operation_id:
                 raise InvalidOperationRecord(operation_id)
+            allowed = {
+                "operation_id", "operation_type", "target_id", "previous_revision",
+                "revision", "execution_plan_hash", "status", "plan",
+            }
+            if data.keys() - allowed:
+                raise InvalidOperationRecord("unknown Operation fields")
+            plan = data.get("plan")
+            if isinstance(plan, dict):
+                if data.get("operation_type") == OperationType.THREAD_CREATE.value:
+                    plan_allowed = {"information_id", "event_id", "after_state"}
+                else:
+                    plan_allowed = {"new_status", "event_id", "before_state", "after_state"}
+                if plan.keys() - plan_allowed:
+                    raise InvalidOperationRecord("unknown Operation plan fields")
 
             return OperationRecord(
                 operation_id=data["operation_id"],

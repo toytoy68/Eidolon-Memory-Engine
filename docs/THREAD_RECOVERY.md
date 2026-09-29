@@ -46,6 +46,8 @@ fresh repository instances.
 
 Recovery recognizes the exact old or new Thread state. A divergent Thread, hash
 mismatch or conflicting Event is reported BLOCKED without overwriting that data.
+Unknown JSON fields in an Operation or its plan are also rejected before a
+write could discard them; such a record requires explicit review.
 Already committed commands replay their original result even after later changes.
 This is recoverable multi-file persistence, not an atomic snapshot for readers:
 readers can observe a Thread before its Event or commit marker becomes visible.

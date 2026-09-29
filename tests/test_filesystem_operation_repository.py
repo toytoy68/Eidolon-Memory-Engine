@@ -40,6 +40,36 @@ def test_operation_repository_rejects_symlinked_paths(tmp_path):
         repository.create(operation)
 
 
+@pytest.mark.parametrize("location", ["record", "plan"])
+def test_operation_rejects_unknown_fields_before_update(tmp_path, location):
+    repository = FilesystemOperationRepository(tmp_path)
+    operation = OperationRecord(
+        operation_id="op-test", operation_type=OperationType.THREAD_STATUS_CHANGE,
+        target_id="thread-test", previous_revision=1, revision=2,
+        execution_plan_hash="hash",
+        plan=ThreadStatusChangePlan(new_status=ThreadStatus.IMPLEMENTATION, event_id="event-test"),
+    )
+    repository.create(operation)
+    path = tmp_path / "op-test.json"
+    record = json.loads(path.read_text())
+    if location == "record":
+        record["private_extension"] = "must not disappear"
+    else:
+        record["plan"]["private_extension"] = "must not disappear"
+    path.write_text(json.dumps(record))
+    original = path.read_bytes()
+    with pytest.raises(InvalidOperationRecord, match="unknown Operation"):
+        repository.get("op-test")
+    with pytest.raises(InvalidOperationRecord, match="unknown Operation"):
+        repository.update(OperationRecord(
+            operation_id="op-test", operation_type=OperationType.THREAD_STATUS_CHANGE,
+            target_id="thread-test", previous_revision=1, revision=2,
+            execution_plan_hash="hash", status=OperationStatus.APPLYING,
+            plan=operation.plan,
+        ))
+    assert path.read_bytes() == original
+
+
 def test_create_and_get_operation(tmp_path):
     repository = FilesystemOperationRepository(tmp_path)
 
