@@ -6,6 +6,10 @@ révisions, scores, indicateurs de troncature et étiquettes distinctes
 (`epistemic_status`, `operational_state`, `confidence`). Une Information
 `REFUTED` n'est pas promue implicitement en fait confirmé. Il ne crée pas de
 prompt et n'écrit aucun fichier.
+Les champs `importance`, `retention`, `valid_from` et `valid_until` sont aussi
+transmis comme étiquettes quand ils existent, sans bonus de classement ni
+déduction de validité. L'appelant doit traiter leurs valeurs dans leur
+contexte ; le rapport de cycle de vie les analyse séparément à une date donnée.
 
 Les limites par défaut sont 5 Informations, 4 000 caractères de contenu au
 total et 1 000 caractères par Information. Le budget de tokens optionnel

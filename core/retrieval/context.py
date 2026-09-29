@@ -21,6 +21,10 @@ class ContextItem:
     confidence: str | None
     ranking: dict | None = None
     token_count: int | None = None
+    importance: str | None = None
+    retention: str | None = None
+    valid_from: str | None = None
+    valid_until: str | None = None
 
 
 @dataclass(frozen=True)
@@ -108,6 +112,10 @@ class ContextAssembler:
                     confidence=self._label(memory.metadata, "confidence"),
                     ranking=result.metadata.get("ranking") if ranking is not None else None,
                     token_count=token_count,
+                    importance=self._label(memory.metadata, "importance"),
+                    retention=self._label(memory.metadata, "retention"),
+                    valid_from=self._label(memory.temporal, "valid_from"),
+                    valid_until=self._label(memory.temporal, "valid_until"),
                 ))
                 remaining -= length
                 if remaining_tokens is not None:

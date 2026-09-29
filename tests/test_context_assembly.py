@@ -40,6 +40,23 @@ def test_context_opt_in_ranking_keeps_explanation_and_status_separate(tmp_path):
     assert bundle.items[1].ranking["content_coverage"] == 0
 
 
+def test_context_exposes_retention_and_validity_without_ranking_by_them(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("a", content="alpha",
+                         metadata={"importance": "CRITICAL", "retention": "PERMANENT"},
+                         temporal={"valid_from": "2026-01-01T00:00:00Z",
+                                   "valid_until": "2026-06-01T00:00:00Z"}))
+    backend.store(Memory("b", content="alpha",
+                         metadata={"importance": "LOW", "retention": "TEMPORARY"}))
+    bundle = ContextAssembler(backend).assemble("alpha", ranking="lexical_v1")
+    assert [item.information_id for item in bundle.items] == ["a", "b"]
+    assert bundle.items[0].score == bundle.items[1].score
+    assert (bundle.items[0].importance, bundle.items[0].retention,
+            bundle.items[0].valid_from, bundle.items[0].valid_until) == (
+                "CRITICAL", "PERMANENT", "2026-01-01T00:00:00Z",
+                "2026-06-01T00:00:00Z")
+
+
 def test_context_respects_injected_token_budget_and_char_limit(tmp_path):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     backend.store(Memory("first", content="abcdef"))

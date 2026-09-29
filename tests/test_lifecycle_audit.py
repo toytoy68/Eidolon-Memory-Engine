@@ -1,8 +1,10 @@
 import json
 
 import pytest
+import core.information.lifecycle_audit as lifecycle_module
 
 from core.backend.filesystem import FilesystemBackend
+from core.backend.errors import InvalidMemory
 from core.backend.models import Memory
 from core.information.lifecycle_audit import audit_lifecycle, main
 
@@ -75,3 +77,18 @@ def test_lifecycle_counts_exact_duplicate_bodies_without_identifying_them(tmp_pa
     assert report["exact_content_duplicates"] == {"groups": 1, "documents_in_groups": 2}
     assert "private" not in json.dumps(report)
     assert "first" not in json.dumps(report)
+
+
+def test_lifecycle_refuses_source_changed_after_manifest(tmp_path, monkeypatch):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("first", content="private original"))
+    original = lifecycle_module.build_manifest
+
+    def changed_after_snapshot(root):
+        manifest = original(root)
+        (root / "first.md").write_text("different private content")
+        return manifest
+
+    monkeypatch.setattr(lifecycle_module, "build_manifest", changed_after_snapshot)
+    with pytest.raises(InvalidMemory, match="changed during audit"):
+        audit_lifecycle(backend.persistent_root, as_of="2026-09-29T12:00:00Z")
