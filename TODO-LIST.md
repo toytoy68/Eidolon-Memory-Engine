@@ -163,12 +163,15 @@ stables du moteur avant l'intégration aux agents.
   sans perdre les statuts épistémiques ; aucun statut n'ajoute de bonus de
   vérité. Mesure synthétique de 15 000 fichiers documentée ; récence,
   importance, preuves et budget tokens restent ouverts (2026-09-29).
+- **【FAIT】** T-036b — L'assembleur accepte un compteur de tokens injectable et
+  borne les extraits par caractères et par somme de tokens isolés ; les tokens
+  de prompt et de jointure restent à réserver par l'appelant (2026-09-29).
 - **【FAIT】** T-002 — Changement de statut Thread récupérable avec journal,
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 404 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 410 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens

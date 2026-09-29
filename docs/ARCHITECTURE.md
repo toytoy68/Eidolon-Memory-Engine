@@ -16,8 +16,15 @@ ces composantes et les étiquettes épistémiques séparément. Sans cette optio
 le classement historique est conservé. Ce premier classement lexical ne
 mesure ni la vérité, ni la récence, ni l'importance, ni la qualité des preuves ;
 une Information `REFUTED` reste consultable et étiquetée. La politique de
-sélection, le budget de tokens et la validation sur un corpus représentatif
-restent à définir avant une intégration agentique.
+sélection et la validation sur un corpus représentatif restent à définir avant
+une intégration agentique.
+L'assembleur accepte maintenant un budget optionnel `max_tokens` avec un
+`token_counter` fourni par l'appelant. Il borne alors la somme des coûts de
+chaque extrait isolé, en plus des limites de caractères, et retourne les
+comptes observés. Ce budget ne couvre ni les séparateurs entre extraits, ni
+les instructions du prompt, ni les effets de tokenisation aux jonctions :
+l'appelant doit réserver cette marge et utiliser le compteur correspondant au
+modèle qui consommera le contexte. Le choix du tokenizer reste hors du moteur.
 
 ## Composants et droits d'écriture
 

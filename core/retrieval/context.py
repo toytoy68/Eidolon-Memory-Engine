@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Callable
 
 from core.backend.interface import MemoryBackend
 
@@ -18,6 +19,7 @@ class ContextItem:
     operational_state: str | None
     confidence: str | None
     ranking: dict | None = None
+    token_count: int | None = None
 
 
 @dataclass(frozen=True)
@@ -25,6 +27,7 @@ class ContextBundle:
     query: str
     items: tuple[ContextItem, ...]
     used_chars: int
+    used_tokens: int | None = None
 
 
 class ContextAssembler:
@@ -35,7 +38,8 @@ class ContextAssembler:
 
     def assemble(self, query: str, *, max_items: int = 5,
                  max_chars: int = 4000, max_item_chars: int = 1000,
-                 ranking: str | None = None) -> ContextBundle:
+                 ranking: str | None = None, max_tokens: int | None = None,
+                 token_counter: Callable[[str], int] | None = None) -> ContextBundle:
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be nonempty text")
         if any(type(value) is not int or value < 1
@@ -43,15 +47,21 @@ class ContextAssembler:
             raise ValueError("context limits must be positive integers")
         if ranking not in (None, "lexical_v1"):
             raise ValueError("unknown context ranking")
+        if (max_tokens is None) != (token_counter is None):
+            raise ValueError("max_tokens and token_counter must be provided together")
+        if max_tokens is not None and (type(max_tokens) is not int or max_tokens < 1
+                                       or not callable(token_counter)):
+            raise ValueError("invalid token budget")
 
         items = []
         seen = set()
         remaining = max_chars
+        remaining_tokens = max_tokens
         # Page past hits with no usable text while bounding each search response.
         page_size = 100
         offset = 0
         seen_pages = set()
-        while remaining and len(items) < max_items:
+        while remaining and len(items) < max_items and remaining_tokens != 0:
             options = {"limit": page_size, "offset": offset}
             if ranking is not None:
                 options["ranking"] = ranking
@@ -68,6 +78,12 @@ class ContextAssembler:
                 if not memory.content:
                     continue
                 length = min(len(memory.content), max_item_chars, remaining)
+                token_count = None
+                if remaining_tokens is not None:
+                    length, token_count = self._fit_tokens(
+                        memory.content, length, remaining_tokens, token_counter)
+                    if length == 0:
+                        continue
                 items.append(ContextItem(
                     information_id=memory.information_id,
                     revision=memory.revision,
@@ -78,14 +94,41 @@ class ContextAssembler:
                     operational_state=self._label(memory.metadata, "operational_state"),
                     confidence=self._label(memory.metadata, "confidence"),
                     ranking=result.metadata.get("ranking") if ranking is not None else None,
+                    token_count=token_count,
                 ))
                 remaining -= length
-                if len(items) == max_items or remaining == 0:
+                if remaining_tokens is not None:
+                    remaining_tokens -= token_count
+                if len(items) == max_items or remaining == 0 or remaining_tokens == 0:
                     break
             if len(candidates) < page_size:
                 break
             offset += len(candidates)
-        return ContextBundle(query=query, items=tuple(items), used_chars=max_chars - remaining)
+        return ContextBundle(query=query, items=tuple(items), used_chars=max_chars - remaining,
+                             used_tokens=(max_tokens - remaining_tokens)
+                             if max_tokens is not None else None)
+
+    @staticmethod
+    def _fit_tokens(content: str, length: int, budget: int,
+                    counter: Callable[[str], int]) -> tuple[int, int]:
+        """Find a prefix within the token budget; counter counts isolated text."""
+        def count(size: int) -> int:
+            value = counter(content[:size])
+            if type(value) is not int or value < 0:
+                raise ValueError("token counter must return a nonnegative integer")
+            return value
+
+        full_count = count(length)
+        if full_count <= budget:
+            return length, full_count
+        low, high = 0, length
+        while low + 1 < high:
+            mid = (low + high) // 2
+            if count(mid) <= budget:
+                low = mid
+            else:
+                high = mid
+        return low, count(low)
 
     @staticmethod
     def _label(metadata: dict, key: str) -> str | None:

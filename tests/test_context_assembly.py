@@ -40,6 +40,36 @@ def test_context_opt_in_ranking_keeps_explanation_and_status_separate(tmp_path):
     assert bundle.items[1].ranking["content_coverage"] == 0
 
 
+def test_context_respects_injected_token_budget_and_char_limit(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("first", content="abcdef"))
+    backend.store(Memory("second", content="ghijkl"))
+    bundle = ContextAssembler(backend).assemble(
+        "first second", max_chars=20, max_item_chars=5,
+        max_tokens=7, token_counter=len)
+    assert [(item.content, item.token_count, item.truncated) for item in bundle.items] == [
+        ("abcde", 5, True), ("gh", 2, True),
+    ]
+    assert bundle.used_chars == bundle.used_tokens == 7
+
+
+def test_context_skips_items_without_a_token_fitting_the_budget(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("first", content="alpha"))
+    bundle = ContextAssembler(backend).assemble(
+        "alpha", max_tokens=1, token_counter=lambda text: 2 if text else 0)
+    assert bundle.items == ()
+    assert bundle.used_tokens == 0
+
+
+def test_context_rejects_invalid_token_counter_result(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("first", content="alpha"))
+    with pytest.raises(ValueError, match="token counter"):
+        ContextAssembler(backend).assemble("alpha", max_tokens=1,
+                                           token_counter=lambda text: True)
+
+
 def test_context_skips_nontext_empty_and_duplicate_search_hits():
     @dataclass
     class FakeBackend:
@@ -135,6 +165,9 @@ def test_filesystem_search_rejects_invalid_pagination(tmp_path, options):
 @pytest.mark.parametrize("kwargs", [
     {"query": "  "}, {"query": None}, {"query": "x", "max_items": True},
     {"query": "x", "max_chars": 0}, {"query": "x", "max_item_chars": -1},
+    {"query": "x", "max_tokens": 10},
+    {"query": "x", "token_counter": len},
+    {"query": "x", "max_tokens": True, "token_counter": len},
 ])
 def test_context_rejects_invalid_limits_and_queries(kwargs):
     with pytest.raises(ValueError):
