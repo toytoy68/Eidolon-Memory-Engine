@@ -60,6 +60,15 @@ def test_context_pages_past_full_page_of_unusable_hits():
     ]
 
 
+def test_context_page_size_stays_bounded_for_large_item_limit():
+    class RecordingBackend:
+        def search(self, query, options):
+            assert options == {"limit": 100, "offset": 0}
+            return []
+
+    assert ContextAssembler(RecordingBackend()).assemble("query", max_items=10000).items == ()
+
+
 def test_filesystem_search_offset_pages_ranked_results(tmp_path):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     for index in range(3):

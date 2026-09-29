@@ -44,7 +44,7 @@ class ContextAssembler:
         seen = set()
         remaining = max_chars
         # Page past hits with no usable text while bounding each search response.
-        page_size = max(100, max_items * 4)
+        page_size = 100
         offset = 0
         while remaining and len(items) < max_items:
             candidates = self.backend.search(query, {"limit": page_size, "offset": offset})
