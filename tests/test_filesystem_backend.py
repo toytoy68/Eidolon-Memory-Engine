@@ -47,6 +47,19 @@ def test_list_and_search_skip_identity_mismatch(tmp_path):
     assert backend.search("unique searchable") == []
 
 
+def test_search_considers_information_after_ten_thousand_entries(tmp_path, monkeypatch):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+
+    def documents():
+        for index in range(10_000):
+            yield Memory(f"info-{index}", content="ordinary")
+        yield Memory("final", content="rare-search-term")
+
+    monkeypatch.setattr(backend, "_iter_valid_memories", documents)
+    matches = backend.search("rare-search-term")
+    assert [result.memory.information_id for result in matches] == ["final"]
+
+
 def test_store_and_get(tmp_path):
     backend = FilesystemBackend(
         persistent_root=tmp_path / "persistent",

@@ -467,6 +467,21 @@ class FilesystemBackend(MemoryBackend):
             status="CANCELLED",
         )
 
+    def _iter_valid_memories(self):
+        """Yield readable, correctly named Information documents in path order."""
+        for path in sorted(self.persistent_root.glob("*.md")):
+            if path.is_symlink():
+                continue
+            try:
+                memory = self._deserialize(
+                    path.read_text(encoding="utf-8")
+                )
+            except (OSError, InvalidMemory):
+                continue
+            if memory.information_id != path.stem:
+                continue
+            yield memory
+
     def list(
         self,
         offset: int = 0,
@@ -479,21 +494,9 @@ class FilesystemBackend(MemoryBackend):
         if limit < 1:
             raise ValueError("limit must be >= 1")
 
-        paths = sorted(self.persistent_root.glob("*.md"))
-
         memories: list[Memory] = []
 
-        for path in paths:
-            if path.is_symlink():
-                continue
-            try:
-                memory = self._deserialize(
-                    path.read_text(encoding="utf-8")
-                )
-            except (OSError, InvalidMemory):
-                continue
-            if memory.information_id != path.stem:
-                continue
+        for memory in self._iter_valid_memories():
 
             if filters and not self._matches_filters(memory, filters):
                 continue
@@ -545,7 +548,7 @@ class FilesystemBackend(MemoryBackend):
 
         results: list[SearchResult] = []
 
-        for memory in self.list(limit=10_000):
+        for memory in self._iter_valid_memories():
             haystack = self._json(
                 {
                     "id": memory.information_id,
