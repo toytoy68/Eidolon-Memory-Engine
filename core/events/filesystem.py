@@ -124,12 +124,12 @@ class FilesystemEventRepository(EventRepository):
     @staticmethod
     def _from_dict(data: dict[str, Any]) -> Event:
         try:
-            state_data = data.get("state_transition") or {}
+            state_data = data.get("state_transition", {})
             cause_data = data.get("cause")
-            evidence_data = data.get("evidence") or {}
+            evidence_data = data.get("evidence", {})
             provenance_data = data.get("provenance")
             validation_data = data.get("validation")
-            relations_data = data.get("relations") or []
+            relations_data = data.get("relations", [])
 
             def has_unknown(value, allowed):
                 return isinstance(value, dict) and bool(value.keys() - allowed)

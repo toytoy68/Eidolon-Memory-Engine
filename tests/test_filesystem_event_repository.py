@@ -56,6 +56,19 @@ def test_event_reader_rejects_unknown_structural_fields(location):
         FilesystemEventRepository._deserialize(text)
 
 
+@pytest.mark.parametrize("field,value", [
+    ("state_transition", []), ("evidence", []), ("relations", ""),
+    ("state_transition", None),
+])
+def test_event_reader_rejects_falsey_wrong_container_types(field, value):
+    payload = FilesystemEventRepository._to_dict(
+        Event("event-1", 1, EventType.CREATED, information_id="info-1"))
+    payload[field] = value
+    text = "# Eidolon Memory Event\n\nVersion: 0.2\n\n```json\n" + json.dumps(payload) + "\n```\n"
+    with pytest.raises(InvalidEvent, match="invalid serialized Event shape"):
+        FilesystemEventRepository._deserialize(text)
+
+
 def test_save_and_get_event(tmp_path):
     repository = FilesystemEventRepository(
         events_root=tmp_path / "events",
