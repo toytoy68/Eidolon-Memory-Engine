@@ -92,10 +92,11 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
    Garder l'audit
    actuel en lecture seule tant que la politique de réparation n'est pas fixée.
    T-032a protège déjà les demandes en attente contre l'écrasement.
-4. **【À FAIRE】** T-033 — Produire une simulation de migration **sans écriture**
-   des Informations historiques : correspondance champ par champ, liste des
-   pertes ou blocages, inventaire Events/Reviews, rapport déterministe ; décider
-   du format cible avant un convertisseur effectif.
+4. **【À FAIRE】** T-033 — La première simulation **sans écriture** des
+   Informations historiques propose une correspondance champ par champ et
+   signale les blocages ainsi que les Events/Reviews à décider. Restent la
+   validation des pertes sémantiques, des relations, de la révision structurée
+   et du format cible avant un convertisseur effectif.
 5. **【À VALIDER】** T-034 — Contrats d'intégration Eidolon Core et Qdrant : API,
    identité/authentification, erreurs, index dérivé, reconstruction et rattrapage
    après écriture. Tester sur copie anonymisée avant exposition au système réel.
@@ -115,8 +116,8 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 279 tests exécutables réussis sur la copie de travail le
-  2026-09-28 ; 5 tests de concurrence non exécutables dans cet environnement
+- **【FAIT】** T-005 — 281 tests exécutables réussis sur la copie de travail le
+  2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
   CLI, tableau de correspondance et outil de comptage en lecture seule ; voir
@@ -167,6 +168,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   sous verrous avec le même identifiant d'opération, testée après interruption
   avant et après le retrait. L'audit signale les opérations à reprendre
   (`9d7c162`, 2026-09-28).
+- **【FAIT】** T-033a — Simulation déterministe en lecture seule des Informations
+  anciennes : proposition de mapping, fichiers candidats/bloqués, inventaire
+  Events/Reviews/Operations et blocage des valeurs YAML non représentables en
+  JSON ; tests sur copie isolée (2026-09-29).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).

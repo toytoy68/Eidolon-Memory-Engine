@@ -42,6 +42,27 @@ Un `legacy_candidate` signifie seulement **structure minimale analysable** :
 la conversion, la validité métier, les références et la conservation de tous les
 champs ne sont pas encore garanties. Aucun fichier n'est converti.
 
+## Simulation de faisabilité en lecture seule
+
+Sur une copie arrêtée, après inventaire et précontrôle :
+
+```sh
+python -m core.migration.simulation --root /chemin/vers/copie/du/moteur
+```
+
+Le rapport donne une proposition de correspondance champ par champ, les chemins
+des Informations candidates ou bloquées et les nombres d'Events, Reviews et
+Operations historiques. Il ne montre aucune valeur privée et n'écrit aucun
+fichier. Une date YAML devenue un objet Python non sérialisable en JSON est
+bloquée jusqu'à décision sur sa représentation. Les Events et Reviews sont
+inventoriés, mais leur archivage ou conversion reste à décider.
+
+**Une candidate n'est pas une conversion validée** : le rapport ne construit
+pas de nouvel objet, ne vérifie pas tous les sens métier et ne garantit ni la
+préservation exacte du corps, ni les relations, ni une révision structurée.
+La correspondance proposée ne doit pas être appliquée avant décision sur le
+format cible et tests sur données anonymisées.
+
 ## Correspondance des fichiers constatée dans le code
 
 Chemins relatifs à `MEMORY_ENGINE_ROOT` ; la variable peut modifier cette racine.
