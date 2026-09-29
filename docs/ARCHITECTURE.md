@@ -27,6 +27,25 @@ documents core 0.2 doit être validé avant de les réutiliser sur la même raci
 Le nouveau dispatcher de requêtes route actuellement les requêtes Thread ; il
 ne constitue pas une API complète pour Information, Event ou l'interface web.
 
+### Décision provisoire pour les anciens écrivains
+
+Conserver `memory-controller` uniquement pour les données historiques YAML
+tant que la migration n'est pas décidée. Ses commandes `execute` et `update`
+sur Persistent Memory prennent désormais le verrou du nouveau backend et
+refusent une racine contenant des Informations core, des Threads core ou des
+journaux d'opérations Thread. Ce contrôle protège contre une cohabitation
+accidentelle déjà visible ; il ne transforme pas ses Events/Reviews YAML en
+Events core ni ne répare les écritures historiques interrompues.
+
+`memory-relations` écrit dans Working Memory et produit des Events/Reviews
+historiques : le conserver uniquement sur une racine historique isolée. Les
+CLI classifier, router, executor et semantic-validator sont essentiellement
+lecteurs/producteurs de plans ; les adapter après choix du format cible.
+Avant une mise en service core, arrêter les écrivains historiques, migrer ou
+archiver leurs données sur une copie, puis rediriger les usages nécessaires vers
+les services core journalisés. Une détection de fichiers ne suffit pas à
+autoriser deux piles actives sur la même racine.
+
 ## Parcours de changement de statut Thread
 
 Une commande avec identifiant d'opération et révision attendue prépare un plan

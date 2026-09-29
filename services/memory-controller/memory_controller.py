@@ -29,6 +29,8 @@ from core.config import (
     REVIEWS_ROOT,
     OPERATIONS_ROOT,
 )
+from core.persistence import exclusive_write
+from core.migration.legacy_guard import require_legacy_persistent_only
 
 
 ALLOWED_TYPES = {
@@ -339,7 +341,7 @@ def ingest(args: argparse.Namespace) -> int:
     return 0
 
 
-def update_information(
+def _update_information_unlocked(
     path: Path,
     new_epistemic: str | None,
     new_operational: str | None,
@@ -1567,7 +1569,7 @@ def execute_update_operation(
     }
 
 
-def execute_execution_plan(
+def _execute_execution_plan_unlocked(
     execution: dict[str, Any],
 ) -> dict[str, Any]:
 
@@ -2024,6 +2026,44 @@ def execute_execution_plan(
     return decision
 
 
+def update_information(
+    path: Path, new_epistemic: str | None, new_operational: str | None,
+    new_confidence: str | None, new_importance: str | None,
+    reason: str, event_type: str, event_id_out: list[str] | None = None,
+) -> int:
+    """Reject updates to Persistent Memory while core data shares the root."""
+    if path.parent.resolve() != PERSISTENT_ROOT.resolve():
+        return _update_information_unlocked(
+            path, new_epistemic, new_operational, new_confidence,
+            new_importance, reason, event_type, event_id_out,
+        )
+    with exclusive_write(PERSISTENT_ROOT):
+        try:
+            require_legacy_persistent_only(PERSISTENT_ROOT, HISTORY_ROOT)
+        except ValueError as exc:
+            print(f"ERREUR : {exc}")
+            return 1
+        return _update_information_unlocked(
+            path, new_epistemic, new_operational, new_confidence,
+            new_importance, reason, event_type, event_id_out,
+        )
+
+
+def execute_execution_plan(execution: dict[str, Any]) -> dict[str, Any]:
+    """Keep the legacy decision and writes away from core persistent data."""
+    PERSISTENT_ROOT.mkdir(parents=True, exist_ok=True)
+    with exclusive_write(PERSISTENT_ROOT):
+        try:
+            require_legacy_persistent_only(PERSISTENT_ROOT, HISTORY_ROOT)
+        except ValueError as exc:
+            return {
+                "result": "BLOCK", "reason": str(exc), "writes_performed": False,
+                "operation_id": execution.get("operation_id"),
+                "information_id": execution.get("input", {}).get("information_id"),
+            }
+        return _execute_execution_plan_unlocked(execution)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Eidolon Memory Controller"
@@ -2214,4 +2254,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
