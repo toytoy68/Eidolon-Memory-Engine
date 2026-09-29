@@ -3,6 +3,7 @@ import json
 import pytest
 
 from core.backend.filesystem import FilesystemBackend
+from core.backend.errors import InvalidMemory
 from core.backend.models import Memory
 from core.information.deletion_audit import audit_deletions, main
 
@@ -81,3 +82,20 @@ def test_audit_reports_actual_symlinked_directory(tmp_path):
     assert audit_deletions(tmp_path) == {"requests_checked": 0, "issues": [{
         "request": "memory/persistent", "reason": "symlink_skipped",
     }]}
+
+
+@pytest.mark.parametrize("extra", ['"status":"DELETED"', '"revision":NaN'])
+def test_audit_and_backend_reject_ambiguous_delete_receipt(tmp_path, extra):
+    store = backend(tmp_path)
+    store.store(Memory("info-1", content="private"))
+    store.delete_request("info-1", "human", "reason", 1, "op-1")
+    request = tmp_path / "memory/history/pending-delete/info-1.json"
+    request.write_text(request.read_text().rstrip()[:-1] + "," + extra + "}")
+    original = request.read_bytes()
+    assert audit_deletions(tmp_path) == {"requests_checked": 0, "issues": [{
+        "request": "memory/history/pending-delete/info-1.json", "reason": "invalid_request",
+    }]}
+    with pytest.raises(InvalidMemory):
+        store.approve_delete("info-1", "op-1")
+    assert request.read_bytes() == original
+    assert store.get("info-1").content == "private"

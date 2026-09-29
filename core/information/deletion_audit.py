@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
+
+from core.backend.filesystem import FilesystemBackend
+from core.backend.errors import InvalidMemory
 
 
 def audit_deletions(engine_root: Path) -> dict:
@@ -31,22 +33,7 @@ def audit_deletions(engine_root: Path) -> dict:
             reason = "symlink_skipped"
         else:
             try:
-                record = json.loads(path.read_text(encoding="utf-8"))
-                if (not isinstance(record, dict)
-                        or record.get("information_id") != path.stem
-                        or record.get("status") not in {"PENDING_DELETE", "APPLYING_DELETE", "DELETED", "CANCELLED"}
-                        or type(record.get("revision")) is not int
-                        or record["revision"] < 1
-                        or not isinstance(record.get("operation_id"), str)
-                        or not record["operation_id"]
-                        or not isinstance(record.get("requested_by"), str)
-                        or not record["requested_by"]
-                        or not isinstance(record.get("reason"), str)
-                        or not record["reason"]
-                        or (record.get("status") == "APPLYING_DELETE"
-                            and (not isinstance(record.get("content_sha256"), str)
-                                 or not re.fullmatch(r"[0-9a-f]{64}", record["content_sha256"])))):
-                    raise ValueError("invalid deletion request")
+                record = FilesystemBackend._load_delete_request(path, path.stem)
                 report["requests_checked"] += 1
                 information = persistent / f"{path.stem}.md"
                 if information.is_symlink():
@@ -59,7 +46,7 @@ def audit_deletions(engine_root: Path) -> dict:
                     reason = "deleted_but_information_present"
                 else:
                     reason = None
-            except (OSError, UnicodeError, ValueError, TypeError):
+            except (OSError, UnicodeError, ValueError, TypeError, InvalidMemory):
                 reason = "invalid_request"
         if reason:
             report["issues"].append({"request": location, "reason": reason})
