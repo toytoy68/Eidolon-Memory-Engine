@@ -38,6 +38,11 @@ FIELD_MAPPING = {
     "revision.previous_revision": "metadata.legacy_revision.previous_revision",
 }
 
+RELATION_TYPES = {
+    "SUPPORTS", "CONTRADICTS", "DERIVED_FROM", "DEPENDS_ON", "SUPERSEDES",
+    "RELATED_TO", "PART_OF", "INSTANCE_OF", "CAUSED_BY", "FOLLOWS",
+}
+
 
 def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -> tuple[dict, list]:
     directory = root / "memory/history" / category
@@ -151,8 +156,12 @@ def _candidate_issues(path: Path, persistent: Path) -> list[str]:
         return ["non_json_metadata_requires_policy"]
     reasons = []
     for relation in projected.relations:
-        if relation.get("type") == "RELATES_TO" and "legacy_relation_alias_requires_policy" not in reasons:
+        relation_type = relation.get("type")
+        if relation_type == "RELATES_TO" and "legacy_relation_alias_requires_policy" not in reasons:
             reasons.append("legacy_relation_alias_requires_policy")
+        elif not isinstance(relation_type, str) or relation_type not in RELATION_TYPES:
+            if "unknown_relation_type" not in reasons:
+                reasons.append("unknown_relation_type")
         target_id = relation.get("target_id")
         legacy_target = relation.get("target")
         if target_id is not None and legacy_target is not None and target_id != legacy_target:

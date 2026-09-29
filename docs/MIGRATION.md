@@ -80,7 +80,8 @@ font bloquer la candidate, y compris par propagation le long d'une chaîne de
 références. Une relation textuelle trouvée dans le corps est signalée pour
 revue : l'ancien CLI `memory-relations` pouvait y inscrire des données que la
 liste YAML `relations` ne représente pas. L'outil ne réécrit ni ne déduit ces
-relations.
+relations. Un type de relation absent, inconnu ou de forme incorrecte exige
+également une décision avant conversion.
 La variante `RELATES_TO` dans une relation Information est bloquée pour revue :
 le modèle Relation et l'ancien CLI utilisent `RELATED_TO`, tandis que
 `RELATES_TO` reste un type possible dans le contrat des Events. La simulation

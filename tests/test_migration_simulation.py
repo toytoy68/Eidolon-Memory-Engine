@@ -131,6 +131,23 @@ def test_simulation_flags_old_relation_alias_without_rewriting_it(tmp_path):
     assert source.read_bytes() == before
 
 
+def test_simulation_blocks_unknown_relation_type_with_existing_target(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    source = persistent / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\ntype: FACT\n"
+                      "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+                      "relations:\n  - type: CUSTOM_PRIVATE_TYPE\n    target: info-1\n"
+                      "---\nbody\n")
+    assert simulate(tmp_path)["information"]["blocked"] == [{
+        "path": "memory/persistent/info-1.md", "reasons": ["unknown_relation_type"],
+    }]
+    source.write_text(source.read_text().replace("CUSTOM_PRIVATE_TYPE", "[SUPPORTS]"))
+    assert simulate(tmp_path)["information"]["blocked"] == [{
+        "path": "memory/persistent/info-1.md", "reasons": ["unknown_relation_type"],
+    }]
+
+
 def test_simulation_counts_plain_events_and_flags_unknown_history_values(tmp_path):
     events = tmp_path / "memory/history/events"
     reviews = tmp_path / "memory/history/reviews"
