@@ -8,7 +8,10 @@ inclus dans le manifeste.
 
 Un document illisible, mal identifié ou symbolique bloque la construction.
 `diff_manifests(ancien, courant)` prépare, sans écriture, la liste ordonnée des
-IDs à ajouter/actualiser et à retirer. Les doublons d'identifiants sont refusés.
+IDs à ajouter/actualiser et à retirer. La comparaison refuse les doublons,
+les entrées invalides et une empreinte globale incohérente ; cette empreinte
+n'authentifie toutefois pas l'origine du manifeste.
+
 Pour deux copies arrêtées, afficher seulement les comptes et empreintes :
 
 ```sh
