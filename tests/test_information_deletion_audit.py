@@ -96,6 +96,16 @@ def test_audit_does_not_follow_symlinked_parent_directory(tmp_path, component):
     assert report["requests_checked"] == 0
 
 
+def test_audit_rejects_symlink_above_engine_root(tmp_path):
+    external = tmp_path / "external"
+    (external / "engine/memory/history/pending-delete").mkdir(parents=True)
+    linked = tmp_path / "linked"
+    linked.symlink_to(external, target_is_directory=True)
+    assert audit_deletions(linked / "engine") == {"requests_checked": 0, "issues": [
+        {"request": ".", "reason": "symlink_skipped"},
+    ]}
+
+
 @pytest.mark.parametrize("extra", ['"status":"DELETED"', '"revision":NaN'])
 def test_audit_and_backend_reject_ambiguous_delete_receipt(tmp_path, extra):
     store = backend(tmp_path)

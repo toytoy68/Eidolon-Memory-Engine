@@ -93,3 +93,13 @@ def test_deletion_recovery_blocks_symlinked_parent_directory(tmp_path, component
     assert recover_deletions(tmp_path) == {"recovered": [], "blocked": [
         {"path": "memory", "reason": "symlink_directory"},
     ]}
+
+
+def test_deletion_recovery_rejects_symlink_above_engine_root(tmp_path):
+    external = tmp_path / "external"
+    (external / "engine/memory/history/pending-delete").mkdir(parents=True)
+    linked = tmp_path / "linked"
+    linked.symlink_to(external, target_is_directory=True)
+    assert recover_deletions(linked / "engine") == {"recovered": [], "blocked": [
+        {"path": ".", "reason": "symlink_directory"},
+    ]}

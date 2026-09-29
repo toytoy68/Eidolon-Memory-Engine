@@ -8,10 +8,14 @@ from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.errors import InvalidMemory
+from core.persistence import has_symlink_component
 
 
 def audit_deletions(engine_root: Path) -> dict:
     root = Path(engine_root)
+    if has_symlink_component(root):
+        return {"requests_checked": 0, "issues": [
+            {"request": ".", "reason": "symlink_skipped"}]}
     if not root.is_dir():
         raise ValueError(f"engine root is not a directory: {root}")
     persistent = root / "memory" / "persistent"

@@ -9,12 +9,16 @@ from pathlib import Path
 from core.backend.errors import BackendError
 from core.backend.filesystem import FilesystemBackend
 from core.information.deletion_audit import audit_deletions
+from core.persistence import has_symlink_component
 from core.threads.storage import ThreadStorageError
 
 
 def recover_deletions(engine_root: Path) -> dict:
     """Resume only durable APPLYING_DELETE receipts; never infer legacy deletions."""
     root = Path(engine_root)
+    if has_symlink_component(root):
+        return {"recovered": [], "blocked": [
+            {"path": ".", "reason": "symlink_directory"}]}
     if not root.is_dir():
         raise ValueError(f"engine root is not a directory: {root}")
     persistent = root / "memory/persistent"
