@@ -12,6 +12,8 @@ import yaml
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
+from core.events.filesystem import FilesystemEventRepository
+from core.events.errors import InvalidEvent
 from core.events.models import EventType
 from core.migration.inventory import inventory, classify
 from core.migration.preflight import UniqueKeyLoader, inspect_core_information, inspect_legacy_information
@@ -56,7 +58,14 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
         relative = path.relative_to(root).as_posix()
         kind = classify(path, category)
         if kind == "core_event_0.2" and category == "events":
-            counts["core_event_0.2"] += 1
+            try:
+                event = FilesystemEventRepository._deserialize(path.read_text(encoding="utf-8"))
+                if event.event_id != path.stem:
+                    raise InvalidEvent("Event identity mismatch")
+            except (OSError, UnicodeError, InvalidEvent):
+                issues.append({"path": relative, "reason": "invalid_core_history_event"})
+            else:
+                counts["core_event_0.2"] += 1
             continue
         if kind != "legacy_front_matter" and not (category == "events" and kind == "legacy_event_plain"):
             issues.append({"path": relative, "reason": "unrecognized_history_format"})

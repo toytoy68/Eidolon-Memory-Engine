@@ -1,5 +1,7 @@
 import json
 
+from core.events.filesystem import FilesystemEventRepository
+from core.events.models import Event, EventType
 from core.migration.simulation import main, simulate, preview_legacy_information
 
 
@@ -227,4 +229,20 @@ def test_simulation_does_not_follow_history_reference_symlink(tmp_path):
     assert report["inventory_needs_review"] == [
         {"path": "memory/working/linked.md", "reason": "symlink_skipped"},
         {"path": "memory/history/events/event.md", "reason": "unsafe_history_reference"},
+    ]
+
+
+def test_simulation_validates_core_event_body_and_filename(tmp_path):
+    events = tmp_path / "memory/history/events"
+    events.mkdir(parents=True)
+    valid = FilesystemEventRepository._serialize(
+        Event("event-1", 1, EventType.CREATED, information_id="info-1"))
+    (events / "event-1.md").write_text(valid)
+    (events / "wrong.md").write_text(valid)
+    (events / "broken.md").write_text("# Eidolon Memory Event\n\nVersion: 0.2\n\ninvalid")
+    report = simulate(tmp_path)
+    assert report["other_data"]["event_types"] == {"core_event_0.2": 1}
+    assert report["inventory_needs_review"] == [
+        {"path": "memory/history/events/broken.md", "reason": "invalid_core_history_event"},
+        {"path": "memory/history/events/wrong.md", "reason": "invalid_core_history_event"},
     ]
