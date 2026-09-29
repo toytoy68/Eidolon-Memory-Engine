@@ -1,6 +1,6 @@
 # Eidolon Memory Engine — feuille de route
 
-**Avancement prévisionnel : ≈ 40 % (estimation révisée au 2026-09-28,
+**Avancement prévisionnel : ≈ 40 % (estimation révisée au 2026-09-29,
 incertitude d'au moins ± 10 points).** Ce chiffre
 représente la maturité estimée de la cible complète, pas le rapport entre les
 tâches cochées et leur nombre. Le noyau Information/Thread/Event et la reprise
@@ -8,7 +8,7 @@ de certains parcours sont testés dans le dépôt ; migration des données ancie
 intégration à Eidolon Core et à l'index, validation sur la VM et tableau de bord
 restent à terminer ou à décider. Réévaluer ce pourcentage après chaque phase
 majeure validée ; la cible peut encore évoluer. Voir le
-[bilan détaillé de l'audit](docs/AUDIT-2026-09-28.md).
+[bilan détaillé de l'audit](docs/AUDIT-2026-09-29.md).
 
 Dernière mise à jour : 2026-09-29. Branche suivie : `refactor/architecture-v1`.
 Cette arborescence décrit une **cible supposée**, pas une architecture figée. Les
@@ -55,6 +55,7 @@ Eidolon-Memory-Engine/
 ├── docs/                         format, reprise, déploiement (existant)
 │   ├── ARCHITECTURE.md           frontières actuelles, cible à compléter (existant)
 │   ├── AUDIT-2026-09-28.md       bilan vérifié du dépôt (existant)
+│   ├── AUDIT-2026-09-29.md       bilan actualisé du dépôt (existant)
 │   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
 ├── scripts/                      bootstrap Debian (existant)
 ├── tests/                        tests unitaires et de régression (existant)
@@ -118,7 +119,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 310 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 312 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -226,6 +227,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-033f — Le rapport signale les références `information_id`
   historiques absentes ou invalides pour Events et Reviews, sans exposer leurs
   valeurs ni décider qu'une suppression passée était illégitime (2026-09-29).
+- **【FAIT】** T-033g — Les références historiques ambiguës entre Working et
+  Persistent, structurellement invalides ou traversant un lien symbolique sont
+  signalées sans lire la cible externe (2026-09-29).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).

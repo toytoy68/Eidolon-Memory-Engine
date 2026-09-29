@@ -80,12 +80,34 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
             counts[value] += 1
         if not isinstance(reference, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", reference):
             issues.append({"path": relative, "reason": "invalid_history_reference"})
-        elif not any(
-            not directory.is_symlink() and not (directory / f"{reference}.md").is_symlink()
-            and (directory / f"{reference}.md").is_file()
-            for directory in (root / "memory/working", root / "memory/persistent")
-        ):
-            issues.append({"path": relative, "reason": "unresolved_history_reference"})
+        else:
+            targets = []
+            unsafe = False
+            for directory in (root / "memory/working", root / "memory/persistent"):
+                candidate = directory / f"{reference}.md"
+                if directory.is_symlink() or candidate.is_symlink():
+                    if candidate.exists() or candidate.is_symlink():
+                        unsafe = True
+                    continue
+                if candidate.is_file():
+                    targets.append(candidate)
+            if unsafe:
+                issues.append({"path": relative, "reason": "unsafe_history_reference"})
+            elif not targets:
+                issues.append({"path": relative, "reason": "unresolved_history_reference"})
+            elif len(targets) > 1:
+                issues.append({"path": relative, "reason": "ambiguous_history_reference"})
+            else:
+                target = targets[0]
+                target_kind = classify(target, "information")
+                if target_kind in {"core_information_0.1", "core_information_0.2"}:
+                    reasons = inspect_core_information(target)
+                elif target_kind == "legacy_front_matter":
+                    reasons = inspect_legacy_information(target)
+                else:
+                    reasons = [target_kind]
+                if reasons:
+                    issues.append({"path": relative, "reason": "invalid_history_reference"})
     return dict(sorted(counts.items())), issues
 
 

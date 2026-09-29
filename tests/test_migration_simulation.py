@@ -138,7 +138,9 @@ def test_simulation_counts_plain_events_and_flags_unknown_history_values(tmp_pat
     reviews.mkdir(parents=True)
     working = tmp_path / "memory/working"
     working.mkdir()
-    (working / "info-1.md").write_text("---\nid: info-1\n---\n")
+    (working / "info-1.md").write_text(
+        "---\nid: info-1\nrevision: 1\ntype: FACT\n"
+        "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n---\nbody\n")
     (events / "plain.md").write_text(
         "event_id: plain\ninformation_id: info-1\n"
         "event_type: RELATION_ADDED\n---\nprivate content\n")
@@ -168,3 +170,44 @@ def test_simulation_flags_orphan_historical_event_without_private_content(tmp_pa
         "path": "memory/history/events/lost.md", "reason": "unresolved_history_reference",
     }]
     assert "private event body" not in json.dumps(report)
+
+
+def test_simulation_flags_ambiguous_and_invalid_history_references(tmp_path):
+    working = tmp_path / "memory/working"
+    persistent = tmp_path / "memory/persistent"
+    events = tmp_path / "memory/history/events"
+    for directory in (working, persistent, events):
+        directory.mkdir(parents=True)
+    valid = ("---\nid: {id}\nrevision: 1\ntype: FACT\n"
+             "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n---\nbody\n")
+    (working / "shared.md").write_text(valid.format(id="shared"))
+    (persistent / "shared.md").write_text(valid.format(id="shared"))
+    (working / "broken.md").write_text("---\nid: wrong\n---\nbody\n")
+    for identifier in ("shared", "broken"):
+        (events / f"{identifier}.md").write_text(
+            f"---\nevent_id: {identifier}\ninformation_id: {identifier}\n"
+            "event_type: STORED\n---\nprivate content\n")
+    report = simulate(tmp_path)
+    assert report["inventory_needs_review"] == [
+        {"path": "memory/history/events/broken.md", "reason": "invalid_history_reference"},
+        {"path": "memory/history/events/shared.md", "reason": "ambiguous_history_reference"},
+    ]
+    assert "private content" not in json.dumps(report)
+
+
+def test_simulation_does_not_follow_history_reference_symlink(tmp_path):
+    working = tmp_path / "memory/working"
+    events = tmp_path / "memory/history/events"
+    working.mkdir(parents=True)
+    events.mkdir(parents=True)
+    external = tmp_path / "external.md"
+    external.write_text("private")
+    (working / "linked.md").symlink_to(external)
+    (events / "event.md").write_text(
+        "---\nevent_id: event\ninformation_id: linked\n"
+        "event_type: STORED\n---\nprivate event\n")
+    report = simulate(tmp_path)
+    assert report["inventory_needs_review"] == [
+        {"path": "memory/working/linked.md", "reason": "symlink_skipped"},
+        {"path": "memory/history/events/event.md", "reason": "unsafe_history_reference"},
+    ]
