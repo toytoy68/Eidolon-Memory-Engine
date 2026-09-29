@@ -118,7 +118,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 288 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 290 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -187,6 +187,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   vérifie son aller-retour au format 0.2, y compris corps CRLF et révision
   structurée. Aucune conversion sur disque ni validation sémantique des
   relations n'est effectuée (2026-09-29).
+- **【FAIT】** T-033c — La simulation signale les relations vers une cible absente,
+  ambiguë ou bloquée (avec propagation), ainsi que les relations textuelles
+  présentes dans le corps Markdown ; aucune cible n'est devinée ou réécrite
+  (2026-09-29).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).

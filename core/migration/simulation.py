@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -65,7 +66,7 @@ def preview_legacy_information(path: Path) -> Memory:
     )
 
 
-def _candidate_issues(path: Path) -> list[str]:
+def _candidate_issues(path: Path, persistent: Path) -> list[str]:
     """Test an in-memory projection without exposing any source values."""
     try:
         projected = preview_legacy_information(path)
@@ -74,7 +75,29 @@ def _candidate_issues(path: Path) -> list[str]:
             return ["core_round_trip_mismatch"]
     except (TypeError, ValueError, OverflowError):
         return ["non_json_metadata_requires_policy"]
-    return []
+    reasons = []
+    for relation in projected.relations:
+        target_id = relation.get("target_id")
+        legacy_target = relation.get("target")
+        if target_id is not None and legacy_target is not None and target_id != legacy_target:
+            reason = "ambiguous_relation_target"
+        else:
+            target = target_id if target_id is not None else legacy_target
+            if not isinstance(target, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", target):
+                reason = "invalid_relation_target"
+            else:
+                linked = persistent / f"{target}.md"
+                if linked.is_symlink() or not linked.is_file():
+                    reason = "unresolved_relation_target"
+                else:
+                    reason = None
+        if reason and reason not in reasons:
+            reasons.append(reason)
+    # An older relations CLI could append a textual relation in the Markdown
+    # body instead of the front matter. Preserve it, but require human mapping.
+    if re.search(r"(?m)^\s*-\s*type:\s*[^\n]+\n\s*target:\s*[^\n]+", projected.content):
+        reasons.append("body_relation_requires_policy")
+    return reasons
 
 
 def simulate(engine_root: Path) -> dict:
@@ -109,7 +132,7 @@ def simulate(engine_root: Path) -> dict:
         elif kind == "legacy_front_matter":
             reasons = inspect_legacy_information(path)
             if not reasons:
-                reasons = _candidate_issues(path)
+                reasons = _candidate_issues(path, persistent)
             destination = "candidates"
         else:
             reasons = [kind]
@@ -118,6 +141,24 @@ def simulate(engine_root: Path) -> dict:
             report["information"]["blocked"].append({"path": relative, "reasons": reasons})
         else:
             report["information"][destination].append(relative)
+    # A candidate depending on a blocked Information cannot be considered
+    # ready either. Repeat to cover chains of relations without exposing IDs.
+    information = report["information"]
+    while True:
+        blocked_ids = {Path(item["path"]).stem for item in information["blocked"]}
+        dependent = []
+        for relative in information["candidates"]:
+            preview = preview_legacy_information(root / relative)
+            if any((relation.get("target_id") or relation.get("target")) in blocked_ids
+                   for relation in preview.relations):
+                dependent.append(relative)
+        if not dependent:
+            break
+        information["candidates"] = [path for path in information["candidates"]
+                                     if path not in dependent]
+        information["blocked"].extend(
+            {"path": path, "reasons": ["relation_target_blocked"]} for path in dependent)
+        information["blocked"].sort(key=lambda item: item["path"])
     return report
 
 

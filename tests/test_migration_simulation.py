@@ -71,3 +71,38 @@ def test_preview_preserves_structured_revision_and_crlf_body(tmp_path):
     assert preview.content == "# Information\r\nsecret\r\n"
     assert simulate(tmp_path)["information"]["candidates"] == ["memory/persistent/info-2.md"]
     assert source.read_bytes() == before
+
+
+def test_simulation_requires_review_for_unresolved_or_body_relations(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    (persistent / "info-1.md").write_text(
+        "---\nid: info-1\nrevision: 1\ntype: FACT\n"
+        "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+        "relations:\n  - type: SUPPORTS\n    target: missing\n"
+        "---\n# Information\n- type: CONTRADICTS\n  target: other\n")
+    (persistent / "info-2.md").write_text(
+        "---\nid: info-2\nrevision: 1\ntype: FACT\n"
+        "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+        "relations:\n  - type: SUPPORTS\n    target: info-1\n"
+        "---\n# Information\nbody\n")
+    report = simulate(tmp_path)["information"]
+    assert report["candidates"] == []
+    assert report["blocked"] == [
+        {"path": "memory/persistent/info-1.md",
+         "reasons": ["unresolved_relation_target", "body_relation_requires_policy"]},
+        {"path": "memory/persistent/info-2.md", "reasons": ["relation_target_blocked"]},
+    ]
+
+
+def test_simulation_rejects_ambiguous_relation_target(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    (persistent / "info-1.md").write_text(
+        "---\nid: info-1\nrevision: 1\ntype: FACT\n"
+        "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+        "relations:\n  - type: SUPPORTS\n    target: info-2\n    target_id: info-3\n"
+        "---\n# Information\nbody\n")
+    assert simulate(tmp_path)["information"]["blocked"] == [{
+        "path": "memory/persistent/info-1.md", "reasons": ["ambiguous_relation_target"],
+    }]

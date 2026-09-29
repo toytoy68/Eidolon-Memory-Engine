@@ -63,6 +63,12 @@ est conservé dans cet aperçu, y compris ses fins de ligne ; une révision YAML
 structurée conserve ses indicateurs dans `metadata.legacy_revision`. Cette
 vérification établit la sérialisabilité technique de la proposition, sans
 valider le sens métier des champs ou autoriser une conversion sur disque.
+Les relations du front matter vers une cible absente, ambiguë ou déjà bloquée
+font bloquer la candidate, y compris par propagation le long d'une chaîne de
+références. Une relation textuelle trouvée dans le corps est signalée pour
+revue : l'ancien CLI `memory-relations` pouvait y inscrire des données que la
+liste YAML `relations` ne représente pas. L'outil ne réécrit ni ne déduit ces
+relations.
 
 **Une candidate n'est pas une conversion validée** : le rapport ne crée
 pas de document converti et ne vérifie pas tous les sens métier, notamment
