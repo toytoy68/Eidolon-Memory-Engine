@@ -10,7 +10,7 @@ restent à terminer ou à décider. Réévaluer ce pourcentage après chaque pha
 majeure validée ; la cible peut encore évoluer. Voir le
 [bilan détaillé de l'audit](docs/AUDIT-2026-09-28.md).
 
-Dernière mise à jour : 2026-09-28. Branche suivie : `refactor/architecture-v1`.
+Dernière mise à jour : 2026-09-29. Branche suivie : `refactor/architecture-v1`.
 Cette arborescence décrit une **cible supposée**, pas une architecture figée. Les
 emplacements marqués `prévu` sont des propositions à confirmer avant création.
 Le dépôt Git versionne le code et les schémas ; les mémoires réelles, secrets,
@@ -323,6 +323,35 @@ informations que le moteur de mémoire devra pouvoir fournir ou recevoir. Voir
   **AI-first** et à des tâches autonomes/cadencées : API stable, événements,
   statuts et opérations observables, tout en gardant le scheduler général hors
   du Memory Engine.
+
+- **【À VALIDER】** T-041 — Définir côté Eidolon Core un **Model / Task Router**
+  capable d'affecter une tâche étroite à un petit modèle spécialisé (classification,
+  extraction, OCR, traduction, scoring...) et de réserver les gros modèles aux
+  tâches nécessitant davantage de raisonnement ou de contexte. Prévoir profils de
+  capacités, coût matériel/latence et validation automatique lorsque possible ;
+  le Memory Engine expose les données nécessaires mais ne choisit pas le runtime.
+- **【À VALIDER】** T-042 — Définir un **Mission Manager** côté Core :
+  mission → Planner → agents spécialisés → Validator/Reviewer, avec statuts,
+  échanges inter-agents et résultats observables. Le Memory Engine doit pouvoir
+  conserver provenance et historique via `agent_id`, `mission_id`, `thread_id`,
+  `model_id`, horodatage, source, action et résultat, sans créer une base
+  indépendante par agent.
+- **【À VALIDER】** T-043 — Concevoir un **Agent Registry / Agent Card** côté Core :
+  identité, capacités, schémas d'entrée/sortie, modèle/runtime, endpoint,
+  authentification et permissions. Étudier une compatibilité **A2A** afin de ne
+  pas inventer un protocole propriétaire pour les agents externes ; découverte
+  d'un agent et autorisation d'agir doivent rester deux mécanismes distincts.
+- **【À VALIDER】** T-044 — Étudier **MCP** comme frontière standard entre les
+  agents Eidolon et les Tools/Skills externes. Conserver la séparation :
+  Memory/RAG = savoir ; Skills/MCP = agir via outils ; A2A = déléguer à d'autres
+  agents ; Policy Engine = autoriser/valider. Journaliser appels, permissions et
+  résultats utiles dans Memory Engine sans y exécuter les tools.
+- **【À VALIDER】** T-045 — Prévoir côté EidolonOS un **App Catalog** déclaratif et
+  reproductible : catégories, description, source officielle, version,
+  dépendances, permissions, installation, mise à jour et désinstallation.
+  Privilégier des recettes contrôlées/reproductibles aux scripts arbitraires root.
+  Cette fonction appartient à EidolonOS/Core ; Memory Engine peut seulement
+  conserver configuration, historique et événements si nécessaire.
 
 ## Critère de livraison
 
