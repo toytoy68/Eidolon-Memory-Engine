@@ -7,6 +7,8 @@ from contextlib import contextmanager
 from functools import wraps
 import os
 import time
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 from threading import local
 
 _held_locks = local()
@@ -71,6 +73,24 @@ def durable_replace(source, destination):
             os.fsync(descriptor)
         finally:
             os.close(descriptor)
+
+
+def atomic_write_text(path: Path, content: str) -> None:
+    """Flush a UTF-8 file and publish it with an atomic, durable rename."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                prefix=f".{path.name}.", suffix=".tmp", delete=False) as handle:
+            temporary = Path(handle.name)
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        durable_replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def serialized_write(root_attribute):

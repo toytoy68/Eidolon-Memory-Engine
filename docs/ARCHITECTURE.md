@@ -44,8 +44,12 @@ uniquement sur une racine historique isolée. Le controller historique partage
 désormais le verrou Working lors des commandes `ingest`, `update` d'un fichier
 Working et `review`. Ses commandes `update` et `review` refusent aussi les
 chemins hors de leurs répertoires respectifs. Leurs Events/Reviews ne forment
-toujours pas une transaction atomique. Les
-CLI classifier, router, executor et semantic-validator sont essentiellement
+toujours pas une transaction atomique. Les écritures de `memory-relations`
+passent par un fichier temporaire synchronisé
+et un remplacement atomique ; l'ajout de relation modifie seulement le champ
+YAML `relations` dans le front matter et conserve le corps. Un bloc de relations
+non reconnu est refusé sans écriture, afin d'éviter une perte de sous-champs.
+Les CLI classifier, router, executor et semantic-validator sont essentiellement
 lecteurs/producteurs de plans ; les adapter après choix du format cible.
 Avant une mise en service core, arrêter les écrivains historiques, migrer ou
 archiver leurs données sur une copie, puis rediriger les usages nécessaires vers

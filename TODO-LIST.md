@@ -118,7 +118,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 305 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 309 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -173,6 +173,11 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Working pour `ingest`, `update` Working et `review`, et refuse les chemins
   de mise à jour hors des racines attendues ; test de contention entre threads
   (2026-09-29). Events et Reviews restent non transactionnels.
+- **【FAIT】** T-031g — `memory-relations` publie source, Event et Review avec
+  remplacement atomique ; son ajout modifie uniquement le champ YAML
+  `relations` du front matter, conserve le corps et refuse les blocs inconnus
+  sans perte de données. Les trois fichiers ne forment toujours pas une
+  transaction récupérable (2026-09-29).
 - **【FAIT】** T-032a — Une demande `PENDING_DELETE` ne peut plus être écrasée
   par une autre ; le rejeu strictement identique est sans écriture, un reçu
   illisible bloque la demande (trois tests, 2026-09-28).

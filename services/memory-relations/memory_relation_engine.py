@@ -20,7 +20,7 @@ from core.config import (
     EVENTS_ROOT,
     REVIEWS_ROOT,
 )
-from core.persistence import exclusive_write
+from core.persistence import exclusive_write, atomic_write_text
 
 WORKING = WORKING_ROOT
 EVENTS = EVENTS_ROOT
@@ -91,24 +91,51 @@ def validate_relation(source, relation, target_id):
     return errors, warnings
 
 def relation_exists(text, relation, target_id):
-    pattern = re.compile(
-        r"(?ms)^\s*-\s*type:\s*" + re.escape(relation) +
-        r"\s*\n\s*target:\s*" + re.escape(target_id) + r"\s*$"
-    )
-    return bool(pattern.search(text))
+    _, _, _, entries = _front_matter_relations(text)
+    return (relation, target_id) in entries
+
+
+def _front_matter_relations(text):
+    lines = text.splitlines(keepends=True)
+    if not lines or lines[0].strip() != "---":
+        raise ValueError("front matter absent")
+    closing = next((i for i, line in enumerate(lines[1:], 1) if line.strip() == "---"), None)
+    if closing is None:
+        raise ValueError("front matter non fermé")
+    positions = [i for i in range(1, closing) if lines[i].startswith("relations:")]
+    if len(positions) != 1:
+        raise ValueError("champ relations absent ou ambigu")
+    start = positions[0]
+    scalar = lines[start][len("relations:"):].strip()
+    if scalar not in {"", "[]"}:
+        raise ValueError("format du champ relations non pris en charge")
+    end = next((i for i in range(start + 1, closing)
+                if lines[i].strip() and not lines[i][0].isspace()), closing)
+    block = [line.strip() for line in lines[start + 1:end] if line.strip()]
+    if scalar == "[]" and block:
+        raise ValueError("champ relations contradictoire")
+    if len(block) % 2:
+        raise ValueError("bloc relations non pris en charge")
+    entries = []
+    for index in range(0, len(block), 2):
+        kind = re.fullmatch(r"- type: ([A-Z_]+)", block[index])
+        target = re.fullmatch(r"target: ([A-Za-z0-9._-]+)", block[index + 1])
+        if not kind or not target:
+            raise ValueError("bloc relations non pris en charge")
+        entries.append((kind.group(1), target.group(1)))
+    return lines, start, end, entries
 
 def add_relation(text, relation, target_id):
-    if relation_exists(text, relation, target_id):
+    if relation not in RELATIONS or not re.fullmatch(r"[A-Za-z0-9._-]+", target_id):
+        raise ValueError("relation ou cible invalide")
+    lines, start, end, entries = _front_matter_relations(text)
+    if (relation, target_id) in entries:
         raise ValueError("relation déjà présente")
-    match = re.search(r"(?ms)^relations:\s*(.*?)(?=^##\s|\Z)", text)
-    if not match:
-        raise ValueError("bloc relations absent")
-    block = match.group(0).rstrip()
-    if re.fullmatch(r"relations:\s*", block):
-        new_block = f"relations:\n\n- type: {relation}\n  target: {target_id}"
-    else:
-        new_block = f"{block}\n- type: {relation}\n  target: {target_id}"
-    return text[:match.start()] + new_block + text[match.end():]
+    newline = "\r\n" if "\r\n" in text else "\n"
+    replacement = "relations:" + newline
+    for kind, target in [*entries, (relation, target_id)]:
+        replacement += f"  - type: {kind}{newline}    target: {target}{newline}"
+    return "".join(lines[:start]) + replacement + "".join(lines[end:])
 
 def create_event(source_id, old_rev, new_rev, relation, target_id, review_id=None):
     now = datetime.now().astimezone()
@@ -153,7 +180,7 @@ status: ACCEPTED
 
 Ajout contrôlé d'une relation {relation}.
 """
-    path.write_text(content, encoding="utf-8")
+    atomic_write_text(path, content)
     return event_id, path
 
 def create_review(source_id, target_id, relation):
@@ -189,7 +216,7 @@ persiste.
 
 Aucune décision humaine n'a été simulée par le système.
 """
-    path.write_text(content, encoding="utf-8")
+    atomic_write_text(path, content)
     return review_id, path
 
 def _command_add_locked(args):
@@ -214,13 +241,19 @@ def _command_add_locked(args):
         print("Ajout de relation : REFUSÉ")
         print("- revision absente")
         return 1
-    if relation_exists(text, args.relation, args.target):
+    try:
+        already_linked = relation_exists(text, args.relation, args.target)
+        new_text = None if already_linked else add_relation(text, args.relation, args.target)
+    except ValueError as exc:
+        print("Ajout de relation : REFUSÉ")
+        print(f"- {exc}")
+        return 1
+    if already_linked:
         print("Ajout de relation : REFUSÉ")
         print("- relation déjà présente")
         return 1
 
     new_rev = old_rev + 1
-    new_text = add_relation(text, args.relation, args.target)
     match = re.search(r"^revision:\s*\d+", new_text, re.MULTILINE)
     if not match:
         print("Ajout de relation : REFUSÉ")
@@ -233,7 +266,7 @@ def _command_add_locked(args):
     if args.review and args.relation in REVIEW_RELATIONS:
         review_id, review_path = create_review(source_id, args.target, args.relation)
 
-    source.write_text(new_text, encoding="utf-8")
+    atomic_write_text(source, new_text)
     event_id, event_path = create_event(
         source_id, old_rev, new_rev, args.relation, args.target, review_id
     )
