@@ -318,6 +318,35 @@ def test_approve_delete_recovers_interruption(tmp_path, monkeypatch, interrupt_a
     assert not backend.exists("info-test")
 
 
+@pytest.mark.parametrize("status", ["PENDING_DELETE", "APPLYING_DELETE", "DELETED"])
+def test_deletion_receipt_reserves_information_identity(tmp_path, status):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test", content="original"))
+    backend.delete_request("info-test", "human", "reason", 1, "op-1")
+    if status == "DELETED":
+        backend.approve_delete("info-test", "op-1")
+    else:
+        backend._path("info-test").unlink()
+        if status == "APPLYING_DELETE":
+            receipt = backend.pending_delete_root / "info-test.json"
+            record = json.loads(receipt.read_text())
+            record["status"] = status
+            record["content_sha256"] = "a" * 64
+            receipt.write_text(json.dumps(record))
+    with pytest.raises(RevisionConflict, match="reserves Information identity"):
+        backend.store(Memory("info-test", content="replacement"))
+    assert not backend.exists("info-test")
+
+
+def test_store_rejects_linked_deletion_receipt(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    receipt = backend.pending_delete_root / "info-test.json"
+    receipt.symlink_to(tmp_path / "outside.json")
+    with pytest.raises(InvalidMemory, match="receipt is a symlink"):
+        backend.store(Memory("info-test", content="new"))
+    assert not backend.exists("info-test")
+
+
 def test_approve_delete_recovery_rejects_changed_information(tmp_path, monkeypatch):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     backend.store(Memory("info-test", content="keep"))

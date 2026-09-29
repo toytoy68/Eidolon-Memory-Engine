@@ -202,6 +202,12 @@ class FilesystemBackend(MemoryBackend):
         if path.exists() or path.is_symlink():
             raise MemoryAlreadyExists(memory.information_id)
 
+        receipt = self.pending_delete_root / f"{memory.information_id}.json"
+        if receipt.is_symlink():
+            raise InvalidMemory("deletion receipt is a symlink")
+        if receipt.exists():
+            raise RevisionConflict("deletion history reserves Information identity")
+
         self._atomic_write(path, self._serialize(memory))
 
         return StoreResult(
