@@ -546,9 +546,14 @@ class FilesystemBackend(MemoryBackend):
             return []
 
         limit = 100
+        offset = 0
 
         if options and "limit" in options:
             limit = max(1, int(options["limit"]))
+        if options and "offset" in options:
+            offset = int(options["offset"])
+            if offset < 0:
+                raise ValueError("offset must be >= 0")
 
         query_terms = [
             term.lower()
@@ -594,7 +599,7 @@ class FilesystemBackend(MemoryBackend):
             reverse=True,
         )
 
-        return results[:limit]
+        return results[offset:offset + limit]
 
     def rebuild_index(self) -> dict[str, Any]:
         """Filesystem backend has no derived index yet."""

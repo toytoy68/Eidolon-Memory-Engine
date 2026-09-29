@@ -43,29 +43,35 @@ class ContextAssembler:
         items = []
         seen = set()
         remaining = max_chars
-        # Allow room for search hits without text or repeated identifiers.
-        candidates = self.backend.search(query, {"limit": max(100, max_items * 4)})
-        for result in candidates:
-            memory = result.memory
-            if memory.information_id in seen or not isinstance(memory.content, str):
-                continue
-            seen.add(memory.information_id)
-            if not memory.content:
-                continue
-            length = min(len(memory.content), max_item_chars, remaining)
-            items.append(ContextItem(
-                information_id=memory.information_id,
-                revision=memory.revision,
-                content=memory.content[:length],
-                score=result.score,
-                truncated=length < len(memory.content),
-                epistemic_status=self._label(memory.metadata, "epistemic_status"),
-                operational_state=self._label(memory.metadata, "operational_state"),
-                confidence=self._label(memory.metadata, "confidence"),
-            ))
-            remaining -= length
-            if len(items) == max_items or remaining == 0:
+        # Page past hits with no usable text while bounding each search response.
+        page_size = max(100, max_items * 4)
+        offset = 0
+        while remaining and len(items) < max_items:
+            candidates = self.backend.search(query, {"limit": page_size, "offset": offset})
+            for result in candidates:
+                memory = result.memory
+                if memory.information_id in seen or not isinstance(memory.content, str):
+                    continue
+                seen.add(memory.information_id)
+                if not memory.content:
+                    continue
+                length = min(len(memory.content), max_item_chars, remaining)
+                items.append(ContextItem(
+                    information_id=memory.information_id,
+                    revision=memory.revision,
+                    content=memory.content[:length],
+                    score=result.score,
+                    truncated=length < len(memory.content),
+                    epistemic_status=self._label(memory.metadata, "epistemic_status"),
+                    operational_state=self._label(memory.metadata, "operational_state"),
+                    confidence=self._label(memory.metadata, "confidence"),
+                ))
+                remaining -= length
+                if len(items) == max_items or remaining == 0:
+                    break
+            if len(candidates) < page_size:
                 break
+            offset += len(candidates)
         return ContextBundle(query=query, items=tuple(items), used_chars=max_chars - remaining)
 
     @staticmethod

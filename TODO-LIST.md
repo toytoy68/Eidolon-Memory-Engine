@@ -120,7 +120,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 371 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 373 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -250,6 +250,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   épistémique, opérationnelle et de confiance lorsqu'elles existent ; leur
   politique de sélection et leur rendu pour le modèle restent à définir
   (2026-09-29).
+- **【FAIT】** T-034c — La recherche accepte un décalage de pagination et
+  l'assembleur peut dépasser une page entière de résultats sans texte
+  utilisable tout en bornant chaque réponse (2026-09-29).
 - **【FAIT】** T-024a — Manifeste déterministe en lecture seule des fichiers
   Information core (ID, révision, empreinte) ; échoue sur source invalide ou
   symbolique. Aucun index Qdrant n'est écrit (2026-09-29).

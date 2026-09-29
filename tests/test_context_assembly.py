@@ -45,6 +45,32 @@ def test_context_skips_nontext_empty_and_duplicate_search_hits():
     assert bundle.used_chars == 6
 
 
+def test_context_pages_past_full_page_of_unusable_hits():
+    class PagedBackend:
+        def search(self, query, options):
+            hits = [SearchResult(Memory(f"empty-{i}", content=""), 1.0)
+                    for i in range(100)]
+            hits.append(SearchResult(Memory("useful", content="answer"), 0.5))
+            offset = options["offset"]
+            return hits[offset:offset + options["limit"]]
+
+    bundle = ContextAssembler(PagedBackend()).assemble("query", max_items=1)
+    assert [(item.information_id, item.content) for item in bundle.items] == [
+        ("useful", "answer"),
+    ]
+
+
+def test_filesystem_search_offset_pages_ranked_results(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    for index in range(3):
+        backend.store(Memory(f"info-{index}", content="alpha"))
+    first = backend.search("alpha", {"limit": 2})
+    second = backend.search("alpha", {"limit": 2, "offset": 2})
+    assert [hit.memory.information_id for hit in first + second] == [
+        "info-0", "info-1", "info-2",
+    ]
+
+
 @pytest.mark.parametrize("kwargs", [
     {"query": "  "}, {"query": None}, {"query": "x", "max_items": True},
     {"query": "x", "max_chars": 0}, {"query": "x", "max_item_chars": -1},
