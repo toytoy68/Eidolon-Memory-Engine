@@ -10,6 +10,7 @@ from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.errors import InvalidMemory
+from core.persistence import has_symlink_component
 
 
 @dataclass(frozen=True)
@@ -75,7 +76,7 @@ def _validate_manifest(manifest: IndexManifest) -> None:
 def build_manifest(persistent_root: Path) -> IndexManifest:
     """Read canonical files once; fail if any Information cannot be indexed safely."""
     root = Path(persistent_root)
-    if root.is_symlink() or not root.is_dir():
+    if has_symlink_component(root) or not root.is_dir():
         raise ValueError("persistent root must be a real directory")
     entries = []
     for path in sorted(root.glob("*.md")):

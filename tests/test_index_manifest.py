@@ -50,6 +50,17 @@ def test_manifest_rejects_identity_the_backend_cannot_address(tmp_path):
         build_manifest(persistent)
 
 
+def test_manifest_rejects_symlinked_parent_without_reading_target(tmp_path):
+    external = tmp_path / "external"
+    external.mkdir()
+    (external / "persistent").mkdir()
+    (external / "persistent/private.md").write_text("sensitive source")
+    linked = tmp_path / "linked"
+    linked.symlink_to(external, target_is_directory=True)
+    with pytest.raises(ValueError, match="real directory"):
+        build_manifest(linked / "persistent")
+
+
 def test_manifest_delta_plans_upsert_and_deletion_without_writes(tmp_path):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     for identifier in ("keep", "change", "remove"):
