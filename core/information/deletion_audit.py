@@ -15,8 +15,13 @@ def audit_deletions(engine_root: Path) -> dict:
     if not root.is_dir():
         raise ValueError(f"engine root is not a directory: {root}")
     persistent = root / "memory" / "persistent"
+    memory = root / "memory"
+    history = memory / "history"
     requests = root / "memory" / "history" / "pending-delete"
     report = {"requests_checked": 0, "issues": []}
+    for parent, location in ((memory, "memory"), (history, "memory/history")):
+        if parent.is_symlink():
+            report["issues"].append({"request": location, "reason": "symlink_skipped"})
     if persistent.is_symlink():
         report["issues"].append({"request": "memory/persistent",
                                  "reason": "symlink_skipped"})

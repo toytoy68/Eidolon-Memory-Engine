@@ -84,6 +84,18 @@ def test_audit_reports_actual_symlinked_directory(tmp_path):
     }]}
 
 
+@pytest.mark.parametrize("component", ["memory", "memory/history"])
+def test_audit_does_not_follow_symlinked_parent_directory(tmp_path, component):
+    external = tmp_path / "external"
+    external.mkdir()
+    parent = tmp_path / component
+    parent.parent.mkdir(parents=True, exist_ok=True)
+    parent.symlink_to(external, target_is_directory=True)
+    report = audit_deletions(tmp_path)
+    assert {"request": component, "reason": "symlink_skipped"} in report["issues"]
+    assert report["requests_checked"] == 0
+
+
 @pytest.mark.parametrize("extra", ['"status":"DELETED"', '"revision":NaN'])
 def test_audit_and_backend_reject_ambiguous_delete_receipt(tmp_path, extra):
     store = backend(tmp_path)

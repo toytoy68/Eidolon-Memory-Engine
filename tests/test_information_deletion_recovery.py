@@ -1,5 +1,6 @@
 import hashlib
 import json
+import pytest
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
@@ -66,3 +67,15 @@ def test_deletion_recovery_never_infers_old_pending_request(tmp_path):
     before = receipt.read_bytes()
     assert recover_deletions(tmp_path) == {"recovered": [], "blocked": []}
     assert receipt.read_bytes() == before
+
+
+@pytest.mark.parametrize("component", ["memory", "memory/history"])
+def test_deletion_recovery_blocks_symlinked_parent_directory(tmp_path, component):
+    external = tmp_path / "external"
+    external.mkdir()
+    parent = tmp_path / component
+    parent.parent.mkdir(parents=True, exist_ok=True)
+    parent.symlink_to(external, target_is_directory=True)
+    assert recover_deletions(tmp_path) == {"recovered": [], "blocked": [
+        {"path": "memory", "reason": "symlink_directory"},
+    ]}
