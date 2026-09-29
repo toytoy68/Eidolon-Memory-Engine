@@ -65,6 +65,8 @@ class ContextAssembler:
                    for status in allowed_epistemic_statuses)
         ):
             raise ValueError("invalid epistemic status filter")
+        selected_statuses = (frozenset(allowed_epistemic_statuses)
+                             if allowed_epistemic_statuses is not None else None)
 
         items = []
         seen = set()
@@ -88,9 +90,9 @@ class ContextAssembler:
                 if memory.information_id in seen or not isinstance(memory.content, str):
                     continue
                 seen.add(memory.information_id)
-                if (allowed_epistemic_statuses is not None
+                if (selected_statuses is not None
                         and self._label(memory.metadata, "epistemic_status")
-                        not in allowed_epistemic_statuses):
+                        not in selected_statuses):
                     continue
                 if not memory.content:
                     continue

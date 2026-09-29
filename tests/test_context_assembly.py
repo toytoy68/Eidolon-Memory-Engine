@@ -116,6 +116,23 @@ def test_explicit_epistemic_filter_can_include_missing_status(tmp_path):
         ContextAssembler(backend).assemble("alpha", allowed_epistemic_statuses={"VALID"})
 
 
+def test_epistemic_filter_is_snapshotted_before_pagination():
+    allowed = {"CONFIRMED"}
+
+    class ChangingCaller:
+        def search(self, query, options):
+            if options["offset"] == 0:
+                allowed.add("REFUTED")
+                return [SearchResult(Memory(f"empty-{i}", content="",
+                                            metadata={"epistemic_status": "CONFIRMED"}), 1.0)
+                        for i in range(100)]
+            return [SearchResult(Memory("refuted", content="text",
+                                        metadata={"epistemic_status": "REFUTED"}), 0.5)]
+
+    assert ContextAssembler(ChangingCaller()).assemble(
+        "query", allowed_epistemic_statuses=allowed).items == ()
+
+
 def test_context_skips_nontext_empty_and_duplicate_search_hits():
     @dataclass
     class FakeBackend:
@@ -201,11 +218,22 @@ def test_filesystem_search_offset_pages_ranked_results(tmp_path):
 @pytest.mark.parametrize("options", [
     {"limit": 0}, {"limit": True}, {"limit": "5"},
     {"offset": -1}, {"offset": False}, {"offset": 1.5},
+    {"ranking": []}, {"ranking": "unknown"}, {"unsupported": True},
 ])
 def test_filesystem_search_rejects_invalid_pagination(tmp_path, options):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     with pytest.raises(ValueError):
         backend.search("alpha", options)
+
+
+def test_filesystem_search_validates_options_even_for_empty_query(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(ValueError, match="ranking"):
+        backend.search("", {"ranking": "unknown"})
+    with pytest.raises(ValueError, match="options"):
+        backend.search("alpha", ["limit"])
+    with pytest.raises(ValueError, match="query"):
+        backend.search(None)
 
 
 @pytest.mark.parametrize("kwargs", [

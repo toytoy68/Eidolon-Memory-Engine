@@ -546,8 +546,11 @@ class FilesystemBackend(MemoryBackend):
         query: str,
         options: dict[str, Any] | None = None,
     ) -> list[SearchResult]:
-        if not query:
-            return []
+        if not isinstance(query, str):
+            raise ValueError("query must be text")
+        if options is not None and (not isinstance(options, dict)
+                                    or options.keys() - {"limit", "offset", "ranking"}):
+            raise ValueError("invalid search options")
 
         limit = 100
         offset = 0
@@ -563,6 +566,9 @@ class FilesystemBackend(MemoryBackend):
             offset = options["offset"]
             if type(offset) is not int or offset < 0:
                 raise ValueError("offset must be a nonnegative integer")
+
+        if not query:
+            return []
 
         query_terms = [
             term.lower()

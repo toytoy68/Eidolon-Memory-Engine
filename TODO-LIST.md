@@ -182,6 +182,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-036g — Le classement lexical normalise les formes Unicode
   équivalentes (NFC) et cherche dans les valeurs des contenus structurés,
   sans retirer les accents (2026-09-29).
+- **【FAIT】** T-036h — La recherche fichier valide les options et le mode de
+  classement même pour une requête vide ; l'assembleur fixe les statuts
+  autorisés au début de la pagination (2026-09-29).
 - **【FAIT】** T-037a — Audit du cycle de vie sur copie arrêtée : comptes de
   rétention et de période de validité distincts à une date explicite, sans
   suppression ni sortie du contenu ; voir `docs/LIFECYCLE.md` (2026-09-29).
@@ -196,7 +199,7 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 429 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 434 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
