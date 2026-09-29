@@ -183,6 +183,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   Review et reçus d'opération par écriture atomique avec synchronisation disque ;
   les écritures sur plusieurs fichiers restent sans transaction commune
   (2026-09-29).
+- **【FAIT】** T-028b — Le tableau des écrivains dans `docs/ARCHITECTURE.md`
+  décrit les verrous et écritures atomiques des services historiques sans leur
+  attribuer une transaction multi-fichiers (2026-09-29).
 - **【FAIT】** T-032a — Une demande `PENDING_DELETE` ne peut plus être écrasée
   par une autre ; le rejeu strictement identique est sans écriture, un reçu
   illisible bloque la demande (trois tests, 2026-09-28).

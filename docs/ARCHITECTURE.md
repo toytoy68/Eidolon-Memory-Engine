@@ -1,6 +1,6 @@
 # Frontières actuelles du Memory Engine
 
-État du dépôt au 2026-09-28. Les décisions ci-dessous concernent le code
+État du dépôt au 2026-09-29. Les décisions ci-dessous concernent le code
 présent ; leur adoption sur la VM 110 reste soumise à sauvegarde, inventaire et
 tests. La source de vérité est le stockage en fichiers sous `memory/`, pas un
 index Qdrant. La forme future des API et de la migration reste ouverte.
@@ -16,9 +16,9 @@ index Qdrant. La forme future des API et de la migration reste ouverte.
 | `core/information/LinkedInformationDeletionService` | Backend partagé avec les Threads | Délègue l'approbation au backend | Façade de compatibilité ; la protection est appliquée aussi aux appels directs au backend. Les anciens CLI restent indépendants. |
 | `core/operations/FilesystemThreadOperations` | Thread, Event et Operation | Journaux `thread-status-v1`, nouveau Thread ; ordre de verrous Thread → Operation → Event | Exécuter `recover` après redémarrage avant de reprendre les mutations. |
 | `core/events/FilesystemEventRepository` | Events de son répertoire configuré | Nouveaux Events append-only | Le listing d'un dépôt n'agrège pas les autres sous-répertoires ni les Events anciens. |
-| `services/memory-controller` | Working, Persistent, Reviews, anciens plans | YAML en `working/`, `persistent/`, `history/{events,reviews}/` et reçus JSON dans `history/operations/` | Écrivain historique direct, sans les verrous des dépôts core ; arrêter avant toute écriture core sur les mêmes données. |
-| `services/memory-relations` | Informations Working, Reviews | Modifie Working ; crée Events et Reviews historiques | Même interdiction de concurrence ; son format Event ne correspond pas au format core. |
-| `core/migration/{inventory,preflight}` | Signatures et métadonnées de fichiers | Aucune | Exécuter sur une copie sauvegardée. Ce ne sont pas des convertisseurs. |
+| `services/memory-controller` | Working, Persistent, Reviews, anciens plans | YAML en `working/`, `persistent/`, `history/{events,reviews}/` et reçus JSON dans `history/operations/` | Verrous partagés sur Working ou Persistent selon l'opération, contrôle de format Persistent et publication atomique de chaque fichier ; Events/Reviews/reçus ne forment pas une transaction. Garder les données historiques isolées. |
+| `services/memory-relations` | Informations Working, Reviews | Modifie Working ; crée Events et Reviews historiques | Ajout limité à Working sous le verrou partagé, fichiers publiés atomiquement ; son Event n'a pas le format core et l'ensemble des écritures n'est pas transactionnel. |
+| `core/migration/{inventory,preflight,simulation}` | Signatures, métadonnées et aperçus en mémoire | Aucune | Exécuter sur une copie sauvegardée. Ce ne sont pas des convertisseurs. |
 | `core/monitoring/*` | Mesures, statuts, aperçus `.md` autorisés | Aucune | Le TDB peut lire pendant une écriture et afficher un état provisoire ; ne pas interpréter ses chiffres comme un snapshot atomique. |
 
 Les autres anciens services lisent principalement les Informations YAML et
@@ -44,12 +44,16 @@ uniquement sur une racine historique isolée. Le controller historique partage
 désormais le verrou Working lors des commandes `ingest`, `update` d'un fichier
 Working et `review`. Ses commandes `update` et `review` refusent aussi les
 chemins hors de leurs répertoires respectifs. Leurs Events/Reviews ne forment
-toujours pas une transaction atomique. Les écritures de `memory-relations`
+toujours pas une transaction atomique. Les écritures de `memory-relations` et
+du controller historique
 passent par un fichier temporaire synchronisé
 et un remplacement atomique ; l'ajout de relation modifie seulement le champ
 YAML `relations` dans le front matter et conserve le corps. Un bloc de relations
 non reconnu est refusé sans écriture, afin d'éviter une perte de sous-champs.
-Les CLI classifier, router, executor et semantic-validator sont essentiellement
+Cette publication atomique protège chaque fichier isolé d'une écriture
+partielle ; elle ne permet pas de reprendre une séquence interrompue entre
+Information, Event, Review et reçu d'opération. Les CLI classifier, router,
+executor et semantic-validator sont essentiellement
 lecteurs/producteurs de plans ; les adapter après choix du format cible.
 Avant une mise en service core, arrêter les écrivains historiques, migrer ou
 archiver leurs données sur une copie, puis rediriger les usages nécessaires vers
