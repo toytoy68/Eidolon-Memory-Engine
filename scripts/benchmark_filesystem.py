@@ -32,15 +32,19 @@ def main(argv: list[str] | None = None) -> int:
         listed = perf_counter()
         matches = backend.search("needle")
         searched = perf_counter()
+        ranked_matches = backend.search("needle", {"ranking": "lexical_v1"})
+        ranked = perf_counter()
         manifest = build_manifest(backend.persistent_root)
         indexed = perf_counter()
     print(json.dumps({
         "count": args.count, "first_page_count": len(page),
         "search_matches": len(matches), "manifest_count": len(manifest.entries),
+        "ranked_search_matches": len(ranked_matches),
         "store_seconds": round(stored - start, 4),
         "first_page_seconds": round(listed - stored, 4),
         "search_seconds": round(searched - listed, 4),
-        "manifest_seconds": round(indexed - searched, 4),
+        "ranked_search_seconds": round(ranked - searched, 4),
+        "manifest_seconds": round(indexed - ranked, 4),
     }, sort_keys=True))
     return 0
 

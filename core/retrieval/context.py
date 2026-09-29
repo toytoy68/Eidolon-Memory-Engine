@@ -17,6 +17,7 @@ class ContextItem:
     epistemic_status: str | None
     operational_state: str | None
     confidence: str | None
+    ranking: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -33,12 +34,15 @@ class ContextAssembler:
         self.backend = backend
 
     def assemble(self, query: str, *, max_items: int = 5,
-                 max_chars: int = 4000, max_item_chars: int = 1000) -> ContextBundle:
+                 max_chars: int = 4000, max_item_chars: int = 1000,
+                 ranking: str | None = None) -> ContextBundle:
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be nonempty text")
         if any(type(value) is not int or value < 1
                for value in (max_items, max_chars, max_item_chars)):
             raise ValueError("context limits must be positive integers")
+        if ranking not in (None, "lexical_v1"):
+            raise ValueError("unknown context ranking")
 
         items = []
         seen = set()
@@ -48,7 +52,10 @@ class ContextAssembler:
         offset = 0
         seen_pages = set()
         while remaining and len(items) < max_items:
-            candidates = self.backend.search(query, {"limit": page_size, "offset": offset})
+            options = {"limit": page_size, "offset": offset}
+            if ranking is not None:
+                options["ranking"] = ranking
+            candidates = self.backend.search(query, options)
             page_ids = tuple(result.memory.information_id for result in candidates)
             if page_ids in seen_pages:
                 break
@@ -70,6 +77,7 @@ class ContextAssembler:
                     epistemic_status=self._label(memory.metadata, "epistemic_status"),
                     operational_state=self._label(memory.metadata, "operational_state"),
                     confidence=self._label(memory.metadata, "confidence"),
+                    ranking=result.metadata.get("ranking") if ranking is not None else None,
                 ))
                 remaining -= length
                 if len(items) == max_items or remaining == 0:

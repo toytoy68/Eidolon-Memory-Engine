@@ -157,12 +157,18 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-038 — Le validateur Information accepte les membres Enum et
   leurs valeurs texte sans dépendre du test d'appartenance à `EnumType`, qui
   lève sur Python 3.11 pour une valeur invalide (2026-09-29 ; tests isolés).
+- **【FAIT】** T-036a — Premier classement lexical optionnel de la recherche
+  fichier : couverture des termes, contenu, phrase et fréquence plafonnée,
+  avec score explicable et ordre déterministe. L'assembleur peut le demander
+  sans perdre les statuts épistémiques ; aucun statut n'ajoute de bonus de
+  vérité. Mesure synthétique de 15 000 fichiers documentée ; récence,
+  importance, preuves et budget tokens restent ouverts (2026-09-29).
 - **【FAIT】** T-002 — Changement de statut Thread récupérable avec journal,
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 400 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 404 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens

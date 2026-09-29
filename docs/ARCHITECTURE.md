@@ -5,6 +5,20 @@ présent ; leur adoption sur la VM 110 reste soumise à sauvegarde, inventaire e
 tests. La source de vérité est le stockage en fichiers sous `memory/`, pas un
 index Qdrant. La forme future des API et de la migration reste ouverte.
 
+## Recherche lexicale optionnelle
+
+`FilesystemBackend.search(query, {"ranking": "lexical_v1"})` parcourt les
+Informations core et classe les correspondances par couverture des termes,
+présence dans le contenu, phrase et fréquence plafonnée. Le score et ses
+composantes sont retournés avec chaque résultat ; l'ordre des égalités suit
+l'identifiant. `ContextAssembler.assemble(..., ranking="lexical_v1")` conserve
+ces composantes et les étiquettes épistémiques séparément. Sans cette option,
+le classement historique est conservé. Ce premier classement lexical ne
+mesure ni la vérité, ni la récence, ni l'importance, ni la qualité des preuves ;
+une Information `REFUTED` reste consultable et étiquetée. La politique de
+sélection, le budget de tokens et la validation sur un corpus représentatif
+restent à définir avant une intégration agentique.
+
 ## Composants et droits d'écriture
 
 | Composant | Lecture | Écriture actuelle | Règle de coexistence |

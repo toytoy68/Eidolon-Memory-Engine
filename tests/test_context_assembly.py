@@ -27,6 +27,19 @@ def test_context_from_real_files_is_bounded_and_traceable(tmp_path):
     assert backend.get("info-1").content == "alpha " * 10
 
 
+def test_context_opt_in_ranking_keeps_explanation_and_status_separate(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("metadata", content="unrelated",
+                         metadata={"topic": "cuivre pompe", "epistemic_status": "CONFIRMED"}))
+    backend.store(Memory("content", content="cuivre pompe",
+                         metadata={"epistemic_status": "REFUTED"}))
+    bundle = ContextAssembler(backend).assemble("cuivre pompe", ranking="lexical_v1")
+    assert [item.information_id for item in bundle.items] == ["content", "metadata"]
+    assert bundle.items[0].epistemic_status == "REFUTED"
+    assert bundle.items[0].ranking["content_coverage"] == 1
+    assert bundle.items[1].ranking["content_coverage"] == 0
+
+
 def test_context_skips_nontext_empty_and_duplicate_search_hits():
     @dataclass
     class FakeBackend:

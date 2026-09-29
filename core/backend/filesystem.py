@@ -551,6 +551,9 @@ class FilesystemBackend(MemoryBackend):
 
         limit = 100
         offset = 0
+        ranking = options.get("ranking", "legacy") if options else "legacy"
+        if not isinstance(ranking, str) or ranking not in {"legacy", "lexical_v1"}:
+            raise ValueError("unknown search ranking")
 
         if options and "limit" in options:
             limit = options["limit"]
@@ -570,6 +573,19 @@ class FilesystemBackend(MemoryBackend):
             return []
 
         results: list[SearchResult] = []
+
+        if ranking == "lexical_v1":
+            from core.retrieval.ranking import lexical_ranking
+            for memory in self._iter_valid_memories():
+                ranked = lexical_ranking(query, memory.content,
+                                         memory.information_id, memory.metadata)
+                if ranked.coverage:
+                    results.append(SearchResult(
+                        memory=memory, score=ranked.score,
+                        metadata={"ranking": ranked.explanation()},
+                    ))
+            results.sort(key=lambda result: (-result.score, result.memory.information_id))
+            return results[offset:offset + limit]
 
         for memory in self._iter_valid_memories():
             haystack = self._json(
