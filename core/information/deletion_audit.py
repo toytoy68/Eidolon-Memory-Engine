@@ -39,6 +39,10 @@ def audit_deletions(engine_root: Path) -> dict:
                         or record["revision"] < 1
                         or not isinstance(record.get("operation_id"), str)
                         or not record["operation_id"]
+                        or not isinstance(record.get("requested_by"), str)
+                        or not record["requested_by"]
+                        or not isinstance(record.get("reason"), str)
+                        or not record["reason"]
                         or (record.get("status") == "APPLYING_DELETE"
                             and (not isinstance(record.get("content_sha256"), str)
                                  or not re.fullmatch(r"[0-9a-f]{64}", record["content_sha256"])))):

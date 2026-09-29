@@ -242,3 +242,30 @@ def test_approve_delete_recovery_rejects_changed_information(tmp_path, monkeypat
     assert backend._path("info-test").read_text() == "replacement"
     with pytest.raises(RevisionConflict, match="not pending"):
         backend.cancel_delete("info-test", "op-1")
+
+
+@pytest.mark.parametrize("field,value", [("requested_by", None), ("reason", ""),
+                                           ("operation_id", ""), ("revision", True)])
+def test_new_deletion_request_rejects_unusable_fields(tmp_path, field, value):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test"))
+    fields = {"requested_by": "human", "reason": "because", "revision": 1,
+              "operation_id": "op-1"}
+    fields[field] = value
+    with pytest.raises(InvalidMemory, match="invalid deletion request fields"):
+        backend.delete_request("info-test", **fields)
+    assert not (backend.pending_delete_root / "info-test.json").exists()
+
+
+@pytest.mark.parametrize("field,value", [("requested_by", None), ("reason", "")])
+def test_malformed_deletion_receipt_cannot_approve(tmp_path, field, value):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test"))
+    backend.delete_request("info-test", "human", "because", 1, "op-1")
+    receipt = backend.pending_delete_root / "info-test.json"
+    record = json.loads(receipt.read_text())
+    record[field] = value
+    receipt.write_text(json.dumps(record))
+    with pytest.raises(InvalidMemory, match="invalid"):
+        backend.approve_delete("info-test", "op-1")
+    assert backend.exists("info-test")

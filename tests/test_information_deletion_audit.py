@@ -14,6 +14,7 @@ def test_audit_reports_deletion_waiting_for_resume(tmp_path):
     (requests / "info-1.json").write_text(json.dumps({
         "information_id": "info-1", "operation_id": "op-1", "revision": 1,
         "status": "APPLYING_DELETE", "content_sha256": "a" * 64,
+        "requested_by": "human", "reason": "test",
     }))
     report = audit_deletions(root)
     assert report["requests_checked"] == 1

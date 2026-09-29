@@ -146,7 +146,8 @@ La demande en attente n'est plus remplacée par une autre demande ; un rejeu
 identique est accepté sans écriture. Une demande `CANCELLED` peut toutefois être
 remplacée par une nouvelle demande sur le même identifiant : ce fichier n'est
 pas un historique complet des décisions. L'approbation et l'annulation refusent
-un reçu dont l'identité Information ne correspond pas au fichier demandé.
+un reçu dont l'identité Information ne correspond pas au fichier demandé, ou
+dont l'auteur, le motif, la révision ou l'identifiant d'opération sont invalides.
 
 Sur une copie arrêtée :
 

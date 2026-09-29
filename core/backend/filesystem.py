@@ -283,6 +283,11 @@ class FilesystemBackend(MemoryBackend):
         revision: int,
         operation_id: str,
     ) -> DeleteResult:
+        if (not isinstance(requested_by, str) or not requested_by
+                or not isinstance(reason, str) or not reason
+                or not isinstance(operation_id, str) or not operation_id
+                or type(revision) is not int or revision < 1):
+            raise InvalidMemory("invalid deletion request fields")
         memory = self.get(information_id)
 
         if memory is None:
@@ -339,6 +344,10 @@ class FilesystemBackend(MemoryBackend):
                 or type(request.get("revision")) is not int or request["revision"] < 1
                 or not isinstance(request.get("operation_id"), str)
                 or not request["operation_id"]
+                or not isinstance(request.get("requested_by"), str)
+                or not request["requested_by"]
+                or not isinstance(request.get("reason"), str)
+                or not request["reason"]
                 or (request.get("status") == "APPLYING_DELETE"
                     and (not isinstance(request.get("content_sha256"), str)
                          or not re.fullmatch(r"[0-9a-f]{64}", request["content_sha256"])))):
