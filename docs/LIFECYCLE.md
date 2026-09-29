@@ -63,3 +63,16 @@ la cible apparaît après un retrait interrompu, le reçu reste bloqué pour rev
 humaine au lieu d'être déclaré terminé. Les écrivains directs actuels ne
 valident pas encore toutes les cibles lors de leur création ; cette frontière
 reste à traiter avant une ouverture aux agents.
+
+Sur une copie arrêtée, un inventaire distinct aide à mesurer cette frontière :
+
+```sh
+python -m core.information.relation_audit --root /chemin/vers/copie
+```
+
+Il vérifie les Informations core et leur empreinte, puis compte les relations
+vers une Information présente, vers le document lui-même, vers une cible
+**externe ou absente**, ainsi que les cibles invalides ou contradictoires.
+Une cible externe peut désigner un objet non Information ; le rapport ne la
+qualifie donc pas automatiquement de lien cassé. Il ne révèle ni ID, ni texte
+et ne modifie aucun document.

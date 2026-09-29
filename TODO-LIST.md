@@ -204,12 +204,16 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-032l — La reprise d'une suppression interrompue reste bloquée
   lorsqu'une autre Information a créé une référence vers la cible déjà retirée,
   au lieu de finaliser silencieusement le reçu (2026-09-29).
+- **【FAIT】** T-032m — Inventaire en lecture seule des relations Information
+  core vers une cible présente, elle-même, externe ou absente, invalide ou
+  ambiguë, sans imposer que toute relation cible une Information
+  (2026-09-29).
 - **【FAIT】** T-002 — Changement de statut Thread récupérable avec journal,
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 445 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 447 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
