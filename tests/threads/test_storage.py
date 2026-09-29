@@ -2,6 +2,11 @@ from pathlib import Path
 
 from core.threads.models import Thread, ThreadStatus
 from core.threads.storage import ThreadStorage
+from core.threads.storage import ThreadStorageError
+from core.backend.filesystem import FilesystemBackend
+from core.backend.models import Memory
+import pytest
+from dataclasses import replace
 
 
 def make_thread() -> Thread:
@@ -32,6 +37,28 @@ def test_create_thread(tmp_path: Path):
     path = tmp_path / "threads" / "thread-test-001.md"
 
     assert path.exists()
+
+
+def test_direct_thread_create_requires_existing_linked_information(tmp_path):
+    storage = ThreadStorage(tmp_path / "persistent")
+    linked = replace(make_thread(), relations=[{"type": "CONCERNS", "target_id": "info-1"}])
+    with pytest.raises(ThreadStorageError, match="missing linked Information"):
+        storage.create(linked)
+    assert not storage.exists(linked.thread_id)
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-1"))
+    storage.create(linked)
+    assert storage.get(linked.thread_id) == linked
+
+
+def test_direct_thread_update_cannot_change_concerns(tmp_path):
+    storage = ThreadStorage(tmp_path / "persistent")
+    original = make_thread()
+    storage.create(original)
+    changed = replace(original, revision=2, relations=[{"type": "CONCERNS", "target_id": "info-1"}])
+    with pytest.raises(ThreadStorageError, match="coordinated writer"):
+        storage.update(changed, 1)
+    assert storage.get(original.thread_id) == original
 
 
 def test_get_thread(tmp_path: Path):

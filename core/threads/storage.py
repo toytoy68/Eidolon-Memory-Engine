@@ -331,6 +331,41 @@ class ThreadStorage:
     # Basic storage operations
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _concerns(thread: Thread) -> set[str]:
+        targets = set()
+        for relation in thread.relations:
+            if not isinstance(relation, dict):
+                raise ThreadStorageError("invalid Thread relation")
+            if relation.get("type") != "CONCERNS":
+                continue
+            target = relation.get("target_id")
+            legacy = relation.get("target")
+            if (target is not None and legacy is not None and target != legacy):
+                raise ThreadStorageError("ambiguous CONCERNS target")
+            target = target if target is not None else legacy
+            if not isinstance(target, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", target):
+                raise ThreadStorageError("invalid CONCERNS target")
+            targets.add(target)
+        return targets
+
+    def _check_concerns(self, thread: Thread) -> None:
+        # The persistent lock is held by create before checking any target.
+        from core.backend.filesystem import FilesystemBackend
+        from core.backend.errors import InvalidMemory
+
+        for target in self._concerns(thread):
+            path = self.persistent_root / f"{target}.md"
+            if path.is_symlink() or not path.is_file():
+                raise ThreadStorageError(f"missing linked Information: {target}")
+            try:
+                memory = FilesystemBackend._deserialize(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, InvalidMemory) as exc:
+                raise ThreadStorageError(f"unreadable linked Information: {target}") from exc
+            if memory.information_id != target:
+                raise ThreadStorageError(f"linked Information identity mismatch: {target}")
+
+    @serialized_write("persistent_root")
     @serialized_write("threads_root")
     def create(self, thread: Thread) -> None:
         """Create a new persistent Thread."""
@@ -342,6 +377,7 @@ class ThreadStorage:
         if path.exists():
             raise ThreadAlreadyExists(thread.thread_id)
 
+        self._check_concerns(thread)
         content = self._serialize(thread)
 
         self._atomic_write(
@@ -401,6 +437,9 @@ class ThreadStorage:
                 f"{thread.thread_id}: new revision must be "
                 f"{expected_revision}, got {thread.revision}"
             )
+
+        if self._concerns(current) != self._concerns(thread):
+            raise ThreadStorageError("CONCERNS changes require a coordinated writer")
 
         content = self._serialize(thread)
 

@@ -45,10 +45,12 @@ def test_audit_flags_invalid_thread_without_writing(tmp_path):
 def test_audit_flags_ambiguous_concerns_target(tmp_path):
     root = tmp_path / "memory"
     threads = ThreadStorage(root / "persistent")
-    threads.create(Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
-                          updated_at="2026-09-28", relations=[
-                              {"type": "CONCERNS", "target_id": "info-2", "target": "info-1"},
-                          ]))
+    malformed = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                       updated_at="2026-09-28", relations=[
+                           {"type": "CONCERNS", "target_id": "info-2", "target": "info-1"},
+                       ])
+    # Simulate historical data bypassing the current storage writer.
+    threads._path("thread-1").write_text(threads._serialize(malformed))
     assert audit_links(tmp_path) == {"threads_checked": 1, "links_checked": 1, "issues": [{
         "thread": "memory/persistent/threads/thread-1.md", "reason": "invalid_target_id",
     }]}

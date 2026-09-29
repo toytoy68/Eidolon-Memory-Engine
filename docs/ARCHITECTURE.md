@@ -74,6 +74,13 @@ reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
 création restent à adapter.
 `ThreadService.recover_all` fournit le même ordre de reprise aux appelants
 Python lorsque les deux coordinateurs lui sont injectés.
+L'écriture directe de `ThreadStorage.create` prend maintenant les verrous
+`persistent/` puis `threads/` et vérifie que chaque cible `CONCERNS` est une
+Information core lisible au même identifiant. `ThreadStorage.update` refuse
+de changer les cibles `CONCERNS` directement. Cela protège les liens contre
+une suppression concurrente, mais une création directe reste dépourvue de
+journal et d'Event : les applications doivent utiliser le coordinateur de
+création pour obtenir une reprise complète.
 Le CLI de changement de statut vérifie les journaux de création en attente et
 refuse la mutation du Thread concerné avant `recover-creations`. Les appels
 Python qui construisent `FilesystemThreadOperations` doivent lui passer le

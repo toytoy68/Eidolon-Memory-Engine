@@ -98,8 +98,10 @@ def test_direct_backend_approval_rejects_untrusted_thread(tmp_path, thread_file)
 def test_direct_backend_approval_rejects_ambiguous_concerns_relation(tmp_path, relation):
     backend, threads, _ = stores(tmp_path)
     backend.store(Memory("info-1", content="keep"))
-    threads.create(Thread("thread-1", "Title", "Objective", relations=[relation],
-                          created_at="2026-09-28", updated_at="2026-09-28"))
+    malformed = Thread("thread-1", "Title", "Objective", relations=[relation],
+                       created_at="2026-09-28", updated_at="2026-09-28")
+    # Existing malformed data can still be encountered even though the writer rejects it.
+    threads._path("thread-1").write_text(threads._serialize(malformed))
     backend.delete_request("info-1", "human", "reason", 1, "delete-1")
 
     with pytest.raises(InformationDeletionBlocked, match="Thread CONCERNS target"):
