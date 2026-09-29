@@ -274,7 +274,7 @@ def create_review(information_id: str, reason: str) -> Path:
     return review_path
 
 
-def ingest(args: argparse.Namespace) -> int:
+def _ingest_unlocked(args: argparse.Namespace) -> int:
     info_type = args.type.upper()
 
     if info_type not in ALLOWED_TYPES:
@@ -483,7 +483,7 @@ Transition de revision {old_revision} vers revision {new_revision}.
 
     return 0
 
-def resolve_review(review_path: Path, decision: str, reason: str) -> int:
+def _resolve_review_unlocked(review_path: Path, decision: str, reason: str) -> int:
     decision = decision.upper()
     allowed = {"CONFIRMED", "REFUTED", "CONFLICTED"}
 
@@ -2026,17 +2026,41 @@ def _execute_execution_plan_unlocked(
     return decision
 
 
+def ingest(args: argparse.Namespace) -> int:
+    WORKING_ROOT.mkdir(parents=True, exist_ok=True)
+    with exclusive_write(WORKING_ROOT):
+        return _ingest_unlocked(args)
+
+
+def resolve_review(review_path: Path, decision: str, reason: str) -> int:
+    if (review_path.is_symlink() or review_path.parent.resolve() != REVIEWS_ROOT.resolve()
+            or review_path.suffix != ".md"):
+        print("ERREUR : Review doit être un fichier Markdown de l'historique")
+        return 1
+    WORKING_ROOT.mkdir(parents=True, exist_ok=True)
+    with exclusive_write(WORKING_ROOT):
+        return _resolve_review_unlocked(review_path, decision, reason)
+
+
 def update_information(
     path: Path, new_epistemic: str | None, new_operational: str | None,
     new_confidence: str | None, new_importance: str | None,
     reason: str, event_type: str, event_id_out: list[str] | None = None,
 ) -> int:
     """Reject updates to Persistent Memory while core data shares the root."""
+    if path.is_symlink() or path.suffix != ".md":
+        print("ERREUR : source doit être un fichier Markdown sans lien symbolique")
+        return 1
+    if path.parent.resolve() == WORKING_ROOT.resolve():
+        WORKING_ROOT.mkdir(parents=True, exist_ok=True)
+        with exclusive_write(WORKING_ROOT):
+            return _update_information_unlocked(
+                path, new_epistemic, new_operational, new_confidence,
+                new_importance, reason, event_type, event_id_out,
+            )
     if path.parent.resolve() != PERSISTENT_ROOT.resolve():
-        return _update_information_unlocked(
-            path, new_epistemic, new_operational, new_confidence,
-            new_importance, reason, event_type, event_id_out,
-        )
+        print("ERREUR : mise à jour limitée aux fichiers Working ou Persistent Memory")
+        return 1
     with exclusive_write(PERSISTENT_ROOT):
         try:
             require_legacy_persistent_only(PERSISTENT_ROOT, HISTORY_ROOT)

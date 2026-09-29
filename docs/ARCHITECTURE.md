@@ -40,9 +40,11 @@ Events core ni ne répare les écritures historiques interrompues.
 `memory-relations` écrit dans Working Memory et produit des Events/Reviews
 historiques : sa commande `add` refuse maintenant les sources hors de
 `memory/working/*.md` et prend le verrou de ce répertoire. Le conserver
-uniquement sur une racine historique isolée ; le controller historique ne
-partage pas encore tous ses verrous Working et leurs Events/Reviews ne forment
-pas une transaction atomique. Les
+uniquement sur une racine historique isolée. Le controller historique partage
+désormais le verrou Working lors des commandes `ingest`, `update` d'un fichier
+Working et `review`. Ses commandes `update` et `review` refusent aussi les
+chemins hors de leurs répertoires respectifs. Leurs Events/Reviews ne forment
+toujours pas une transaction atomique. Les
 CLI classifier, router, executor et semantic-validator sont essentiellement
 lecteurs/producteurs de plans ; les adapter après choix du format cible.
 Avant une mise en service core, arrêter les écrivains historiques, migrer ou

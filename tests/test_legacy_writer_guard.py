@@ -1,9 +1,12 @@
 import importlib.util
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Event
 
 import pytest
 
 from core.migration.legacy_guard import require_legacy_persistent_only
+from core.persistence import exclusive_write
 
 
 CONTROLLER = Path(__file__).resolve().parents[1] / "services/memory-controller/memory_controller.py"
@@ -70,3 +73,37 @@ def test_controller_blocks_direct_persistent_update_when_core_present(tmp_path, 
     monkeypatch.setattr(controller, "_update_information_unlocked", lambda *args: pytest.fail("wrote"))
     assert controller.update_information(old, None, None, None, None, "reason", "UPDATED") == 1
     assert old.read_text().endswith("original\n")
+
+
+def test_controller_working_update_waits_for_shared_writer_lock(tmp_path, monkeypatch):
+    controller = load_controller()
+    working = tmp_path / "working"
+    working.mkdir()
+    source = working / "info-1.md"
+    source.write_text("legacy")
+    monkeypatch.setattr(controller, "WORKING_ROOT", working)
+    entered = Event()
+    started = Event()
+    monkeypatch.setattr(controller, "_update_information_unlocked", lambda *args: entered.set() or 0)
+
+    def update():
+        started.set()
+        return controller.update_information(source, None, None, None, None, "reason", "UPDATED")
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        with exclusive_write(working):
+            future = executor.submit(update)
+            assert started.wait(1)
+            assert not entered.is_set()
+        assert future.result(timeout=2) == 0
+    assert entered.is_set()
+
+
+def test_controller_rejects_updates_outside_memory_roots(tmp_path, monkeypatch):
+    controller = load_controller()
+    monkeypatch.setattr(controller, "WORKING_ROOT", tmp_path / "working")
+    monkeypatch.setattr(controller, "PERSISTENT_ROOT", tmp_path / "persistent")
+    outside = tmp_path / "outside.md"
+    outside.write_text("private")
+    assert controller.update_information(outside, None, None, None, None, "reason", "UPDATED") == 1
+    assert outside.read_text() == "private"
