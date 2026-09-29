@@ -188,6 +188,8 @@ class ThreadStorage:
             raise ThreadStorageError(
                 "invalid Thread revision"
             ) from exc
+        if revision_value < 1:
+            raise ThreadStorageError("invalid Thread revision")
 
         try:
             status_value = ThreadStatus(status.group(1).strip())

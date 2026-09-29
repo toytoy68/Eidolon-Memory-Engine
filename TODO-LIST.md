@@ -219,7 +219,7 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 453 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 454 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -291,6 +291,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031x — Les quatre dépôts core refusent dès leur construction
   tout parent symbolique dans les chemins de stockage, avant la création des
   répertoires ; contrôle commun et tests isolés (2026-09-29).
+- **【FAIT】** T-031z — Les lecteurs historiques Information et Thread
+  rejettent une révision zéro comme les lecteurs du format core 0.2
+  (2026-09-29).
 - **【FAIT】** T-031y — La création commune des répertoires vérifie tous les
   chemins configurés avant la première écriture et rejette les parents
   symboliques, y compris avec les chemins par défaut (2026-09-29).

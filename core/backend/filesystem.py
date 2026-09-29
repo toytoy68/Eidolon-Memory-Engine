@@ -154,6 +154,8 @@ class FilesystemBackend(MemoryBackend):
             revision_value = int(revision.group(1))
         except ValueError as exc:
             raise InvalidMemory("invalid revision") from exc
+        if revision_value < 1:
+            raise InvalidMemory("invalid revision")
 
         content_match = re.search(
             r"## Content\s+(.*?)(?:\n---|\Z)",

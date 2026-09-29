@@ -47,6 +47,16 @@ def test_legacy_thread_remains_readable():
     assert value.objective == "Legacy objective"
 
 
+def test_legacy_documents_reject_zero_revision():
+    memory = (FIXTURES / "memory-v01.md").read_text().replace("revision: 1", "revision: 0")
+    thread = (FIXTURES / "thread-v01.md").read_text().replace("revision: 1", "revision: 0")
+    assert "revision: 0" in memory and "revision: 0" in thread
+    with pytest.raises(InvalidMemory, match="revision"):
+        FilesystemBackend._deserialize(memory)
+    with pytest.raises(ThreadStorageError, match="revision"):
+        ThreadStorage._deserialize(thread)
+
+
 @pytest.mark.parametrize("store,value,error", [(ThreadStorage, Thread("t","title","objective"),ThreadStorageError),
                                               (FilesystemBackend, Memory("m",content="x"),InvalidMemory)])
 def test_unknown_versions_and_trailing_payload_are_rejected(store, value, error):
