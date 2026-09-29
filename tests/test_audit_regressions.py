@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from core.backend.errors import RevisionConflict
+from core.backend.errors import RevisionConflict, InvalidMemory
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 from core.events.errors import InvalidEvent, EventAlreadyExists
@@ -20,7 +20,29 @@ from core.operations.models import (
 from core.threads.manager import ThreadManager
 from core.threads.models import Thread, ThreadAction, ThreadStatus
 from core.threads.queries import ThreadQuery, ThreadQueryType
-from core.threads.storage import ThreadStorage, ThreadRevisionConflict
+from core.threads.storage import ThreadStorage, ThreadRevisionConflict, ThreadStorageError
+
+
+@pytest.mark.parametrize("repository,error", [
+    ("thread", ThreadStorageError), ("information", InvalidMemory),
+    ("event", InvalidEvent), ("operation", InvalidOperationRecord),
+])
+def test_repository_constructor_rejects_linked_parent_before_creation(tmp_path,
+                                                                      repository, error):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (tmp_path / "linked").symlink_to(outside, target_is_directory=True)
+    target = tmp_path / "linked" / repository
+    with pytest.raises(error, match="symlink"):
+        if repository == "thread":
+            ThreadStorage(target)
+        elif repository == "information":
+            FilesystemBackend(target, tmp_path / "history")
+        elif repository == "event":
+            FilesystemEventRepository(target)
+        else:
+            FilesystemOperationRepository(target)
+    assert not (outside / repository).exists()
 
 
 def operation():

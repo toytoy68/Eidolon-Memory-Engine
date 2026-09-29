@@ -14,6 +14,12 @@ from threading import local
 _held_locks = local()
 
 
+def has_symlink_component(path: Path) -> bool:
+    """Inspect the path as written, without resolving away linked ancestors."""
+    path = Path(path).absolute()
+    return any(component.is_symlink() for component in (path, *path.parents))
+
+
 @contextmanager
 def _exclusive_write(root):
     # Keep the lock file: unlinking it could split waiters across two inodes.

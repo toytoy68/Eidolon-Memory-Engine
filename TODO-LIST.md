@@ -147,7 +147,7 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 394 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 398 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -216,6 +216,9 @@ stables du moteur avant l'intégration aux agents.
   une cible extérieure (2026-09-29).
 - **【FAIT】** T-031w — Le constructeur Thread refuse également une racine
   `persistent/` symbolique avant de créer `threads/` (2026-09-29).
+- **【FAIT】** T-031x — Les quatre dépôts core refusent dès leur construction
+  tout parent symbolique dans les chemins de stockage, avant la création des
+  répertoires ; contrôle commun et tests isolés (2026-09-29).
 - **【FAIT】** T-031j — Le backend Information refuse les racines de stockage et
   fichiers Information symboliques pour les lectures directes, ignore ces
   entrées lors du listing et refuse leur écrasement à la création

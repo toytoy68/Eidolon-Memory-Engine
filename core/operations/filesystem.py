@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-from core.persistence import serialized_write, atomic_write_text
+from core.persistence import serialized_write, atomic_write_text, has_symlink_component
 
 from core.operations.errors import (
     InvalidOperationRecord,
@@ -31,10 +31,10 @@ class FilesystemOperationRepository(OperationRepository):
 
     def __init__(self, root: Path) -> None:
         self.root = Path(root)
-        if self.root.is_symlink():
+        if has_symlink_component(self.root):
             raise InvalidOperationRecord("Operation directory is a symlink")
         self.root.mkdir(parents=True, exist_ok=True)
-        if self.root.is_symlink():
+        if has_symlink_component(self.root):
             raise InvalidOperationRecord("Operation directory is a symlink")
 
     def _path(self, operation_id: str) -> Path:

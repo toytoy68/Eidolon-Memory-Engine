@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from core.persistence import serialized_write, atomic_write_text
+from core.persistence import serialized_write, atomic_write_text, has_symlink_component
 
 from core.config import EVENTS_ROOT, ensure_directories
 
@@ -43,10 +43,10 @@ class FilesystemEventRepository(EventRepository):
             else EVENTS_ROOT
         )
 
-        if self.events_root.is_symlink():
+        if has_symlink_component(self.events_root):
             raise InvalidEvent("Event directory is a symlink")
         self.events_root.mkdir(parents=True, exist_ok=True)
-        if self.events_root.is_symlink():
+        if has_symlink_component(self.events_root):
             raise InvalidEvent("Event directory is a symlink")
 
     # ------------------------------------------------------------------

@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-from core.persistence import serialized_write, atomic_write_text
+from core.persistence import serialized_write, atomic_write_text, has_symlink_component
 
 from core.storage_format import encode_document, decode_document
 from .serialization import thread_to_dict
@@ -39,13 +39,13 @@ class ThreadStorage:
         self.persistent_root = Path(persistent_root)
         self.threads_root = self.persistent_root / "threads"
 
-        if self.persistent_root.is_symlink() or self.threads_root.is_symlink():
+        if has_symlink_component(self.threads_root):
             raise ThreadStorageError("Thread directory is a symlink")
         self.threads_root.mkdir(
             parents=True,
             exist_ok=True,
         )
-        if self.persistent_root.is_symlink() or self.threads_root.is_symlink():
+        if has_symlink_component(self.threads_root):
             raise ThreadStorageError("Thread directory is a symlink")
 
     # ------------------------------------------------------------------

@@ -11,7 +11,7 @@ from typing import Any
 from dataclasses import asdict, replace
 from core.storage_format import encode_document, decode_document
 
-from core.persistence import serialized_write, atomic_write_text, exclusive_write
+from core.persistence import serialized_write, atomic_write_text, exclusive_write, has_symlink_component
 from core.information.references import ensure_no_thread_links
 from core.backend.errors import InformationDeletionBlocked
 
@@ -52,13 +52,13 @@ class FilesystemBackend(MemoryBackend):
 
         self.pending_delete_root = self.history_root / "pending-delete"
 
-        if (self.persistent_root.is_symlink() or self.history_root.is_symlink()
-                or self.pending_delete_root.is_symlink()):
+        if (has_symlink_component(self.persistent_root)
+                or has_symlink_component(self.pending_delete_root)):
             raise InvalidMemory("Information storage directory is a symlink")
         self.persistent_root.mkdir(parents=True, exist_ok=True)
         self.pending_delete_root.mkdir(parents=True, exist_ok=True)
-        if (self.persistent_root.is_symlink() or self.history_root.is_symlink()
-                or self.pending_delete_root.is_symlink()):
+        if (has_symlink_component(self.persistent_root)
+                or has_symlink_component(self.pending_delete_root)):
             raise InvalidMemory("Information storage directory is a symlink")
 
     # ------------------------------------------------------------------
