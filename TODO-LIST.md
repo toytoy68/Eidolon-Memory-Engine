@@ -118,7 +118,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 290 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 293 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -179,6 +179,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   sous verrous avec le même identifiant d'opération, testée après interruption
   avant et après le retrait. L'audit signale les opérations à reprendre
   (`9d7c162`, 2026-09-28).
+- **【FAIT】** T-032e — Commande explicite d'audit puis reprise `--apply` des
+  seuls reçus `APPLYING_DELETE`, avec rapport des blocages et rejeu idempotent ;
+  les anciens `PENDING_DELETE` incohérents restent pour revue humaine
+  (2026-09-29).
 - **【FAIT】** T-033a — Simulation déterministe en lecture seule des Informations
   anciennes : proposition de mapping, fichiers candidats/bloqués, inventaire
   Events/Reviews/Operations et blocage des valeurs YAML non représentables en

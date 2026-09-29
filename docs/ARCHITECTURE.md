@@ -148,6 +148,19 @@ Sur une copie arrêtée :
 python -m core.information.deletion_audit --root /chemin/vers/copie/du/moteur
 ```
 
+Une commande distincte affiche le même audit par défaut et peut reprendre
+explicitement les **seuls** reçus `APPLYING_DELETE` après sauvegarde, sur une
+racine arrêtée :
+
+```sh
+python -m core.information.deletion_recovery --root /chemin/vers/copie/du/moteur --apply
+```
+
+Chaque reçu est repris via `FilesystemBackend.approve_delete`, sous ses verrous
+et avec les contrôles de liens et d'empreinte. Le rapport liste les reprises et
+les blocages ; une nouvelle exécution ignore les reçus déjà `DELETED`. Les
+anciens `PENDING_DELETE` sans fichier ne sont jamais finalisés par déduction.
+
 L'audit signale les demandes `APPLYING_DELETE` à reprendre, les demandes
 malformées, `PENDING_DELETE` sans Information et
 `DELETED` avec un fichier présent. Il ne lit pas le contenu des Informations,
