@@ -2,9 +2,39 @@ import json
 
 import pytest
 
-from core.backend.errors import InvalidMemory, RevisionConflict
+from core.backend.errors import InvalidMemory, MemoryAlreadyExists, RevisionConflict
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
+
+
+def test_backend_rejects_symlinked_information_without_reading_target(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    outside = tmp_path / "outside.md"
+    outside.write_text(FilesystemBackend._serialize(Memory("info-test", content="private")))
+    path = backend.persistent_root / "info-test.md"
+    path.symlink_to(outside)
+    with pytest.raises(InvalidMemory, match="symlink"):
+        backend.get("info-test")
+    with pytest.raises(InvalidMemory, match="symlink"):
+        backend.exists("info-test")
+    with pytest.raises(MemoryAlreadyExists):
+        backend.store(Memory("info-test", content="replacement"))
+    assert backend.list() == []
+    assert outside.read_text().find("private") != -1
+
+
+def test_backend_rejects_symlinked_storage_directories(tmp_path):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    persistent = tmp_path / "persistent"
+    persistent.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(InvalidMemory, match="directory is a symlink"):
+        FilesystemBackend(persistent, tmp_path / "history")
+    persistent.unlink()
+    history = tmp_path / "history"
+    history.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(InvalidMemory, match="directory is a symlink"):
+        FilesystemBackend(persistent, history)
 
 
 def test_store_and_get(tmp_path):

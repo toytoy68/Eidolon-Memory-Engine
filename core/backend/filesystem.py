@@ -53,8 +53,14 @@ class FilesystemBackend(MemoryBackend):
 
         self.pending_delete_root = self.history_root / "pending-delete"
 
+        if (self.persistent_root.is_symlink() or self.history_root.is_symlink()
+                or self.pending_delete_root.is_symlink()):
+            raise InvalidMemory("Information storage directory is a symlink")
         self.persistent_root.mkdir(parents=True, exist_ok=True)
         self.pending_delete_root.mkdir(parents=True, exist_ok=True)
+        if (self.persistent_root.is_symlink() or self.history_root.is_symlink()
+                or self.pending_delete_root.is_symlink()):
+            raise InvalidMemory("Information storage directory is a symlink")
 
     # ------------------------------------------------------------------
     # Paths
@@ -207,7 +213,7 @@ class FilesystemBackend(MemoryBackend):
 
         path = self._path(memory.information_id)
 
-        if path.exists():
+        if path.exists() or path.is_symlink():
             raise MemoryAlreadyExists(memory.information_id)
 
         self._atomic_write(path, self._serialize(memory))
@@ -220,6 +226,8 @@ class FilesystemBackend(MemoryBackend):
     def get(self, information_id: str) -> Memory | None:
         path = self._path(information_id)
 
+        if path.is_symlink():
+            raise InvalidMemory("Information path is a symlink")
         if not path.exists():
             return None
 
@@ -234,7 +242,10 @@ class FilesystemBackend(MemoryBackend):
             ) from exc
 
     def exists(self, information_id: str) -> bool:
-        return self._path(information_id).exists()
+        path = self._path(information_id)
+        if path.is_symlink():
+            raise InvalidMemory("Information path is a symlink")
+        return path.exists()
 
     @serialized_write("persistent_root")
     def update(
@@ -473,6 +484,8 @@ class FilesystemBackend(MemoryBackend):
         memories: list[Memory] = []
 
         for path in paths:
+            if path.is_symlink():
+                continue
             try:
                 memory = self._deserialize(
                     path.read_text(encoding="utf-8")
