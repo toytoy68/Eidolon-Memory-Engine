@@ -101,3 +101,20 @@ def test_preflight_rejects_recognized_but_invalid_core_documents(tmp_path):
     ]}
     assert "private content" not in json.dumps(report)
     assert not (persistent / ".write.lock").exists()
+
+
+def test_preflight_rejects_wrong_structured_revision_field_types(tmp_path):
+    document(tmp_path, "wrong-flags",
+             "id: wrong-flags\nrevision:\n  number: 3\n"
+             "  is_revision: 'false'\n  previous_revision: true\n"
+             "type: FACT\nepistemic_status: UNVERIFIED\noperational_state: ACTIVE\n")
+    document(tmp_path, "valid-flags",
+             "id: valid-flags\nrevision:\n  number: 3\n"
+             "  is_revision: true\n  previous_revision: 2\n"
+             "type: FACT\nepistemic_status: UNVERIFIED\noperational_state: ACTIVE\n")
+    assert preflight(tmp_path) == {
+        "legacy_candidates": 1, "already_core": 0,
+        "blocked": [{"path": "memory/persistent/wrong-flags.md", "reasons": [
+            "invalid_revision_flag", "invalid_previous_revision",
+        ]}],
+    }
