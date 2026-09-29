@@ -145,7 +145,7 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 390 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 391 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -298,6 +298,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-024d — La comparaison refuse les entrées invalides, identités
   répétées et empreintes globales incohérentes des manifestes fournis, avant
   de calculer les changements pour l'index (2026-09-29).
+- **【FAIT】** T-024e — La construction du manifeste refuse une Information dont
+  l'identifiant contient des caractères que le backend ne peut adresser,
+  même si son nom de fichier et son identifiant interne concordent (2026-09-29).
 - **【FAIT】** T-028b — Le tableau des écrivains dans `docs/ARCHITECTURE.md`
   décrit les verrous et écritures atomiques des services historiques sans leur
   attribuer une transaction multi-fichiers (2026-09-29).

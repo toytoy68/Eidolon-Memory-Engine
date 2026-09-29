@@ -88,6 +88,9 @@ def build_manifest(persistent_root: Path) -> IndexManifest:
             raise InvalidMemory("Information manifest contains an unreadable file") from exc
         if memory.information_id != path.stem:
             raise InvalidMemory("Information manifest identity mismatch")
+        if (not re.fullmatch(r"[A-Za-z0-9._-]+", path.stem)
+                or type(memory.revision) is not int or memory.revision < 1):
+            raise InvalidMemory("Information manifest identity or revision is invalid")
         entries.append(SourceEntry(path.stem, memory.revision, sha256(raw).hexdigest()))
     frozen = tuple(entries)
     return IndexManifest(frozen, _digest(frozen))

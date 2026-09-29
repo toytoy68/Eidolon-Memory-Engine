@@ -41,6 +41,15 @@ def test_manifest_blocks_invalid_or_symlinked_source(tmp_path):
         build_manifest(persistent)
 
 
+def test_manifest_rejects_identity_the_backend_cannot_address(tmp_path):
+    persistent = tmp_path / "persistent"
+    persistent.mkdir()
+    (persistent / "bad name.md").write_text(
+        FilesystemBackend._serialize(Memory("bad name", content="private")))
+    with pytest.raises(InvalidMemory, match="identity or revision"):
+        build_manifest(persistent)
+
+
 def test_manifest_delta_plans_upsert_and_deletion_without_writes(tmp_path):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     for identifier in ("keep", "change", "remove"):
