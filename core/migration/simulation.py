@@ -77,6 +77,8 @@ def _candidate_issues(path: Path, persistent: Path) -> list[str]:
         return ["non_json_metadata_requires_policy"]
     reasons = []
     for relation in projected.relations:
+        if relation.get("type") == "RELATES_TO" and "legacy_relation_alias_requires_policy" not in reasons:
+            reasons.append("legacy_relation_alias_requires_policy")
         target_id = relation.get("target_id")
         legacy_target = relation.get("target")
         if target_id is not None and legacy_target is not None and target_id != legacy_target:

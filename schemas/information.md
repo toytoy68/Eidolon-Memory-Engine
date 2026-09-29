@@ -263,7 +263,7 @@ relations:
 
 Types autorisés :
 
-- RELATES_TO
+- RELATED_TO
 - CONCERNS
 - DERIVED_FROM
 - SUPPORTS
@@ -285,6 +285,10 @@ Types autorisés :
 - ASSOCIATED_WITH
 
 Les relations doivent conserver leur signification.
+`RELATED_TO` est le nom utilisé par `memory-relation.md` et le CLI historique.
+Les éventuels fichiers contenant `RELATES_TO` doivent être inventoriés avant
+migration et ne doivent pas être réécrits implicitement. Le type d'Event
+`RELATES_TO` est un contrat distinct des relations Information.
 
 ---
 

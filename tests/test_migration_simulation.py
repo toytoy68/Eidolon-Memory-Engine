@@ -106,3 +106,19 @@ def test_simulation_rejects_ambiguous_relation_target(tmp_path):
     assert simulate(tmp_path)["information"]["blocked"] == [{
         "path": "memory/persistent/info-1.md", "reasons": ["ambiguous_relation_target"],
     }]
+
+
+def test_simulation_flags_old_relation_alias_without_rewriting_it(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    source = persistent / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\ntype: FACT\n"
+                      "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+                      "relations:\n  - type: RELATES_TO\n    target: info-1\n"
+                      "---\nbody\n")
+    before = source.read_bytes()
+    assert simulate(tmp_path)["information"]["blocked"] == [{
+        "path": "memory/persistent/info-1.md",
+        "reasons": ["legacy_relation_alias_requires_policy"],
+    }]
+    assert source.read_bytes() == before

@@ -69,6 +69,10 @@ références. Une relation textuelle trouvée dans le corps est signalée pour
 revue : l'ancien CLI `memory-relations` pouvait y inscrire des données que la
 liste YAML `relations` ne représente pas. L'outil ne réécrit ni ne déduit ces
 relations.
+La variante `RELATES_TO` dans une relation Information est bloquée pour revue :
+le modèle Relation et l'ancien CLI utilisent `RELATED_TO`, tandis que
+`RELATES_TO` reste un type possible dans le contrat des Events. La simulation
+ne renomme aucun type automatiquement.
 
 **Une candidate n'est pas une conversion validée** : le rapport ne crée
 pas de document converti et ne vérifie pas tous les sens métier, notamment

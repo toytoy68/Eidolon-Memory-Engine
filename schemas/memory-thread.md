@@ -140,6 +140,10 @@ TESTING
 COMPLETED
 ```
 
+Un test qui révèle un travail à reprendre peut renvoyer `TESTING` vers
+`IMPLEMENTATION`. Cette transition conserve le Thread et incrémente sa
+révision ; elle n'implique pas que le résultat précédent soit effacé.
+
 Transitions de suspension :
 
 ```text
