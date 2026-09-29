@@ -57,6 +57,9 @@ class OperationRecord:
     plan: ThreadStatusChangePlan | ThreadCreatePlan | None = None
 
     def __post_init__(self) -> None:
+        if (type(self.previous_revision) is not int or self.previous_revision < 0
+                or type(self.revision) is not int or self.revision < 1):
+            raise ValueError("Operation revisions must be non-negative integers")
         if self.revision != self.previous_revision + 1:
             raise ValueError(
                 "revision must equal previous_revision + 1"

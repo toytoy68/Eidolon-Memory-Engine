@@ -47,6 +47,17 @@ def test_operation_rejects_invalid_revision_transition():
         )
 
 
+@pytest.mark.parametrize("previous,revision", [(True, 2), (0, True), ("1", 2), (-1, 0)])
+def test_operation_rejects_invalid_revision_types(previous, revision):
+    with pytest.raises(ValueError, match="non-negative integers"):
+        OperationRecord(
+            operation_id="op-invalid", operation_type=OperationType.THREAD_STATUS_CHANGE,
+            target_id="thread-test", previous_revision=previous, revision=revision,
+            execution_plan_hash="hash",
+            plan=ThreadStatusChangePlan(ThreadStatus.IMPLEMENTATION, "event-test"),
+        )
+
+
 def test_operation_rejects_invalid_status_transition():
     from core.operations.models import validate_status_transition
 
