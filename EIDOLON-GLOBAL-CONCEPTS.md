@@ -55,10 +55,16 @@ modèles aux tâches nécessitant davantage de raisonnement ou de contexte.
 
 Exemples : classification, extraction, OCR, traduction, scoring et résumé.
 
-Prévoir pour chaque modèle/profil : capacités, mémoire/VRAM, latence, qualité,
-coût matériel, contexte disponible et possibilité de validation automatique.
+Prévoir pour chaque modèle/profil : capacités, **domaines explicitement non
+supportés**, mémoire/VRAM, latence, qualité, coût matériel, contexte disponible,
+seuil de confiance, validateur éventuel et modèle de repli.
 
-Objectif : le gros modèle ne doit pas tout faire.
+Le routeur doit empêcher un spécialiste de traiter silencieusement une tâche hors
+de son domaine. Si le profil ne couvre pas la tâche, si le score est insuffisant
+ou si la validation échoue, escalader vers un modèle plus général/capable.
+
+Objectif : le gros modèle ne doit pas tout faire, mais un petit modèle spécialisé
+ne doit pas non plus être utilisé hors de son domaine.
 
 ## G-003 — Mission Manager et orchestration multi-agents
 
@@ -80,6 +86,11 @@ Architecture cible à étudier :
 
 Le Mission Manager gère statut, progression, délégation, résultats et échanges
 inter-agents. Les agents peuvent utiliser des modèles différents.
+
+Le nombre d'agents doit être **dynamique et justifié par la mission**, pas un
+objectif en soi : un seul worker si cela suffit, plusieurs uniquement lorsque le
+travail est réellement parallélisable. Le Core devra arbitrer concurrence,
+VRAM/RAM, modèles disponibles et coût/temps d'exécution.
 
 Le Memory Engine peut conserver l'historique/provenance via des champs tels que
 `agent_id`, `mission_id`, `thread_id`, `model_id`, timestamp, source,
@@ -167,6 +178,13 @@ panneau de travail large, éventuellement plein écran.
 
 À terme, Eidolon peut proposer automatiquement une disposition selon la mission
 en cours.
+
+### Piste R&D — interface générative/adaptative
+
+Étudier, sans en faire une dépendance, l'usage de modèles spécialisés de design
+pour proposer des dashboards, panneaux ou compositions adaptés à une mission.
+Distinguer strictement génération d'une maquette visuelle et génération de code
+UI exécutable : une capacité de design ne prouve pas la fiabilité du code produit.
 
 ## G-008 — Cadence / Scheduler
 
@@ -273,6 +291,35 @@ lorsque disponible.
 L'architecture doit continuer à fonctionner de façon dégradée lorsque le serveur
 n'est pas joignable et conserver des frontières de sécurité fortes pour les
 actions physiques.
+
+### Edge AI embarquée
+
+Le calcul embarqué doit privilégier de petits modèles spécialisés pour les tâches
+qui doivent rester disponibles localement : perception légère, classification,
+détection, commandes simples, sécurité et autres fonctions temps réel ou
+semi-temps-réel. Les gros modèles, le raisonnement lourd et la mémoire globale
+restent côté serveur lorsque celui-ci est disponible.
+
+### Spatial / World Model
+
+Piste à étudier : transformer progressivement la perception caméra en
+représentation exploitable par le Planner :
+
+    vision 2D -> profondeur -> objets -> positions/géométrie -> world state
+
+Les techniques de reconstruction 3D depuis une ou plusieurs images peuvent servir
+à la simulation, à l'apprentissage et à la compréhension spatiale. Elles restent
+une piste R&D tant que leur coût, leur latence et leur robustesse sur le matériel
+Wall-E réel ne sont pas mesurés.
+
+### Manipulation sûre et compliance
+
+Pour les futurs bras, pinces et mains, ne pas optimiser uniquement force et
+précision. Étudier la **compliance**, la limitation/mesure de force ou de couple,
+l'absorption des impacts et l'adaptation passive/active à la forme des objets.
+
+Objectif : pouvoir manipuler des objets domestiques avec une force suffisante mais
+sans comportement de type étau ni dommage en cas de contact imprévu.
 
 ## Statut du document
 
