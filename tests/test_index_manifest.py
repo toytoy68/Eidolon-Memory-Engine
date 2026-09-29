@@ -3,7 +3,7 @@ import pytest
 from core.backend.errors import InvalidMemory
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
-from core.indexing import IndexManifest, build_manifest, diff_manifests
+from core.indexing import IndexManifest, SourceEntry, build_manifest, diff_manifests
 
 
 def test_manifest_is_stable_and_detects_source_change(tmp_path):
@@ -60,3 +60,17 @@ def test_manifest_delta_plans_upsert_and_deletion_without_writes(tmp_path):
     duplicate = IndexManifest((before.entries[0], before.entries[0]), "invalid")
     with pytest.raises(ValueError, match="duplicate"):
         diff_manifests(duplicate, after)
+
+
+@pytest.mark.parametrize("tamper", [
+    lambda snapshot: IndexManifest(snapshot.entries, "0" * 64),
+    lambda snapshot: IndexManifest((SourceEntry("../escape", 1, "a" * 64),), snapshot.digest),
+    lambda snapshot: IndexManifest((SourceEntry("valid", True, "a" * 64),), snapshot.digest),
+    lambda snapshot: IndexManifest((SourceEntry("valid", 1, "invalid"),), snapshot.digest),
+])
+def test_manifest_delta_rejects_tampered_snapshot(tmp_path, tamper):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("valid", content="alpha"))
+    snapshot = build_manifest(backend.persistent_root)
+    with pytest.raises(ValueError):
+        diff_manifests(tamper(snapshot), snapshot)

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 import json
+import re
 from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
@@ -32,6 +33,8 @@ class IndexDelta:
 
 def diff_manifests(previous: IndexManifest, current: IndexManifest) -> IndexDelta:
     """Plan index changes from two validated source snapshots; perform no writes."""
+    _validate_manifest(previous)
+    _validate_manifest(current)
     old = {entry.information_id: entry for entry in previous.entries}
     new = {entry.information_id: entry for entry in current.entries}
     if len(old) != len(previous.entries) or len(new) != len(current.entries):
@@ -40,6 +43,33 @@ def diff_manifests(previous: IndexManifest, current: IndexManifest) -> IndexDelt
         upsert=tuple(new[key] for key in sorted(new) if old.get(key) != new[key]),
         delete_ids=tuple(sorted(old.keys() - new.keys())),
     )
+
+
+def _digest(entries: tuple[SourceEntry, ...]) -> str:
+    payload = json.dumps(
+        [[entry.information_id, entry.revision, entry.file_sha256] for entry in entries],
+        ensure_ascii=False, separators=(",", ":"),
+    ).encode("utf-8")
+    return sha256(payload).hexdigest()
+
+
+def _validate_manifest(manifest: IndexManifest) -> None:
+    if not isinstance(manifest, IndexManifest) or not isinstance(manifest.entries, tuple):
+        raise ValueError("invalid manifest")
+    seen = set()
+    for entry in manifest.entries:
+        if (not isinstance(entry, SourceEntry)
+                or not isinstance(entry.information_id, str)
+                or not re.fullmatch(r"[A-Za-z0-9._-]+", entry.information_id)
+                or type(entry.revision) is not int or entry.revision < 1
+                or not isinstance(entry.file_sha256, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", entry.file_sha256)):
+            raise ValueError("invalid manifest entry")
+        if entry.information_id in seen:
+            raise ValueError("manifest contains duplicate Information identities")
+        seen.add(entry.information_id)
+    if manifest.digest != _digest(manifest.entries):
+        raise ValueError("manifest digest mismatch")
 
 
 def build_manifest(persistent_root: Path) -> IndexManifest:
@@ -59,8 +89,5 @@ def build_manifest(persistent_root: Path) -> IndexManifest:
         if memory.information_id != path.stem:
             raise InvalidMemory("Information manifest identity mismatch")
         entries.append(SourceEntry(path.stem, memory.revision, sha256(raw).hexdigest()))
-    payload = json.dumps(
-        [[entry.information_id, entry.revision, entry.file_sha256] for entry in entries],
-        ensure_ascii=False, separators=(",", ":"),
-    ).encode("utf-8")
-    return IndexManifest(tuple(entries), sha256(payload).hexdigest())
+    frozen = tuple(entries)
+    return IndexManifest(frozen, _digest(frozen))
