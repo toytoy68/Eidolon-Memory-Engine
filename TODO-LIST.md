@@ -118,7 +118,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 295 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 297 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -165,6 +165,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,
   sans ajouter de journal/Event à cette API (2026-09-29).
+- **【FAIT】** T-031e — L'ancien CLI `memory-relations add` refuse les sources
+  hors `memory/working/*.md` et sérialise ses propres ajouts sous verrou Working.
+  La coordination complète avec le controller YAML reste à faire ou à remplacer
+  lors de la migration (2026-09-29).
 - **【FAIT】** T-032a — Une demande `PENDING_DELETE` ne peut plus être écrasée
   par une autre ; le rejeu strictement identique est sans écriture, un reçu
   illisible bloque la demande (trois tests, 2026-09-28).

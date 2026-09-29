@@ -20,6 +20,7 @@ from core.config import (
     EVENTS_ROOT,
     REVIEWS_ROOT,
 )
+from core.persistence import exclusive_write
 
 WORKING = WORKING_ROOT
 EVENTS = EVENTS_ROOT
@@ -191,7 +192,7 @@ Aucune décision humaine n'a été simulée par le système.
     path.write_text(content, encoding="utf-8")
     return review_id, path
 
-def command_add(args):
+def _command_add_locked(args):
     source = Path(args.source)
     if not source.is_file():
         print(f"ERREUR : fichier source introuvable : {source}")
@@ -248,6 +249,20 @@ def command_add(args):
     print(f"Event ID : {event_id}")
     print("Aucune transition épistémique automatique.")
     return 0
+
+
+def command_add(args):
+    source = Path(args.source)
+    if (source.is_symlink() or source.parent.resolve() != WORKING.resolve()
+            or source.suffix != ".md"):
+        print("Ajout de relation : REFUSÉ")
+        print("- la source doit être un fichier Markdown de Working Memory")
+        return 1
+    if not source.is_file():
+        print(f"ERREUR : fichier source introuvable : {source}")
+        return 1
+    with exclusive_write(WORKING):
+        return _command_add_locked(args)
 
 def command_review(args):
     source = Path(args.source)
