@@ -119,7 +119,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 320 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 321 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -193,6 +193,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-031k — Les dépôts Event et Operation refusent les répertoires
   symboliques et les fichiers symboliques au chargement ; leur création ne
   remplace pas un lien symbolique existant (2026-09-29).
+- **【FAIT】** T-031l — `FilesystemBackend.list` et donc `search` écartent une
+  Information dont l'identifiant interne ne correspond pas au nom du fichier,
+  comme le faisait déjà `get` (2026-09-29).
 - **【FAIT】** T-028b — Le tableau des écrivains dans `docs/ARCHITECTURE.md`
   décrit les verrous et écritures atomiques des services historiques sans leur
   attribuer une transaction multi-fichiers (2026-09-29).

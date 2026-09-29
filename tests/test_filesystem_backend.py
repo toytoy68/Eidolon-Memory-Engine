@@ -37,6 +37,16 @@ def test_backend_rejects_symlinked_storage_directories(tmp_path):
         FilesystemBackend(persistent, history)
 
 
+def test_list_and_search_skip_identity_mismatch(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("actual", content="unique searchable content"))
+    (backend.persistent_root / "actual.md").rename(backend.persistent_root / "wrong.md")
+    with pytest.raises(InvalidMemory, match="identity"):
+        backend.get("wrong")
+    assert backend.list() == []
+    assert backend.search("unique searchable") == []
+
+
 def test_store_and_get(tmp_path):
     backend = FilesystemBackend(
         persistent_root=tmp_path / "persistent",

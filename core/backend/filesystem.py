@@ -492,6 +492,8 @@ class FilesystemBackend(MemoryBackend):
                 )
             except (OSError, InvalidMemory):
                 continue
+            if memory.information_id != path.stem:
+                continue
 
             if filters and not self._matches_filters(memory, filters):
                 continue
