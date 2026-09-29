@@ -40,6 +40,9 @@ order Thread -> Operation -> Event. Abrupt process termination releases OS locks
 POSIX writers flush the file and the containing directory after replacement.
 Windows uses file flush and atomic replacement; power-loss durability still
 requires platform validation. Tests cover process termination, not power loss.
+The linked creation path is exercised with hard process exit after each of its
+five persisted boundaries; recovery and idempotent replay are checked with
+fresh repository instances.
 
 Recovery recognizes the exact old or new Thread state. A divergent Thread, hash
 mismatch or conflicting Event is reported BLOCKED without overwriting that data.

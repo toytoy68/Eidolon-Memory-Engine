@@ -2,7 +2,9 @@
 
 from dataclasses import replace
 import json
+import multiprocessing
 import os
+from pathlib import Path
 import subprocess
 import sys
 
@@ -40,6 +42,59 @@ def open_creation(root):
     operations = FilesystemOperationRepository(history / "operations/thread-create-v1")
     events = FilesystemEventRepository(history / "events/thread-create-v1")
     return backend, FilesystemLinkedThreadCreation(backend, threads, events, operations)
+
+
+def crash_creation_worker(root, phase):
+    _, creation = open_creation(Path(root))
+    if phase == "prepared":
+        target, method = creation.operations, "create"
+    elif phase in {"applying", "committed"}:
+        target, method = creation.operations, "update"
+    elif phase == "thread":
+        target, method = creation.storage, "create"
+    else:
+        target, method = creation.events, "save"
+    original = getattr(target, method)
+
+    def stop_after_write(*args, **kwargs):
+        result = original(*args, **kwargs)
+        if target is creation.operations and method == "update":
+            expected = (OperationStatus.APPLYING if phase == "applying"
+                        else OperationStatus.COMMITTED)
+            if args[0].status != expected:
+                return result
+        os._exit(74)
+
+    setattr(target, method, stop_after_write)
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+
+
+@pytest.mark.parametrize("phase", ["prepared", "applying", "thread", "event", "committed"])
+def test_hard_exit_at_each_linked_creation_boundary_recovers(tmp_path, phase):
+    backend, _ = open_creation(tmp_path)
+    backend.store(Memory("info-1", content="private content"))
+    process = multiprocessing.get_context("spawn").Process(
+        target=crash_creation_worker, args=(str(tmp_path), phase))
+    process.start()
+    process.join(timeout=20)
+    if process.is_alive():
+        process.terminate()
+        process.join()
+        pytest.fail("creation deadlocked")
+    assert process.exitcode == 74
+    _, restarted = open_creation(tmp_path)
+    assert restarted.recover().get("create-1", {"status": "COMMITTED"})["status"] == "COMMITTED"
+    linked = restarted.storage.get("thread-1")
+    assert linked.relations == [{"type": "CONCERNS", "target_id": "info-1"}]
+    assert restarted.operations.get("create-1").status is OperationStatus.COMMITTED
+    assert [event.event_id for event in restarted.events.list_for_target("thread-1")] == ["created-1"]
+    assert restarted.backend.get("info-1").content == "private content"
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    assert restarted.create(thread, "info-1", operation_id="create-1", event_id="created-1") == linked
+    assert restarted.recover() == {}
 
 
 def test_information_and_thread_survive_interrupted_status_commit(tmp_path, monkeypatch):
