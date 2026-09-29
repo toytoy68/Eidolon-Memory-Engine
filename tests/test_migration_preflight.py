@@ -118,3 +118,20 @@ def test_preflight_rejects_wrong_structured_revision_field_types(tmp_path):
             "invalid_revision_flag", "invalid_previous_revision",
         ]}],
     }
+
+
+def test_preflight_blocks_contradictory_revision_history(tmp_path):
+    for name, flag, previous in (
+        ("future", "true", "9"),
+        ("missing", "true", "null"),
+        ("unexpected", "false", "1"),
+    ):
+        document(tmp_path, name,
+                 f"id: {name}\nrevision:\n  number: 3\n"
+                 f"  is_revision: {flag}\n  previous_revision: {previous}\n"
+                 "type: FACT\nepistemic_status: UNVERIFIED\noperational_state: ACTIVE\n")
+    assert preflight(tmp_path)["blocked"] == [
+        {"path": f"memory/persistent/{name}.md",
+         "reasons": ["inconsistent_revision_history"]}
+        for name in ("future", "missing", "unexpected")
+    ]

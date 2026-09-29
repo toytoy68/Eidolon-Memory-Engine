@@ -71,12 +71,18 @@ def inspect_legacy_information(path: Path) -> list[str]:
     if isinstance(revision, dict):
         if revision.keys() - {"number", "is_revision", "previous_revision"}:
             reasons.append("unknown_revision_fields")
-        if "is_revision" in revision and type(revision["is_revision"]) is not bool:
+        flag = revision.get("is_revision")
+        if "is_revision" in revision and type(flag) is not bool:
             reasons.append("invalid_revision_flag")
         previous = revision.get("previous_revision")
         if previous is not None and (type(previous) is not int or previous < 1):
             reasons.append("invalid_previous_revision")
-        revision = revision.get("number")
+        number = revision.get("number")
+        if (type(number) is int and number >= 1 and type(flag) is bool
+                and (flag != (previous is not None)
+                     or (type(previous) is int and previous >= number))):
+            reasons.append("inconsistent_revision_history")
+        revision = number
     if type(revision) is not int or revision < 1:
         reasons.append("invalid_revision")
     enumerations = {

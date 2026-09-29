@@ -36,7 +36,10 @@ le backend dans l'identifiant, la révision simple ou
 les types de `revision.is_revision` et `revision.previous_revision`, les champs
 de premier niveau ou de révision inconnus, la forme des blocs de
 métadonnées et relations, et la présence d'un corps. Il
-valide aussi la lecture et l'identité des documents core reconnus avant de les
+signale aussi une révision précédente supérieure ou égale au numéro courant,
+ou un indicateur `is_revision` contradictoire avec sa présence. Il ne déduit
+pas une chronologie manquante. Il valide aussi la lecture et l'identité des
+documents core reconnus avant de les
 compter comme déjà présents, et liste les fichiers bloqués avec des
 codes de raison, sans inclure le contenu. Code retour 1 en présence de blocages.
 Un `legacy_candidate` signifie seulement **structure minimale analysable** :
