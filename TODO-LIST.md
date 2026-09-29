@@ -298,60 +298,12 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   jamais écrire directement dans les fichiers du moteur. Reprendre uniquement
   après la priorité donnée au noyau mémoire (demande du 2026-09-28).
 
-## Pistes d'intégration avec Eidolon Core
+## Concepts Eidolon hors Memory Engine
 
-Ces éléments sont volontairement **hors du noyau Memory Engine**. Ils sont suivis
-ici uniquement parce qu'ils définissent les futurs contrats d'intégration et les
-informations que le moteur de mémoire devra pouvoir fournir ou recevoir. Voir
-[docs/CORE-INTEGRATION-NOTES.md](docs/CORE-INTEGRATION-NOTES.md).
-
-- **【À VALIDER】** T-036 — Définir le contrat avec un futur **Decision Engine** :
-  décisions/scorings rapides et structurés utilisables par Classifier, Router ou
-  Validator, sans imposer un modèle particulier au Memory Engine.
-- **【À VALIDER】** T-037 — Formaliser la frontière **Agents / Skills** : leur
-  définition, sélection, orchestration et exécution appartiennent à Eidolon Core ;
-  Memory Engine peut conserver leur mémoire, résultats, événements, provenance et
-  historique, mais ne doit pas devenir leur runtime.
-- **【À VALIDER】** T-038 — Préparer les contrats mémoire nécessaires à une
-  orchestration **Planner → Workers → Validator → Reviewer**, sans introduire
-  cette orchestration dans le moteur de mémoire.
-- **【À VALIDER】** T-039 — Définir les besoins d'un futur **Policy/Safety Engine**
-  côté Core : permissions explicites, sandbox, validation des actions sensibles,
-  journalisation et traçabilité. Le Memory Engine doit pouvoir enregistrer les
-  décisions et preuves utiles sans être lui-même le moteur d'autorisation.
-- **【À VALIDER】** T-040 — Prévoir l'intégration à une interface EidolonOS
-  **AI-first** et à des tâches autonomes/cadencées : API stable, événements,
-  statuts et opérations observables, tout en gardant le scheduler général hors
-  du Memory Engine.
-
-- **【À VALIDER】** T-041 — Définir côté Eidolon Core un **Model / Task Router**
-  capable d'affecter une tâche étroite à un petit modèle spécialisé (classification,
-  extraction, OCR, traduction, scoring...) et de réserver les gros modèles aux
-  tâches nécessitant davantage de raisonnement ou de contexte. Prévoir profils de
-  capacités, coût matériel/latence et validation automatique lorsque possible ;
-  le Memory Engine expose les données nécessaires mais ne choisit pas le runtime.
-- **【À VALIDER】** T-042 — Définir un **Mission Manager** côté Core :
-  mission → Planner → agents spécialisés → Validator/Reviewer, avec statuts,
-  échanges inter-agents et résultats observables. Le Memory Engine doit pouvoir
-  conserver provenance et historique via `agent_id`, `mission_id`, `thread_id`,
-  `model_id`, horodatage, source, action et résultat, sans créer une base
-  indépendante par agent.
-- **【À VALIDER】** T-043 — Concevoir un **Agent Registry / Agent Card** côté Core :
-  identité, capacités, schémas d'entrée/sortie, modèle/runtime, endpoint,
-  authentification et permissions. Étudier une compatibilité **A2A** afin de ne
-  pas inventer un protocole propriétaire pour les agents externes ; découverte
-  d'un agent et autorisation d'agir doivent rester deux mécanismes distincts.
-- **【À VALIDER】** T-044 — Étudier **MCP** comme frontière standard entre les
-  agents Eidolon et les Tools/Skills externes. Conserver la séparation :
-  Memory/RAG = savoir ; Skills/MCP = agir via outils ; A2A = déléguer à d'autres
-  agents ; Policy Engine = autoriser/valider. Journaliser appels, permissions et
-  résultats utiles dans Memory Engine sans y exécuter les tools.
-- **【À VALIDER】** T-045 — Prévoir côté EidolonOS un **App Catalog** déclaratif et
-  reproductible : catégories, description, source officielle, version,
-  dépendances, permissions, installation, mise à jour et désinstallation.
-  Privilégier des recettes contrôlées/reproductibles aux scripts arbitraires root.
-  Cette fonction appartient à EidolonOS/Core ; Memory Engine peut seulement
-  conserver configuration, historique et événements si nécessaire.
+Les idées concernant Eidolon Core, agents, skills, modèles, Policy Engine,
+EidolonOS, robotique et autres sous-projets sont volontairement suivies dans
+[EIDOLON-GLOBAL-CONCEPTS.md](EIDOLON-GLOBAL-CONCEPTS.md). Cette TODO reste
+strictement réservée au développement et au déploiement du Memory Engine.
 
 ## Critère de livraison
 
