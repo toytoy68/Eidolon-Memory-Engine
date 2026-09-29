@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
-from core.persistence import serialized_write, durable_replace
+from core.persistence import serialized_write, atomic_write_text
 
 from core.operations.errors import (
     InvalidOperationRecord,
@@ -154,16 +152,7 @@ class FilesystemOperationRepository(OperationRepository):
             ),
         }
 
-        with NamedTemporaryFile(
-            mode="w", encoding="utf-8", dir=path.parent,
-            prefix=f".{path.name}.", suffix=".tmp", delete=False,
-        ) as handle:
-            temp_path = Path(handle.name)
-            json.dump(data, handle, ensure_ascii=False, indent=2)
-            handle.flush()
-            os.fsync(handle.fileno())
-
-        durable_replace(temp_path, path)
+        atomic_write_text(path, json.dumps(data, ensure_ascii=False, indent=2))
 
     def list_incomplete(self) -> list[OperationRecord]:
         incomplete_statuses = {

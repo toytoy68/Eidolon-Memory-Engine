@@ -7,12 +7,11 @@ import hashlib
 import os
 import re
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from typing import Any
 from dataclasses import asdict
 from core.storage_format import encode_document, decode_document
 
-from core.persistence import serialized_write, durable_replace, exclusive_write
+from core.persistence import serialized_write, atomic_write_text, exclusive_write
 from core.information.references import ensure_no_thread_links
 from core.backend.errors import InformationDeletionBlocked
 
@@ -183,22 +182,7 @@ class FilesystemBackend(MemoryBackend):
 
     @staticmethod
     def _atomic_write(path: Path, content: str) -> None:
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        with NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=path.parent,
-            prefix=f".{path.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as handle:
-            temporary_path = Path(handle.name)
-            handle.write(content)
-            handle.flush()
-            os.fsync(handle.fileno())
-
-        durable_replace(temporary_path, path)
+        atomic_write_text(path, content)
 
     # ------------------------------------------------------------------
     # Backend contract

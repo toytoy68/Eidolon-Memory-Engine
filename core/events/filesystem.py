@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from typing import Any
 
-from core.persistence import serialized_write, durable_replace
+from core.persistence import serialized_write, atomic_write_text
 
 from core.config import EVENTS_ROOT, ensure_directories
 
@@ -261,22 +259,7 @@ class FilesystemEventRepository(EventRepository):
 
     @staticmethod
     def _atomic_write(path: Path, content: str) -> None:
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        with NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=path.parent,
-            prefix=f".{path.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as handle:
-            temporary_path = Path(handle.name)
-            handle.write(content)
-            handle.flush()
-            os.fsync(handle.fileno())
-
-        durable_replace(temporary_path, path)
+        atomic_write_text(path, content)
 
     # ------------------------------------------------------------------
     # Repository contract

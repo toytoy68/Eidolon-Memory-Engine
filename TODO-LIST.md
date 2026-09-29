@@ -196,6 +196,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-031l — `FilesystemBackend.list` et donc `search` écartent une
   Information dont l'identifiant interne ne correspond pas au nom du fichier,
   comme le faisait déjà `get` (2026-09-29).
+- **【FAIT】** T-031m — Les quatre dépôts core utilisent la même publication
+  atomique avec synchronisation disque et nettoyage du fichier temporaire en
+  cas d'échec de remplacement ; suite existante vérifiée (2026-09-29).
 - **【FAIT】** T-035a — La recherche locale parcourt toutes les Informations
   valides sans plafond implicite de 10 000 fichiers ; test d'un résultat placé
   après ce seuil (2026-09-29). Les performances réelles restent à mesurer.
