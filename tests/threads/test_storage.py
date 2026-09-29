@@ -3,6 +3,7 @@ from pathlib import Path
 from core.threads.models import Thread, ThreadStatus
 from core.threads.storage import ThreadStorage
 from core.threads.storage import ThreadStorageError
+from core.threads.manager import InvalidThread, ThreadManager
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 import pytest
@@ -107,6 +108,22 @@ def test_thread_storage_rejects_symlink_directory(tmp_path):
     (persistent / "threads").symlink_to(external, target_is_directory=True)
     with pytest.raises(ThreadStorageError, match="directory is a symlink"):
         ThreadStorage(persistent)
+
+
+def test_thread_revisions_reject_booleans_before_writing(tmp_path):
+    storage = ThreadStorage(tmp_path / "persistent")
+    wrong = replace(make_thread(), revision=True)
+    with pytest.raises(InvalidThread, match="revision must be an integer"):
+        ThreadManager.validate(wrong)
+    with pytest.raises(ThreadStorageError, match="revision must be an integer"):
+        storage.create(wrong)
+    assert not storage.exists(wrong.thread_id)
+    storage.create(make_thread())
+    with pytest.raises(ThreadStorageError, match="previous_revision"):
+        storage.update(replace(make_thread(), revision=2), previous_revision=True)
+    with pytest.raises(ThreadStorageError, match="revision must be an integer"):
+        storage.update(replace(make_thread(), revision=True), previous_revision=1)
+    assert storage.get(wrong.thread_id).revision == 1
 
 
 def test_exists(tmp_path: Path):

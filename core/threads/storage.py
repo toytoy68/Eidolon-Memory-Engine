@@ -349,6 +349,8 @@ class ThreadStorage:
         """Create a new persistent Thread."""
 
         self._validate_id(thread.thread_id)
+        if type(thread.revision) is not int or thread.revision < 1:
+            raise ThreadStorageError("Thread revision must be an integer >= 1")
 
         path = self._path(thread.thread_id)
 
@@ -398,6 +400,10 @@ class ThreadStorage:
     ) -> None:
         """Update a Thread using optimistic revision control."""
         self._validate_id(thread.thread_id)
+        if type(previous_revision) is not int:
+            raise ThreadStorageError("previous_revision must be an integer")
+        if type(thread.revision) is not int:
+            raise ThreadStorageError("Thread revision must be an integer")
 
         current = self.get(thread.thread_id)
 

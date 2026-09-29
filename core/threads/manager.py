@@ -101,8 +101,8 @@ class ThreadManager:
         if not thread.objective.strip():
             raise InvalidThread("objective is required")
 
-        if thread.revision < 1:
-            raise InvalidThread("revision must be >= 1")
+        if type(thread.revision) is not int or thread.revision < 1:
+            raise InvalidThread("revision must be an integer >= 1")
 
         if not isinstance(thread.status, ThreadStatus):
             raise InvalidThread("invalid Thread status")
