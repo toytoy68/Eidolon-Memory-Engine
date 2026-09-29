@@ -178,6 +178,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   `relations` du front matter, conserve le corps et refuse les blocs inconnus
   sans perte de données. Les trois fichiers ne forment toujours pas une
   transaction récupérable (2026-09-29).
+- **【FAIT】** T-031h — Le controller historique publie ses Information, Event,
+  Review et reçus d'opération par écriture atomique avec synchronisation disque ;
+  les écritures sur plusieurs fichiers restent sans transaction commune
+  (2026-09-29).
 - **【FAIT】** T-032a — Une demande `PENDING_DELETE` ne peut plus être écrasée
   par une autre ; le rejeu strictement identique est sans écriture, un reçu
   illisible bloque la demande (trois tests, 2026-09-28).

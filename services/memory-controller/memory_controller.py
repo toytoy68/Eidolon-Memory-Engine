@@ -29,7 +29,7 @@ from core.config import (
     REVIEWS_ROOT,
     OPERATIONS_ROOT,
 )
-from core.persistence import exclusive_write
+from core.persistence import exclusive_write, atomic_write_text
 from core.migration.legacy_guard import require_legacy_persistent_only
 
 
@@ -244,10 +244,7 @@ relations:
 {yaml_scalar(reason)}
 """
 
-    event_path.write_text(
-        event_content,
-        encoding="utf-8",
-    )
+    atomic_write_text(event_path, event_content)
 
     return event_path
 
@@ -270,7 +267,7 @@ def create_review(information_id: str, reason: str) -> Path:
         "persiste.\n"
     )
 
-    review_path.write_text(content, encoding="utf-8")
+    atomic_write_text(review_path, content)
     return review_path
 
 
@@ -298,7 +295,7 @@ def _ingest_unlocked(args: argparse.Namespace) -> int:
         print(f"ERREUR : collision d'identifiant : {path}")
         return 1
 
-    path.write_text(content, encoding="utf-8")
+    atomic_write_text(path, content)
 
     valid, errors, fields = validate_information(path)
 
@@ -462,15 +459,11 @@ relations:
 Transition de revision {old_revision} vers revision {new_revision}.
 """
 
-    temp_path = path.with_suffix(path.suffix + ".tmp")
-
     try:
-        event_path.write_text(event_content, encoding="utf-8")
-        temp_path.write_text(updated, encoding="utf-8")
-        temp_path.replace(path)
+        atomic_write_text(event_path, event_content)
+        atomic_write_text(path, updated)
     except OSError as exc:
         event_path.unlink(missing_ok=True)
-        temp_path.unlink(missing_ok=True)
         print(f"ERREUR : mise à jour annulée : {exc}")
         return 1
 
@@ -590,7 +583,6 @@ def _resolve_review_unlocked(review_path: Path, decision: str, reason: str) -> i
                 "---\n", "---\nresolver: human\n", 1
             )
 
-        tmp = review_path.with_suffix(review_path.suffix + ".tmp")
         if re.search(r"^resolution_event_id:\s*.*$", updated_review, flags=re.MULTILINE):
             updated_review = replace_top_level("resolution_event_id", resolution_event, updated_review)
         else:
@@ -600,8 +592,7 @@ def _resolve_review_unlocked(review_path: Path, decision: str, reason: str) -> i
                 1,
             )
 
-        tmp.write_text(updated_review, encoding="utf-8")
-        tmp.replace(review_path)
+        atomic_write_text(review_path, updated_review)
 
     except OSError as exc:
         print(
@@ -1234,21 +1225,13 @@ def write_operation_record(
         "timestamp": now_iso(),
     }
 
-    temporary_path = operation_path.with_suffix(
-        ".json.tmp"
-    )
-
-    temporary_path.write_text(
+    atomic_write_text(
+        operation_path,
         json.dumps(
             record,
             ensure_ascii=False,
             indent=2,
         ) + "\n",
-        encoding="utf-8",
-    )
-
-    temporary_path.replace(
-        operation_path
     )
 
     return operation_path
@@ -1327,24 +1310,10 @@ def execute_store_operation(
         encoding="utf-8"
     )
 
-    temporary_path = destination_path.with_suffix(
-        ".md.tmp"
-    )
-
     try:
-        temporary_path.write_text(
-            content,
-            encoding="utf-8",
-        )
-
-        temporary_path.replace(
-            destination_path
-        )
+        atomic_write_text(destination_path, content)
 
     except OSError as exc:
-
-        if temporary_path.exists():
-            temporary_path.unlink()
 
         raise ValueError(
             "STORE échoué pendant "
@@ -1532,24 +1501,10 @@ def execute_update_operation(
         encoding="utf-8"
     )
 
-    temporary_path = destination_path.with_suffix(
-        ".md.tmp"
-    )
-
     try:
-        temporary_path.write_text(
-            content,
-            encoding="utf-8",
-        )
-
-        temporary_path.replace(
-            destination_path
-        )
+        atomic_write_text(destination_path, content)
 
     except OSError as exc:
-
-        if temporary_path.exists():
-            temporary_path.unlink()
 
         raise ValueError(
             "UPDATE échoué pendant "
