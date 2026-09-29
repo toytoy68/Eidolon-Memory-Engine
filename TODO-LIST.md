@@ -226,6 +226,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   frontières de la création Thread liée (journal préparé, en application,
   Thread, Event, commit) ; reprise et rejeu sans Event dupliqué. Cela ne simule
   pas une coupure d'alimentation (2026-09-29).
+- **【FAIT】** T-035d — Script de mesure sur données synthétiques temporaires,
+  exécuté localement à 15 000 fichiers ; chiffres et limites dans
+  `docs/PERFORMANCE.md`. À refaire sur copie représentative de la VM
+  (2026-09-29).
 - **【FAIT】** T-034a — Première interface interne d'assemblage de contexte
   structurée, bornée en caractères et traçable par ID/révision ; vérification
   sur fichiers core. Pertinence, budgets en tokens, politique d'accès et
