@@ -58,6 +58,20 @@ def test_deletion_recovery_blocks_changed_file_and_linked_thread(tmp_path):
     assert json.loads(linked_receipt.read_text())["status"] == "APPLYING_DELETE"
 
 
+def test_deletion_recovery_blocks_new_information_reference_after_removal(tmp_path):
+    backend, document, receipt = applying(tmp_path, "target", removed=True)
+    backend.store(Memory("source", relations=[
+        {"type": "RELATED_TO", "target_id": "target"},
+    ]))
+    report = recover_deletions(tmp_path)
+    assert report == {"recovered": [], "blocked": [
+        {"path": "memory/history/pending-delete/target.json",
+         "reason": "InformationDeletionBlocked"},
+    ]}
+    assert not document.exists()
+    assert json.loads(receipt.read_text())["status"] == "APPLYING_DELETE"
+
+
 def test_deletion_recovery_never_infers_old_pending_request(tmp_path):
     backend = FilesystemBackend(tmp_path / "memory/persistent", tmp_path / "memory/history")
     backend.store(Memory("old"))

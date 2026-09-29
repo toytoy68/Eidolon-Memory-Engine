@@ -58,3 +58,8 @@ relations textuelles restent à examiner avant déploiement.
 Une relation sortante du document supprimé, y compris vers lui-même, disparaît
 avec ce document ; elle ne bloque donc pas sa propre suppression. Les autres
 Informations sont inspectées avant le retrait.
+La reprise d'un reçu `APPLYING_DELETE` refait ce contrôle. Si une relation vers
+la cible apparaît après un retrait interrompu, le reçu reste bloqué pour revue
+humaine au lieu d'être déclaré terminé. Les écrivains directs actuels ne
+valident pas encore toutes les cibles lors de leur création ; cette frontière
+reste à traiter avant une ouverture aux agents.
