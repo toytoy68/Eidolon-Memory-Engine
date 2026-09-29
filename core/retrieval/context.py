@@ -14,6 +14,9 @@ class ContextItem:
     content: str
     score: float | None
     truncated: bool
+    epistemic_status: str | None
+    operational_state: str | None
+    confidence: str | None
 
 
 @dataclass(frozen=True)
@@ -56,8 +59,16 @@ class ContextAssembler:
                 content=memory.content[:length],
                 score=result.score,
                 truncated=length < len(memory.content),
+                epistemic_status=self._label(memory.metadata, "epistemic_status"),
+                operational_state=self._label(memory.metadata, "operational_state"),
+                confidence=self._label(memory.metadata, "confidence"),
             ))
             remaining -= length
             if len(items) == max_items or remaining == 0:
                 break
         return ContextBundle(query=query, items=tuple(items), used_chars=max_chars - remaining)
+
+    @staticmethod
+    def _label(metadata: dict, key: str) -> str | None:
+        value = metadata.get(key)
+        return value if isinstance(value, str) else None

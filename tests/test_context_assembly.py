@@ -9,7 +9,9 @@ from core.retrieval import ContextAssembler
 
 def test_context_from_real_files_is_bounded_and_traceable(tmp_path):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
-    backend.store(Memory("info-1", content="alpha " * 10))
+    backend.store(Memory("info-1", content="alpha " * 10,
+                         metadata={"epistemic_status": "REFUTED",
+                                   "operational_state": "ACTIVE", "confidence": "LOW"}))
     backend.store(Memory("info-2", content="alpha second"))
     bundle = ContextAssembler(backend).assemble(
         "alpha", max_items=2, max_chars=17, max_item_chars=12)
@@ -19,6 +21,9 @@ def test_context_from_real_files_is_bounded_and_traceable(tmp_path):
         ("info-2", 1, "alpha", True),
     ]
     assert bundle.used_chars == 17
+    assert (bundle.items[0].epistemic_status, bundle.items[0].operational_state,
+            bundle.items[0].confidence) == ("REFUTED", "ACTIVE", "LOW")
+    assert bundle.items[1].epistemic_status is None
     assert backend.get("info-1").content == "alpha " * 10
 
 

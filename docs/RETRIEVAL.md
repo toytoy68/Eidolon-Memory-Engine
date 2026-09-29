@@ -3,8 +3,11 @@
 `core.retrieval.ContextAssembler` reçoit un backend conforme à `MemoryBackend`
 et une requête textuelle. Il retourne une structure contenant des extraits de
 contenu, les identifiants Information, leurs révisions, les scores fournis par
-la recherche et un indicateur de troncature. Il ne crée pas de prompt et n'écrit
-aucun fichier.
+la recherche et un indicateur de troncature. Les éventuelles étiquettes
+`epistemic_status`, `operational_state` et `confidence` restent distinctes ;
+une Information `REFUTED` n'est pas promue implicitement en fait confirmé.
+L'assembleur ne valide ni ne filtre ces étiquettes. Il ne crée pas de prompt
+et n'écrit aucun fichier.
 
 Les limites par défaut sont 5 Informations, 4 000 caractères de contenu au
 total et 1 000 caractères par Information. Les limites comptent les caractères

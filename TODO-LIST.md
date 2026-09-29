@@ -234,6 +234,10 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
   structurée, bornée en caractères et traçable par ID/révision ; vérification
   sur fichiers core. Pertinence, budgets en tokens, politique d'accès et
   intégration Core/Qdrant restent à définir (2026-09-29).
+- **【FAIT】** T-034b — Les extraits de contexte portent séparément les étiquettes
+  épistémique, opérationnelle et de confiance lorsqu'elles existent ; leur
+  politique de sélection et leur rendu pour le modèle restent à définir
+  (2026-09-29).
 - **【FAIT】** T-024a — Manifeste déterministe en lecture seule des fichiers
   Information core (ID, révision, empreinte) ; échoue sur source invalide ou
   symbolique. Aucun index Qdrant n'est écrit (2026-09-29).
