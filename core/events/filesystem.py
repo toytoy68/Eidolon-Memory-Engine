@@ -298,7 +298,7 @@ class FilesystemEventRepository(EventRepository):
             if event.event_id != event_id:
                 raise InvalidEvent("Event identity does not match filename")
             return event
-        except OSError as exc:
+        except (OSError, UnicodeError) as exc:
             raise InvalidEvent(
                 f"unable to read Event: {event_id}"
             ) from exc
@@ -316,7 +316,7 @@ class FilesystemEventRepository(EventRepository):
                 event = self._deserialize(
                     path.read_text(encoding="utf-8")
                 )
-            except OSError as exc:
+            except (OSError, UnicodeError) as exc:
                 raise InvalidEvent(
                     f"unable to read Event file: {path.name}"
                 ) from exc

@@ -220,7 +220,7 @@ class FilesystemBackend(MemoryBackend):
             if memory.information_id != information_id:
                 raise InvalidMemory("Information identity does not match filename")
             return memory
-        except OSError as exc:
+        except (OSError, UnicodeError) as exc:
             raise InvalidMemory(
                 f"unable to read memory: {information_id}"
             ) from exc
@@ -462,7 +462,7 @@ class FilesystemBackend(MemoryBackend):
                 memory = self._deserialize(
                     path.read_text(encoding="utf-8")
                 )
-            except (OSError, InvalidMemory):
+            except (OSError, UnicodeError, InvalidMemory):
                 continue
             if memory.information_id != path.stem:
                 continue

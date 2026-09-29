@@ -375,9 +375,10 @@ class ThreadStorage:
         if not path.exists():
             return None
 
-        text = path.read_text(
-            encoding="utf-8",
-        )
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise ThreadStorageError("unable to read Thread") from exc
 
         thread = self._deserialize(text)
         if thread.thread_id != thread_id:
@@ -458,7 +459,10 @@ class ThreadStorage:
         for path in sorted(self.threads_root.glob("*.md")):
             if path.is_symlink():
                 raise ThreadStorageError("Thread path is a symlink")
-            text = path.read_text(encoding="utf-8")
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeError) as exc:
+                raise ThreadStorageError("unable to read Thread") from exc
             thread = self._deserialize(text)
             if thread.thread_id != path.stem:
                 raise ThreadStorageError("Thread identity does not match filename")

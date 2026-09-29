@@ -96,7 +96,7 @@ class FilesystemOperationRepository(OperationRepository):
                     else None
                 ),
             )
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+        except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
             raise InvalidOperationRecord(operation_id) from exc
 
     @serialized_write("root")
