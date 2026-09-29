@@ -122,6 +122,8 @@ stables du moteur avant l'intégration aux agents.
    les champs d'identité, type ou référence sont déclarés plusieurs fois,
    ou dont le séparateur de fin d'en-tête manque
    (2026-09-29 ; simulation en lecture seule).
+   T-033n classe une référence historique sous un dossier lié comme dangereuse
+   même si sa cible n'existe pas (2026-09-29 ; simulation en lecture seule).
 5. **【À VALIDER】** T-034 — Définir l'API avec Eidolon Core,
    l'identité/authentification et les erreurs. Décider ensuite si Qdrant est
    utile selon les besoins mesurés ; si oui, préciser index dérivé,
@@ -143,7 +145,7 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 389 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 390 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens

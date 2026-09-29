@@ -300,6 +300,20 @@ def test_simulation_does_not_follow_history_reference_symlink(tmp_path):
     ]
 
 
+def test_simulation_reports_linked_reference_directory_even_without_target(tmp_path):
+    memory = tmp_path / "memory"
+    events = memory / "history/events"
+    events.mkdir(parents=True)
+    (memory / "working").symlink_to(tmp_path / "outside", target_is_directory=True)
+    (events / "event.md").write_text(
+        "---\nevent_id: event\ninformation_id: absent\n"
+        "event_type: STORED\n---\nprivate\n")
+    report = simulate(tmp_path)
+    assert {item["reason"] for item in report["inventory_needs_review"]} == {
+        "symlink_skipped", "unsafe_history_reference",
+    }
+
+
 def test_simulation_validates_core_event_body_and_filename(tmp_path):
     events = tmp_path / "memory/history/events"
     events.mkdir(parents=True)

@@ -121,8 +121,7 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
             for directory in (root / "memory/working", root / "memory/persistent"):
                 candidate = directory / f"{reference}.md"
                 if symlink_ancestor(root, candidate) is not None:
-                    if candidate.exists() or candidate.is_symlink():
-                        unsafe = True
+                    unsafe = True
                     continue
                 if candidate.is_file():
                     targets.append(candidate)
