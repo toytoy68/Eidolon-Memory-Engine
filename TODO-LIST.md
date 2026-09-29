@@ -71,9 +71,13 @@ Eidolon-Memory-Engine/
         └── reviews/
 ```
 
-Qdrant, s'il est raccordé, serait un index **reconstructible** à partir des
-fichiers. Son emplacement et le découpage `indexing/` restent à valider ; aucun
-connecteur Qdrant opérationnel n'est attesté par cette branche.
+Qdrant est **volontairement différé** : il n'est pas encore installé pour ce
+projet et son raccordement attend un besoin de recherche mesuré et le contrat
+d'intégration d'Eidolon Core. S'il est raccordé, il sera un index
+**reconstructible** à partir des fichiers. Son emplacement et le découpage
+`indexing/` restent à valider ; aucun connecteur Qdrant opérationnel n'est
+attesté par cette branche. `Eidolon-Bootstrap-Framework` est le dépôt du
+déploiement de la plateforme, distinct d'Eidolon Core et du Memory Engine.
 
 ## Priorités après l'audit du dépôt
 
@@ -101,9 +105,11 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
    signale les blocages ainsi que les Events/Reviews à décider. Restent la
    validation des pertes sémantiques, des relations, de la révision structurée
    et du format cible avant un convertisseur effectif.
-5. **【À VALIDER】** T-034 — Contrats d'intégration Eidolon Core et Qdrant : API,
-   identité/authentification, erreurs, index dérivé, reconstruction et rattrapage
-   après écriture. Tester sur copie anonymisée avant exposition au système réel.
+5. **【À VALIDER】** T-034 — Définir l'API avec Eidolon Core,
+   l'identité/authentification et les erreurs. Décider ensuite si Qdrant est
+   utile selon les besoins mesurés ; si oui, préciser index dérivé,
+   reconstruction et rattrapage après écriture. Tester sur copie anonymisée
+   avant exposition au système réel.
 6. **【À FAIRE】** T-035 — Enrichir les fixtures avec des exemples anonymisés
    représentatifs de la VM, tester les performances et l'interruption aux
    frontières de chaque écriture multi-fichiers ; distinguer crash processus et
