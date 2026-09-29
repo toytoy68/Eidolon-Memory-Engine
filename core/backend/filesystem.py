@@ -192,8 +192,8 @@ class FilesystemBackend(MemoryBackend):
     def store(self, memory: Memory) -> StoreResult:
         self._validate_id(memory.information_id)
 
-        if memory.revision < 1:
-            raise InvalidMemory("revision must be >= 1")
+        if type(memory.revision) is not int or memory.revision < 1:
+            raise InvalidMemory("revision must be an integer >= 1")
 
         path = self._path(memory.information_id)
 
@@ -238,6 +238,8 @@ class FilesystemBackend(MemoryBackend):
         memory: Memory,
         previous_revision: int,
     ) -> UpdateResult:
+        if type(previous_revision) is not int or previous_revision < 1:
+            raise InvalidMemory("previous_revision must be an integer >= 1")
         current = self.get(information_id)
 
         if current is None:

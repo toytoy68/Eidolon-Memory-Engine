@@ -75,6 +75,19 @@ def test_list_stops_after_requested_filtered_page(tmp_path, monkeypatch):
     assert visited == list(range(8))
 
 
+def test_backend_rejects_boolean_revision_before_writing(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(InvalidMemory, match="revision must be an integer"):
+        backend.store(Memory("info-test", revision=True))
+    assert not (backend.persistent_root / "info-test.md").exists()
+    backend.store(Memory("info-test", content="original"))
+    replacement = Memory("info-test", content="replacement")
+    with pytest.raises(InvalidMemory, match="previous_revision"):
+        backend.update("info-test", replacement, previous_revision=True)
+    assert replacement.revision == 1
+    assert backend.get("info-test").content == "original"
+
+
 def test_store_and_get(tmp_path):
     backend = FilesystemBackend(
         persistent_root=tmp_path / "persistent",
