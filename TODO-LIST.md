@@ -137,17 +137,32 @@ stables du moteur avant l'intégration aux agents.
    coupure d'alimentation dans les garanties.
 7. **【EN ATTENTE】** T-029 — Reprendre le tableau de bord et son accès LAN lorsque
    la priorité au noyau sera levée par le projet.
+8. **【À FAIRE】** T-036 — Concevoir et mesurer une récupération classée au sein
+   du moteur : pertinence de la requête, qualité des preuves, statut
+   épistémique, importance et récence comme signaux distincts. Définir une
+   politique explicite pour les Informations réfutées, conflictuelles et
+   périmées ; ne pas déduire la vérité d'un score. Garder les critères et
+   explications du classement indépendants d'Eidolon Core et d'un fournisseur
+   d'index. Ajouter un budget de tokens via un compteur injectable adapté au
+   consommateur, en conservant les bornes actuelles en caractères.
+9. **【À VALIDER】** T-037 — Définir le cycle de vie mémoire : consolidation,
+   révisions, rétention et oubli. Préciser les liens, la provenance, les
+   conflits, l'archivage et la reprise avant toute mutation automatique ;
+   aucun niveau `retention` ne doit provoquer une suppression implicite.
 
 ## État vérifié dans le dépôt
 
 - **【FAIT】** T-001 — Modèles, stockage de fichiers et requêtes des Informations
   et Threads, dépôts Event et Operation, contrôle de révision des Threads.
+- **【FAIT】** T-038 — Le validateur Information accepte les membres Enum et
+  leurs valeurs texte sans dépendre du test d'appartenance à `EnumType`, qui
+  lève sur Python 3.11 pour une valeur invalide (2026-09-29 ; tests isolés).
 - **【FAIT】** T-002 — Changement de statut Thread récupérable avec journal,
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 398 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 400 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens

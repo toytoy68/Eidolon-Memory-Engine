@@ -10,6 +10,13 @@ from .models import (
 )
 
 
+def _is_enum_value(value: object, enum_type: type) -> bool:
+    """Accept a domain Enum member or its wire value on Python 3.11+."""
+    return isinstance(value, enum_type) or (
+        type(value) is str and value in {member.value for member in enum_type}
+    )
+
+
 def validate_information(information: Information) -> list[str]:
     """Return validation errors for an Information object."""
     errors: list[str] = []
@@ -17,15 +24,15 @@ def validate_information(information: Information) -> list[str]:
     if not information.information_id:
         errors.append("id vide")
 
-    if information.type not in InformationType:
+    if not _is_enum_value(information.type, InformationType):
         errors.append(f"type invalide : {information.type}")
 
-    if information.epistemic_status not in EpistemicStatus:
+    if not _is_enum_value(information.epistemic_status, EpistemicStatus):
         errors.append(
             f"epistemic_status invalide : {information.epistemic_status}"
         )
 
-    if information.operational_state not in OperationalState:
+    if not _is_enum_value(information.operational_state, OperationalState):
         errors.append(
             f"operational_state invalide : {information.operational_state}"
         )

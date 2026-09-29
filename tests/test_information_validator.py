@@ -39,3 +39,25 @@ def test_invalid_operational_state():
     information.operational_state = "INVALID"
     errors = validate_information(information)
     assert any("operational_state invalide" in error for error in errors)
+
+
+def test_validator_accepts_wire_values_and_enum_members():
+    information = make_information()
+    information.type = "FACT"
+    information.epistemic_status = "UNVERIFIED"
+    information.operational_state = "ACTIVE"
+    assert validate_information(information) == []
+    information.type = InformationType.FACT
+    information.epistemic_status = EpistemicStatus.UNVERIFIED
+    information.operational_state = OperationalState.ACTIVE
+    assert validate_information(information) == []
+
+
+def test_validator_returns_errors_for_invalid_types_without_raising():
+    information = make_information()
+    information.type = "INVALID"
+    information.epistemic_status = None
+    information.operational_state = 42
+    errors = validate_information(information)
+    assert len(errors) == 3
+    assert not is_valid(information)
