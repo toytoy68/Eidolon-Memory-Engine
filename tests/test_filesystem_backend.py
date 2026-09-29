@@ -88,6 +88,21 @@ def test_backend_rejects_boolean_revision_before_writing(tmp_path):
     assert backend.get("info-test").content == "original"
 
 
+def test_failed_update_does_not_mutate_callers_memory(tmp_path, monkeypatch):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test", content="original"))
+    candidate = Memory("info-test", content="replacement")
+
+    def fail_publish(path, content):
+        raise OSError("simulated publish failure")
+
+    monkeypatch.setattr(backend, "_atomic_write", fail_publish)
+    with pytest.raises(OSError, match="simulated publish failure"):
+        backend.update("info-test", candidate, previous_revision=1)
+    assert candidate.revision == 1
+    assert backend.get("info-test").content == "original"
+
+
 def test_store_and_get(tmp_path):
     backend = FilesystemBackend(
         persistent_root=tmp_path / "persistent",

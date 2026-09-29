@@ -8,7 +8,7 @@ import os
 import re
 from pathlib import Path
 from typing import Any
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from core.storage_format import encode_document, decode_document
 
 from core.persistence import serialized_write, atomic_write_text, exclusive_write
@@ -258,11 +258,11 @@ class FilesystemBackend(MemoryBackend):
             )
 
         new_revision = current.revision + 1
-        memory.revision = new_revision
+        updated = replace(memory, revision=new_revision)
 
         self._atomic_write(
             self._path(information_id),
-            self._serialize(memory),
+            self._serialize(updated),
         )
 
         return UpdateResult(

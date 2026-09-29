@@ -119,7 +119,7 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 329 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 330 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -209,6 +209,9 @@ connecteur Qdrant opérationnel n'est attesté par cette branche.
 - **【FAIT】** T-031p — Le modèle Operation refuse les révisions négatives,
   booléennes ou de mauvais type avant la création du journal ; quatre cas
   de régression (2026-09-29).
+- **【FAIT】** T-031q — Une mise à jour Information sérialise une copie à la
+  révision suivante ; un échec de publication ne modifie plus la révision de
+  l'objet fourni par l'appelant (2026-09-29).
 - **【FAIT】** T-035a — La recherche locale parcourt toutes les Informations
   valides sans plafond implicite de 10 000 fichiers ; test d'un résultat placé
   après ce seuil (2026-09-29). Les performances réelles restent à mesurer.
