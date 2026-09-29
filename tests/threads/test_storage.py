@@ -80,6 +80,35 @@ def test_get_thread(tmp_path: Path):
     assert loaded.provenance == thread.provenance
 
 
+def test_thread_storage_rejects_symlink_without_reading_or_deleting_target(tmp_path):
+    storage = ThreadStorage(tmp_path / "persistent")
+    outside = tmp_path / "outside.md"
+    outside.write_text(storage._serialize(make_thread()))
+    path = storage.threads_root / "thread-test-001.md"
+    path.symlink_to(outside)
+    original = outside.read_bytes()
+    with pytest.raises(ThreadStorageError, match="symlink"):
+        storage.get("thread-test-001")
+    with pytest.raises(ThreadStorageError, match="symlink"):
+        storage.exists("thread-test-001")
+    with pytest.raises(ThreadStorageError, match="symlink"):
+        storage.list()
+    with pytest.raises(ThreadStorageError, match="symlink"):
+        storage.delete("thread-test-001")
+    assert outside.read_bytes() == original
+    assert path.is_symlink()
+
+
+def test_thread_storage_rejects_symlink_directory(tmp_path):
+    persistent = tmp_path / "persistent"
+    persistent.mkdir()
+    external = tmp_path / "external"
+    external.mkdir()
+    (persistent / "threads").symlink_to(external, target_is_directory=True)
+    with pytest.raises(ThreadStorageError, match="directory is a symlink"):
+        ThreadStorage(persistent)
+
+
 def test_exists(tmp_path: Path):
     storage = ThreadStorage(tmp_path)
 

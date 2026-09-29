@@ -45,6 +45,8 @@ class ThreadStorage:
             parents=True,
             exist_ok=True,
         )
+        if self.threads_root.is_symlink():
+            raise ThreadStorageError("Thread directory is a symlink")
 
     # ------------------------------------------------------------------
     # Paths
@@ -374,7 +376,7 @@ class ThreadStorage:
 
         path = self._path(thread.thread_id)
 
-        if path.exists():
+        if path.exists() or path.is_symlink():
             raise ThreadAlreadyExists(thread.thread_id)
 
         self._check_concerns(thread)
@@ -390,6 +392,8 @@ class ThreadStorage:
 
         path = self._path(thread_id)
 
+        if path.is_symlink():
+            raise ThreadStorageError("Thread path is a symlink")
         if not path.exists():
             return None
 
@@ -405,7 +409,10 @@ class ThreadStorage:
     def exists(self, thread_id: str) -> bool:
         """Return whether a Thread exists."""
 
-        return self._path(thread_id).exists()
+        path = self._path(thread_id)
+        if path.is_symlink():
+            raise ThreadStorageError("Thread path is a symlink")
+        return path.exists()
 
     @serialized_write("threads_root")
     def update(
@@ -453,6 +460,8 @@ class ThreadStorage:
         """Delete a persistent Thread."""
         path = self._path(thread_id)
 
+        if path.is_symlink():
+            raise ThreadStorageError("Thread path is a symlink")
         if not path.exists():
             raise ThreadStorageError(
                 f"Thread not found: {thread_id}"
@@ -465,6 +474,8 @@ class ThreadStorage:
         threads: list[Thread] = []
 
         for path in sorted(self.threads_root.glob("*.md")):
+            if path.is_symlink():
+                raise ThreadStorageError("Thread path is a symlink")
             text = path.read_text(encoding="utf-8")
             thread = self._deserialize(text)
             if thread.thread_id != path.stem:
