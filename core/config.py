@@ -5,6 +5,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from core.persistence import has_symlink_component
+
 
 # Racine du Memory Engine.
 # Par défaut, elle est déterminée automatiquement
@@ -40,14 +42,19 @@ SERVICES_ROOT = ENGINE_ROOT / "services"
 
 
 def ensure_directories() -> None:
-    for path in (
+    paths = (
         WORKING_ROOT,
         PERSISTENT_ROOT,
         EVENTS_ROOT,
         REVIEWS_ROOT,
         OPERATIONS_ROOT,
-    ):
+    )
+    if any(has_symlink_component(path) for path in paths):
+        raise ValueError("configured memory directory contains a symlink")
+    for path in paths:
         path.mkdir(
             parents=True,
             exist_ok=True,
         )
+    if any(has_symlink_component(path) for path in paths):
+        raise ValueError("configured memory directory became a symlink")
