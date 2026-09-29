@@ -35,7 +35,7 @@ modèle qui consommera le contexte. Le choix du tokenizer reste hors du moteur.
 
 | Composant | Lecture | Écriture actuelle | Règle de coexistence |
 | --- | --- | --- | --- |
-| `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread | Seul écrivain nouveau des Informations core ; ne pas lancer le controller historique sur les mêmes fichiers. |
+| `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread et Information | Seul écrivain nouveau des Informations core ; ne pas lancer le controller historique sur les mêmes fichiers. |
 | `core/threads/ThreadStorage` | `persistent/threads/*.md` | Threads sous verrou, avec contrôle de révision | Les changements de statut doivent passer par le coordinateur d'Operations pour être récupérables. |
 | `core/threads/ThreadInformationLinkService` | Information ciblée | Crée un Thread avec relation `CONCERNS` | Vérifie l'existence sous le verrou partagé de `persistent/` au moment de la création ; ne garantit pas que la cible restera présente après une suppression ultérieure. |
 | `core/operations/FilesystemLinkedThreadCreation` | Information, Thread, Event et Operation | Journal `thread-create-v1`, Thread lié et Event `CREATED` | Prend les verrous Persistent → Thread → Operation → Event ; reprendre avec `recover-creations` avant d'autres mutations. |

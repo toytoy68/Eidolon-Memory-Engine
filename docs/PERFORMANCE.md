@@ -33,3 +33,12 @@ courts, un seul essai : recherche historique 0,65 s, recherche
 Ces temps ne mesurent ni la qualité du classement ni un corpus réel ; ils
 indiquent seulement que le mode optionnel n'a pas augmenté le coût de ce
 scénario synthétique dans cet environnement.
+
+Un autre essai local du même jour a créé 15 000 fichiers synthétiques courts
+avec 1 000 corps distincts répétés. L'audit de rétention et de validité a pris
+3,70 s ; la prévisualisation des doublons exacts, 3,42 s pour 1 000 groupes.
+Le pic suivi par `tracemalloc` pendant ces deux lectures était d'environ
+15,9 Mio d'allocations Python, ce qui n'est **pas** une mesure de la RAM totale
+du processus. Ces essais ont été effectués une seule fois, sur des textes
+très courts et sans écrivain concurrent. Ils ne remplacent pas une mesure sur
+une copie représentative de la VM.

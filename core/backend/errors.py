@@ -26,4 +26,4 @@ class RevisionConflict(BackendError):
 
 
 class InformationDeletionBlocked(BackendError):
-    """A linked or unreadable Thread prevents safe Information deletion."""
+    """A linked or unreadable object prevents safe Information deletion."""

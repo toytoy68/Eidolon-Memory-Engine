@@ -1,11 +1,50 @@
-"""Check persisted Thread references before removing an Information."""
+"""Check persisted references before removing an Information."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from core.backend.errors import InformationDeletionBlocked
+from core.backend.errors import InformationDeletionBlocked, InvalidMemory
 from core.threads.storage import ThreadStorage, ThreadStorageError
+
+
+def ensure_no_information_links(persistent_root: Path, information_id: str,
+                                deserialize) -> None:
+    """Block removal if another Information references the target.
+
+    The caller holds the Persistent writer lock, shared by Information writes.
+    """
+    if persistent_root.is_symlink():
+        raise InformationDeletionBlocked("Information directory is a symlink")
+    for path in sorted(persistent_root.glob("*.md")):
+        if path.is_symlink():
+            raise InformationDeletionBlocked("Information scan contains a symlink")
+        if path.stem == information_id:
+            continue  # Its outgoing relations disappear with this Information.
+        try:
+            memory = deserialize(path.read_text(encoding="utf-8"))
+            if memory.information_id != path.stem:
+                raise ValueError("Information identity mismatch")
+        except (OSError, UnicodeError, ValueError, TypeError, KeyError,
+                AttributeError, InvalidMemory) as exc:
+            raise InformationDeletionBlocked(
+                "unreadable Information prevents safe deletion"
+            ) from exc
+        for relation in memory.relations:
+            if not isinstance(relation, dict):
+                raise InformationDeletionBlocked("invalid Information relation")
+            target_id = relation.get("target_id")
+            legacy_target = relation.get("target")
+            if (target_id is not None and legacy_target is not None
+                    and target_id != legacy_target):
+                raise InformationDeletionBlocked("ambiguous Information relation target")
+            target = target_id if target_id is not None else legacy_target
+            if not isinstance(target, str) or not target:
+                raise InformationDeletionBlocked("invalid Information relation target")
+            if target == information_id:
+                raise InformationDeletionBlocked(
+                    f"Information is referenced by Information {memory.information_id}"
+                )
 
 
 def ensure_no_thread_links(threads_root: Path, information_id: str) -> None:

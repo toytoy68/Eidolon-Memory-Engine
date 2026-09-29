@@ -48,6 +48,59 @@ def test_guarded_approval_allows_unlinked_information(tmp_path):
     assert backend.get("info-2") is not None
 
 
+def test_information_relation_blocks_delete_until_source_is_updated(tmp_path):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("target", content="keep"))
+    backend.store(Memory("source", content="related",
+                         relations=[{"type": "RELATED_TO", "target_id": "target"}]))
+    backend.delete_request("target", "human", "obsolete", 1, "delete-target")
+    with pytest.raises(InformationDeletionBlocked, match="referenced by Information"):
+        backend.approve_delete("target", "delete-target")
+    assert backend.get("target").content == "keep"
+    receipt = json.loads((backend.pending_delete_root / "target.json").read_text())
+    assert receipt["status"] == "PENDING_DELETE"
+    backend.update("source", Memory("source", content="related", relations=[]),
+                   previous_revision=1)
+    assert backend.approve_delete("target", "delete-target").status == "DELETED"
+
+
+def test_unreadable_information_blocks_other_information_deletion(tmp_path):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("target"))
+    backend.delete_request("target", "human", "reason", 1, "delete-target")
+    (backend.persistent_root / "broken.md").write_text("invalid Information")
+    with pytest.raises(InformationDeletionBlocked, match="unreadable Information"):
+        backend.approve_delete("target", "delete-target")
+    assert backend.get("target") is not None
+
+
+@pytest.mark.parametrize("relation", [
+    {"type": "RELATED_TO", "target": "target"},
+    {"type": "RELATED_TO", "target_id": "other", "target": "target"},
+    {"type": "RELATED_TO"},
+])
+def test_information_relation_aliases_or_ambiguity_block_delete(tmp_path, relation):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("target"))
+    backend.store(Memory("source", relations=[relation]))
+    backend.delete_request("target", "human", "reason", 1, "delete-target")
+    with pytest.raises(InformationDeletionBlocked):
+        backend.approve_delete("target", "delete-target")
+    assert backend.get("target") is not None
+
+
+def test_symlinked_information_source_blocks_delete(tmp_path):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("target"))
+    backend.delete_request("target", "human", "reason", 1, "delete-target")
+    outside = tmp_path / "outside.md"
+    outside.write_text("private")
+    (backend.persistent_root / "source.md").symlink_to(outside)
+    with pytest.raises(InformationDeletionBlocked, match="symlink"):
+        backend.approve_delete("target", "delete-target")
+    assert outside.read_text() == "private"
+
+
 def test_unreadable_thread_blocks_guarded_deletion(tmp_path):
     backend, threads, deletion = stores(tmp_path)
     backend.store(Memory("info-1"))

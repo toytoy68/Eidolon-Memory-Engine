@@ -108,7 +108,7 @@ stables du moteur avant l'intégration aux agents.
    Garder l'audit
    actuel en lecture seule tant que la politique de réparation n'est pas fixée.
    T-032a protège déjà les demandes en attente contre l'écrasement.
-   T-032b refuse explicitement un reçu de suppression symbolique cassé lors
+   Le garde-fou T-032j refuse explicitement un reçu symbolique cassé lors
    de l'approbation ou de l'annulation (2026-09-29).
 4. **【À FAIRE】** T-033 — La première simulation **sans écriture** des
    Informations historiques propose une correspondance champ par champ et
@@ -197,12 +197,16 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-037d — Prévisualisation Python en lecture seule des groupes
   exacts avec IDs et noms de champs divergents pour revue humaine ; aucune
   proposition de fusion automatique (2026-09-29).
+- **【FAIT】** T-032k — L'approbation core contrôle aussi les relations des
+  autres Informations sous le verrou Persistent et refuse une cible liée,
+  illisible ou ambiguë ; les références textuelles historiques restent à
+  examiner lors de la migration (2026-09-29).
 - **【FAIT】** T-002 — Changement de statut Thread récupérable avec journal,
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 437 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 443 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
@@ -398,6 +402,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-032i — L'audit et la reprise explicite refusent les liens
   symboliques sur les répertoires parents `memory` et `memory/history` avant
   de parcourir les demandes (2026-09-29).
+- **【FAIT】** T-032j — L'approbation et l'annulation refusent un reçu de
+  suppression symbolique cassé au lieu de le traiter comme absent
+  (2026-09-29).
 - **【FAIT】** T-033a — Simulation déterministe en lecture seule des Informations
   anciennes : proposition de mapping, fichiers candidats/bloqués, inventaire
   Events/Reviews/Operations et blocage des valeurs YAML non représentables en

@@ -49,3 +49,9 @@ révisions, comment identifier les contradictions, quelle archive restaurable
 produire, qui peut autoriser une suppression et comment la reprendre après
 interruption. Les valeurs `TEMPORARY` ou `DISPOSABLE` ne suffisent pas à elles
 seules à décider une date de suppression.
+L'approbation core d'une suppression refuse désormais une Information ciblée
+par une relation structurée d'une autre Information, sous le verrou du stockage
+Persistent. Les relations ambiguës, documents illisibles et liens symboliques
+bloquent également la suppression. Le scanner ne déduit pas des références
+textuelles cachées dans un corps libre ; la migration historique et ses
+relations textuelles restent à examiner avant déploiement.
