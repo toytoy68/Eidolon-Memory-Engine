@@ -42,3 +42,9 @@ Le pic suivi par `tracemalloc` pendant ces deux lectures était d'environ
 du processus. Ces essais ont été effectués une seule fois, sur des textes
 très courts et sans écrivain concurrent. Ils ne remplacent pas une mesure sur
 une copie représentative de la VM.
+
+Après l'ajout du contrôle des relations Information avant suppression, un
+essai isolé sur 15 000 courts fichiers core sans relation a pris 0,43 s pour
+approuver une suppression (scan des autres Informations inclus). C'est un seul
+essai local, sans Thread lié, sans concurrence et sans matériel de la VM ; le
+coût dépend du nombre et de la taille des fichiers.

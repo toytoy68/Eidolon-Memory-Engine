@@ -101,6 +101,13 @@ def test_symlinked_information_source_blocks_delete(tmp_path):
     assert outside.read_text() == "private"
 
 
+def test_self_relation_does_not_block_deleting_its_own_document(tmp_path):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("self", relations=[{"type": "RELATED_TO", "target_id": "self"}]))
+    backend.delete_request("self", "human", "reason", 1, "delete-self")
+    assert backend.approve_delete("self", "delete-self").status == "DELETED"
+
+
 def test_unreadable_thread_blocks_guarded_deletion(tmp_path):
     backend, threads, deletion = stores(tmp_path)
     backend.store(Memory("info-1"))
