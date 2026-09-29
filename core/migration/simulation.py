@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 import re
 from pathlib import Path
@@ -11,6 +12,7 @@ import yaml
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
+from core.events.models import EventType
 from core.migration.inventory import inventory, classify
 from core.migration.preflight import UniqueKeyLoader, inspect_core_information, inspect_legacy_information
 
@@ -35,6 +37,44 @@ FIELD_MAPPING = {
     "revision.is_revision": "metadata.legacy_revision.is_revision",
     "revision.previous_revision": "metadata.legacy_revision.previous_revision",
 }
+
+
+def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -> tuple[dict, list]:
+    directory = root / "memory/history" / category
+    counts: Counter[str] = Counter()
+    issues = []
+    if directory.is_symlink():
+        return {}, [{"path": f"memory/history/{category}", "reason": "symlink_skipped"}]
+    if not directory.is_dir():
+        return {}, []
+    for path in sorted(directory.glob("*.md")):
+        relative = path.relative_to(root).as_posix()
+        kind = classify(path, category)
+        if kind == "core_event_0.2" and category == "events":
+            counts["core_event_0.2"] += 1
+            continue
+        if kind != "legacy_front_matter" and not (category == "events" and kind == "legacy_event_plain"):
+            issues.append({"path": relative, "reason": "unrecognized_history_format"})
+            continue
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                header = handle.read(65536)
+            if kind == "legacy_front_matter":
+                lines = header.splitlines(keepends=True)
+                end = next(i for i, line in enumerate(lines[1:], 1) if line.strip() == "---")
+                record = yaml.load("".join(lines[1:end]), Loader=UniqueKeyLoader)
+                value = record.get(field) if isinstance(record, dict) else None
+            else:
+                plain_header = header.split("\n---", 1)[0]
+                match = re.search(rf"(?m)^{re.escape(field)}:\s*([A-Z_]+)\s*$", plain_header)
+                value = match.group(1) if match else None
+        except (OSError, UnicodeError, ValueError, StopIteration, yaml.YAMLError):
+            value = None
+        if not isinstance(value, str) or value not in allowed:
+            issues.append({"path": relative, "reason": "unrecognized_history_value"})
+        else:
+            counts[value] += 1
+    return dict(sorted(counts.items())), issues
 
 
 def preview_legacy_information(path: Path) -> Memory:
@@ -105,6 +145,10 @@ def _candidate_issues(path: Path, persistent: Path) -> list[str]:
 def simulate(engine_root: Path) -> dict:
     root = Path(engine_root)
     source_inventory = inventory(root)
+    event_types, event_issues = _history_summary(
+        root, "events", "event_type", {item.value for item in EventType} | {"STORED", "RELATION_ADDED"})
+    review_statuses, review_issues = _history_summary(
+        root, "reviews", "status", {"PENDING_REVIEW", "RESOLVED"})
     persistent = root / "memory/persistent"
     report = {
         "field_mapping_proposal": FIELD_MAPPING,
@@ -113,9 +157,16 @@ def simulate(engine_root: Path) -> dict:
             "events": source_inventory["categories"]["events"],
             "reviews": source_inventory["categories"]["reviews"],
             "operations": source_inventory["categories"]["operations"],
+            "event_types": event_types,
+            "review_statuses": review_statuses,
+            "requires_policy": {
+                "events": {key: event_types[key] for key in ("STORED", "RELATION_ADDED")
+                           if key in event_types},
+                "reviews": review_statuses,
+            },
             "policy": "archive_or_convert_requires_decision",
         },
-        "inventory_needs_review": source_inventory["needs_review"],
+        "inventory_needs_review": source_inventory["needs_review"] + event_issues + review_issues,
     }
     if persistent.is_symlink():
         report["information"]["blocked"].append(

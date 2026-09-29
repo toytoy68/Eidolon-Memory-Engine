@@ -13,10 +13,12 @@ def test_simulation_reports_mapping_and_legacy_data_without_writing(tmp_path, ca
                          "---\n# Information\nsecret body\n")
     events = tmp_path / "memory/history/events"
     events.mkdir(parents=True)
-    (events / "event-1.md").write_text("---\nevent_id: event-1\n---\nsecret event\n")
+    (events / "event-1.md").write_text(
+        "---\nevent_id: event-1\nevent_type: STORED\n---\nsecret event\n")
     reviews = tmp_path / "memory/history/reviews"
     reviews.mkdir(parents=True)
-    (reviews / "review-1.md").write_text("---\nid: review-1\n---\nsecret review\n")
+    (reviews / "review-1.md").write_text(
+        "---\nid: review-1\nstatus: PENDING_REVIEW\n---\nsecret review\n")
     before = {path: path.read_bytes() for path in tmp_path.rglob("*") if path.is_file()}
 
     assert main(["--root", str(tmp_path)]) == 0
@@ -25,6 +27,9 @@ def test_simulation_reports_mapping_and_legacy_data_without_writing(tmp_path, ca
     assert report["information"]["candidates"] == ["memory/persistent/info-1.md"]
     assert report["other_data"]["events"] == {"legacy_front_matter": 1}
     assert report["other_data"]["reviews"] == {"legacy_front_matter": 1}
+    assert report["other_data"]["event_types"] == {"STORED": 1}
+    assert report["other_data"]["review_statuses"] == {"PENDING_REVIEW": 1}
+    assert report["other_data"]["requires_policy"]["events"] == {"STORED": 1}
     assert report["field_mapping_proposal"]["revision.previous_revision"] == (
         "metadata.legacy_revision.previous_revision")
     assert "secret" not in output and "private-value" not in output
@@ -122,3 +127,23 @@ def test_simulation_flags_old_relation_alias_without_rewriting_it(tmp_path):
         "reasons": ["legacy_relation_alias_requires_policy"],
     }]
     assert source.read_bytes() == before
+
+
+def test_simulation_counts_plain_events_and_flags_unknown_history_values(tmp_path):
+    events = tmp_path / "memory/history/events"
+    reviews = tmp_path / "memory/history/reviews"
+    events.mkdir(parents=True)
+    reviews.mkdir(parents=True)
+    (events / "plain.md").write_text(
+        "event_id: plain\nevent_type: RELATION_ADDED\n---\nprivate content\n")
+    (events / "unknown.md").write_text(
+        "---\nevent_id: unknown\nevent_type: PRIVATE_VALUE\n---\nprivate content\n")
+    (reviews / "bad.md").write_text(
+        "---\nreview_id: bad\nstatus: PRIVATE_VALUE\n---\nprivate content\n")
+    report = simulate(tmp_path)
+    assert report["other_data"]["event_types"] == {"RELATION_ADDED": 1}
+    assert report["other_data"]["review_statuses"] == {}
+    assert [item["reason"] for item in report["inventory_needs_review"]] == [
+        "unrecognized_history_value", "unrecognized_history_value",
+    ]
+    assert "PRIVATE_VALUE" not in json.dumps(report)
