@@ -1,0 +1,32 @@
+# Cycle de vie mémoire — premier audit en lecture seule
+
+Les champs `retention` et `valid_until` répondent à deux questions
+différentes. La rétention exprime une politique de conservation à définir ;
+`valid_until` indique la fin déclarée d'une période d'applicabilité.
+Une Information dont la période est terminée peut rester utile pour son
+historique, une contradiction, une décision ou une recherche passée. Aucun de
+ces champs ne déclenche une suppression.
+
+Sur une copie arrêtée et sauvegardée de la racine du moteur :
+
+```sh
+python -m core.information.lifecycle_audit \
+  --root /chemin/vers/copie \
+  --at 2026-09-29T12:00:00+02:00
+```
+
+La date `--at` doit indiquer son fuseau. L'outil valide le manifeste de
+source, refuse les liens symboliques sur le chemin de stockage, puis compare
+l'empreinte de chaque fichier relu à celle du manifeste. Il rend seulement les
+nombres de politiques de rétention déclarées (`missing` et `invalid` inclus),
+les nombres de périodes `ended`, `not_ended`, `unknown` ou `invalid`, l'heure
+de référence et l'empreinte globale. Il n'affiche pas de contenu ni d'ID et
+n'écrit pas de fichier. Ce contrôle n'est pas un instantané atomique si un
+autre processus modifie la copie pendant l'exécution.
+
+Avant une consolidation ou un oubli, il faudra décider explicitement :
+comment conserver provenance et preuves, comment traiter les relations et
+révisions, comment identifier les contradictions, quelle archive restaurable
+produire, qui peut autoriser une suppression et comment la reprendre après
+interruption. Les valeurs `TEMPORARY` ou `DISPOSABLE` ne suffisent pas à elles
+seules à décider une date de suppression.
