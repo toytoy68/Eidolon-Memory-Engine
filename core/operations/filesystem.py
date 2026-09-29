@@ -33,7 +33,11 @@ class FilesystemOperationRepository(OperationRepository):
 
     def __init__(self, root: Path) -> None:
         self.root = Path(root)
+        if self.root.is_symlink():
+            raise InvalidOperationRecord("Operation directory is a symlink")
         self.root.mkdir(parents=True, exist_ok=True)
+        if self.root.is_symlink():
+            raise InvalidOperationRecord("Operation directory is a symlink")
 
     def _path(self, operation_id: str) -> Path:
         if (not isinstance(operation_id, str)
@@ -48,7 +52,7 @@ class FilesystemOperationRepository(OperationRepository):
     def create(self, operation: OperationRecord) -> None:
         path = self._path(operation.operation_id)
 
-        if path.exists():
+        if path.exists() or path.is_symlink():
             raise OperationAlreadyExists(operation.operation_id)
 
         self._write(operation, path)
@@ -56,6 +60,8 @@ class FilesystemOperationRepository(OperationRepository):
     def get(self, operation_id: str) -> OperationRecord | None:
         path = self._path(operation_id)
 
+        if path.is_symlink():
+            raise InvalidOperationRecord("Operation path is a symlink")
         if not path.exists():
             return None
 

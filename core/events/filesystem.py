@@ -45,7 +45,11 @@ class FilesystemEventRepository(EventRepository):
             else EVENTS_ROOT
         )
 
+        if self.events_root.is_symlink():
+            raise InvalidEvent("Event directory is a symlink")
         self.events_root.mkdir(parents=True, exist_ok=True)
+        if self.events_root.is_symlink():
+            raise InvalidEvent("Event directory is a symlink")
 
     # ------------------------------------------------------------------
     # Paths
@@ -287,7 +291,7 @@ class FilesystemEventRepository(EventRepository):
 
         path = self._path(event.event_id)
 
-        if path.exists():
+        if path.exists() or path.is_symlink():
             raise EventAlreadyExists(event.event_id)
 
         try:
@@ -301,6 +305,8 @@ class FilesystemEventRepository(EventRepository):
     def get(self, event_id: str) -> Event | None:
         path = self._path(event_id)
 
+        if path.is_symlink():
+            raise InvalidEvent("Event path is a symlink")
         if not path.exists():
             return None
 
@@ -321,6 +327,8 @@ class FilesystemEventRepository(EventRepository):
         events: list[Event] = []
 
         for path in sorted(self.events_root.glob("*.md")):
+            if path.is_symlink():
+                raise InvalidEvent("Event path is a symlink")
             try:
                 event = self._deserialize(
                     path.read_text(encoding="utf-8")

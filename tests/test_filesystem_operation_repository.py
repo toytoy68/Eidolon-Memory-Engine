@@ -18,6 +18,28 @@ from core.operations.models import (
 from core.threads.models import ThreadStatus
 
 
+def test_operation_repository_rejects_symlinked_paths(tmp_path):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    root = tmp_path / "operations"
+    root.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(InvalidOperationRecord, match="directory is a symlink"):
+        FilesystemOperationRepository(root)
+    root.unlink()
+    repository = FilesystemOperationRepository(root)
+    (root / "op-test.json").symlink_to(root / "missing.json")
+    with pytest.raises(InvalidOperationRecord, match="symlink"):
+        repository.get("op-test")
+    operation = OperationRecord(
+        operation_id="op-test", operation_type=OperationType.THREAD_STATUS_CHANGE,
+        target_id="thread-test", previous_revision=1, revision=2,
+        execution_plan_hash="hash",
+        plan=ThreadStatusChangePlan(new_status=ThreadStatus.IMPLEMENTATION, event_id="event-test"),
+    )
+    with pytest.raises(OperationAlreadyExists):
+        repository.create(operation)
+
+
 def test_create_and_get_operation(tmp_path):
     repository = FilesystemOperationRepository(tmp_path)
 

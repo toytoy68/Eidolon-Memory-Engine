@@ -19,6 +19,25 @@ from core.events.models import (
 )
 
 
+def test_event_repository_rejects_symlinked_paths(tmp_path):
+    external = tmp_path / "external.md"
+    external.write_text("private")
+    root = tmp_path / "events"
+    root.symlink_to(tmp_path, target_is_directory=True)
+    with pytest.raises(InvalidEvent, match="directory is a symlink"):
+        FilesystemEventRepository(root)
+    root.unlink()
+    repository = FilesystemEventRepository(root)
+    (root / "event-test.md").symlink_to(external)
+    with pytest.raises(InvalidEvent, match="path is a symlink"):
+        repository.get("event-test")
+    with pytest.raises(InvalidEvent, match="path is a symlink"):
+        repository.list_for_target("info-test")
+    with pytest.raises(EventAlreadyExists):
+        repository.save(Event("event-test", 1, EventType.CREATED, information_id="info-test"))
+    assert external.read_text() == "private"
+
+
 def test_save_and_get_event(tmp_path):
     repository = FilesystemEventRepository(
         events_root=tmp_path / "events",
