@@ -81,6 +81,14 @@ déploiement de la plateforme, distinct d'Eidolon Core et du Memory Engine.
 
 ## Priorités après l'audit du dépôt
 
+**Règle de priorité du projet :** construire et fiabiliser le Memory Engine
+comme composant autonome et persistant avant le système agentique. Les formats,
+la source de vérité, la validation et la reprise appartiennent au moteur ;
+Eidolon Core et les futurs agents sont des clients susceptibles d'évoluer ou
+d'être remplacés sans migration imposée de la mémoire. L'index éventuel reste
+reconstructible. Prioriser la sûreté des données, la migration et les contrats
+stables du moteur avant l'intégration aux agents.
+
 1. **【À FAIRE】** T-010 à T-015 — Sur VM, identifier les écrivains et données,
    sauvegarder et vérifier une restauration sur copie, tester les cinq cas de
    concurrence et définir l'ordre de `recover-all` au démarrage. Ne pas ouvrir
@@ -105,6 +113,9 @@ déploiement de la plateforme, distinct d'Eidolon Core et du Memory Engine.
    signale les blocages ainsi que les Events/Reviews à décider. Restent la
    validation des pertes sémantiques, des relations, de la révision structurée
    et du format cible avant un convertisseur effectif.
+   T-033a refuse désormais les liens symboliques dans les répertoires parents
+   des sources lors de l'inventaire, du précontrôle et de la simulation
+   (2026-09-29 ; test de non-parcours sur une racine `memory/` liée).
 5. **【À VALIDER】** T-034 — Définir l'API avec Eidolon Core,
    l'identité/authentification et les erreurs. Décider ensuite si Qdrant est
    utile selon les besoins mesurés ; si oui, préciser index dérivé,

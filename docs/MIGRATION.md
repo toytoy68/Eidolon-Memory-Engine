@@ -73,6 +73,9 @@ invalide, ambiguë (même identifiant dans les deux espaces) ou accessible par
 un lien symbolique est signalée comme référence à examiner, sans conclure
 qu'il s'agit d'une corruption : une suppression historique peut être légitime.
 Le rapport ne réécrit aucun lien et n'affiche aucune valeur de contenu.
+Les trois outils de lecture refusent aussi un lien symbolique sur un répertoire
+parent de leurs sources sous la racine du moteur, notamment `memory/` ou
+`memory/history/` ; la copie doit avoir une arborescence réelle à ces endroits.
 
 Pour chaque candidate, l'outil construit maintenant un objet core **en mémoire**
 et vérifie son aller-retour dans le format 0.2. Le corps après le front matter

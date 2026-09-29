@@ -15,7 +15,7 @@ from core.backend.models import Memory
 from core.events.filesystem import FilesystemEventRepository
 from core.events.errors import InvalidEvent
 from core.events.models import EventType
-from core.migration.inventory import inventory, classify
+from core.migration.inventory import inventory, classify, symlink_ancestor
 from core.migration.preflight import UniqueKeyLoader, inspect_core_information, inspect_legacy_information
 
 
@@ -50,8 +50,9 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
     directory = root / "memory/history" / category
     counts: Counter[str] = Counter()
     issues = []
-    if directory.is_symlink():
-        return {}, [{"path": f"memory/history/{category}", "reason": "symlink_skipped"}]
+    linked = symlink_ancestor(root, directory)
+    if linked is not None:
+        return {}, [{"path": linked.relative_to(root).as_posix(), "reason": "symlink_skipped"}]
     if not directory.is_dir():
         return {}, []
     for path in sorted(directory.glob("*.md")):
@@ -99,7 +100,7 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
             unsafe = False
             for directory in (root / "memory/working", root / "memory/persistent"):
                 candidate = directory / f"{reference}.md"
-                if directory.is_symlink() or candidate.is_symlink():
+                if symlink_ancestor(root, candidate) is not None:
                     if candidate.exists() or candidate.is_symlink():
                         unsafe = True
                     continue
@@ -220,9 +221,10 @@ def simulate(engine_root: Path) -> dict:
         },
         "inventory_needs_review": source_inventory["needs_review"] + event_issues + review_issues,
     }
-    if persistent.is_symlink():
+    linked = symlink_ancestor(root, persistent)
+    if linked is not None:
         report["information"]["blocked"].append(
-            {"path": "memory/persistent", "reasons": ["symlink_skipped"]})
+            {"path": linked.relative_to(root).as_posix(), "reasons": ["symlink_skipped"]})
         return report
     if not persistent.is_dir():
         return report

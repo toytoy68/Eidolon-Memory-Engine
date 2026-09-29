@@ -3,6 +3,24 @@ import json
 from core.events.filesystem import FilesystemEventRepository
 from core.events.models import Event, EventType
 from core.migration.simulation import main, simulate, preview_legacy_information
+from core.migration.inventory import inventory
+from core.migration.preflight import preflight
+
+
+def test_migration_tools_do_not_traverse_linked_memory_parent(tmp_path):
+    outside = tmp_path / "outside"
+    (outside / "persistent").mkdir(parents=True)
+    (outside / "persistent" / "secret.md").write_text(
+        "---\nid: secret\nrevision: 1\n---\nprivate\n")
+    (tmp_path / "memory").symlink_to(outside, target_is_directory=True)
+
+    assert inventory(tmp_path)["categories"]["information"] == {}
+    assert preflight(tmp_path)["blocked"] == [
+        {"path": "memory", "reasons": ["symlink_skipped"]}]
+    report = simulate(tmp_path)
+    assert report["information"]["candidates"] == []
+    assert report["information"]["blocked"] == [
+        {"path": "memory", "reasons": ["symlink_skipped"]}]
 
 
 def test_simulation_reports_mapping_and_legacy_data_without_writing(tmp_path, capsys):

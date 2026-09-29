@@ -14,7 +14,7 @@ from core.backend.filesystem import FilesystemBackend
 from core.information.models import (
     Confidence, EpistemicStatus, Importance, InformationType, OperationalState, Retention,
 )
-from core.migration.inventory import classify
+from core.migration.inventory import classify, symlink_ancestor
 
 
 class UniqueKeyLoader(yaml.SafeLoader):
@@ -131,8 +131,10 @@ def preflight(engine_root: Path) -> dict:
         raise ValueError(f"engine root is not a directory: {root}")
     persistent = root / "memory" / "persistent"
     report = {"legacy_candidates": 0, "already_core": 0, "blocked": []}
-    if persistent.is_symlink():
-        report["blocked"].append({"path": "memory/persistent", "reasons": ["symlink_skipped"]})
+    linked = symlink_ancestor(root, persistent)
+    if linked is not None:
+        report["blocked"].append({"path": linked.relative_to(root).as_posix(),
+                                  "reasons": ["symlink_skipped"]})
         return report
     if not persistent.is_dir():
         return report

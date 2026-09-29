@@ -23,6 +23,16 @@ SOURCES = (
 )
 
 
+def symlink_ancestor(root: Path, path: Path) -> Path | None:
+    """Return the first linked component below the engine root, without following it."""
+    current = root
+    for part in path.relative_to(root).parts:
+        current = current / part
+        if current.is_symlink():
+            return current
+    return None
+
+
 def classify(path: Path, category: str) -> str:
     if path.is_symlink():
         return "symlink_skipped"
@@ -67,8 +77,10 @@ def inventory(engine_root: Path) -> dict:
     for category, relative, pattern in SOURCES:
         directory = root / relative
         counts: Counter[str] = Counter()
-        if directory.is_symlink():
-            result["needs_review"].append({"path": relative, "reason": "symlink_skipped"})
+        linked = symlink_ancestor(root, directory)
+        if linked is not None:
+            result["needs_review"].append({
+                "path": linked.relative_to(root).as_posix(), "reason": "symlink_skipped"})
         elif directory.is_dir():
             for path in sorted(directory.glob(pattern)):
                 if not path.is_file() and not path.is_symlink():
