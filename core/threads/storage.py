@@ -39,11 +39,13 @@ class ThreadStorage:
         self.persistent_root = Path(persistent_root)
         self.threads_root = self.persistent_root / "threads"
 
+        if self.persistent_root.is_symlink() or self.threads_root.is_symlink():
+            raise ThreadStorageError("Thread directory is a symlink")
         self.threads_root.mkdir(
             parents=True,
             exist_ok=True,
         )
-        if self.threads_root.is_symlink():
+        if self.persistent_root.is_symlink() or self.threads_root.is_symlink():
             raise ThreadStorageError("Thread directory is a symlink")
 
     # ------------------------------------------------------------------

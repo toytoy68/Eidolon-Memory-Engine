@@ -110,6 +110,16 @@ def test_thread_storage_rejects_symlink_directory(tmp_path):
         ThreadStorage(persistent)
 
 
+def test_thread_storage_rejects_linked_persistent_root_before_creating_threads(tmp_path):
+    external = tmp_path / "external"
+    external.mkdir()
+    persistent = tmp_path / "persistent"
+    persistent.symlink_to(external, target_is_directory=True)
+    with pytest.raises(ThreadStorageError, match="directory is a symlink"):
+        ThreadStorage(persistent)
+    assert not (external / "threads").exists()
+
+
 def test_thread_revisions_reject_booleans_before_writing(tmp_path):
     storage = ThreadStorage(tmp_path / "persistent")
     wrong = replace(make_thread(), revision=True)
