@@ -36,6 +36,7 @@ def test_lifecycle_audit_separates_retention_from_validity(tmp_path, capsys):
         "invalid": 2, "unknown": 1,
     }
     assert report["policy"] == "read_only_no_deletion_inferred"
+    assert report["exact_content_duplicates"] == {"groups": 0, "documents_in_groups": 0}
     assert "private" not in output and "old" not in output
     assert {path: path.read_bytes() for path in tmp_path.rglob("*") if path.is_file()} == before
 
@@ -61,3 +62,16 @@ def test_lifecycle_boundary_is_not_marked_ended_at_exact_instant(tmp_path):
     report = audit_lifecycle(backend.persistent_root,
                              as_of="2026-09-29T12:00:00+02:00")
     assert report["applicability"] == {"within_known_bounds": 1}
+
+
+def test_lifecycle_counts_exact_duplicate_bodies_without_identifying_them(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("first", content="same private text",
+                         provenance={"source": "user"}))
+    backend.store(Memory("second", content="same private text",
+                         provenance={"source": "measurement"}))
+    backend.store(Memory("third", content="different private text"))
+    report = audit_lifecycle(backend.persistent_root, as_of="2026-09-29T12:00:00Z")
+    assert report["exact_content_duplicates"] == {"groups": 1, "documents_in_groups": 2}
+    assert "private" not in json.dumps(report)
+    assert "first" not in json.dumps(report)

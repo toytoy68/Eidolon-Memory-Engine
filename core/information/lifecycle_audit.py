@@ -32,6 +32,7 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
     manifest = build_manifest(root)
     retention_counts: Counter[str] = Counter()
     applicability_counts: Counter[str] = Counter()
+    content_counts: Counter[str] = Counter()
     allowed_retention = {member.value for member in Retention}
     for entry in manifest.entries:
         path = root / f"{entry.information_id}.md"
@@ -41,6 +42,8 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
         if sha256(raw).hexdigest() != entry.file_sha256:
             raise InvalidMemory("lifecycle source changed during audit")
         memory = FilesystemBackend._deserialize(raw.decode("utf-8"))
+        if isinstance(memory.content, str) and memory.content:
+            content_counts[sha256(memory.content.encode("utf-8")).hexdigest()] += 1
         retention = memory.metadata.get("retention")
         if retention is None:
             retention_key = "missing"
@@ -82,6 +85,11 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
         "as_of": instant.isoformat(),
         "retention": dict(sorted(retention_counts.items())),
         "applicability": dict(sorted(applicability_counts.items())),
+        "exact_content_duplicates": {
+            "groups": sum(count > 1 for count in content_counts.values()),
+            "documents_in_groups": sum(count for count in content_counts.values()
+                                       if count > 1),
+        },
         "policy": "read_only_no_deletion_inferred",
     }
 

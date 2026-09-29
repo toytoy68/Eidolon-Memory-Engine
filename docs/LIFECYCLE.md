@@ -28,6 +28,11 @@ L'outil compare `valid_from` et `valid_until` avec `--at` ; il signale une
 période contradictoire ou une date sans fuseau comme `invalid`. Une seule borne
 connue peut suffire à `within_known_bounds`, ce qui ne prouve pas que
 l'Information est vraie ou applicable dans tous les contextes.
+Le rapport compte également les groupes de contenus textuels **exactement**
+identiques et le nombre de documents qu'ils réunissent. Les empreintes de
+contenu restent internes au calcul et ne sont pas affichées. Un contenu
+identique peut représenter plusieurs observations ou provenances : ce comptage
+ne conclut pas qu'une fusion est correcte et ne modifie aucune relation.
 
 Avant une consolidation ou un oubli, il faudra décider explicitement :
 comment conserver provenance et preuves, comment traiter les relations et
