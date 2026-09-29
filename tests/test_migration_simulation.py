@@ -1,6 +1,6 @@
 import json
 
-from core.migration.simulation import main, simulate
+from core.migration.simulation import main, simulate, preview_legacy_information
 
 
 def test_simulation_reports_mapping_and_legacy_data_without_writing(tmp_path, capsys):
@@ -48,3 +48,26 @@ def test_simulation_blocks_ambiguous_or_non_json_metadata(tmp_path):
         {"path": "memory/persistent/duplicate.md", "reasons": ["invalid_or_ambiguous_yaml"]},
     ]
     assert main(["--root", str(tmp_path)]) == 1
+
+
+def test_preview_preserves_structured_revision_and_crlf_body(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    source = persistent / "info-2.md"
+    source.write_bytes(
+        b"---\r\nid: info-2\r\nrevision:\r\n  number: 3\r\n"
+        b"  is_revision: true\r\n  previous_revision: 2\r\n"
+        b"type: FACT\r\nepistemic_status: UNVERIFIED\r\n"
+        b"operational_state: ACTIVE\r\nevidence:\r\n  supporting: []\r\n"
+        b"relations: []\r\n---\r\n# Information\r\nsecret\r\n"
+    )
+    before = source.read_bytes()
+    preview = preview_legacy_information(source)
+    assert preview.revision == 3
+    assert preview.metadata["legacy_revision"] == {
+        "shape": "structured", "is_revision": True, "previous_revision": 2,
+    }
+    assert preview.verification == {"evidence": {"supporting": []}}
+    assert preview.content == "# Information\r\nsecret\r\n"
+    assert simulate(tmp_path)["information"]["candidates"] == ["memory/persistent/info-2.md"]
+    assert source.read_bytes() == before

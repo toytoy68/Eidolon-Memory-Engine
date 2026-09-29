@@ -8,6 +8,8 @@ from pathlib import Path
 
 import yaml
 
+from core.backend.filesystem import FilesystemBackend
+from core.backend.models import Memory
 from core.migration.inventory import inventory, classify
 from core.migration.preflight import UniqueKeyLoader, inspect_core_information, inspect_legacy_information
 
@@ -34,14 +36,42 @@ FIELD_MAPPING = {
 }
 
 
-def _candidate_issues(path: Path) -> list[str]:
-    """Check the proposed JSON target without exposing any source values."""
-    text = path.read_text(encoding="utf-8")
+def preview_legacy_information(path: Path) -> Memory:
+    """Build a proposed core object in memory; callers must preflight first."""
+    # read_text() translates CRLF on some platforms, so decode the raw bytes.
+    text = path.read_bytes().decode("utf-8")
     lines = text.splitlines(keepends=True)
     end = next(i for i, line in enumerate(lines[1:], 1) if line.strip() == "---")
     data = yaml.load("".join(lines[1:end]), Loader=UniqueKeyLoader)
+    revision = data["revision"]
+    metadata = {key: data[key] for key in (
+        "type", "epistemic_status", "operational_state", "confidence",
+        "importance", "context", "triggers", "retention",
+    ) if key in data}
+    if isinstance(revision, dict):
+        metadata["legacy_revision"] = {
+            "shape": "structured",
+            **{key: revision[key] for key in ("is_revision", "previous_revision")
+               if key in revision},
+        }
+        revision = revision["number"]
+    return Memory(
+        information_id=data["id"], revision=revision,
+        content="".join(lines[end + 1:]), metadata=metadata,
+        provenance=data.get("provenance", {}),
+        temporal=data.get("time", {}),
+        verification={"evidence": data["evidence"]} if "evidence" in data else {},
+        relations=data.get("relations", []),
+    )
+
+
+def _candidate_issues(path: Path) -> list[str]:
+    """Test an in-memory projection without exposing any source values."""
     try:
-        json.dumps(data, ensure_ascii=False, allow_nan=False)
+        projected = preview_legacy_information(path)
+        encoded = FilesystemBackend._serialize(projected)
+        if FilesystemBackend._deserialize(encoded) != projected:
+            return ["core_round_trip_mismatch"]
     except (TypeError, ValueError, OverflowError):
         return ["non_json_metadata_requires_policy"]
     return []

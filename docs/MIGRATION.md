@@ -57,9 +57,16 @@ fichier. Une date YAML devenue un objet Python non sérialisable en JSON est
 bloquée jusqu'à décision sur sa représentation. Les Events et Reviews sont
 inventoriés, mais leur archivage ou conversion reste à décider.
 
-**Une candidate n'est pas une conversion validée** : le rapport ne construit
-pas de nouvel objet, ne vérifie pas tous les sens métier et ne garantit ni la
-préservation exacte du corps, ni les relations, ni une révision structurée.
+Pour chaque candidate, l'outil construit maintenant un objet core **en mémoire**
+et vérifie son aller-retour dans le format 0.2. Le corps après le front matter
+est conservé dans cet aperçu, y compris ses fins de ligne ; une révision YAML
+structurée conserve ses indicateurs dans `metadata.legacy_revision`. Cette
+vérification établit la sérialisabilité technique de la proposition, sans
+valider le sens métier des champs ou autoriser une conversion sur disque.
+
+**Une candidate n'est pas une conversion validée** : le rapport ne crée
+pas de document converti et ne vérifie pas tous les sens métier, notamment
+les références des relations et la politique d'historique des révisions.
 La correspondance proposée ne doit pas être appliquée avant décision sur le
 format cible et tests sur données anonymisées.
 
