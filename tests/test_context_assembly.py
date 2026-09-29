@@ -69,6 +69,20 @@ def test_context_page_size_stays_bounded_for_large_item_limit():
     assert ContextAssembler(RecordingBackend()).assemble("query", max_items=10000).items == ()
 
 
+def test_context_stops_if_backend_repeats_a_full_page():
+    class BrokenPagination:
+        calls = 0
+
+        def search(self, query, options):
+            self.calls += 1
+            return [SearchResult(Memory(f"empty-{i}", content=""), 1.0)
+                    for i in range(100)]
+
+    backend = BrokenPagination()
+    assert ContextAssembler(backend).assemble("query").items == ()
+    assert backend.calls == 2
+
+
 def test_filesystem_search_offset_pages_ranked_results(tmp_path):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     for index in range(3):
