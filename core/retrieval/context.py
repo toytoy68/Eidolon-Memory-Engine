@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from core.backend.interface import MemoryBackend
+from core.information.models import EpistemicStatus
 
 
 @dataclass(frozen=True)
@@ -39,7 +40,8 @@ class ContextAssembler:
     def assemble(self, query: str, *, max_items: int = 5,
                  max_chars: int = 4000, max_item_chars: int = 1000,
                  ranking: str | None = None, max_tokens: int | None = None,
-                 token_counter: Callable[[str], int] | None = None) -> ContextBundle:
+                 token_counter: Callable[[str], int] | None = None,
+                 allowed_epistemic_statuses: set[str | None] | frozenset[str | None] | None = None) -> ContextBundle:
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be nonempty text")
         if any(type(value) is not int or value < 1
@@ -52,6 +54,13 @@ class ContextAssembler:
         if max_tokens is not None and (type(max_tokens) is not int or max_tokens < 1
                                        or not callable(token_counter)):
             raise ValueError("invalid token budget")
+        if allowed_epistemic_statuses is not None and (
+            not isinstance(allowed_epistemic_statuses, (set, frozenset))
+            or any(status is not None and
+                   (type(status) is not str or status not in {item.value for item in EpistemicStatus})
+                   for status in allowed_epistemic_statuses)
+        ):
+            raise ValueError("invalid epistemic status filter")
 
         items = []
         seen = set()
@@ -75,6 +84,10 @@ class ContextAssembler:
                 if memory.information_id in seen or not isinstance(memory.content, str):
                     continue
                 seen.add(memory.information_id)
+                if (allowed_epistemic_statuses is not None
+                        and self._label(memory.metadata, "epistemic_status")
+                        not in allowed_epistemic_statuses):
+                    continue
                 if not memory.content:
                     continue
                 length = min(len(memory.content), max_item_chars, remaining)

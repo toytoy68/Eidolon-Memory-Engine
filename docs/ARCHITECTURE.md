@@ -18,6 +18,11 @@ mesure ni la vérité, ni la récence, ni l'importance, ni la qualité des preuv
 une Information `REFUTED` reste consultable et étiquetée. La politique de
 sélection et la validation sur un corpus représentatif restent à définir avant
 une intégration agentique.
+L'assembleur accepte `allowed_epistemic_statuses` uniquement sur demande :
+`None` (défaut) conserve tous les statuts, tandis qu'un ensemble explicite
+sélectionne les seules valeurs demandées ; la valeur `None` dans cet ensemble
+inclut les documents sans étiquette. Il poursuit les pages si une page entière
+est écartée. Ce filtre ne modifie ni le stockage ni le score de recherche.
 L'assembleur accepte maintenant un budget optionnel `max_tokens` avec un
 `token_counter` fourni par l'appelant. Il borne alors la somme des coûts de
 chaque extrait isolé, en plus des limites de caractères, et retourne les

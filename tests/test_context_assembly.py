@@ -70,6 +70,35 @@ def test_context_rejects_invalid_token_counter_result(tmp_path):
                                            token_counter=lambda text: True)
 
 
+def test_explicit_epistemic_filter_pages_past_excluded_hits():
+    class PagedBackend:
+        def search(self, query, options):
+            hits = [SearchResult(Memory(f"refuted-{i}", content="alpha",
+                                        metadata={"epistemic_status": "REFUTED"}), 1.0)
+                    for i in range(100)]
+            hits.append(SearchResult(Memory("confirmed", content="alpha",
+                                            metadata={"epistemic_status": "CONFIRMED"}), 0.5))
+            offset = options["offset"]
+            return hits[offset:offset + options["limit"]]
+
+    assembler = ContextAssembler(PagedBackend())
+    assert [item.information_id for item in assembler.assemble("alpha", max_items=1).items] == [
+        "refuted-0",
+    ]
+    filtered = assembler.assemble("alpha", max_items=1,
+                                  allowed_epistemic_statuses={"CONFIRMED"})
+    assert [item.information_id for item in filtered.items] == ["confirmed"]
+
+
+def test_explicit_epistemic_filter_can_include_missing_status(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("unknown", content="alpha"))
+    assert ContextAssembler(backend).assemble(
+        "alpha", allowed_epistemic_statuses={None}).items[0].information_id == "unknown"
+    with pytest.raises(ValueError, match="epistemic status filter"):
+        ContextAssembler(backend).assemble("alpha", allowed_epistemic_statuses={"VALID"})
+
+
 def test_context_skips_nontext_empty_and_duplicate_search_hits():
     @dataclass
     class FakeBackend:
