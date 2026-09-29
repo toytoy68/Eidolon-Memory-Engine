@@ -85,16 +85,23 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
                             record.get("review_id", record.get("id"))) if isinstance(record, dict) else None
             else:
                 plain_header = header.split("\n---", 1)[0]
-                match = re.search(rf"(?m)^{re.escape(field)}:\s*([A-Z_]+)\s*$", plain_header)
-                value = match.group(1) if match else None
-                reference_match = re.search(r"(?m)^information_id:\s*([A-Za-z0-9._-]+)\s*$", plain_header)
-                reference = reference_match.group(1) if reference_match else None
-                identity_match = re.search(r"(?m)^event_id:[ \t]*([A-Za-z0-9._-]+)[ \t]*$", plain_header)
-                identity = identity_match.group(1) if identity_match else None
+                entries = re.findall(r"(?m)^([A-Za-z_]+):[ \t]*(.*?)[ \t]*$", plain_header)
+                fields = {}
+                for key, raw_value in entries:
+                    if key in {field, "information_id", "event_id"}:
+                        if key in fields:
+                            raise ValueError("ambiguous plain Event header")
+                        fields[key] = raw_value
+                value = fields.get(field)
+                reference = fields.get("information_id")
+                identity = fields.get("event_id")
         except (OSError, UnicodeError, ValueError, StopIteration, yaml.YAMLError):
             value = None
             reference = None
             identity = None
+            if kind == "legacy_event_plain":
+                issues.append({"path": relative, "reason": "invalid_plain_history_header"})
+                continue
         if identity != path.stem or (kind == "legacy_front_matter" and category == "reviews"
                                      and isinstance(record, dict) and "id" in record
                                      and record["id"] != path.stem):

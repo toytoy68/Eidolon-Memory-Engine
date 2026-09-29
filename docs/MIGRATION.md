@@ -70,6 +70,9 @@ qu'après validation du document entier et de son identité fichier/objet.
 Un type ou statut inconnu est signalé par son chemin, sans recopier sa valeur
 dans le rapport. Ce comptage aide à décider l'archivage ; il ne valide pas
 encore la structure complète d'un Event ou d'une Review.
+Pour les Events historiques sans front matter, les déclarations en double des
+champs `event_id`, `event_type` et `information_id` sont signalées comme en-tête
+ambigu et ne contribuent pas au comptage des types.
 L'identifiant `information_id` de ces anciens fichiers est contrôlé en lecture
 seule contre Working et Persistent. Une cible absente, structurellement
 invalide, ambiguë (même identifiant dans les deux espaces) ou accessible par

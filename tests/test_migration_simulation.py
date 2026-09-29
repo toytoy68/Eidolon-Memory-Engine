@@ -232,6 +232,20 @@ def test_simulation_flags_historical_event_and_review_identity_mismatch(tmp_path
     assert "private" not in json.dumps(report)
 
 
+def test_simulation_rejects_duplicate_plain_event_header_fields(tmp_path):
+    events = tmp_path / "memory/history/events"
+    events.mkdir(parents=True)
+    (events / "event-1.md").write_text(
+        "event_id: event-1\nevent_type: RELATION_ADDED\n"
+        "information_id: first\ninformation_id: second\n---\nprivate event\n")
+    report = simulate(tmp_path)
+    assert report["other_data"]["event_types"] == {}
+    assert report["inventory_needs_review"] == [
+        {"path": "memory/history/events/event-1.md", "reason": "invalid_plain_history_header"},
+    ]
+    assert "private" not in json.dumps(report)
+
+
 def test_simulation_flags_ambiguous_and_invalid_history_references(tmp_path):
     working = tmp_path / "memory/working"
     persistent = tmp_path / "memory/persistent"

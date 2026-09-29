@@ -118,6 +118,9 @@ stables du moteur avant l'intégration aux agents.
    (2026-09-29 ; test de non-parcours sur une racine `memory/` liée).
    T-033l signale les identifiants internes d'Events et Reviews historiques
    incohérents avec leur nom de fichier (2026-09-29 ; simulation en lecture seule).
+   T-033m bloque les en-têtes des Events historiques sans front matter dont
+   les champs d'identité, type ou référence sont déclarés plusieurs fois
+   (2026-09-29 ; simulation en lecture seule).
 5. **【À VALIDER】** T-034 — Définir l'API avec Eidolon Core,
    l'identité/authentification et les erreurs. Décider ensuite si Qdrant est
    utile selon les besoins mesurés ; si oui, préciser index dérivé,
