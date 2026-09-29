@@ -62,6 +62,9 @@ bloquée jusqu'à décision sur sa représentation. Les Events et Reviews sont
 inventoriés, mais leur archivage ou conversion reste à décider.
 Le rapport compte aussi les types d'Events historiques reconnus (notamment
 `STORED` et `RELATION_ADDED`) et les Reviews `PENDING_REVIEW`/`RESOLVED`.
+Il signale si l'identifiant interne d'un Event ou d'une Review ne correspond
+pas au nom de son fichier ; les deux variantes historiques `id` et `review_id`
+des Reviews sont reconnues, et une contradiction entre elles est signalée.
 Les Events core 0.2 présents dans le répertoire historique ne sont comptés
 qu'après validation du document entier et de son identité fichier/objet.
 Un type ou statut inconnu est signalé par son chemin, sans recopier sa valeur

@@ -71,6 +71,7 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
         if kind != "legacy_front_matter" and not (category == "events" and kind == "legacy_event_plain"):
             issues.append({"path": relative, "reason": "unrecognized_history_format"})
             continue
+        record = None
         try:
             with path.open("r", encoding="utf-8") as handle:
                 header = handle.read(65536)
@@ -80,15 +81,24 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
                 record = yaml.load("".join(lines[1:end]), Loader=UniqueKeyLoader)
                 value = record.get(field) if isinstance(record, dict) else None
                 reference = record.get("information_id") if isinstance(record, dict) else None
+                identity = (record.get("event_id") if category == "events" else
+                            record.get("review_id", record.get("id"))) if isinstance(record, dict) else None
             else:
                 plain_header = header.split("\n---", 1)[0]
                 match = re.search(rf"(?m)^{re.escape(field)}:\s*([A-Z_]+)\s*$", plain_header)
                 value = match.group(1) if match else None
                 reference_match = re.search(r"(?m)^information_id:\s*([A-Za-z0-9._-]+)\s*$", plain_header)
                 reference = reference_match.group(1) if reference_match else None
+                identity_match = re.search(r"(?m)^event_id:[ \t]*([A-Za-z0-9._-]+)[ \t]*$", plain_header)
+                identity = identity_match.group(1) if identity_match else None
         except (OSError, UnicodeError, ValueError, StopIteration, yaml.YAMLError):
             value = None
             reference = None
+            identity = None
+        if identity != path.stem or (kind == "legacy_front_matter" and category == "reviews"
+                                     and isinstance(record, dict) and "id" in record
+                                     and record["id"] != path.stem):
+            issues.append({"path": relative, "reason": "invalid_history_identity"})
         if not isinstance(value, str) or value not in allowed:
             issues.append({"path": relative, "reason": "unrecognized_history_value"})
         else:

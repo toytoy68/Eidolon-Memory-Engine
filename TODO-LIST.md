@@ -116,6 +116,8 @@ stables du moteur avant l'intégration aux agents.
    T-033a refuse désormais les liens symboliques dans les répertoires parents
    des sources lors de l'inventaire, du précontrôle et de la simulation
    (2026-09-29 ; test de non-parcours sur une racine `memory/` liée).
+   T-033l signale les identifiants internes d'Events et Reviews historiques
+   incohérents avec leur nom de fichier (2026-09-29 ; simulation en lecture seule).
 5. **【À VALIDER】** T-034 — Définir l'API avec Eidolon Core,
    l'identité/authentification et les erreurs. Décider ensuite si Qdrant est
    utile selon les besoins mesurés ; si oui, préciser index dérivé,

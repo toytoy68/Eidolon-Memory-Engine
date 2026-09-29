@@ -209,6 +209,29 @@ def test_simulation_flags_orphan_historical_event_without_private_content(tmp_pa
     assert "private event body" not in json.dumps(report)
 
 
+def test_simulation_flags_historical_event_and_review_identity_mismatch(tmp_path):
+    working = tmp_path / "memory/working"
+    events = tmp_path / "memory/history/events"
+    reviews = tmp_path / "memory/history/reviews"
+    for directory in (working, events, reviews):
+        directory.mkdir(parents=True)
+    (working / "info-1.md").write_text(
+        "---\nid: info-1\nrevision: 1\ntype: FACT\n"
+        "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n---\nbody\n")
+    (events / "file-event.md").write_text(
+        "event_id: other-event\ninformation_id: info-1\n"
+        "event_type: RELATION_ADDED\n---\nprivate event\n")
+    (reviews / "file-review.md").write_text(
+        "---\nreview_id: other-review\ninformation_id: info-1\n"
+        "status: PENDING_REVIEW\n---\nprivate review\n")
+    report = simulate(tmp_path)
+    assert report["inventory_needs_review"] == [
+        {"path": "memory/history/events/file-event.md", "reason": "invalid_history_identity"},
+        {"path": "memory/history/reviews/file-review.md", "reason": "invalid_history_identity"},
+    ]
+    assert "private" not in json.dumps(report)
+
+
 def test_simulation_flags_ambiguous_and_invalid_history_references(tmp_path):
     working = tmp_path / "memory/working"
     persistent = tmp_path / "memory/persistent"
