@@ -33,6 +33,15 @@ identiques et le nombre de documents qu'ils réunissent. Les empreintes de
 contenu restent internes au calcul et ne sont pas affichées. Un contenu
 identique peut représenter plusieurs observations ou provenances : ce comptage
 ne conclut pas qu'une fusion est correcte et ne modifie aucune relation.
+Pour une revue locale explicite, l'API Python
+`preview_exact_duplicates(persistent_root)` dans
+`core.information.consolidation` renvoie les IDs de chaque groupe de corps
+identiques et les noms des champs divergents (`revision`, `metadata`,
+`provenance`, `temporal`, `verification`, `relations`). Elle vérifie la source
+contre le manifeste et n'écrit rien. Les IDs ne sont pas inclus dans la sortie
+de la commande d'audit ; traiter la prévisualisation Python comme une donnée
+potentiellement privée. Des textes identiques avec des statuts ou provenances
+différents restent des Informations distinctes jusqu'à décision explicite.
 
 Avant une consolidation ou un oubli, il faudra décider explicitement :
 comment conserver provenance et preuves, comment traiter les relations et
