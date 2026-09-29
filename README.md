@@ -12,6 +12,7 @@ développement et n'est pas encore validée sur la VM.
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
 - [Reprise des opérations Thread](docs/THREAD_RECOVERY.md)
+- [Première interface d'assemblage de contexte](docs/RETRIEVAL.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
 `core.migration.inventory`, `core.migration.preflight`,
