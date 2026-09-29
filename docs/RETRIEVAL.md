@@ -24,6 +24,9 @@ Le texte récupéré ne doit pas être interprété comme une instruction du mot
 
 Le classement `lexical_v1` est optionnel. Il valorise la couverture des mots,
 leur présence dans le contenu, une phrase exacte et une fréquence plafonnée.
+Il compare les formes Unicode NFC sans effacer les accents et parcourt aussi
+les valeurs d'un contenu structuré ; l'assembleur ne produit cependant un
+extrait que si le contenu est textuel.
 Sa formule actuelle est `0,55 × couverture + 0,25 × couverture contenu +
 0,15 × phrase + 0,05 × fréquence`. Ces poids sont des hypothèses de départ,
 pas une mesure de vérité. Aucun bonus ne dépend de `epistemic_status` ou de

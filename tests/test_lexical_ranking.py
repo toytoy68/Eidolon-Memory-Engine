@@ -69,3 +69,17 @@ def test_opt_in_ranking_indexes_numeric_values_without_boolean_noise():
     boolean = lexical_ranking("true", "other", "info", {"flag": True})
     assert numeric.coverage == 1
     assert boolean.coverage == 0
+
+
+def test_lexical_ranking_matches_equivalent_unicode_accent_forms():
+    composed = lexical_ranking("mémoire", "me\u0301moire", "info", {})
+    assert composed.coverage == 1
+    assert composed.content_coverage == 1
+    assert composed.phrase_in_content is True
+    assert lexical_ranking("mémoire", "memoire", "info", {}).coverage == 0
+
+
+def test_lexical_ranking_searches_values_in_structured_content():
+    ranked = lexical_ranking("voltage 42", {"label": "voltage", "value": 42},
+                             "info", {})
+    assert ranked.coverage == ranked.content_coverage == 1

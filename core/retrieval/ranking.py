@@ -6,10 +6,12 @@ from collections import Counter
 from dataclasses import dataclass
 import re
 from typing import Any
+import unicodedata
 
 
 def terms(text: str) -> tuple[str, ...]:
-    return tuple(re.findall(r"\w+", text.casefold(), flags=re.UNICODE))
+    normalized = unicodedata.normalize("NFC", text.casefold())
+    return tuple(re.findall(r"\w+", normalized, flags=re.UNICODE))
 
 
 def _text_values(value: Any):
@@ -50,7 +52,7 @@ def lexical_ranking(query: str, content: object, information_id: str,
     ordered = tuple(dict.fromkeys(query_terms))
     if not ordered:
         return LexicalRanking(0.0, 0.0, 0.0, False, 0.0)
-    content_terms = terms(content) if isinstance(content, str) else ()
+    content_terms = terms(" ".join(_text_values(content)))
     auxiliary_terms = terms(" ".join((information_id, *_text_values(metadata),
                                       *_text_values(auxiliary))))
     counts = Counter(content_terms)
