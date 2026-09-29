@@ -380,6 +380,8 @@ class FilesystemBackend(MemoryBackend):
         self._validate_id(information_id)
         request_path = self.pending_delete_root / f"{information_id}.json"
 
+        if request_path.is_symlink():
+            raise InvalidMemory("pending delete request is a symlink")
         if not request_path.exists():
             raise MemoryNotFound(
                 f"pending delete request not found: {information_id}"
@@ -446,6 +448,8 @@ class FilesystemBackend(MemoryBackend):
         self._validate_id(information_id)
         request_path = self.pending_delete_root / f"{information_id}.json"
 
+        if request_path.is_symlink():
+            raise InvalidMemory("pending delete request is a symlink")
         if not request_path.exists():
             raise MemoryNotFound(
                 f"pending delete request not found: {information_id}"

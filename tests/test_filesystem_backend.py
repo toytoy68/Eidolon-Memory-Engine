@@ -365,3 +365,15 @@ def test_malformed_deletion_receipt_cannot_approve(tmp_path, field, value):
     with pytest.raises(InvalidMemory, match="invalid"):
         backend.approve_delete("info-test", "op-1")
     assert backend.exists("info-test")
+
+
+def test_dangling_deletion_receipt_symlink_is_not_treated_as_missing(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("info-test"))
+    receipt = backend.pending_delete_root / "info-test.json"
+    receipt.symlink_to(tmp_path / "absent.json")
+    with pytest.raises(InvalidMemory, match="symlink"):
+        backend.approve_delete("info-test", "op-1")
+    with pytest.raises(InvalidMemory, match="symlink"):
+        backend.cancel_delete("info-test", "op-1")
+    assert backend.exists("info-test")

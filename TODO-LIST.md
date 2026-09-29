@@ -108,6 +108,8 @@ stables du moteur avant l'intégration aux agents.
    Garder l'audit
    actuel en lecture seule tant que la politique de réparation n'est pas fixée.
    T-032a protège déjà les demandes en attente contre l'écrasement.
+   T-032b refuse explicitement un reçu de suppression symbolique cassé lors
+   de l'approbation ou de l'annulation (2026-09-29).
 4. **【À FAIRE】** T-033 — La première simulation **sans écriture** des
    Informations historiques propose une correspondance champ par champ et
    signale les blocages ainsi que les Events/Reviews à décider. Restent la
@@ -145,7 +147,7 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
-- **【FAIT】** T-005 — 391 tests exécutables réussis sur la copie de travail le
+- **【FAIT】** T-005 — 392 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement
   (socket local interdit). Cette preuve ne couvre pas la VM Debian.
 - **【FAIT】** T-020 — Inventaire des formats et chemins produits par les anciens
