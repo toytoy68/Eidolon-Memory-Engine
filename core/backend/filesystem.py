@@ -578,7 +578,9 @@ class FilesystemBackend(MemoryBackend):
             from core.retrieval.ranking import lexical_ranking
             for memory in self._iter_valid_memories():
                 ranked = lexical_ranking(query, memory.content,
-                                         memory.information_id, memory.metadata)
+                                         memory.information_id, memory.metadata,
+                                         (memory.provenance, memory.temporal,
+                                          memory.verification, memory.relations))
                 if ranked.coverage:
                     results.append(SearchResult(
                         memory=memory, score=ranked.score,

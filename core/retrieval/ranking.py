@@ -15,6 +15,8 @@ def terms(text: str) -> tuple[str, ...]:
 def _text_values(value: Any):
     if isinstance(value, str):
         yield value
+    elif type(value) in (int, float):
+        yield str(value)
     elif isinstance(value, dict):
         for child in value.values():
             yield from _text_values(child)
@@ -42,19 +44,21 @@ class LexicalRanking:
 
 
 def lexical_ranking(query: str, content: object, information_id: str,
-                    metadata: dict[str, Any]) -> LexicalRanking:
+                    metadata: dict[str, Any], auxiliary: object = None) -> LexicalRanking:
     """Score term coverage and capped frequency, without epistemic boosts."""
-    ordered = tuple(dict.fromkeys(terms(query)))
+    query_terms = terms(query)
+    ordered = tuple(dict.fromkeys(query_terms))
     if not ordered:
         return LexicalRanking(0.0, 0.0, 0.0, False, 0.0)
     content_terms = terms(content) if isinstance(content, str) else ()
-    auxiliary_terms = terms(" ".join((information_id, *_text_values(metadata))))
+    auxiliary_terms = terms(" ".join((information_id, *_text_values(metadata),
+                                      *_text_values(auxiliary))))
     counts = Counter(content_terms)
     counts.update(auxiliary_terms)
     matched = sum(term in counts for term in ordered)
     content_matched = sum(term in content_terms for term in ordered)
-    phrase = any(content_terms[index:index + len(ordered)] == ordered
-                 for index in range(len(content_terms) - len(ordered) + 1))
+    phrase = any(content_terms[index:index + len(query_terms)] == query_terms
+                 for index in range(len(content_terms) - len(query_terms) + 1))
     frequency = sum(min(counts[term], 3) for term in ordered) / (3 * len(ordered))
     coverage = matched / len(ordered)
     content_coverage = content_matched / len(ordered)
