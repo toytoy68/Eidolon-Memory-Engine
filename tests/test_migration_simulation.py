@@ -14,11 +14,13 @@ def test_simulation_reports_mapping_and_legacy_data_without_writing(tmp_path, ca
     events = tmp_path / "memory/history/events"
     events.mkdir(parents=True)
     (events / "event-1.md").write_text(
-        "---\nevent_id: event-1\nevent_type: STORED\n---\nsecret event\n")
+        "---\nevent_id: event-1\ninformation_id: info-1\n"
+        "event_type: STORED\n---\nsecret event\n")
     reviews = tmp_path / "memory/history/reviews"
     reviews.mkdir(parents=True)
     (reviews / "review-1.md").write_text(
-        "---\nid: review-1\nstatus: PENDING_REVIEW\n---\nsecret review\n")
+        "---\nid: review-1\ninformation_id: info-1\n"
+        "status: PENDING_REVIEW\n---\nsecret review\n")
     before = {path: path.read_bytes() for path in tmp_path.rglob("*") if path.is_file()}
 
     assert main(["--root", str(tmp_path)]) == 0
@@ -134,12 +136,18 @@ def test_simulation_counts_plain_events_and_flags_unknown_history_values(tmp_pat
     reviews = tmp_path / "memory/history/reviews"
     events.mkdir(parents=True)
     reviews.mkdir(parents=True)
+    working = tmp_path / "memory/working"
+    working.mkdir()
+    (working / "info-1.md").write_text("---\nid: info-1\n---\n")
     (events / "plain.md").write_text(
-        "event_id: plain\nevent_type: RELATION_ADDED\n---\nprivate content\n")
+        "event_id: plain\ninformation_id: info-1\n"
+        "event_type: RELATION_ADDED\n---\nprivate content\n")
     (events / "unknown.md").write_text(
-        "---\nevent_id: unknown\nevent_type: PRIVATE_VALUE\n---\nprivate content\n")
+        "---\nevent_id: unknown\ninformation_id: info-1\n"
+        "event_type: PRIVATE_VALUE\n---\nprivate content\n")
     (reviews / "bad.md").write_text(
-        "---\nreview_id: bad\nstatus: PRIVATE_VALUE\n---\nprivate content\n")
+        "---\nreview_id: bad\ninformation_id: info-1\n"
+        "status: PRIVATE_VALUE\n---\nprivate content\n")
     report = simulate(tmp_path)
     assert report["other_data"]["event_types"] == {"RELATION_ADDED": 1}
     assert report["other_data"]["review_statuses"] == {}
@@ -147,3 +155,16 @@ def test_simulation_counts_plain_events_and_flags_unknown_history_values(tmp_pat
         "unrecognized_history_value", "unrecognized_history_value",
     ]
     assert "PRIVATE_VALUE" not in json.dumps(report)
+
+
+def test_simulation_flags_orphan_historical_event_without_private_content(tmp_path):
+    events = tmp_path / "memory/history/events"
+    events.mkdir(parents=True)
+    (events / "lost.md").write_text(
+        "---\nevent_id: lost\ninformation_id: absent\nevent_type: STORED\n"
+        "---\nprivate event body\n")
+    report = simulate(tmp_path)
+    assert report["inventory_needs_review"] == [{
+        "path": "memory/history/events/lost.md", "reason": "unresolved_history_reference",
+    }]
+    assert "private event body" not in json.dumps(report)

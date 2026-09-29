@@ -64,16 +64,28 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
                 end = next(i for i, line in enumerate(lines[1:], 1) if line.strip() == "---")
                 record = yaml.load("".join(lines[1:end]), Loader=UniqueKeyLoader)
                 value = record.get(field) if isinstance(record, dict) else None
+                reference = record.get("information_id") if isinstance(record, dict) else None
             else:
                 plain_header = header.split("\n---", 1)[0]
                 match = re.search(rf"(?m)^{re.escape(field)}:\s*([A-Z_]+)\s*$", plain_header)
                 value = match.group(1) if match else None
+                reference_match = re.search(r"(?m)^information_id:\s*([A-Za-z0-9._-]+)\s*$", plain_header)
+                reference = reference_match.group(1) if reference_match else None
         except (OSError, UnicodeError, ValueError, StopIteration, yaml.YAMLError):
             value = None
+            reference = None
         if not isinstance(value, str) or value not in allowed:
             issues.append({"path": relative, "reason": "unrecognized_history_value"})
         else:
             counts[value] += 1
+        if not isinstance(reference, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", reference):
+            issues.append({"path": relative, "reason": "invalid_history_reference"})
+        elif not any(
+            not directory.is_symlink() and not (directory / f"{reference}.md").is_symlink()
+            and (directory / f"{reference}.md").is_file()
+            for directory in (root / "memory/working", root / "memory/persistent")
+        ):
+            issues.append({"path": relative, "reason": "unresolved_history_reference"})
     return dict(sorted(counts.items())), issues
 
 

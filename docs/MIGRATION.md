@@ -61,6 +61,11 @@ Le rapport compte aussi les types d'Events historiques reconnus (notamment
 Un type ou statut inconnu est signalé par son chemin, sans recopier sa valeur
 dans le rapport. Ce comptage aide à décider l'archivage ; il ne valide pas
 encore la structure complète d'un Event ou d'une Review.
+L'identifiant `information_id` de ces anciens fichiers est contrôlé en lecture
+seule contre Working et Persistent. Une cible absente ou illisible par chemin
+est signalée comme référence à examiner, sans conclure qu'il s'agit d'une
+corruption : une suppression historique peut être légitime. Le rapport ne
+réécrit aucun lien et n'affiche aucune valeur de contenu.
 
 Pour chaque candidate, l'outil construit maintenant un objet core **en mémoire**
 et vérifie son aller-retour dans le format 0.2. Le corps après le front matter
