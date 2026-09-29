@@ -246,6 +246,19 @@ def test_simulation_rejects_duplicate_plain_event_header_fields(tmp_path):
     assert "private" not in json.dumps(report)
 
 
+def test_simulation_does_not_count_unclosed_plain_event(tmp_path):
+    events = tmp_path / "memory/history/events"
+    events.mkdir(parents=True)
+    (events / "event-1.md").write_text(
+        "event_id: event-1\ninformation_id: info-1\n"
+        "event_type: RELATION_ADDED\nprivate body without separator\n")
+    report = simulate(tmp_path)
+    assert report["other_data"]["event_types"] == {}
+    assert report["inventory_needs_review"] == [
+        {"path": "memory/history/events/event-1.md", "reason": "invalid_plain_history_header"},
+    ]
+
+
 def test_simulation_flags_ambiguous_and_invalid_history_references(tmp_path):
     working = tmp_path / "memory/working"
     persistent = tmp_path / "memory/persistent"

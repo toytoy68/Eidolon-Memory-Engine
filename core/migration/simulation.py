@@ -84,7 +84,10 @@ def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -
                 identity = (record.get("event_id") if category == "events" else
                             record.get("review_id", record.get("id"))) if isinstance(record, dict) else None
             else:
-                plain_header = header.split("\n---", 1)[0]
+                closing = re.search(r"(?m)^---[ \t]*\r?$", header)
+                if closing is None:
+                    raise ValueError("unclosed plain Event header")
+                plain_header = header[:closing.start()]
                 entries = re.findall(r"(?m)^([A-Za-z_]+):[ \t]*(.*?)[ \t]*$", plain_header)
                 fields = {}
                 for key, raw_value in entries:
