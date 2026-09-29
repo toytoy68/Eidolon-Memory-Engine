@@ -71,6 +71,16 @@ def test_filesystem_search_offset_pages_ranked_results(tmp_path):
     ]
 
 
+@pytest.mark.parametrize("options", [
+    {"limit": 0}, {"limit": True}, {"limit": "5"},
+    {"offset": -1}, {"offset": False}, {"offset": 1.5},
+])
+def test_filesystem_search_rejects_invalid_pagination(tmp_path, options):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(ValueError):
+        backend.search("alpha", options)
+
+
 @pytest.mark.parametrize("kwargs", [
     {"query": "  "}, {"query": None}, {"query": "x", "max_items": True},
     {"query": "x", "max_chars": 0}, {"query": "x", "max_item_chars": -1},

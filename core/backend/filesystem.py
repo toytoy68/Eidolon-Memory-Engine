@@ -549,11 +549,13 @@ class FilesystemBackend(MemoryBackend):
         offset = 0
 
         if options and "limit" in options:
-            limit = max(1, int(options["limit"]))
+            limit = options["limit"]
+            if type(limit) is not int or limit < 1:
+                raise ValueError("limit must be a positive integer")
         if options and "offset" in options:
-            offset = int(options["offset"])
-            if offset < 0:
-                raise ValueError("offset must be >= 0")
+            offset = options["offset"]
+            if type(offset) is not int or offset < 0:
+                raise ValueError("offset must be a nonnegative integer")
 
         query_terms = [
             term.lower()
