@@ -200,6 +200,9 @@ stables du moteur avant l'intégration aux agents.
    Un garde-fou empêche déjà le controller historique d'écrire dans Persistent
    Memory si des données core y sont détectées. Vérifier sur
    une copie que deux écrivains ne partagent pas une famille de fichiers.
+   Carte des chemins identifiés dans le dépôt : `docs/WRITERS.md` ; elle et
+   `tools.writer_inventory` ne remplacent pas la revue des unités, tâches et
+   commandes effectivement installées sur la VM.
 3. **【À FAIRE】** T-032 — Concevoir et tester une suppression Information
    récupérable : journal avant retrait et reprise explicite par `approve_delete`
    sont en place pour les nouvelles demandes ; restent la résolution des
@@ -874,7 +877,7 @@ stables du moteur avant l'intégration aux agents.
   synthétique. Il manque la revue des pertes de sens, des rejets et des données
   réelles sur copie VM avant tout usage ; ne jamais migrer silencieusement
   au démarrage. Voir `docs/MIGRATION.md` et `tests/test_migration_verification.py`.
-- **【À FAIRE】** T-022 — Tester le parcours complet Information → Thread →
+- **【PARTIEL / NON TESTÉ SUR VM】** T-022 — Tester le parcours complet Information → Thread →
   Operation → Event → reprise après crash sur un répertoire isolé ; vérifier
   idempotence, conflits et absence de perte de données. T-022a/b couvrent la
   création liée et la reprise d'un statut ; T-022c/d/e détectent les liens
@@ -882,6 +885,13 @@ stables du moteur avant l'intégration aux agents.
   journalisé de création avec Event ; il manque encore l'adaptation des autres
   chemins de création, les Events propres à l'Information et le
   raccordement des anciens chemins de suppression à cette protection.
+  `tests/integration/test_recovery_gate_flow.py` couvre désormais sur dépôt
+  isolé création liée interrompue après Event, reprise, statut interrompu
+  après Event, reprise, suppression Thread interrompue après retrait, reprise,
+  puis suppression Information. Le parcours intégré passe localement ; le test
+  simule des interruptions par exceptions, les essais de processus brutal et
+  de disque VM restent distincts. Les autres écrivains Information et
+  historiques restent hors de ce parcours.
 - **【À FAIRE】** T-023 — Clarifier les frontières entre anciens CLI et nouvelles
   écritures verrouillées ; supprimer ou adapter les chemins d'écriture
   concurrents avant de les lancer simultanément. Frontières documentées (T-023a),

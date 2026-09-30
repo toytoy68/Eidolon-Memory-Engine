@@ -33,6 +33,9 @@ modèle qui consommera le contexte. Le choix du tokenizer reste hors du moteur.
 
 ## Composants et droits d'écriture
 
+La carte d'inventaire utilisable sur la VM est dans `docs/WRITERS.md` ; le
+tableau ci-dessous précise les frontières de coordination dans le code.
+
 | Composant | Lecture | Écriture actuelle | Règle de coexistence |
 | --- | --- | --- | --- |
 | `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads et journaux `thread-create-v1` lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread et Information ainsi que des créations liées inachevées | Seul écrivain nouveau des Informations core ; partager la même racine d'historique avec le coordinateur Thread et ne pas lancer le controller historique sur les mêmes fichiers. |
