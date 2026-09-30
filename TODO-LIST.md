@@ -421,6 +421,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031av — Le constructeur Event refuse lui-même les révisions
   booléennes ou non entières avec `ValueError`, avant le dépôt et sans erreur
   Python de comparaison brute (2026-09-30).
+- **【FAIT】** T-031aw — Le rejouage d'un changement de statut refuse par conflit
+  contrôlé un identifiant de journal déjà employé pour une création Thread,
+  sans accéder à un plan du mauvais type (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

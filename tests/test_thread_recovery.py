@@ -10,7 +10,8 @@ from core.events.filesystem import FilesystemEventRepository
 from core.events.models import Event, EventType
 from core.operations.errors import OperationConflict
 from core.operations.filesystem import FilesystemOperationRepository
-from core.operations.models import OperationStatus
+from core.operations.models import (OperationRecord, OperationStatus, OperationType,
+                                    ThreadCreatePlan)
 from core.operations.thread_status import FilesystemThreadOperations, plan_hash
 from core.threads.models import Thread, ThreadStatus
 from core.threads.storage import ThreadStorage
@@ -97,6 +98,18 @@ def test_service_integrates_mutation_and_idempotent_replay(tmp_path):
     assert change(engine) == result
     assert engine.storage.get("t") == later
     assert service.recover() == {}
+
+
+def test_status_command_rejects_creation_record_with_same_id(tmp_path):
+    engine, before = seed(tmp_path)
+    engine.operations.create(OperationRecord(
+        "op", OperationType.THREAD_CREATE, "t", 0, 1, "hash",
+        plan=ThreadCreatePlan("info-1", "e", "snapshot")))
+    with pytest.raises(OperationConflict, match="different command"):
+        engine.change_status("t", ThreadStatus.VALIDATED,
+                             previous_revision=0, operation_id="op", event_id="e")
+    assert engine.storage.get("t") == before
+    assert engine.events.get("e") is None
 
 
 def test_reused_operation_id_cannot_change_command(tmp_path):

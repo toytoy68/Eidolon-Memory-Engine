@@ -58,8 +58,9 @@ class FilesystemThreadOperations:
             existing = self.operations.get(operation_id)
             if existing is not None:
                 if (existing.target_id != thread_id
+                        or existing.operation_type is not OperationType.THREAD_STATUS_CHANGE
                         or existing.previous_revision != previous_revision
-                        or existing.plan is None
+                        or not isinstance(existing.plan, ThreadStatusChangePlan)
                         or existing.plan.new_status != new_status
                         or existing.plan.event_id != event_id):
                     raise OperationConflict("operation_id reused with a different command")
