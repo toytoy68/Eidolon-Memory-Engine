@@ -15,6 +15,7 @@ from core.information.models import (
     Confidence, EpistemicStatus, Importance, InformationType, OperationalState, Retention,
 )
 from core.migration.inventory import classify, symlink_ancestor
+from core.persistence import has_symlink_component
 
 
 class UniqueKeyLoader(yaml.SafeLoader):
@@ -127,6 +128,8 @@ def inspect_core_information(path: Path) -> list[str]:
 
 def preflight(engine_root: Path) -> dict:
     root = Path(engine_root)
+    if has_symlink_component(root):
+        raise ValueError("engine root contains a symlinked ancestor")
     if not root.is_dir():
         raise ValueError(f"engine root is not a directory: {root}")
     persistent = root / "memory" / "persistent"

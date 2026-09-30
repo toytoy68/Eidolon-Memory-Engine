@@ -7,6 +7,8 @@ from collections import Counter
 import json
 from pathlib import Path
 
+from core.persistence import has_symlink_component
+
 
 SOURCES = (
     ("working", "memory/working", "*.md"),
@@ -71,6 +73,8 @@ def classify(path: Path, category: str) -> str:
 def inventory(engine_root: Path) -> dict:
     """Count recognized file shapes; never parse or expose memory content."""
     root = Path(engine_root)
+    if has_symlink_component(root):
+        raise ValueError("engine root contains a symlinked ancestor")
     if not root.is_dir():
         raise ValueError(f"engine root is not a directory: {root}")
     result = {"categories": {}, "needs_review": []}

@@ -328,3 +328,16 @@ def test_simulation_validates_core_event_body_and_filename(tmp_path):
         {"path": "memory/history/events/broken.md", "reason": "invalid_core_history_event"},
         {"path": "memory/history/events/wrong.md", "reason": "invalid_core_history_event"},
     ]
+
+
+def test_migration_tools_reject_link_above_engine_root(tmp_path):
+    import pytest
+    outside = tmp_path / "outside"
+    (outside / "engine/memory/persistent").mkdir(parents=True)
+    (outside / "engine/memory/persistent/info-1.md").write_text("private")
+    linked = tmp_path / "linked"
+    linked.symlink_to(outside, target_is_directory=True)
+    root = linked / "engine"
+    for tool in (inventory, preflight, simulate):
+        with pytest.raises(ValueError, match="symlink"):
+            tool(root)

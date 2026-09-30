@@ -126,6 +126,8 @@ stables du moteur avant l'intégration aux agents.
    (2026-09-29 ; simulation en lecture seule).
    T-033n classe une référence historique sous un dossier lié comme dangereuse
    même si sa cible n'existe pas (2026-09-29 ; simulation en lecture seule).
+   T-033o refuse aussi un lien symbolique sur la racine du moteur ou un de ses
+   ancêtres avant inventaire, précontrôle et simulation (2026-09-30).
 5. **【À VALIDER】** T-034 — Définir l'API avec Eidolon Core,
    l'identité/authentification et les erreurs. Décider ensuite si Qdrant est
    utile selon les besoins mesurés ; si oui, préciser index dérivé,
@@ -516,6 +518,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-033k — La simulation ne compte un Event core 0.2 historique
   comme valide qu'après lecture complète et contrôle de l'identité correspondant
   au nom du fichier (2026-09-29).
+- **【FAIT】** T-033o — L'inventaire et le précontrôle refusent un ancêtre
+  symbolique de la racine du moteur avant lecture ; la simulation échoue de
+  même via l'inventaire. Test sur un chemin parent lié (2026-09-30).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).
