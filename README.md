@@ -7,7 +7,7 @@ développement et n'est pas encore validée sur la VM.
 
 ## Point de départ
 
-- [Bilan de l'audit](docs/AUDIT-2026-09-29.md) et [todo list](TODO-LIST.md)
+- [Bilan de l'audit](docs/AUDIT-2026-09-30.md) et [todo list](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)

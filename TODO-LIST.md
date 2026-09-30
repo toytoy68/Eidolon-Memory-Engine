@@ -1,14 +1,12 @@
 # Eidolon Memory Engine — feuille de route
 
-**Avancement prévisionnel : ≈ 40 % (estimation révisée au 2026-09-29,
-incertitude d'au moins ± 10 points).** Ce chiffre
-représente la maturité estimée de la cible complète, pas le rapport entre les
-tâches cochées et leur nombre. Le noyau Information/Thread/Event et la reprise
-de certains parcours sont testés dans le dépôt ; migration des données anciennes,
-intégration à Eidolon Core et à l'index, validation sur la VM et tableau de bord
-restent à terminer ou à décider. Réévaluer ce pourcentage après chaque phase
-majeure validée ; la cible peut encore évoluer. Voir le
-[bilan détaillé de l'audit](docs/AUDIT-2026-09-29.md).
+**Avancement estimé : ≈ 45 % (plage 35–55 %, audit indépendant du suivi des
+tâches au 2026-09-30).** La cible est un moteur autonome utilisable avec les
+données historiques et des clients réels. Le noyau testé sur fichiers isolés
+est plus avancé ; la migration effective, l'unification des écrivains,
+l'intégration et la validation VM pèsent davantage dans l'estimation. Le
+pourcentage n'est pas un ratio de cases cochées. Voir
+[l'audit détaillé](docs/AUDIT-2026-09-30.md) pour les poids, preuves et limites.
 
 Dernière mise à jour : 2026-09-30. Branche suivie : `refactor/architecture-v1`.
 Cette arborescence décrit une **cible supposée**, pas une architecture figée. Les
@@ -57,6 +55,7 @@ Eidolon-Memory-Engine/
 │   ├── ARCHITECTURE.md           frontières actuelles, cible à compléter (existant)
 │   ├── AUDIT-2026-09-28.md       bilan vérifié du dépôt (existant)
 │   ├── AUDIT-2026-09-29.md       bilan actualisé du dépôt (existant)
+│   ├── AUDIT-2026-09-30.md       estimation indépendante du suivi (existant)
 │   └── MIGRATION.md              inventaire et décisions ouvertes (existant)
 ├── scripts/                      bootstrap Debian (existant)
 ├── tests/                        tests unitaires et de régression (existant)
@@ -80,6 +79,15 @@ attesté par cette branche. `Eidolon-Bootstrap-Framework` est le dépôt du
 déploiement de la plateforme, distinct d'Eidolon Core et du Memory Engine.
 
 ## Priorités après l'audit du dépôt
+
+**Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
+non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
+et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
+les écrivains historiques ni sur la VM. Le prochain jalon mesurable est une
+restauration testée sur copie suivie de l'inventaire réel des services, des
+formats et des cinq tests concurrents. Le jalon suivant est un convertisseur
+historique explicite et réexécutable. Ces constats viennent du code et des
+tests, puis ont été reportés dans cette liste.
 
 **Règle de priorité du projet :** construire et fiabiliser le Memory Engine
 comme composant autonome et persistant avant le système agentique. Les formats,
