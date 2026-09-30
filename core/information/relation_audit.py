@@ -23,6 +23,11 @@ def audit_relations(persistent_root: Path, *, history_root: Path | None = None) 
     receipts = Path(history_root) / "pending-delete" if history_root is not None else None
     if receipts is not None and has_symlink_component(receipts):
         raise ValueError("deletion receipt source contains a symlinked directory")
+    if receipts is not None and any(
+        directory.exists() and not directory.is_dir()
+        for directory in (receipts.parent, receipts)
+    ):
+        raise InvalidMemory("deletion receipt source is not a directory")
     manifest = build_manifest(root)
     known_ids = {entry.information_id for entry in manifest.entries}
     counts: Counter[str] = Counter()

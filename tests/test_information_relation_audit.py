@@ -69,3 +69,14 @@ def test_relation_audit_refuses_linked_or_invalid_receipt(tmp_path):
     receipt.symlink_to(tmp_path / "outside.json")
     with pytest.raises(InvalidMemory):
         audit_relations(backend.persistent_root, history_root=backend.history_root)
+
+
+def test_relation_audit_refuses_receipt_directory_replaced_by_file(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    history = tmp_path / "memory/history"
+    history.mkdir()
+    (history / "pending-delete").write_text("damaged")
+
+    with pytest.raises(InvalidMemory, match="not a directory"):
+        audit_relations(persistent, history_root=history)

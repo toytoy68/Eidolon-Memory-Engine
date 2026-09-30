@@ -437,6 +437,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-032w — L'audit des suppressions signale comme invalide un reçu
   dont le nom de fichier contient un identifiant inutilisable par le backend,
   même si son JSON est autrement valide (2026-09-30).
+- **【FAIT】** T-032x — L'audit des relations Information refuse un répertoire
+  de reçus de suppression remplacé par un fichier au lieu de classer ces cibles
+  comme externes (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,
