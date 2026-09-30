@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from .models import Event, EventRelation, EventType, RelationType, StateTransition
+from .models import (Cause, CauseType, Event, EventRelation, EventType, Evidence,
+                     Provenance, RelationType, StateTransition, Validation,
+                     ValidationMode, ValidationStatus)
 
 
 def validate_event(event: Event) -> list[str]:
@@ -32,6 +34,22 @@ def validate_event(event: Event) -> list[str]:
                    or not isinstance(relation.target, str) or not relation.target
                    for relation in event.relations)):
         errors.append("relations invalides")
+    if (event.cause is not None and (not isinstance(event.cause, Cause)
+            or not isinstance(event.cause.type, CauseType)
+            or not isinstance(event.cause.description, str))):
+        errors.append("cause invalide")
+    if (not isinstance(event.evidence, Evidence)
+            or not isinstance(event.evidence.supporting, list)
+            or not isinstance(event.evidence.contradicting, list)):
+        errors.append("evidence invalide")
+    if (event.provenance is not None and (not isinstance(event.provenance, Provenance)
+            or any(not isinstance(getattr(event.provenance, field), str)
+                   for field in ("source_type", "source", "actor", "timestamp")))):
+        errors.append("provenance invalide")
+    if (event.validation is not None and (not isinstance(event.validation, Validation)
+            or not isinstance(event.validation.mode, ValidationMode)
+            or not isinstance(event.validation.status, ValidationStatus))):
+        errors.append("validation invalide")
 
     if not isinstance(event.state_transition, StateTransition) or not isinstance(
         event.state_transition.before, dict

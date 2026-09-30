@@ -414,6 +414,10 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031at — Les relations Event exigent une cible textuelle non vide
   à l'écriture et à la lecture ; un Event historique avec cible numérique ou
   absente est refusé (2026-09-30).
+- **【FAIT】** T-031au — Les champs structurés Cause, Evidence, Provenance et
+  Validation d'un Event vérifient leurs types avant publication, afin de ne
+  pas stocker d'objet que le schéma et les consommateurs interpréteraient mal
+  (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

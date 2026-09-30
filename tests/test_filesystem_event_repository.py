@@ -130,7 +130,8 @@ def test_event_writer_refuses_lossy_json_round_trip(tmp_path, changed):
         event.evidence = Evidence(supporting=("source",))
     else:
         event.state_transition = StateTransition(after={"epistemic_status": ("UNVERIFIED",)})
-    with pytest.raises(InvalidEvent, match="changes when serialized"):
+    reason = "evidence invalide" if changed == "evidence" else "changes when serialized"
+    with pytest.raises(InvalidEvent, match=reason):
         repository.save(event)
     assert repository.get("event-lossy") is None
 
@@ -160,6 +161,21 @@ def test_event_relation_target_is_validated_on_read_and_write(tmp_path, target):
     with pytest.raises(InvalidEvent, match="relations invalides"):
         repository._deserialize(text)
     assert repository.get("event-relation") is None
+
+
+@pytest.mark.parametrize("field,value,reason", [
+    ("cause", Cause(CauseType.OTHER, 4), "cause invalide"),
+    ("evidence", Evidence(supporting="not a list"), "evidence invalide"),
+    ("provenance", Provenance(actor=4), "provenance invalide"),
+    ("validation", Validation("HUMAN", ValidationStatus.ACCEPTED), "validation invalide"),
+])
+def test_event_nested_field_types_are_validated_before_write(tmp_path, field, value, reason):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    event = Event("event-invalid", 1, EventType.CREATED, information_id="info-1")
+    setattr(event, field, value)
+    with pytest.raises(InvalidEvent, match=reason):
+        repository.save(event)
+    assert repository.get("event-invalid") is None
 
 
 def test_save_rejects_duplicate_event_id(tmp_path):
