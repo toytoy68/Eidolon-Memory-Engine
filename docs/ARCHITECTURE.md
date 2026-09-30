@@ -12,6 +12,16 @@ présent ; leur adoption sur la VM 110 reste soumise à sauvegarde, inventaire e
 tests. La source de vérité est le stockage en fichiers sous `memory/`, pas un
 index Qdrant. La forme future des API et de la migration reste ouverte.
 
+## Correspondance métier et stockage (T-040)
+
+`core.information.mapping` projette explicitement les Informations textuelles
+étiquetées vers `Memory` et inversement. Pour une édition, fournir l'original
+préserve les extensions de métadonnées/vérification. Le mapping ne journalise
+pas, n'écrit pas et n'alloue aucune révision. Les données incomplètes ou
+structurées restent soumises à une politique d'import distincte. Six tests,
+dont les 500 candidats synthétiques, couvrent le mapping ; cela ne valide pas
+un router. Voir [le contrat 0.1](../schemas/memory-policy-v0.1.md).
+
 ## Recherche lexicale optionnelle
 
 `FilesystemBackend.search(query, {"ranking": "lexical_v1"})` parcourt les

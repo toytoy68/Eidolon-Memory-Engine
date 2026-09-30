@@ -84,13 +84,14 @@ Cette section fixe le nouvel ordre ; les listes historiques plus bas conservent
 leurs preuves et limites mais ne constituent plus l'ordre d'exécution.
 Voir [le bilan et les scénarios](docs/MEMORY-ARCHITECTURE-2026-09-30.md) et
 [la conception Information](docs/DESIGN-INFORMATION-WRITES.md).
-Cette séance modifie seulement la documentation. Grille inchangée à 50,75
+Le cadrage initial ne modifiait que la documentation ; les réalisations
+suivantes sont attestées ci-dessous. Grille inchangée à 50,75
 points et estimation globale gelée à 45 %. Dernière suite locale sur
 `e0c21a9` : 666 réussis, 5 désélectionnés avec pytest 9.1.1 ; aucun essai VM.
 
 | Ordre | Tâche et statut réel | Livrable et preuve attendus |
 | --- | --- | --- |
-| P0 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-040** Contrat fonctionnel et modèle canonique | Besoins et exemples documentés ; restent schéma versionné, mapping Information ↔ Memory, contexte, autorité, durée d'utilité et attendus de tests |
+| P0 | **【FAIT EN LOCAL — contrat et mapping / ROUTER NON IMPLÉMENTÉ】 T-040** Contrat fonctionnel et modèle canonique | `schemas/memory-policy-v0.1.md`, 14 scénarios attendus et mapping Information ↔ Memory ; six tests passent, dont 500 candidats de migration et préservation des extensions après édition |
 | P1 | **【À FAIRE】 T-031 et T-039** Chemins métier canoniques Thread | Migrer les appelants directs et traiter le coordinateur incomplet ; T-039 reste non corrigé dans cette séance, test d'interruption requis |
 | P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-041** Service Information coordonné | D1–D5 documentées ; restent contrats d'import/rejeu, matrice des conflits avec suppression, implémentation et tests d'interruption |
 | P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-042** Snapshots et reçus compacts | Principe de conservation pendant reprise puis compaction documenté ; restent formats, conditions, politique de suppression et tests de transition interrompue |
@@ -106,8 +107,11 @@ encore ouvertes ne sont pas considérées comme validées. Chaque futur bloc
 doit avoir une preuve comportementale, dont un test rouge après retrait de la
 fonctionnalité. Aucun nouveau test artificiel n'est ajouté pour cette édition
 documentaire. Pas de travail sur Eidolon Core, Hermes, Qdrant ou les nouveaux
-micro-durcissements. Le prochain travail est T-040, pas une reprise automatique
-de l'implémentation.
+micro-durcissements. T-040 a livré le contrat v0.1 et son mapping ; le prochain lot est P1.
+Les 14 cas sont des attendus pour le futur router, pas des tests de routage
+déjà réussis. Le mapping a d'abord échoué faute de module ; retirer ensuite
+la préservation des extensions fait échouer le test d'édition persistée
+(`KeyError: legacy_revision`), puis le code restauré repasse. Aucune VM testée.
 
 ## État des sept blocs après l'audit du dépôt
 

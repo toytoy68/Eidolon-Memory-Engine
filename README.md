@@ -9,7 +9,9 @@ développement et n'est pas encore validée sur la VM.
 
 - [Besoins clarifiés, architecture cible et priorités](docs/MEMORY-ARCHITECTURE-2026-09-30.md)
   et [proposition d'écritures Information coordonnées](docs/DESIGN-INFORMATION-WRITES.md)
-  — conception documentée, non implémentée.
+  — cible documentée, implémentation progressive.
+- [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
+  correspondance Information/Memory testée ; politiques de routage à implémenter.
 - [Bilan de l'audit](docs/AUDIT-2026-09-30.md) et [todo list](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
