@@ -229,6 +229,10 @@ stables du moteur avant l'intégration aux agents.
   snapshots, Event déterministe et commande `recover` explicite (`4e958aa`).
 - **【FAIT】** T-003 — Format 0.2 préservant le Markdown arbitraire, avec lecture
   des fichiers du format core 0.1 (`b470bdf`).
+- **【FAIT】** T-003a — Le lecteur core 0.1 refuse une section Relations absente
+  ou de mauvais type et les sections d'objet de mauvais type, plutôt que de
+  laisser un objet invalide circuler après la lecture (tests isolés,
+  2026-09-30).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
 - **【FAIT】** T-005 — 458 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement

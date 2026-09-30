@@ -81,3 +81,21 @@ def test_event_preserves_embedded_code_fences(tmp_path):
     event = Event("e",1,EventType.CREATED,information_id="m",cause=Cause(CauseType.OTHER,TEXT))
     repo.save(event)
     assert repo.get("e") == event
+
+
+def test_legacy_memory_rejects_missing_or_non_list_relations():
+    source = (FIXTURES / "memory-v01.md").read_text()
+    section = "## Relations\n\n```json\n[]\n```"
+    assert section in source
+    for malformed in (source.replace(section, ""),
+                      source.replace(section, "## Relations\n\n```json\n{}\n```")):
+        with pytest.raises(InvalidMemory, match="relations"):
+            FilesystemBackend._deserialize(malformed)
+
+
+def test_legacy_memory_rejects_non_object_metadata():
+    source = (FIXTURES / "memory-v01.md").read_text()
+    malformed = source.replace("## Metadata\n\n```json\n{}\n```",
+                               "## Metadata\n\n```json\n[]\n```")
+    with pytest.raises(InvalidMemory, match="object section"):
+        FilesystemBackend._deserialize(malformed)

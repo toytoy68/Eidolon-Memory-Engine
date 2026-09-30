@@ -188,15 +188,25 @@ class FilesystemBackend(MemoryBackend):
         if content_match:
             content = content_match.group(1).strip()
 
+        sections = {
+            name: cls._extract_json_block(text, name)
+            for name in ("Metadata", "Provenance", "Temporal", "Verification")
+        }
+        if any(not isinstance(value, dict) for value in sections.values()):
+            raise InvalidMemory("invalid legacy Information object section")
+        relations = cls._extract_json_block(text, "Relations")
+        if not isinstance(relations, list):
+            raise InvalidMemory("invalid legacy Information relations")
+
         return Memory(
             information_id=information_id,
             revision=revision_value,
             content=content,
-            metadata=cls._extract_json_block(text, "Metadata"),
-            provenance=cls._extract_json_block(text, "Provenance"),
-            temporal=cls._extract_json_block(text, "Temporal"),
-            verification=cls._extract_json_block(text, "Verification"),
-            relations=cls._extract_json_block(text, "Relations"),
+            metadata=sections["Metadata"],
+            provenance=sections["Provenance"],
+            temporal=sections["Temporal"],
+            verification=sections["Verification"],
+            relations=relations,
         )
 
     # ------------------------------------------------------------------
