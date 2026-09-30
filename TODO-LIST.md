@@ -108,6 +108,18 @@ chacun. Deux tests vérifient les empreintes identiques entre deux générations
 le précontrôle des 500 candidats et le refus d'écraser une sortie existante.
 Corpus synthétique : représentatif de formes choisies, pas des données VM.
 
+**Convertisseur historique (2026-09-30) — 【PARTIEL / NON TESTÉ SUR VM】** :
+`python -B -m core.migration.converter --source COPIE_HISTORIQUE
+--destination NOUVELLE_RACINE` convertit sans toucher la source, conserve les
+autres fichiers sous `archive/` (dont Events, Reviews, opérations et Working),
+et écrit `migration-report.json` avec raison et action pour chaque rejet. Le
+rejeu identique ne change pas la destination ; les conflits ne sont pas
+écrasés. Trois tests ciblés passent, et 500 documents du corpus synthétique
+ont été convertis sans rejet puis relus par le manifeste core. Il reste à
+valider les correspondances et pertes sémantiques sur la copie VM avant tout
+usage réel ; les anciens Events/Reviews sont conservés comme archives, non
+convertis en objets métier core.
+
 **Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
