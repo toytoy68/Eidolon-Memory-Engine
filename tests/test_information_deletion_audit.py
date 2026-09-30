@@ -174,3 +174,15 @@ def test_audit_reports_unreadable_pending_information(tmp_path):
         "request": "memory/history/pending-delete/info-1.json",
         "reason": "invalid_information",
     }]}
+
+
+def test_audit_reports_invalid_information_for_cancelled_receipt(tmp_path):
+    store = backend(tmp_path)
+    store.store(Memory("info-1"))
+    store.delete_request("info-1", "human", "mistake", 1, "op-1")
+    store.cancel_delete("info-1", "op-1")
+    (store.persistent_root / "info-1.md").write_text("private damaged content")
+    assert audit_deletions(tmp_path) == {"requests_checked": 1, "issues": [{
+        "request": "memory/history/pending-delete/info-1.json",
+        "reason": "invalid_information",
+    }]}

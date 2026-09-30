@@ -233,7 +233,9 @@ stables du moteur avant l'intégration aux agents.
   annulation cohérente ; aucune réparation n'est tentée (2026-09-30).
 - **【FAIT】** T-032r — Pour un reçu `PENDING_DELETE`, l'audit lit l'Information
   encore présente et distingue fichier illisible/identité discordante et
-  révision différente de celle demandée, sans modifier la demande
+  révision différente de celle demandée ; un reçu `CANCELLED` vérifie aussi
+  l'identité et la lisibilité sans exiger une révision inchangée. Aucune demande
+  n'est modifiée
   (2026-09-30).
 - **【FAIT】** T-032n — L’audit et la reprise des suppressions refusent aussi
   les parents symboliques situés au-dessus de `--root`, avant tout parcours
