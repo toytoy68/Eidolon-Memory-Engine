@@ -337,6 +337,16 @@ def test_pending_thread_creation_reserves_information_until_recovery(tmp_path, m
         backend.approve_delete("info-1", "delete-1")
 
 
+def test_unreadable_creation_journal_blocks_information_deletion(tmp_path):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    backend.delete_request("info-1", "human", "obsolete", 1, "delete-1")
+    (creation.operations.root / "broken.json").write_text("{bad", encoding="utf-8")
+    with pytest.raises(InformationDeletionBlocked, match="unreadable Thread creation journal"):
+        backend.approve_delete("info-1", "delete-1")
+    assert backend.get("info-1") is not None
+
+
 def test_status_change_waits_for_interrupted_thread_creation(tmp_path, monkeypatch):
     backend, creation = open_creation(tmp_path)
     backend.store(Memory("info-1"))
