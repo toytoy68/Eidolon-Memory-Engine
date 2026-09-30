@@ -79,6 +79,26 @@ def test_simulation_blocks_ambiguous_or_non_json_metadata(tmp_path):
     assert main(["--root", str(tmp_path)]) == 1
 
 
+def test_preflight_and_simulation_flag_malformed_core_relations(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    path = persistent / "damaged.md"
+    path.write_text(
+        '# Eidolon Information Object\n\nVersion: 0.2\n\n```json\n'
+        '{"information_id":"damaged","revision":1,"content":"private",'
+        '"metadata":{},"provenance":{},"temporal":{},"verification":{},'
+        '"relations":["invalid"]}\n```\n')
+    before = path.read_bytes()
+
+    assert preflight(tmp_path)["blocked"] == [{
+        "path": "memory/persistent/damaged.md", "reasons": ["invalid_core_information"],
+    }]
+    assert simulate(tmp_path)["information"]["blocked"] == [{
+        "path": "memory/persistent/damaged.md", "reasons": ["invalid_core_information"],
+    }]
+    assert path.read_bytes() == before
+
+
 def test_preview_preserves_structured_revision_and_crlf_body(tmp_path):
     persistent = tmp_path / "memory/persistent"
     persistent.mkdir(parents=True)

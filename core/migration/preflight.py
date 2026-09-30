@@ -121,7 +121,8 @@ def inspect_core_information(path: Path) -> list[str]:
         return ["invalid_core_information"]
     if (memory.information_id != path.stem
             or not re.fullmatch(r"[A-Za-z0-9._-]+", path.stem)
-            or type(memory.revision) is not int or memory.revision < 1):
+            or type(memory.revision) is not int or memory.revision < 1
+            or any(not isinstance(relation, dict) for relation in memory.relations)):
         return ["invalid_core_information"]
     return []
 
