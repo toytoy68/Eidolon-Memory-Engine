@@ -65,6 +65,28 @@ def active_writers(root: Path) -> list[dict]:
     return found
 
 
+def code_version() -> dict[str, str]:
+    """Identify the code running acceptance, independent of the data copy."""
+    checkout = Path(__file__).resolve().parents[1]
+    try:
+        process = subprocess.Popen(
+            ["git", "rev-parse", "HEAD", "--abbrev-ref", "HEAD"], cwd=checkout,
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+        )
+        try:
+            output, _ = process.communicate(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.communicate()
+            return {"engine_commit": "unknown", "engine_branch": "unknown"}
+        if process.returncode == 0:
+            commit, branch, *_ = output.splitlines()
+            return {"engine_commit": commit, "engine_branch": branch}
+    except (OSError, ValueError):
+        pass
+    return {"engine_commit": "unknown", "engine_branch": "unknown"}
+
+
 def run(source: Path, workdir: Path, *, at: str) -> dict:
     source, workdir = Path(source).absolute(), Path(workdir).absolute()
     if (not source.is_dir() or has_symlink_component(source)
@@ -78,7 +100,8 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
     report = {"source": str(source), "workdir": str(workdir),
               "versions": {"python": platform.python_version(),
                            "pytest": importlib.metadata.version("pytest"),
-                           "platform": f"{platform.system()} {platform.release()}"},
+                           "platform": f"{platform.system()} {platform.release()}",
+                           **code_version()},
               "steps": []}
 
     def step(name, action, failures=None):

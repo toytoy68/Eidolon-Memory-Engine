@@ -96,6 +96,9 @@ ambiguës et les champs invalides du cycle de vie font échouer la recette tout
 en conservant les décomptes. Les références externes ou absentes sont montrées
 sans présumer qu'elles sont fautives. Les tests locaux couvrent le script et
 l'inventaire ; examiner à la main les candidats configurés sur la VM.
+Le rapport indique maintenant aussi le commit et la branche du code de la
+recette en plus de Python, pytest et du système ; il ne certifie pas l'absence
+de modifications locales sur la VM.
 
 **Contrôle de démarrage (2026-09-30) — 【FAIT EN LOCAL / NON TESTÉ SUR VM】** :
 `python -m core.preflight --root RACINE` vérifie Python ≥ 3.11, l'écriture
