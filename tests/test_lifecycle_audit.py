@@ -55,6 +55,8 @@ def test_lifecycle_audit_requires_timezone_aware_instant(tmp_path):
     persistent.mkdir(parents=True)
     with pytest.raises(ValueError, match="timezone"):
         audit_lifecycle(persistent, as_of="2026-09-29T12:00:00")
+    with pytest.raises(ValueError, match="timezone-aware ISO text"):
+        audit_lifecycle(persistent, as_of=20260929)
 
 
 def test_lifecycle_audit_refuses_linked_memory_parent(tmp_path):

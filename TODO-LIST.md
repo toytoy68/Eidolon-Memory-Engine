@@ -213,6 +213,8 @@ stables du moteur avant l'intégration aux agents.
   et les périodes d'applicabilité, avec catégories `missing` et `invalid`,
   sans exposer de contenu, modifier le classement ou inférer un oubli
   (2026-09-30).
+- **【FAIT】** T-037g — L'audit de cycle de vie refuse une date de référence non
+  textuelle avec `ValueError` explicite avant toute lecture (2026-09-30).
 - **【FAIT】** T-037d — Prévisualisation Python en lecture seule des groupes
   exacts avec IDs et noms de champs divergents pour revue humaine ; aucune
   proposition de fusion automatique (2026-09-29).

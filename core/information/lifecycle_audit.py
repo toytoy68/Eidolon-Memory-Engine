@@ -17,6 +17,8 @@ from core.persistence import has_symlink_component
 
 
 def _aware_timestamp(value: str) -> datetime:
+    if not isinstance(value, str):
+        raise ValueError("timestamp must be timezone-aware ISO text")
     parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise ValueError("timestamp must include a timezone")
