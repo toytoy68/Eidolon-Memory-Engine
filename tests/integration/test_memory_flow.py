@@ -347,6 +347,26 @@ def test_unreadable_creation_journal_blocks_information_deletion(tmp_path):
     assert backend.get("info-1") is not None
 
 
+def test_pending_creation_for_other_information_does_not_block_deletion(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    backend.store(Memory("info-2"))
+    thread = Thread("thread-2", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    save = creation.operations.create
+
+    def interrupt_after_journal(operation):
+        save(operation)
+        raise InterruptedError("interrupted after journal write")
+
+    monkeypatch.setattr(creation.operations, "create", interrupt_after_journal)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-2", operation_id="create-2", event_id="created-2")
+    backend.delete_request("info-1", "human", "obsolete", 1, "delete-1")
+    assert backend.approve_delete("info-1", "delete-1").status == "DELETED"
+    assert backend.get("info-2") is not None
+
+
 def test_status_change_waits_for_interrupted_thread_creation(tmp_path, monkeypatch):
     backend, creation = open_creation(tmp_path)
     backend.store(Memory("info-1"))
