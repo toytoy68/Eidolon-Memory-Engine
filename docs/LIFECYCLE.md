@@ -73,6 +73,11 @@ cible existe encore pendant une demande en attente, le lien est autorisé et
 l'approbation de la suppression est bloquée par le contrôle des relations.
 Les références dans le corps libre et les anciens écrivains ne sont pas
 couverts par ce contrôle.
+L'audit des reçus signale `cancelled_without_information` si une annulation a
+perdu sa cible. Pour `PENDING_DELETE`, il distingue
+`pending_without_information`, `invalid_information` et
+`pending_revision_conflict` ; ces résultats sont des blocages à examiner,
+jamais des réparations automatiques.
 
 Sur une copie arrêtée, un inventaire distinct aide à mesurer cette frontière :
 
