@@ -58,6 +58,24 @@ def test_audit_accepts_completed_deletion_and_flags_malformed_record(tmp_path):
     }]}
 
 
+def test_audit_rejects_completed_receipt_without_content_hash(tmp_path):
+    store = backend(tmp_path)
+    store.store(Memory("info-1"))
+    store.delete_request("info-1", "human", "reason", 1, "op-1")
+    store.approve_delete("info-1", "op-1")
+    receipt = store.pending_delete_root / "info-1.json"
+    record = json.loads(receipt.read_text())
+    del record["content_sha256"]
+    receipt.write_text(json.dumps(record))
+    before = receipt.read_bytes()
+
+    assert audit_deletions(tmp_path) == {"requests_checked": 0, "issues": [{
+        "request": "memory/history/pending-delete/info-1.json",
+        "reason": "invalid_request",
+    }]}
+    assert receipt.read_bytes() == before
+
+
 @pytest.mark.parametrize("field,value", [("revision", 0), ("operation_id", "")])
 def test_audit_rejects_unusable_request_identifiers(tmp_path, field, value):
     store = backend(tmp_path)

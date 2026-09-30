@@ -415,7 +415,7 @@ class FilesystemBackend(MemoryBackend):
                 or ("content_sha256" in request
                     and (not isinstance(request["content_sha256"], str)
                          or not re.fullmatch(r"[0-9a-f]{64}", request["content_sha256"])))
-                or (request.get("status") == "APPLYING_DELETE"
+                or (request.get("status") in {"APPLYING_DELETE", "DELETED"}
                     and "content_sha256" not in request)
                 or (request.get("status") in {"PENDING_DELETE", "CANCELLED"}
                     and "content_sha256" in request)):

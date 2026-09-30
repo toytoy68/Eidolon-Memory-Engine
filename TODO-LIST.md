@@ -229,6 +229,9 @@ stables du moteur avant l'intégration aux agents.
   réservée par un reçu de suppression valide. Il refuse un reçu illisible ou
   symbolique, sans exposer les identifiants ni modifier les données
   (2026-09-30).
+- **【FAIT】** T-032u — Un reçu de suppression terminé sans empreinte du contenu
+  est signalé invalide par l'audit ; cette empreinte est toujours produite par
+  la procédure d'approbation core (2026-09-30).
 - **【FAIT】** T-032o — Un reçu de suppression réserve l’identité
   Information : la création refuse sa réutilisation après suppression ou
   interruption, ainsi qu’un reçu symbolique (2026-09-29).
