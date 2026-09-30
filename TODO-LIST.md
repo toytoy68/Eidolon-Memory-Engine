@@ -222,6 +222,9 @@ stables du moteur avant l'intégration aux agents.
   cible n'existe plus. Une demande encore en attente laisse les liens vers sa
   cible présente possibles ; ils bloquent alors l'approbation. Tests de
   création, mise à jour et demande en attente (2026-09-30).
+- **【FAIT】** T-032q — L'audit en lecture seule signale aussi un reçu
+  `CANCELLED` dont l'Information a disparu, au lieu de le traiter comme une
+  annulation cohérente ; aucune réparation n'est tentée (2026-09-30).
 - **【FAIT】** T-032n — L’audit et la reprise des suppressions refusent aussi
   les parents symboliques situés au-dessus de `--root`, avant tout parcours
   ou toute mutation (2026-09-29).

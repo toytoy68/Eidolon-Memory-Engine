@@ -51,6 +51,8 @@ def audit_deletions(engine_root: Path) -> dict:
                     reason = "deletion_requires_resume"
                 elif record["status"] == "PENDING_DELETE" and not information.is_file():
                     reason = "pending_without_information"
+                elif record["status"] == "CANCELLED" and not information.is_file():
+                    reason = "cancelled_without_information"
                 elif record["status"] == "DELETED" and information.exists():
                     reason = "deleted_but_information_present"
                 else:

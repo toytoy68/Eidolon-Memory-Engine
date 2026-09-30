@@ -140,3 +140,15 @@ def test_audit_and_backend_reject_unexpected_pending_receipt_fields(tmp_path, ex
         store.approve_delete("info-1", "op-1")
     assert request.read_bytes() == original
     assert store.get("info-1").content == "private"
+
+
+def test_audit_reports_cancelled_request_without_information(tmp_path):
+    store = backend(tmp_path)
+    store.store(Memory("info-1"))
+    store.delete_request("info-1", "human", "mistake", 1, "op-1")
+    store.cancel_delete("info-1", "op-1")
+    (store.persistent_root / "info-1.md").unlink()  # historical/foreign writer
+    assert audit_deletions(tmp_path) == {"requests_checked": 1, "issues": [{
+        "request": "memory/history/pending-delete/info-1.json",
+        "reason": "cancelled_without_information",
+    }]}
