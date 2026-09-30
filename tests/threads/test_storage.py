@@ -3,7 +3,7 @@ from pathlib import Path
 from core.threads.models import Thread, ThreadAction, ThreadStatus
 from core.threads.storage import ThreadStorage
 from core.threads.storage import ThreadStorageError
-from core.threads.manager import InvalidThread, ThreadManager
+from core.threads.manager import InvalidThread, InvalidThreadTransition, ThreadManager
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 import pytest
@@ -175,6 +175,11 @@ def test_thread_revisions_reject_booleans_before_writing(tmp_path):
 def test_thread_domain_validation_rejects_malformed_fields(field, value, message):
     with pytest.raises(InvalidThread, match=message):
         ThreadManager.validate(replace(make_thread(), **{field: value}))
+
+
+def test_thread_status_transition_rejects_untyped_status():
+    with pytest.raises(InvalidThreadTransition, match="new_status must be a ThreadStatus"):
+        ThreadManager.change_status(make_thread(), "VALIDATED")
 
 
 def test_exists(tmp_path: Path):

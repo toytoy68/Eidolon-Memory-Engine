@@ -182,6 +182,9 @@ class ThreadManager:
 
         cls.validate(thread)
 
+        if not isinstance(new_status, ThreadStatus):
+            raise InvalidThreadTransition("new_status must be a ThreadStatus")
+
         if thread.status == new_status:
             raise InvalidThreadTransition(
                 f"Thread already has status {new_status.value}"

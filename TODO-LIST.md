@@ -430,6 +430,8 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031ay — La validation métier Thread signale les champs textuels,
   listes, objets et actions mal formés avec `InvalidThread` plutôt qu'une
   exception Python brute (2026-09-30).
+- **【FAIT】** T-031az — La transition métier Thread refuse explicitement un
+  statut non typé avec `InvalidThreadTransition` (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,
