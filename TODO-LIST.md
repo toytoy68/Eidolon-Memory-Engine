@@ -612,6 +612,10 @@ stables du moteur avant l'intégration aux agents.
    vérifier journaux et services. Autoriser les écritures seulement après revue.
 6. **【À VALIDER】** T-015 — Définir comment lancer `recover-all` avant toute nouvelle
    écriture après redémarrage ; aucun job automatique n'existe actuellement.
+   Proposition documentée dans `docs/DEPLOYMENT.md` : reprendre d'abord les
+   créations/statuts Thread, auditer ensuite les suppressions Information et
+   garder les écrivains arrêtés en présence d'un blocage. Vérifier cet ordre
+   avec les services et données réels avant toute automatisation.
 
 ## Changements de code et tests suivants
 

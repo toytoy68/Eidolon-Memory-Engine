@@ -50,6 +50,17 @@ updating production.
 7. Restart only the previously identified services. Check their status/logs and
    perform a read-only application smoke test before permitting writes.
 
+## Proposed startup recovery gate (not installed)
+
+Before enabling any core writer after a restart, stop all writers and preserve
+the current data state. Run Thread `recover-all` first: it resumes linked
+creations before status changes, so a new Thread reference is visible before
+deciding an Information deletion. Audit deletion receipts next, then review
+whether to run deletion recovery with `--apply` on the stopped data. If either
+recovery reports a blocked record, keep writers stopped and investigate. This
+ordering needs validation with the actual Debian services, storage paths and
+representative data; it is not a systemd unit or an automatic deletion policy.
+
 ## Rollback
 
 Stop writers first. Keep a separate copy of the failed deployment and all new
