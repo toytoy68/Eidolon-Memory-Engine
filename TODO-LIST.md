@@ -44,10 +44,10 @@ Eidolon-Memory-Engine/
 │   ├── request_dispatcher.py     routage actuellement limité aux Threads (existant)
 │   ├── persistence.py            verrous et écritures durables (existant)
 │   ├── storage_format.py         documents Markdown/JSON versionnés (existant)
-│   ├── migration/                inventaire et précontrôle ; convertisseur prévu
+│   ├── migration/                inventaire, précontrôle et convertisseur local
 │   ├── monitoring/               mesures et première page HTML (existant)
 │   ├── retrieval/                assemblage borné du contexte (existant, à enrichir)
-│   ├── indexing/                 manifeste source en lecture seule ; connecteur prévu
+│   ├── indexing/                 manifeste et port d'index ; connecteur prévu
 │   └── integration/              adaptateurs vers Eidolon Core/API (prévu)
 ├── schemas/                      contrats Information, Thread, Event… (existant)
 ├── services/                     CLI historiques à auditer/migrer (existant)
@@ -145,14 +145,16 @@ manifeste et le stockage fichier restent canoniques. Voir `docs/INDEXING.md`.
 nDCG@5 0,9495. Un test détecte la divergence. Les jugements sont partiels
 et volontairement faciles ; aucun score sur mémoire VM n'est affirmé.
 
-**Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
+**Point de départ de l'audit du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
 les écrivains historiques ni sur la VM. Le prochain jalon mesurable est une
 restauration testée sur copie suivie de l'inventaire réel des services, des
-formats et des cinq tests concurrents. Le jalon suivant est un convertisseur
-historique explicite et réexécutable. Ces constats viennent du code et des
-tests, puis ont été reportés dans cette liste.
+formats et des cinq tests concurrents. Le convertisseur historique explicite
+est maintenant présent, mais sa sémantique sur données VM reste à valider.
+Après les sept blocs ci-dessus : 652 tests locaux réussis et les cinq tests
+multiprocessus bloqués ici par l'interdiction de créer des sockets ; aucun de
+ces cinq cas n'est compté comme validé.
 
 **Règle de priorité du projet :** construire et fiabiliser le Memory Engine
 comme composant autonome et persistant avant le système agentique. Les formats,
