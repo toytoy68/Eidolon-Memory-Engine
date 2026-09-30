@@ -47,8 +47,12 @@ updating production.
    `python -m core.information.deletion_recovery --root /path/to/copy`.
    Its `--apply` form mutates the copy and resumes only supported
    `APPLYING_DELETE` requests; review its report before any live run.
-7. Restart only the previously identified services. Check their status/logs and
-   perform a read-only application smoke test before permitting writes.
+7. Before restarting a service that can write, use the proposed recovery gate
+   below on the stopped live data, after the copy has passed its rehearsal.
+   Review each report and keep writers stopped on any unresolved conflict.
+   Then restart only the previously identified services, check their
+   status/logs and perform a read-only application smoke test. Do not enable
+   client writes until the gate and smoke test pass.
 
 ## Proposed startup recovery gate (not installed)
 
