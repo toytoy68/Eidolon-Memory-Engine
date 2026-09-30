@@ -48,3 +48,10 @@ essai isolé sur 15 000 courts fichiers core sans relation a pris 0,43 s pour
 approuver une suppression (scan des autres Informations inclus). C'est un seul
 essai local, sans Thread lié, sans concurrence et sans matériel de la VM ; le
 coût dépend du nombre et de la taille des fichiers.
+
+Nouvelle exécution locale le 30 septembre 2026, toujours sur 15 000 fichiers
+synthétiques courts après les contrôles supplémentaires du backend : écriture
+3,75 s, première page de 100 en 0,104 s, recherche historique 0,617 s,
+`lexical_v1` 0,593 s et manifeste 0,438 s. Une seule exécution ne permet pas
+d'attribuer les différences aux changements de code ; le matériel et les
+données de la VM restent à mesurer séparément.
