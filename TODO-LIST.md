@@ -113,7 +113,8 @@ restent à vérifier sur place.
 reproduit 500 Informations historiques, 499 Informations core après une
 suppression terminée, 12 Threads, des relations, cinq statuts épistémiques,
 deux autres suppressions non terminées et six Events/Reviews historiques
-chacun. Deux tests vérifient les empreintes identiques entre deux générations,
+chacun, deux reçus d'opération historiques et un brouillon Working. Deux tests
+vérifient les empreintes identiques entre deux générations,
 le précontrôle des 500 candidats et le refus d'écraser une sortie existante.
 Corpus synthétique : représentatif de formes choisies, pas des données VM.
 

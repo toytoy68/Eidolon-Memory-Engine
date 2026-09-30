@@ -21,6 +21,8 @@ def test_scenario_is_reproducible_and_has_realistic_shapes(tmp_path):
     assert counts["pending_deletions"] >= 2
     assert counts["completed_deletions"] >= 1
     assert counts["refuted"] > 0 and counts["conflicted"] > 0
+    assert counts["historical_operations"] == 2
+    assert counts["working_information"] == 1
     assert preflight(first / "legacy")["legacy_candidates"] == 500
 
 

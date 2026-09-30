@@ -102,10 +102,28 @@ def generate(output: Path, *, seed: int = 70427, count: int = 500) -> dict:
         _legacy(legacy / "memory/history/reviews" / f"review-{index:02d}.md",
                 {"review_id": f"review-{index:02d}", "status": "RESOLVED",
                  "information_id": identifier}, "Historical review retained.\n")
+    _legacy(legacy / "memory/working/working-fixture-01.md",
+            {"id": "working-fixture-01", "revision": 1, "type": "OBSERVATION",
+             "epistemic_status": "UNVERIFIED", "operational_state": "ACTIVE",
+             "confidence": "LOW", "importance": "NORMAL", "context": {"topic": "draft"},
+             "provenance": {"source": "anonymous-generator"}, "evidence": {},
+             "time": {}, "relations": [], "retention": "NORMAL"},
+            "Draft awaiting a historical decision.\n")
+    for index in range(2):
+        receipt = {"operation_id": f"legacy-op-{index:02d}",
+                   "execution_plan_hash": sha256(f"synthetic-plan-{index}".encode()).hexdigest(),
+                   "information_id": f"info-fixture-{index:04d}",
+                   "result": {"stored": True}, "status": "EXECUTED",
+                   "timestamp": "2026-01-01T00:00:00Z"}
+        path = legacy / "memory/history/operations" / f"legacy-op-{index:02d}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(receipt, ensure_ascii=False, sort_keys=True) + "\n",
+                        encoding="utf-8")
     result = {"seed": seed, "information": count - 1, "legacy_information": count,
               "threads": 12, "pending_deletions": 2, "completed_deletions": 1,
               "refuted": statuses["REFUTED"], "conflicted": statuses["CONFLICTED"],
-              "historical_events": 6, "historical_reviews": 6}
+              "historical_events": 6, "historical_reviews": 6,
+              "historical_operations": 2, "working_information": 1}
     (output / "scenario.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n",
                                           encoding="utf-8")
     return result

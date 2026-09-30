@@ -24,6 +24,7 @@ def test_converter_is_idempotent_and_preserves_historical_files(tmp_path):
 
     assert first["converted"] == 50
     assert first["archived_events"] == first["archived_reviews"] == 6
+    assert first["archived_other"] >= 2
     assert first["rejected"] == []
     assert second == first
     assert fingerprints(destination) == after_first
@@ -32,6 +33,8 @@ def test_converter_is_idempotent_and_preserves_historical_files(tmp_path):
         (destination / "memory/persistent/info-fixture-0000.md").read_text()).information_id == "info-fixture-0000"
     assert (destination / "archive/history/events/event-00.md").read_bytes() == (
         source / "memory/history/events/event-00.md").read_bytes()
+    assert (destination / "archive/history/operations/legacy-op-00.json").read_bytes() == (
+        source / "memory/history/operations/legacy-op-00.json").read_bytes()
 
 
 def test_converter_reports_corrupt_source_and_destination_conflict(tmp_path):

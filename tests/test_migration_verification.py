@@ -23,7 +23,7 @@ def test_verification_checks_documents_archives_and_is_read_only(tmp_path):
 
     assert report["ok"] is True
     assert report["checked_information"] == 50
-    assert report["checked_archives"] == 12
+    assert report["checked_archives"] == 15
     assert report["issues"] == []
     assert snapshot(source) == before_source
     assert snapshot(destination) == before_destination
