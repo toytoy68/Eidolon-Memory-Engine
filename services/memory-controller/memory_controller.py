@@ -1253,6 +1253,8 @@ def execute_store_operation(
     ][
         "information_id"
     ]
+    if not isinstance(information_id, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
+        raise ValueError("STORE refusé : information_id invalide")
 
     source_path = Path(
         execution[
@@ -1349,6 +1351,8 @@ def execute_update_operation(
     ][
         "information_id"
     ]
+    if not isinstance(information_id, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
+        raise ValueError("UPDATE refusé : information_id invalide")
 
     source_path = Path(
         execution[

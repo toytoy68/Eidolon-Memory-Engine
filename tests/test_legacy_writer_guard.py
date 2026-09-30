@@ -251,6 +251,22 @@ def test_controller_direct_store_rejects_external_source(tmp_path, monkeypatch):
     assert external.read_text() == "private"
 
 
+@pytest.mark.parametrize("operation", ["execute_store_operation", "execute_update_operation"])
+def test_controller_direct_operations_reject_path_identity(tmp_path, monkeypatch, operation):
+    controller = load_controller()
+    working = tmp_path / "working"
+    working.mkdir()
+    source = working / "source.md"
+    source.write_text("safe")
+    monkeypatch.setattr(controller, "WORKING_ROOT", working)
+    monkeypatch.setattr(controller, "PERSISTENT_ROOT", tmp_path / "persistent")
+    with pytest.raises(ValueError, match="information_id"):
+        getattr(controller, operation)({
+            "input": {"information_id": "../outside", "source_path": str(source)},
+        })
+    assert not (tmp_path / "persistent").exists()
+
+
 def test_controller_plan_validation_rejects_external_source(tmp_path, monkeypatch):
     controller = load_controller()
     monkeypatch.setattr(controller, "WORKING_ROOT", tmp_path / "working")
