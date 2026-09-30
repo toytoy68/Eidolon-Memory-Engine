@@ -339,7 +339,8 @@ class ThreadManager:
                 thread
                 for thread in results
                 if any(
-                    relation.get("type") == query.relation_type
+                    isinstance(relation, dict)
+                    and relation.get("type") == query.relation_type
                     for relation in thread.relations
                 )
             ]
@@ -349,8 +350,9 @@ class ThreadManager:
                 thread
                 for thread in results
                 if any(
-                    relation.get("target_id") == query.related_to
-                    or relation.get("source_id") == query.related_to
+                    isinstance(relation, dict)
+                    and (relation.get("target_id") == query.related_to
+                         or relation.get("source_id") == query.related_to)
                     for relation in thread.relations
                 )
             ]

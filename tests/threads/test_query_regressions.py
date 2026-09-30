@@ -57,6 +57,15 @@ def test_invalid_persisted_dates_do_not_break_other_thread_queries():
     assert ordered == [damaged, valid]
 
 
+def test_malformed_historical_relation_does_not_break_other_query_results():
+    damaged = Thread("bad", "Bad", "x", relations=["corrupt"])
+    valid = Thread("good", "Good", "x", relations=[
+        {"type": "CONCERNS", "target_id": "info-1"}])
+    for filters in ({"relation_type": "CONCERNS"}, {"related_to": "info-1"}):
+        assert ThreadManager.query([damaged, valid], ThreadQuery(
+            ThreadQueryType.LIST_THREADS, **filters)) == [valid]
+
+
 @pytest.mark.parametrize("parameters", [{"include_completed":"false"}, {"limit":True},
                                         {"created_after":"not-a-date"}])
 def test_invalid_query_values_are_rejected(parameters):
