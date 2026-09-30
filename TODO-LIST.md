@@ -399,6 +399,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031aq — Les écritures Information refusent les relations sans
   type ou cible textuelle et les deux alias de cible contradictoires ; les
   audits conservent la détection des anciens fichiers malformés (2026-09-30).
+- **【FAIT】** T-031ar — Le stockage Thread rejette les identifiants non textuels
+  avec son erreur de domaine sur création comme sur lecture, sans écrire de
+  fichier (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

@@ -55,9 +55,9 @@ class ThreadStorage:
 
     @staticmethod
     def _validate_id(thread_id: str) -> None:
-        if not thread_id:
+        if not isinstance(thread_id, str) or not thread_id:
             raise InvalidThreadStorageId(
-                "thread_id is required"
+                "thread_id must be nonempty text"
             )
 
         if not re.fullmatch(

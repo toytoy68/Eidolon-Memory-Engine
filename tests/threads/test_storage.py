@@ -279,6 +279,18 @@ def test_invalid_thread_id(tmp_path, thread_id):
     with pytest.raises(InvalidThreadStorageId):
         storage.create(thread)
 
+
+@pytest.mark.parametrize("thread_id", [1, True, None, []])
+def test_nontext_thread_id_uses_storage_error_without_writing(tmp_path, thread_id):
+    storage = ThreadStorage(tmp_path)
+    thread = make_thread()
+    thread.thread_id = thread_id
+    with pytest.raises(InvalidThreadStorageId):
+        storage.create(thread)
+    with pytest.raises(InvalidThreadStorageId):
+        storage.get(thread_id)
+    assert not list(storage.threads_root.glob("*.md"))
+
 def test_update_missing_thread(tmp_path):
     storage = ThreadStorage(tmp_path)
     thread = make_thread()
