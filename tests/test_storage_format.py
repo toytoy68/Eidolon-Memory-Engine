@@ -134,3 +134,27 @@ def test_legacy_identity_section_in_body_cannot_replace_header(fixture, store, e
     malformed += "\n## Identity\n" + header + "\n---\n"
     with pytest.raises(error):
         store._deserialize(malformed)
+
+
+@pytest.mark.parametrize("replacement", [
+    '{"source":"first","source":"second"}',
+    '{"score":NaN}',
+])
+def test_legacy_memory_rejects_ambiguous_json_sections(replacement):
+    source = (FIXTURES / "memory-v01.md").read_text()
+    malformed = source.replace("## Metadata\n\n```json\n{}\n```",
+                               "## Metadata\n\n```json\n" + replacement + "\n```")
+    with pytest.raises(InvalidMemory, match="invalid JSON"):
+        FilesystemBackend._deserialize(malformed)
+
+
+@pytest.mark.parametrize("replacement", [
+    '{"source":"first","source":"second"}',
+    '{"score":Infinity}',
+])
+def test_legacy_thread_rejects_ambiguous_json_sections(replacement):
+    source = (FIXTURES / "thread-v01.md").read_text()
+    malformed = source.replace("## Context\n\n```json\n{}\n```",
+                               "## Context\n\n```json\n" + replacement + "\n```")
+    with pytest.raises(ThreadStorageError, match="invalid JSON"):
+        ThreadStorage._deserialize(malformed)

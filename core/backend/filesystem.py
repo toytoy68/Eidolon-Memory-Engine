@@ -9,7 +9,8 @@ import re
 from pathlib import Path
 from typing import Any
 from dataclasses import asdict, replace
-from core.storage_format import encode_document, decode_document, legacy_identity_fields
+from core.storage_format import (encode_document, decode_document, decode_json_value,
+                                 legacy_identity_fields)
 
 from core.persistence import serialized_write, atomic_write_text, exclusive_write, has_symlink_component
 from core.information.references import ensure_no_thread_links, ensure_no_information_links
@@ -131,8 +132,8 @@ class FilesystemBackend(MemoryBackend):
             return {}
 
         try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError as exc:
+            return decode_json_value(match.group(1))
+        except ValueError as exc:
             raise InvalidMemory(
                 f"invalid JSON in section {section!r}"
             ) from exc

@@ -250,6 +250,10 @@ stables du moteur avant l'intégration aux agents.
   identités uniquement dans la section Identity et refusent les champs requis
   dupliqués. Un corps libre ne peut plus suppléer une identité manquante
   (tests isolés, 2026-09-30).
+- **【FAIT】** T-003c — Les blocs JSON des documents core 0.1 refusent les
+  clés dupliquées et les nombres non standard comme NaN/Infinity au lieu de
+  choisir silencieusement une valeur ; tests Information et Thread
+  (2026-09-30).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
 - **【FAIT】** T-005 — 458 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement

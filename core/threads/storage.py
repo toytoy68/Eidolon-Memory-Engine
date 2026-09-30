@@ -8,7 +8,8 @@ from pathlib import Path
 
 from core.persistence import serialized_write, atomic_write_text, has_symlink_component
 
-from core.storage_format import encode_document, decode_document, legacy_identity_fields
+from core.storage_format import (encode_document, decode_document, decode_json_value,
+                                 legacy_identity_fields)
 from .serialization import thread_to_dict
 
 from .models import ActionStatus, Thread, ThreadAction, ThreadStatus
@@ -139,8 +140,8 @@ class ThreadStorage:
             return {}
 
         try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError as exc:
+            return decode_json_value(match.group(1))
+        except ValueError as exc:
             raise ThreadStorageError(
                 f"invalid JSON in section {section!r}"
             ) from exc

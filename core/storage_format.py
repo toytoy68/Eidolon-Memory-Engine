@@ -33,6 +33,25 @@ def legacy_identity_fields(text, fields):
     return result
 
 
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def _invalid_constant(value):
+    raise ValueError(f"invalid JSON constant: {value}")
+
+
+def decode_json_value(text):
+    """Parse one JSON value without dropping duplicates or accepting NaN."""
+    return json.loads(text, object_pairs_hook=_unique_object,
+                      parse_constant=_invalid_constant)
+
+
 def decode_document(text, kind):
     """Return None for legacy v0.1, reject unknown/corrupt versioned documents."""
     header = re.match(r"\A# Eidolon " + re.escape(kind) + r" Object\r?\n\r?\nVersion: ([^\r\n]+)", text)
@@ -47,17 +66,8 @@ def decode_document(text, kind):
     if not body.startswith("```json\n") and not body.startswith("```json\r\n"):
         raise ValueError("missing JSON payload")
     body = body.split("\n", 1)[1].lstrip()
-    def unique_object(pairs):
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise ValueError(f"duplicate JSON key: {key}")
-            result[key] = value
-        return result
-    def invalid_constant(value):
-        raise ValueError(f"invalid JSON constant: {value}")
-    payload, end = json.JSONDecoder(object_pairs_hook=unique_object,
-                                   parse_constant=invalid_constant).raw_decode(body)
+    payload, end = json.JSONDecoder(object_pairs_hook=_unique_object,
+                                   parse_constant=_invalid_constant).raw_decode(body)
     if body[end:].strip() != "```" or not isinstance(payload, dict):
         raise ValueError("invalid JSON document boundary")
     return payload
