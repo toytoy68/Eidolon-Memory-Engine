@@ -84,3 +84,30 @@ def test_json_request_to_json_response(tmp_path):
     assert '"intent": "LIST_OPEN_THREADS"' in output
     assert '"status": "OK"' in output
     assert '"thread_id": "thread-dispatch-001"' in output
+
+
+def test_json_status_filter_maps_wire_value_before_query(tmp_path):
+    from core.request_parser import parse_request
+    storage = ThreadStorage(tmp_path)
+    storage.create(make_thread())
+    dispatcher = RequestDispatcher(ThreadService(storage))
+    payload = ('{"request":{"schema_version":"0.1","domain":"THREAD",'
+               '"intent":"LIST_THREADS_BY_STATUS","filters":{'
+               '"statuses":["IMPLEMENTATION"],"sort_by":"title",'
+               '"sort_order":"ASC"}}}')
+
+    response = dispatcher.execute(parse_request(payload))
+    assert [item["thread_id"] for item in response.data] == ["thread-dispatch-001"]
+
+
+def test_invalid_json_thread_filter_fails_before_storage_read(tmp_path, monkeypatch):
+    from core.request_parser import parse_request
+    storage = ThreadStorage(tmp_path)
+    monkeypatch.setattr(storage, "list", lambda: pytest.fail("storage read before validation"))
+    dispatcher = RequestDispatcher(ThreadService(storage))
+    payload = ('{"request":{"schema_version":"0.1","domain":"THREAD",'
+               '"intent":"LIST_THREADS_BY_STATUS","filters":{'
+               '"statuses":["INVALID_PRIVATE_VALUE"]}}}')
+
+    with pytest.raises(ValueError, match="Invalid Thread request filters"):
+        dispatcher.execute(parse_request(payload))

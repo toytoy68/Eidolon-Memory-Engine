@@ -27,6 +27,7 @@ class ThreadService:
         query: ThreadQuery,
     ) -> list[Thread] | list[tuple[Thread, object]]:
         """Query persisted Threads through the domain manager."""
+        query.validate()
         threads = self.storage.list()
 
         return ThreadManager.query(

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from core.requests import RequestEnvelope
 
-from .queries import ThreadQueryType
+from .models import ActionStatus, ThreadStatus
+from .queries import ThreadQueryType, ThreadSortField, ThreadSortOrder
 from .requests import ThreadRequest
 
 
@@ -22,7 +23,21 @@ def build_thread_request(envelope: RequestEnvelope) -> ThreadRequest:
             f"Unsupported Thread request intent: {envelope.intent!r}"
         ) from exc
 
-    return ThreadRequest.from_intent(
-        intent,
-        **envelope.filters,
-    )
+    filters = dict(envelope.filters)
+    scalar_enums = {"status": ThreadStatus, "action_status": ActionStatus,
+                    "sort_by": ThreadSortField, "sort_order": ThreadSortOrder}
+    list_enums = {"statuses": ThreadStatus, "action_statuses": ActionStatus}
+    try:
+        for name, enum_type in scalar_enums.items():
+            if name in filters and filters[name] is not None:
+                filters[name] = enum_type(filters[name])
+        for name, enum_type in list_enums.items():
+            if name in filters:
+                if not isinstance(filters[name], list):
+                    raise ValueError("invalid status list")
+                filters[name] = [enum_type(value) for value in filters[name]]
+        request = ThreadRequest.from_intent(intent, **filters)
+        request.query.validate()
+        return request
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Invalid Thread request filters") from exc
