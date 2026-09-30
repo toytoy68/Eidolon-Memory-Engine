@@ -233,6 +233,10 @@ stables du moteur avant l'intégration aux agents.
   ou de mauvais type et les sections d'objet de mauvais type, plutôt que de
   laisser un objet invalide circuler après la lecture (tests isolés,
   2026-09-30).
+- **【FAIT】** T-003b — Les lecteurs Information et Thread core 0.1 lisent leurs
+  identités uniquement dans la section Identity et refusent les champs requis
+  dupliqués. Un corps libre ne peut plus suppléer une identité manquante
+  (tests isolés, 2026-09-30).
 - **【FAIT】** T-004 — Rejet des Events persistés ambigus ou invalides (`ff0fbc0`).
 - **【FAIT】** T-005 — 458 tests exécutables réussis sur la copie de travail le
   2026-09-29 ; 5 tests de concurrence non exécutables dans cet environnement

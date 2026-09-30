@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 from typing import Any
 from dataclasses import asdict, replace
-from core.storage_format import encode_document, decode_document
+from core.storage_format import encode_document, decode_document, legacy_identity_fields
 
 from core.persistence import serialized_write, atomic_write_text, exclusive_write, has_symlink_component
 from core.information.references import ensure_no_thread_links, ensure_no_information_links
@@ -154,25 +154,17 @@ class FilesystemBackend(MemoryBackend):
                 return Memory(**payload)
         except (KeyError, TypeError, ValueError) as exc:
             raise InvalidMemory("invalid Information document") from exc
-        identity = re.search(
-            r"^id:\s*(.+)$",
-            text,
-            flags=re.MULTILINE,
-        )
+        try:
+            fields = legacy_identity_fields(text, ("id", "revision"))
+        except ValueError as exc:
+            raise InvalidMemory("missing or ambiguous identity information") from exc
 
-        revision = re.search(
-            r"^revision:\s*(\d+)$",
-            text,
-            flags=re.MULTILINE,
-        )
-
-        if not identity or not revision:
-            raise InvalidMemory("missing identity information")
-
-        information_id = identity.group(1).strip()
+        information_id = fields["id"].strip()
 
         try:
-            revision_value = int(revision.group(1))
+            if not re.fullmatch(r"[0-9]+", fields["revision"]):
+                raise ValueError("invalid revision")
+            revision_value = int(fields["revision"])
         except ValueError as exc:
             raise InvalidMemory("invalid revision") from exc
         if revision_value < 1:

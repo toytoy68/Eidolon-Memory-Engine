@@ -99,3 +99,38 @@ def test_legacy_memory_rejects_non_object_metadata():
                                "## Metadata\n\n```json\n[]\n```")
     with pytest.raises(InvalidMemory, match="object section"):
         FilesystemBackend._deserialize(malformed)
+
+
+@pytest.mark.parametrize("fixture,store,error,identity_line", [
+    ("memory-v01.md", FilesystemBackend, InvalidMemory, "id: legacy"),
+    ("thread-v01.md", ThreadStorage, ThreadStorageError, "thread_id: legacy"),
+])
+def test_legacy_identity_must_come_from_identity_section(fixture, store, error, identity_line):
+    source = (FIXTURES / fixture).read_text()
+    malformed = source.replace(identity_line + "\n", "") + "\n" + identity_line + "\n"
+    with pytest.raises(error):
+        store._deserialize(malformed)
+
+
+@pytest.mark.parametrize("fixture,store,error,identity_line", [
+    ("memory-v01.md", FilesystemBackend, InvalidMemory, "id: legacy"),
+    ("thread-v01.md", ThreadStorage, ThreadStorageError, "thread_id: legacy"),
+])
+def test_legacy_identity_rejects_duplicate_header_field(fixture, store, error, identity_line):
+    source = (FIXTURES / fixture).read_text()
+    malformed = source.replace(identity_line, identity_line + "\n" + identity_line, 1)
+    with pytest.raises(error):
+        store._deserialize(malformed)
+
+
+@pytest.mark.parametrize("fixture,store,error", [
+    ("memory-v01.md", FilesystemBackend, InvalidMemory),
+    ("thread-v01.md", ThreadStorage, ThreadStorageError),
+])
+def test_legacy_identity_section_in_body_cannot_replace_header(fixture, store, error):
+    source = (FIXTURES / fixture).read_text()
+    header = source.split("## Identity\n", 1)[1].split("\n---", 1)[0]
+    malformed = source.replace("## Identity\n" + header + "\n---", "## Other\n---", 1)
+    malformed += "\n## Identity\n" + header + "\n---\n"
+    with pytest.raises(error):
+        store._deserialize(malformed)

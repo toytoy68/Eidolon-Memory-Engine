@@ -8,6 +8,31 @@ def encode_document(kind, payload):
     return f"# Eidolon {kind} Object\n\nVersion: 0.2\n\n```json\n{text}\n```\n"
 
 
+def legacy_identity_fields(text, fields):
+    """Read required v0.1 fields only from its Identity section.
+
+    The free-text body may contain lines such as ``id: ...``; it must never
+    supply identity metadata missing from the header.
+    """
+    match = re.search(r"(?m)^## Identity[ \t]*\r?\n", text)
+    first_heading = re.search(r"(?m)^## [^\r\n]+\r?$", text)
+    if match is None or first_heading is None or match.start() != first_heading.start():
+        raise ValueError("missing legacy Identity section")
+    end = re.search(r"(?m)^---[ \t]*\r?$", text[match.end():])
+    if end is None:
+        raise ValueError("unclosed legacy Identity section")
+    section = text[match.end():match.end() + end.start()]
+    if re.search(r"(?m)^## [^\r\n]+\r?$", section):
+        raise ValueError("unclosed legacy Identity section")
+    result = {}
+    for field in fields:
+        values = re.findall(rf"(?m)^{re.escape(field)}:[ \t]*([^\r\n]*)\r?$", section)
+        if len(values) != 1:
+            raise ValueError(f"missing or duplicate legacy {field}")
+        result[field] = values[0]
+    return result
+
+
 def decode_document(text, kind):
     """Return None for legacy v0.1, reject unknown/corrupt versioned documents."""
     header = re.match(r"\A# Eidolon " + re.escape(kind) + r" Object\r?\n\r?\nVersion: ([^\r\n]+)", text)

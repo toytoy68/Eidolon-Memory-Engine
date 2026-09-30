@@ -8,7 +8,7 @@ from pathlib import Path
 
 from core.persistence import serialized_write, atomic_write_text, has_symlink_component
 
-from core.storage_format import encode_document, decode_document
+from core.storage_format import encode_document, decode_document, legacy_identity_fields
 from .serialization import thread_to_dict
 
 from .models import ActionStatus, Thread, ThreadAction, ThreadStatus
@@ -153,37 +153,15 @@ class ThreadStorage:
                 return cls._from_payload(payload)
         except (KeyError, TypeError, ValueError) as exc:
             raise ThreadStorageError("invalid Thread document") from exc
-        identity = re.search(
-            r"^thread_id:\s*(.+)$",
-            text,
-            flags=re.MULTILINE,
-        )
-
-        revision = re.search(
-            r"^revision:\s*(\d+)$",
-            text,
-            flags=re.MULTILINE,
-        )
-
-        title = re.search(
-            r"^title:\s*(.*)$",
-            text,
-            flags=re.MULTILINE,
-        )
-
-        status = re.search(
-            r"^status:\s*(.+)$",
-            text,
-            flags=re.MULTILINE,
-        )
-
-        if not identity or not revision or not title or not status:
-            raise ThreadStorageError(
-                "missing Thread identity information"
-            )
+        try:
+            fields = legacy_identity_fields(text, ("thread_id", "revision", "title", "status"))
+        except ValueError as exc:
+            raise ThreadStorageError("missing or ambiguous Thread identity information") from exc
 
         try:
-            revision_value = int(revision.group(1))
+            if not re.fullmatch(r"[0-9]+", fields["revision"]):
+                raise ValueError("invalid Thread revision")
+            revision_value = int(fields["revision"])
         except ValueError as exc:
             raise ThreadStorageError(
                 "invalid Thread revision"
@@ -192,10 +170,10 @@ class ThreadStorage:
             raise ThreadStorageError("invalid Thread revision")
 
         try:
-            status_value = ThreadStatus(status.group(1).strip())
+            status_value = ThreadStatus(fields["status"].strip())
         except ValueError as exc:
             raise ThreadStorageError(
-                f"invalid Thread status: {status.group(1).strip()!r}"
+                f"invalid Thread status: {fields['status'].strip()!r}"
             ) from exc
 
         objective_match = re.search(
@@ -281,8 +259,8 @@ class ThreadStorage:
             actions.append(action)
 
         thread = Thread(
-            thread_id=identity.group(1).strip(),
-            title=title.group(1).strip(),
+            thread_id=fields["thread_id"].strip(),
+            title=fields["title"].strip(),
             objective=objective,
             status=status_value,
             revision=revision_value,
