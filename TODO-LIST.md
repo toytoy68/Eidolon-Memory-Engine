@@ -10,7 +10,7 @@ restent à terminer ou à décider. Réévaluer ce pourcentage après chaque pha
 majeure validée ; la cible peut encore évoluer. Voir le
 [bilan détaillé de l'audit](docs/AUDIT-2026-09-29.md).
 
-Dernière mise à jour : 2026-09-29. Branche suivie : `refactor/architecture-v1`.
+Dernière mise à jour : 2026-09-30. Branche suivie : `refactor/architecture-v1`.
 Cette arborescence décrit une **cible supposée**, pas une architecture figée. Les
 emplacements marqués `prévu` sont des propositions à confirmer avant création.
 Le dépôt Git versionne le code et les schémas ; les mémoires réelles, secrets,
