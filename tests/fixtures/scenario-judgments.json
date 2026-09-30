@@ -1,0 +1,227 @@
+{
+  "seed": 70427,
+  "count": 500,
+  "assessment": "synthetic partial judgments; unlisted documents are unjudged",
+  "cases": [
+    {
+      "query": "refroidissement GPU V100",
+      "relevance": {
+        "info-fixture-0000": 3,
+        "info-fixture-0010": 2,
+        "info-fixture-0020": 1
+      }
+    },
+    {
+      "query": "réseau fibre SFP",
+      "relevance": {
+        "info-fixture-0001": 3,
+        "info-fixture-0011": 2,
+        "info-fixture-0021": 1
+      }
+    },
+    {
+      "query": "stockage RAIDZ1",
+      "relevance": {
+        "info-fixture-0002": 3,
+        "info-fixture-0012": 2,
+        "info-fixture-0022": 1
+      }
+    },
+    {
+      "query": "robotique moteur",
+      "relevance": {
+        "info-fixture-0003": 3,
+        "info-fixture-0013": 2,
+        "info-fixture-0023": 1
+      }
+    },
+    {
+      "query": "chauffage pompe chaleur",
+      "relevance": {
+        "info-fixture-0004": 3,
+        "info-fixture-0014": 2,
+        "info-fixture-0024": 1
+      }
+    },
+    {
+      "query": "journaux reprise",
+      "relevance": {
+        "info-fixture-0005": 3,
+        "info-fixture-0015": 2,
+        "info-fixture-0025": 1
+      }
+    },
+    {
+      "query": "mémoire épistémique",
+      "relevance": {
+        "info-fixture-0006": 3,
+        "info-fixture-0016": 2,
+        "info-fixture-0026": 1
+      }
+    },
+    {
+      "query": "capteur caméra",
+      "relevance": {
+        "info-fixture-0007": 3,
+        "info-fixture-0017": 2,
+        "info-fixture-0027": 1
+      }
+    },
+    {
+      "query": "alimentation UPS",
+      "relevance": {
+        "info-fixture-0008": 3,
+        "info-fixture-0018": 2,
+        "info-fixture-0028": 1
+      }
+    },
+    {
+      "query": "index recherche",
+      "relevance": {
+        "info-fixture-0009": 3,
+        "info-fixture-0019": 2,
+        "info-fixture-0029": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0001 réseau fibre SFP",
+      "relevance": {
+        "info-fixture-0001": 3,
+        "info-fixture-0011": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0024 chauffage pompe chaleur",
+      "relevance": {
+        "info-fixture-0024": 3,
+        "info-fixture-0034": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0047 capteur caméra",
+      "relevance": {
+        "info-fixture-0047": 3,
+        "info-fixture-0057": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0070 refroidissement GPU V100",
+      "relevance": {
+        "info-fixture-0070": 3,
+        "info-fixture-0080": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0093 robotique moteur",
+      "relevance": {
+        "info-fixture-0093": 3,
+        "info-fixture-0103": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0116 mémoire épistémique",
+      "relevance": {
+        "info-fixture-0116": 3,
+        "info-fixture-0126": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0139 index recherche",
+      "relevance": {
+        "info-fixture-0139": 3,
+        "info-fixture-0149": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0162 stockage RAIDZ1",
+      "relevance": {
+        "info-fixture-0162": 3,
+        "info-fixture-0172": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0185 journaux reprise",
+      "relevance": {
+        "info-fixture-0185": 3,
+        "info-fixture-0195": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0208 alimentation UPS",
+      "relevance": {
+        "info-fixture-0208": 3,
+        "info-fixture-0218": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0231 réseau fibre SFP",
+      "relevance": {
+        "info-fixture-0231": 3,
+        "info-fixture-0241": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0254 chauffage pompe chaleur",
+      "relevance": {
+        "info-fixture-0254": 3,
+        "info-fixture-0264": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0277 capteur caméra",
+      "relevance": {
+        "info-fixture-0277": 3,
+        "info-fixture-0287": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0300 refroidissement GPU V100",
+      "relevance": {
+        "info-fixture-0300": 3,
+        "info-fixture-0310": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0323 robotique moteur",
+      "relevance": {
+        "info-fixture-0323": 3,
+        "info-fixture-0333": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0346 mémoire épistémique",
+      "relevance": {
+        "info-fixture-0346": 3,
+        "info-fixture-0356": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0369 index recherche",
+      "relevance": {
+        "info-fixture-0369": 3,
+        "info-fixture-0379": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0392 stockage RAIDZ1",
+      "relevance": {
+        "info-fixture-0392": 3,
+        "info-fixture-0402": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0415 journaux reprise",
+      "relevance": {
+        "info-fixture-0415": 3,
+        "info-fixture-0425": 1
+      }
+    },
+    {
+      "query": "Observation anonyme info-fixture-0438 alimentation UPS",
+      "relevance": {
+        "info-fixture-0438": 3,
+        "info-fixture-0448": 1
+      }
+    }
+  ]
+}

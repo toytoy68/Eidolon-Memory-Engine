@@ -1,5 +1,15 @@
 # Assemblage de contexte et évaluation de la récupération
 
+Le corpus synthétique reproductible de 500 Informations
+(`tools.generate_scenario`) dispose de 30 jugements partiels avec pertinence
+graduée de 1 à 3 dans `tests/fixtures/scenario-judgments.json`. Exécuter
+`python -B -m tools.evaluate_scenario --check` pour recalculer rappel@5,
+MRR@5 et nDCG@5 avec `lexical_v1` et comparer le score à
+`tests/fixtures/scenario-baseline.json`. Le score de référence est un test de
+régression sur un corpus fabriqué et facile ; il ne mesure pas la qualité sur
+les données réelles. Les documents non listés dans un jugement sont **non
+jugés**, et le rappel ne porte que sur les identifiants annotés.
+
 `core.retrieval.ContextAssembler` reçoit un backend conforme à `MemoryBackend`
 et une requête textuelle. Il retourne des extraits avec leurs identifiants,
 révisions, scores, indicateurs de troncature et étiquettes distinctes

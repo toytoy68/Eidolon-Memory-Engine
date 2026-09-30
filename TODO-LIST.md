@@ -138,6 +138,13 @@ reconstruction depuis les fichiers et préservation de l'état après échec.
 L'index n'est pas synchronisé automatiquement avec les écrivains : le
 manifeste et le stockage fichier restent canoniques. Voir `docs/INDEXING.md`.
 
+**Jugements de pertinence (2026-09-30) — 【FAIT SUR CORPUS SYNTHÉTIQUE】** :
+30 requêtes et pertinences 1–3 versionnées ;
+`python -B -m tools.evaluate_scenario --check` regénère les données, mesure
+`lexical_v1` et compare au score versionné : rappel@5 0,7, MRR@5 1,0,
+nDCG@5 0,9495. Un test détecte la divergence. Les jugements sont partiels
+et volontairement faciles ; aucun score sur mémoire VM n'est affirmé.
+
 **Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
