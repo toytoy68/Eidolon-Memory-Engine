@@ -103,10 +103,7 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
                 "limitation": "known command markers are heuristic; inspect services and jobs manually"}
 
     def formats():
-        result = inventory(source)
-        if result["needs_review"]:
-            raise ValueError(f"{len(result['needs_review'])} formats or paths need review")
-        return result
+        return inventory(source)
 
     step("writers", writers, lambda result: (
         [f"{len(result['open_writable_descriptors'])} writable descriptors on source"]
@@ -115,7 +112,9 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
         [f"{len(result['system_writers']['running'])} possible running writers"]
         if result["system_writers"]["running"] else []
     ))
-    step("formats", formats)
+    step("formats", formats, lambda result: [
+        f"{len(result['needs_review'])} formats or paths need review"
+    ] if result["needs_review"] else [])
 
     def backup_restore():
         original = hashes(source)

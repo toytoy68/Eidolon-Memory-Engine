@@ -122,3 +122,25 @@ def test_acceptance_reports_idle_unit_and_flags_active_writer(tmp_path, monkeypa
     assert writers["status"] == "KO"
     assert writers["details"]["system_writers"]["configured"][0]["path"].endswith("memory.service")
     assert writers["details"]["system_writers"]["running"][0]["pid"] == 123
+
+
+def test_acceptance_keeps_format_evidence_when_inventory_fails(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    source.mkdir()
+    monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
+    monkeypatch.setattr(vm_acceptance, "discover_writers", lambda: {
+        "running": [], "configured": [], "unreadable": [], "coverage": "heuristic_manual_service_review_required"})
+    monkeypatch.setattr(vm_acceptance, "inventory", lambda root: {
+        "needs_review": [{"path": "memory/history/events/broken.md", "reason": "unknown_format"}]})
+    monkeypatch.setattr(vm_acceptance, "audit_relations", lambda *a, **kw: {"relations": {}})
+    monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {
+        "retention": {}, "applicability": {}, "epistemic_by_applicability": {}})
+    monkeypatch.setattr(vm_acceptance, "audit_deletions", lambda *a, **kw: {"issues": []})
+    monkeypatch.setattr(vm_acceptance.subprocess, "run", lambda *a, **kw: type(
+        "Result", (), {"returncode": 0, "stdout": "5 passed", "stderr": ""})())
+
+    result = vm_acceptance.run(source, tmp_path / "work", at="2026-09-30T00:00:00Z")
+
+    assert result["steps"][1]["status"] == "KO"
+    assert result["steps"][1]["details"]["needs_review"][0]["path"] == (
+        "memory/history/events/broken.md")
