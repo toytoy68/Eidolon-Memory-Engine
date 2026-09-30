@@ -1,11 +1,12 @@
 # Proposition — écritures Information coordonnées
 
-Date : 2026-09-30. Statut : **conception partielle, non implémentée**.
-Synthèse locale des propositions de Claude et de la revue GPT transmises par
-toytoy ; ce texte n'est pas une copie du document complet de Claude, non reçu.
-Les orientations sont intégrées ; signatures, format versionné et décisions
-ouvertes restent à spécifier avant le code. Voir le
-[bilan d'architecture](MEMORY-ARCHITECTURE-2026-09-30.md).
+Date : 2026-09-30. Statut : **orientations D7–D9 validées, service et
+compaction non implémentés**. Synthèse de la revue croisée avec Claude et
+toytoy. L'annexe reçue dans `eidolon_memory_engine_2026-09-30_maj2.zip` est
+intégrée et harmonisée avec les décisions validées le 30/09 :
+[conflits, reçus et reprise détaillés](DESIGN-INFORMATION-WRITES-DETAIL.md).
+Les signatures et schémas sérialisés précis restent à définir lors de
+l'implémentation. Voir le [bilan d'architecture](MEMORY-ARCHITECTURE-2026-09-30.md).
 
 ## Problème et frontières
 
@@ -26,15 +27,19 @@ et son coordinateur implicite consulte désormais les familles création/statut
 canoniques via `for_history` (T-039 corrigé en local, non validé sur VM).
 Étendre la coordination Information ne résout pas ces contournements à lui seul.
 
-## D1 à D5
+## Décisions retenues
 
 | Décision | Orientation retenue pour la conception | Reste à spécifier |
 | --- | --- | --- |
-| D1 | Nouvelle Information métier à révision 1 ; mise à jour n → n+1 ; import distinct conservant les révisions historiques | Mapping des deux modèles, import sans faux événements et cas historiques ambigus avec T-021 |
+| D1 | Nouvelle Information métier à révision 1 ; mise à jour n → n+1 ; import distinct conservant les révisions historiques | Mapping textuel livré sous T-040 ; import sans faux événements et cas historiques ambigus avec T-021 |
 | D2 | Event sans corps complet, métadonnées sélectionnées et empreinte ; snapshots conservés pendant la reprise ; compaction possible après succès | Format de reçu compact, politique et conditions de compaction, garanties de rejeu et suppression |
 | D3 | Conserver le contrat bas niveau ; faire passer les mutations métier par un service coordonné ; préserver tests de stockage et ajouter tests de service | Inventaire des appelants et migration par étapes, contrat des primitives réservées à l'import/reprise |
 | D4 | Aucun CREATED historique inventé ; préserver les archives ; trace d'import datée si utile | Format éventuel de trace et liens vers source/rapport de migration |
 | D5 | Unification du journal de suppression ultérieure ; compatibilité et conflits à définir dès maintenant | Ordre de reprise commun, réservation d'identité, interaction avec liens et snapshots |
+| D6 | Mapping textuel explicitement étiqueté livré ; snapshots du Memory complet, extensions comprises | Cas non couverts soumis à une politique d'import explicite |
+| D7 | Annuler explicitement PENDING_DELETE avant une nouvelle modification métier | Implémenter et tester ce contrôle, absent de update actuellement |
+| D8 | Conserver l'empreinte de commande dans le reçu compact v1, même après suppression de la cible ; aucune garantie de confidentialité | Normalisation précise ; futur effacement des empreintes avec contrat de rejeu distinct |
+| D9 | Identité réservée après CANCELLED ; modification de la cible existante permise | Pas de changement de store ; cible absente = incohérence à examiner |
 
 `INFORMATION_CREATE` et `INFORMATION_UPDATE` sont des types Operation proposés,
 absents du code. `CREATED` et `UPDATED` existent déjà comme types Event.
@@ -82,17 +87,20 @@ globale n'est ajoutée par ce document.
   pas la contourner. Reprise ou résolution explicite avant commande incompatible.
 - Une suppression commencée interdit la réécriture ou la recréation de la cible.
   Les identités réservées par un reçu de suppression restent protégées.
-- Une simple demande de suppression n'est pas une suppression commencée :
-  définir explicitement si une modification la bloque ou exige son annulation.
-  Ne pas changer ce comportement implicitement en introduisant le service.
+- Une nouvelle modification métier exige l'annulation explicite d'une demande
+  PENDING_DELETE (D7). CANCELLED conserve l'identité et permet la modification
+  de la cible existante (D9). Ces règles cibles ne sont pas toutes appliquées
+  par les primitives actuelles ; leur raccordement appartient à T-041/T-031.
 - Une suppression doit tenir compte des opérations Information et Thread qui
   réservent ou référencent la cible, en plus des liens persistés.
 - Reprendre un ancien update ne doit jamais ressusciter une cible supprimée.
 - La compaction ne doit pas supprimer les informations nécessaires à ces
   décisions ni permettre le contournement par une autre famille de journal.
 
-Cette section fixe les invariants ; la matrice complète des états existants
-(dont PENDING_DELETE/APPLYING_DELETE) reste un livrable de T-041.
+La matrice cible détaillée et ses écarts avec le code sont dans l'annexe §5bis.
+La compaction précède APPLYING_DELETE. Vérifier l'absence de plans contenant du
+texte puis publier cet état sous le même verrou Persistent partagé avec les
+écrivains ; ne pas laisser une nouvelle opération s'intercaler entre les deux.
 
 ## Snapshots, reçu compact et oubli
 
@@ -108,10 +116,13 @@ métadonnées du reçu doivent elles aussi avoir une politique de conservation.
 
 La compaction est une transition de format récupérable, pas un effacement de
 champs dans `OperationRecord` : les plans actuels sont requis par les modèles,
-empreintes et reprises. Publier le reçu durable avant tout retrait du snapshot ;
-définir les états transitoires, les lecteurs compatibles et la reprise si le
-processus s'arrête entre ces étapes. Ne jamais retraiter un reçu compact comme
-une opération à appliquer. Les dates de compaction restent à décider.
+empreintes et reprises. Publier puis relire le reçu durable avant le retrait
+du snapshot ; synchroniser aussi le répertoire après ce retrait. Si journal
+et reçu coexistent, vérifier leur concordance ; une divergence bloque la
+reprise, sans priorité automatique. Ne jamais retraiter un reçu compact comme
+une opération à appliquer. Les conditions détaillées figurent à l'annexe §10.
+Les empreintes restent conservées en v1 selon D8 ; les délais et un éventuel
+protocole d'effacement ultérieur restent à spécifier.
 
 Séparer : sortir de mémoire haute, expirer l'applicabilité, archiver et supprimer
 le contenu. Une suppression complète doit recenser aussi dossiers, résumés,
@@ -135,6 +146,8 @@ politique explicite distincte des besoins techniques du journal.
   aussi les tests du backend. Validation multiprocessus et disque réel sur VM
   séparée des simulations locales.
 
-Aucun de ces nouveaux tests n'a été ajouté ou exécuté pendant cette séance
-documentaire. Le résultat 666/5 provient de la suite précédente, pas de ces
-propositions. La conception ne déclenche pas encore l'implémentation.
+Aucun nouveau test du service ou de la compaction n'est ajouté ou exécuté
+pendant cette édition documentaire. Le dernier résultat du code inchangé
+reste 674 réussis et 5 exclus ; ni la VM ni la durabilité du disque après
+coupure électrique ne sont validées. Un arrêt de VM ne prouve pas une coupure
+physique. Cette publication concerne la conception, pas son implémentation.

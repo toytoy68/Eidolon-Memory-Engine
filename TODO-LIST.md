@@ -95,14 +95,23 @@ Voir le [rapport de séance](docs/SESSION-2026-09-30-CONTRACT.md).
 | --- | --- | --- |
 | P0 | **【FAIT EN LOCAL — contrat et mapping / ROUTER NON IMPLÉMENTÉ】 T-040** Contrat fonctionnel et modèle canonique | `schemas/memory-policy-v0.1.md`, 14 scénarios attendus et mapping Information ↔ Memory ; six tests passent, dont 500 candidats de migration et préservation des extensions après édition |
 | P1 | **【PARTIEL】 T-031 / 【FAIT EN LOCAL】 T-039** Chemins métier canoniques Thread | Le coordinateur implicite de suppression partage l'assemblage complet du CLI ; deux régressions création/statut passent ; les create/update directs restent à migrer |
-| P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-041** Service Information coordonné | D1–D5 documentées ; restent contrats d'import/rejeu, matrice des conflits avec suppression, implémentation et tests d'interruption |
-| P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-042** Snapshots et reçus compacts | Principe de conservation pendant reprise puis compaction documenté ; restent formats, conditions, politique de suppression et tests de transition interrompue |
+| P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-041** Service Information coordonné | D1–D9 et matrice cible documentées, D7–D9 validées le 30/09 ; restent contrats sérialisés d'import/rejeu, raccordement, implémentation et tests d'interruption |
+| P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-042** Snapshots et reçus compacts | Reçu versionné et séquence de reprise documentés ; empreintes conservées en v1, publication/retrait durables et exclusion avec suppression validés ; restent schéma précis, implémentation, politique future de rétention et tests |
 | P2 | **【À FAIRE】 T-043** Qualification et router métier | Plan expliqué par source, nature, contexte et utilité ; simulation des cas admin technique/philosophique, couloir/chat/fourchette ; aucun LLM obligatoire |
 | P3 | **【À FAIRE】 T-044** Dossiers Markdown vivants | Rattachement ou création, récapitulatif avec références/révisions ; préserver décisions humaines, signaler ambiguïtés et vues périmées |
 | P3 | **【À FAIRE】 T-045** Catalogue léger reconstructible | Mots-clés, contexte et pointeurs disponibles y compris pour mémoire basse ; reconstruction, corrections et suppressions testées sans index externe |
 | P4 | **【À FAIRE】 T-046** Trois niveaux et cycle de vie | Activation, fraîcheur, réexamen, échéances persistantes, distinction éviction/expiration/archive/suppression ; horloge contrôlée et redémarrage |
 | P5 | **【À FAIRE】 T-047**, avec T-036 | Rappel contextuel et parcours complets par client factice ; sources, pertinence, budgets et latence mesurés sur scénarios représentatifs |
 | VM, voie distincte | **【NON TESTÉ SUR VM】 T-010 à T-015 / T-021 / T-032** | Copie arrêtée, inventaire réel, restauration par hash, 5 tests concurrents, audits et migration ; gate avant mise en service du commit candidat |
+
+**Validation documentaire du 30/09 (D7–D9)** : annexe de Claude `maj2`
+intégrée après harmonisation avec la revue. D7 : annuler la demande avant
+modification métier ; D8 : empreinte conservée sans promesse de confidentialité ;
+D9 : identité réservée après annulation. Matrice actuelle/cible distinguée,
+verrou partagé jusqu'à APPLYING_DELETE, retrait du journal synchronisé et
+coexistence divergente bloquée. Aucun code ni test modifié, aucune nouvelle
+validation VM ; estimations et grille inchangées. Voir
+[la conception détaillée](docs/DESIGN-INFORMATION-WRITES-DETAIL.md).
 
 Les orientations fonctionnelles sont intégrées ; les signatures et politiques
 encore ouvertes ne sont pas considérées comme validées. Chaque futur bloc
