@@ -152,3 +152,25 @@ def test_audit_reports_cancelled_request_without_information(tmp_path):
         "request": "memory/history/pending-delete/info-1.json",
         "reason": "cancelled_without_information",
     }]}
+
+
+def test_audit_reports_pending_revision_conflict(tmp_path):
+    store = backend(tmp_path)
+    store.store(Memory("info-1", content="first"))
+    store.delete_request("info-1", "human", "reason", 1, "op-1")
+    store.update("info-1", Memory("info-1", content="changed"), previous_revision=1)
+    assert audit_deletions(tmp_path) == {"requests_checked": 1, "issues": [{
+        "request": "memory/history/pending-delete/info-1.json",
+        "reason": "pending_revision_conflict",
+    }]}
+
+
+def test_audit_reports_unreadable_pending_information(tmp_path):
+    store = backend(tmp_path)
+    store.store(Memory("info-1"))
+    store.delete_request("info-1", "human", "reason", 1, "op-1")
+    (store.persistent_root / "info-1.md").write_text("corrupted private body")
+    assert audit_deletions(tmp_path) == {"requests_checked": 1, "issues": [{
+        "request": "memory/history/pending-delete/info-1.json",
+        "reason": "invalid_information",
+    }]}

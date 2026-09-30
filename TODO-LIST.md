@@ -225,6 +225,10 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-032q — L'audit en lecture seule signale aussi un reçu
   `CANCELLED` dont l'Information a disparu, au lieu de le traiter comme une
   annulation cohérente ; aucune réparation n'est tentée (2026-09-30).
+- **【FAIT】** T-032r — Pour un reçu `PENDING_DELETE`, l'audit lit l'Information
+  encore présente et distingue fichier illisible/identité discordante et
+  révision différente de celle demandée, sans modifier la demande
+  (2026-09-30).
 - **【FAIT】** T-032n — L’audit et la reprise des suppressions refusent aussi
   les parents symboliques situés au-dessus de `--root`, avant tout parcours
   ou toute mutation (2026-09-29).

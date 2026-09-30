@@ -55,6 +55,18 @@ def audit_deletions(engine_root: Path) -> dict:
                     reason = "cancelled_without_information"
                 elif record["status"] == "DELETED" and information.exists():
                     reason = "deleted_but_information_present"
+                elif record["status"] == "PENDING_DELETE":
+                    try:
+                        current = FilesystemBackend._deserialize(
+                            information.read_text(encoding="utf-8"))
+                        if current.information_id != path.stem:
+                            reason = "invalid_information"
+                        elif current.revision != record["revision"]:
+                            reason = "pending_revision_conflict"
+                        else:
+                            reason = None
+                    except (OSError, UnicodeError, ValueError, TypeError, InvalidMemory):
+                        reason = "invalid_information"
                 else:
                     reason = None
             except (OSError, UnicodeError, ValueError, TypeError, InvalidMemory):
