@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from tools import vm_acceptance
+from tools.generate_scenario import generate
 
 
 def test_acceptance_uses_only_explicit_workdir_and_detects_source_change(tmp_path, monkeypatch):
@@ -144,3 +145,26 @@ def test_acceptance_keeps_format_evidence_when_inventory_fails(tmp_path, monkeyp
     assert result["steps"][1]["status"] == "KO"
     assert result["steps"][1]["details"]["needs_review"][0]["path"] == (
         "memory/history/events/broken.md")
+
+
+def test_acceptance_real_audits_on_generated_stopped_copy(tmp_path, monkeypatch):
+    generate(tmp_path / "scenario", count=50)
+    source = tmp_path / "scenario/core"
+    original = vm_acceptance.hashes(source)
+    monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
+    monkeypatch.setattr(vm_acceptance, "discover_writers", lambda: {
+        "running": [], "configured": [], "unreadable": [], "coverage": "heuristic_manual_service_review_required"})
+    monkeypatch.setattr(vm_acceptance.subprocess, "run", lambda *a, **kw: type(
+        "Result", (), {"returncode": 0, "stdout": "5 passed", "stderr": ""})())
+
+    report = vm_acceptance.run(source, tmp_path / "acceptance", at="2026-09-30T00:00:00Z")
+
+    steps = {item["name"]: item for item in report["steps"]}
+    assert steps["backup_restore"]["status"] == "OK"
+    assert steps["audit_relations"]["status"] == "OK"
+    assert steps["audit_lifecycle"]["status"] == "OK"
+    assert steps["audit_deletions"]["status"] == "KO"
+    assert any(item["reason"] == "deletion_requires_resume"
+               for item in steps["audit_deletions"]["details"]["issues"])
+    assert vm_acceptance.hashes(source) == original
+    assert vm_acceptance.hashes(tmp_path / "acceptance/restored") == original

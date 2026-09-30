@@ -84,3 +84,26 @@ def test_converter_does_not_follow_linked_source_tree(tmp_path):
     with pytest.raises(ValueError, match="symlinked"):
         convert(source, tmp_path / "destination")
     assert not (tmp_path / "destination").exists()
+
+
+def test_converter_keeps_authored_revision_relation_and_epistemic_status(tmp_path):
+    fixture = tmp_path / "fixture"
+    generate(fixture, count=60)
+    source, destination = fixture / "legacy", tmp_path / "converted"
+
+    report = convert(source, destination)
+
+    assert report["rejected"] == []
+    root = destination / "memory/persistent"
+    structured = FilesystemBackend._deserialize((root / "info-fixture-0000.md").read_text())
+    related = FilesystemBackend._deserialize((root / "info-fixture-0005.md").read_text())
+    refuted = FilesystemBackend._deserialize((root / "info-fixture-0020.md").read_text())
+    conflicted = FilesystemBackend._deserialize((root / "info-fixture-0030.md").read_text())
+    assert structured.revision == 1
+    assert structured.metadata["legacy_revision"] == {
+        "shape": "structured", "is_revision": False}
+    assert related.relations == [{"type": "RELATED_TO", "target_id": "info-fixture-0004"}]
+    assert refuted.metadata["epistemic_status"] == "REFUTED"
+    assert conflicted.metadata["epistemic_status"] == "CONFLICTED"
+    assert related.verification == {"evidence": {"supporting": ["sample-00"]}}
+    assert structured.content.startswith("Observation anonyme info-fixture-0000")

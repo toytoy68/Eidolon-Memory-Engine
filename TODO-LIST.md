@@ -120,7 +120,8 @@ Corpus synthétique : représentatif de formes choisies, pas des données VM.
 autres fichiers sous `archive/` (dont Events, Reviews, opérations et Working),
 et écrit `migration-report.json` avec raison et action pour chaque rejet. Le
 rejeu identique ne change pas la destination ; les conflits ne sont pas
-écrasés. Trois tests ciblés passent, et 500 documents du corpus synthétique
+écrasés. Les tests ciblés passent, dont un contrôle indépendant de révision,
+relation, preuve et statuts épistémiques ; 500 documents du corpus synthétique
 ont été convertis sans rejet puis relus par le manifeste core. Il reste à
 valider les correspondances et pertes sémantiques sur la copie VM avant tout
 usage réel ; les anciens Events/Reviews sont conservés comme archives, non
