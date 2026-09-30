@@ -326,6 +326,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-023g — Les filtres de relations Thread ignorent une entrée
   historique malformée et conservent les résultats des autres Threads
   (2026-09-30).
+- **【FAIT】** T-023h — Une date ISO dont la conversion UTC déborde les limites
+  de `datetime` est rejetée comme requête invalide, sans exception système
+  brute (2026-09-30).
 - **【FAIT】** T-028b — Audit du dépôt, bilan de maturité et priorités revues dans
   `docs/AUDIT-2026-09-28.md`, entrée `README.md`, et documentation de la reprise
   synchronisée avec `recover-all` (2026-09-28).

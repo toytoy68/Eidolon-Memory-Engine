@@ -14,10 +14,13 @@ def parse_timestamp(value: str) -> datetime:
     """Interpret ISO dates/times without an offset as UTC for legacy records."""
     if not isinstance(value, str):
         raise ValueError("timestamp must be an ISO string")
-    result = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    if result.tzinfo is None:
-        result = result.replace(tzinfo=timezone.utc)
-    return result.astimezone(timezone.utc)
+    try:
+        result = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if result.tzinfo is None:
+            result = result.replace(tzinfo=timezone.utc)
+        return result.astimezone(timezone.utc)
+    except (ValueError, OverflowError) as exc:
+        raise ValueError("invalid timestamp") from exc
 
 
 class ThreadQueryType(str, Enum):
