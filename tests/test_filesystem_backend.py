@@ -406,3 +406,13 @@ def test_dangling_deletion_receipt_symlink_is_not_treated_as_missing(tmp_path):
     with pytest.raises(InvalidMemory, match="symlink"):
         backend.cancel_delete("info-test", "op-1")
     assert backend.exists("info-test")
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"offset": True}, {"offset": 1.5}, {"limit": True}, {"limit": 1.5},
+    {"filters": ["group"]},
+])
+def test_list_rejects_invalid_page_and_filter_types(tmp_path, kwargs):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(ValueError):
+        backend.list(**kwargs)

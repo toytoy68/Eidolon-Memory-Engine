@@ -535,11 +535,14 @@ class FilesystemBackend(MemoryBackend):
         limit: int = 100,
         filters: dict[str, Any] | None = None,
     ) -> list[Memory]:
-        if offset < 0:
-            raise ValueError("offset must be >= 0")
+        if type(offset) is not int or offset < 0:
+            raise ValueError("offset must be a nonnegative integer")
 
-        if limit < 1:
-            raise ValueError("limit must be >= 1")
+        if type(limit) is not int or limit < 1:
+            raise ValueError("limit must be a positive integer")
+        if filters is not None and (not isinstance(filters, dict)
+                                    or any(not isinstance(key, str) for key in filters)):
+            raise ValueError("filters must be a mapping with text keys")
 
         memories: list[Memory] = []
         skipped = 0

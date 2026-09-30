@@ -389,6 +389,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-035b — Le listing filtré arrête la lecture dès que la page
   demandée est complète, au lieu de parcourir tout le corpus pour les premières
   pages (2026-09-29). Mesurer le coût des pages profondes sur la VM.
+- **【FAIT】** T-035e — Le listing refuse les décalages et limites booléens ou
+  non entiers ainsi que les filtres de mauvaise forme avant de parcourir les
+  fichiers ; tests isolés (2026-09-30).
 - **【FAIT】** T-035c — Sortie brutale d'un processus à chacune des cinq
   frontières de la création Thread liée (journal préparé, en application,
   Thread, Event, commit) ; reprise et rejeu sans Event dupliqué. Cela ne simule
