@@ -357,6 +357,9 @@ stables du moteur avant l'intégration aux agents.
   reçus refusent un nombre dont l'exposant déborde en infini Python
   (`1e10000`) ; l'inventaire historique le classe comme invalide au lieu de
   reconnaître un journal exploitable (2026-09-30).
+- **【FAIT】** T-031al — La création et la mise à jour d'un Thread vérifient le
+  document sérialisé avant écriture : valeurs imbriquées modifiées par JSON ou
+  actions illisibles sont refusées sans altérer le disque (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

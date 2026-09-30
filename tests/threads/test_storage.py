@@ -62,6 +62,26 @@ def test_direct_thread_update_cannot_change_concerns(tmp_path):
     assert storage.get(original.thread_id) == original
 
 
+def test_create_rejects_lossy_nested_thread_context(tmp_path):
+    storage = ThreadStorage(tmp_path / "persistent")
+    thread = replace(make_thread(), context={"sequence": ("first", "second")})
+    with pytest.raises(ThreadStorageError, match="changes during serialization"):
+        storage.create(thread)
+    assert not storage.exists(thread.thread_id)
+
+
+def test_update_rejects_unreadable_thread_without_changing_disk(tmp_path):
+    storage = ThreadStorage(tmp_path / "persistent")
+    original = make_thread()
+    storage.create(original)
+    path = storage._path(original.thread_id)
+    before = path.read_bytes()
+    changed = replace(original, revision=2, actions=["not an action"])
+    with pytest.raises(ThreadStorageError, match="invalid Thread document"):
+        storage.update(changed, 1)
+    assert path.read_bytes() == before
+
+
 def test_get_thread(tmp_path: Path):
     storage = ThreadStorage(tmp_path)
 

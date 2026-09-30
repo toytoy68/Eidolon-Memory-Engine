@@ -90,6 +90,18 @@ class ThreadStorage:
     def _serialize(cls, thread: Thread) -> str:
         return encode_document("Thread", thread_to_dict(thread))
 
+    @classmethod
+    def _serialize_checked(cls, thread: Thread) -> str:
+        """Reject values that would change or become unreadable on disk."""
+        try:
+            content = cls._serialize(thread)
+            restored = cls._deserialize(content)
+            if thread_to_dict(restored) != thread_to_dict(thread):
+                raise ThreadStorageError("Thread changes during serialization")
+            return content
+        except (AttributeError, TypeError, ValueError) as exc:
+            raise ThreadStorageError("invalid Thread document") from exc
+
     @staticmethod
     def _from_payload(data) -> Thread:
         if type(data.get("revision")) is not int or data["revision"] < 1:
@@ -341,7 +353,7 @@ class ThreadStorage:
             raise ThreadAlreadyExists(thread.thread_id)
 
         self._check_concerns(thread)
-        content = self._serialize(thread)
+        content = self._serialize_checked(thread)
 
         self._atomic_write(
             path,
@@ -414,7 +426,7 @@ class ThreadStorage:
         if self._concerns(current) != self._concerns(thread):
             raise ThreadStorageError("CONCERNS changes require a coordinated writer")
 
-        content = self._serialize(thread)
+        content = self._serialize_checked(thread)
 
         self._atomic_write(
             self._path(thread.thread_id),
