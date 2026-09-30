@@ -88,8 +88,9 @@ class FilesystemBackend(MemoryBackend):
         for name in ("metadata", "provenance", "temporal", "verification"):
             if not isinstance(getattr(memory, name), dict):
                 raise InvalidMemory(f"{name} must be an object")
-        if not isinstance(memory.relations, list):
-            raise InvalidMemory("relations must be a list")
+        if (not isinstance(memory.relations, list)
+                or any(not isinstance(relation, dict) for relation in memory.relations)):
+            raise InvalidMemory("relations must be a list of objects")
 
     def _ensure_relations_do_not_reuse_deleted_identity(self, memory: Memory) -> None:
         """A receipt reserves its Information identity, including for new links.

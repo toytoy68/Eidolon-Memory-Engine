@@ -372,6 +372,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031ao — Les rapports de reprise Thread création/statut publient
   la classe d'erreur au lieu du message d'exception, qui pouvait contenir une
   valeur privée issue d'un snapshot corrompu (2026-09-30).
+- **【FAIT】** T-031ap — Le backend Information refuse les entrées de relation
+  qui ne sont pas des objets avant création ou mise à jour, évitant d'écrire
+  une Information qui bloquerait ensuite toute suppression (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

@@ -102,6 +102,20 @@ def test_backend_rejects_lossy_information_before_create_or_update(tmp_path):
     assert path.read_bytes() == before
 
 
+def test_backend_rejects_nonobject_relations_before_create_or_update(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(InvalidMemory, match="relations must be a list of objects"):
+        backend.store(Memory("info-test", relations=["invalid relation"]))
+    assert backend.get("info-test") is None
+
+    backend.store(Memory("info-test", content="original"))
+    path = backend._path("info-test")
+    before = path.read_bytes()
+    with pytest.raises(InvalidMemory, match="relations must be a list of objects"):
+        backend.update("info-test", Memory("info-test", relations=[None]), 1)
+    assert path.read_bytes() == before
+
+
 @pytest.mark.parametrize("field,value", [
     ("metadata", []), ("provenance", []), ("temporal", []),
     ("verification", []), ("relations", {}),
