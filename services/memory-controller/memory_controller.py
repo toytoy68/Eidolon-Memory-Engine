@@ -706,7 +706,7 @@ def validate_execution_plan(
     if not isinstance(
         operation_id,
         str,
-    ) or not operation_id:
+    ) or not re.fullmatch(r"[A-Za-z0-9._-]+", operation_id):
         raise ValueError(
             "Execution Plan : "
             "operation_id absent ou invalide."
@@ -732,11 +732,16 @@ def validate_execution_plan(
     if not isinstance(
         information_id,
         str,
-    ) or not information_id:
+    ) or not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
         raise ValueError(
             "Execution Plan : "
             "information_id absent ou invalide."
         )
+
+    source_path = input_data.get("source_path")
+    if source_path is not None and (not isinstance(source_path, str)
+                                    or not _legacy_source_path_safe(Path(source_path))):
+        raise ValueError("Execution Plan : source_path hors de Working Memory ou symbolique")
 
     revision = input_data.get(
         "revision"
@@ -1256,6 +1261,8 @@ def execute_store_operation(
             "source_path"
         ]
     )
+    if not _legacy_source_path_safe(source_path):
+        raise ValueError("STORE refusé : source hors de Working Memory ou symbolique")
 
     destination_path = (
         PERSISTENT_ROOT
@@ -1350,6 +1357,8 @@ def execute_update_operation(
             "source_path"
         ]
     )
+    if not _legacy_source_path_safe(source_path):
+        raise ValueError("UPDATE refusé : source hors de Working Memory ou symbolique")
 
     revision = execution[
         "input"
@@ -1991,6 +2000,13 @@ def _legacy_write_paths_linked() -> bool:
     ))
 
 
+def _legacy_source_path_safe(source: Path) -> bool:
+    return (not has_symlink_component(source)
+            and not has_symlink_component(WORKING_ROOT)
+            and source.suffix == ".md"
+            and source.parent.resolve() == WORKING_ROOT.resolve())
+
+
 def ingest(args: argparse.Namespace) -> int:
     if _legacy_write_paths_linked():
         print("ERREUR : répertoire historique symbolique interdit")
@@ -2044,6 +2060,23 @@ def update_information(
 
 def execute_execution_plan(execution: dict[str, Any]) -> dict[str, Any]:
     """Keep the legacy decision and writes away from core persistent data."""
+    operation_id = execution.get("operation_id")
+    if not isinstance(operation_id, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", operation_id):
+        return {"result": "BLOCK", "reason": "invalid operation identity",
+                "writes_performed": False, "operation_id": operation_id,
+                "information_id": None}
+    input_data = execution.get("input")
+    information_id = input_data.get("information_id") if isinstance(input_data, dict) else None
+    if not isinstance(information_id, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
+        return {"result": "BLOCK", "reason": "invalid Information identity",
+                "writes_performed": False, "operation_id": execution.get("operation_id"),
+                "information_id": information_id}
+    source_path = input_data.get("source_path")
+    if source_path is not None and (not isinstance(source_path, str)
+                                    or not _legacy_source_path_safe(Path(source_path))):
+        return {"result": "BLOCK", "reason": "source outside Working Memory or symlinked",
+                "writes_performed": False, "operation_id": execution.get("operation_id"),
+                "information_id": information_id}
     if _legacy_write_paths_linked():
         return {"result": "BLOCK", "reason": "historical storage contains a symlink",
                 "writes_performed": False, "operation_id": execution.get("operation_id"),

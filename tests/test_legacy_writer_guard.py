@@ -200,3 +200,101 @@ def test_controller_execution_rejects_linked_operations_parent(tmp_path, monkeyp
     result = controller.execute_execution_plan({"operation_id": "op", "input": {"information_id": "i"}})
     assert result["result"] == "BLOCK" and result["writes_performed"] is False
     assert list(outside.iterdir()) == []
+
+
+def test_controller_blocks_traversal_information_id_before_execution(tmp_path, monkeypatch):
+    controller = load_controller()
+    monkeypatch.setattr(controller, "PERSISTENT_ROOT", tmp_path / "persistent")
+    monkeypatch.setattr(controller, "_execute_execution_plan_unlocked", lambda _: pytest.fail("wrote"))
+    plan = {"operation_id": "op", "input": {"information_id": "../outside"}}
+    result = controller.execute_execution_plan(plan)
+    assert result["result"] == "BLOCK" and result["writes_performed"] is False
+    assert not (tmp_path / "persistent").exists()
+
+
+def test_controller_plan_validation_rejects_path_identity():
+    controller = load_controller()
+    plan = {"execution_plan": {
+        "schema_version": controller.EXECUTION_PLAN_SCHEMA,
+        "operation_id": "op", "input": {"information_id": "../outside", "revision": {}},
+        "operations": {key: {} for key in ("STORE", "UPDATE", "INDEX", "IGNORE")},
+    }}
+    with pytest.raises(ValueError, match="information_id"):
+        controller.validate_execution_plan(plan)
+
+
+def test_controller_blocks_external_execution_source_before_read(tmp_path, monkeypatch):
+    controller = load_controller()
+    monkeypatch.setattr(controller, "WORKING_ROOT", tmp_path / "working")
+    monkeypatch.setattr(controller, "PERSISTENT_ROOT", tmp_path / "persistent")
+    external = tmp_path / "outside.md"
+    external.write_text("private")
+    monkeypatch.setattr(controller, "_execute_execution_plan_unlocked", lambda _: pytest.fail("read outside"))
+    result = controller.execute_execution_plan({
+        "operation_id": "op", "input": {"information_id": "info-1", "source_path": str(external)},
+    })
+    assert result["result"] == "BLOCK" and result["writes_performed"] is False
+    assert external.read_text() == "private"
+
+
+def test_controller_direct_store_rejects_external_source(tmp_path, monkeypatch):
+    controller = load_controller()
+    monkeypatch.setattr(controller, "WORKING_ROOT", tmp_path / "working")
+    monkeypatch.setattr(controller, "PERSISTENT_ROOT", tmp_path / "persistent")
+    external = tmp_path / "outside.md"
+    external.write_text("private")
+    monkeypatch.setattr(controller, "validate_information", lambda _: pytest.fail("read outside"))
+    with pytest.raises(ValueError, match="Working Memory"):
+        controller.execute_store_operation({
+            "input": {"information_id": "info-1", "source_path": str(external)},
+        })
+    assert external.read_text() == "private"
+
+
+def test_controller_plan_validation_rejects_external_source(tmp_path, monkeypatch):
+    controller = load_controller()
+    monkeypatch.setattr(controller, "WORKING_ROOT", tmp_path / "working")
+    plan = {"execution_plan": {
+        "schema_version": controller.EXECUTION_PLAN_SCHEMA,
+        "operation_id": "op", "input": {"information_id": "info-1", "revision": {},
+                                         "source_path": str(tmp_path / "outside.md")},
+        "operations": {key: {} for key in ("STORE", "UPDATE", "INDEX", "IGNORE")},
+    }}
+    with pytest.raises(ValueError, match="source_path"):
+        controller.validate_execution_plan(plan)
+
+
+def test_controller_plan_rejects_traversal_operation_id():
+    controller = load_controller()
+    plan = {"execution_plan": {
+        "schema_version": controller.EXECUTION_PLAN_SCHEMA,
+        "operation_id": "../outside", "input": {"information_id": "info-1", "revision": {}},
+        "operations": {key: {} for key in ("STORE", "UPDATE", "INDEX", "IGNORE")},
+    }}
+    with pytest.raises(ValueError, match="operation_id"):
+        controller.validate_execution_plan(plan)
+
+
+def test_controller_blocks_direct_traversal_operation_id(tmp_path, monkeypatch):
+    controller = load_controller()
+    monkeypatch.setattr(controller, "PERSISTENT_ROOT", tmp_path / "persistent")
+    monkeypatch.setattr(controller, "_execute_execution_plan_unlocked", lambda _: pytest.fail("wrote"))
+    result = controller.execute_execution_plan({
+        "operation_id": "../outside", "input": {"information_id": "info-1"},
+    })
+    assert result["result"] == "BLOCK" and result["writes_performed"] is False
+    assert not (tmp_path / "persistent").exists()
+
+
+def test_controller_plan_keeps_regular_working_source(tmp_path, monkeypatch):
+    controller = load_controller()
+    working = tmp_path / "working"
+    working.mkdir()
+    monkeypatch.setattr(controller, "WORKING_ROOT", working)
+    plan = {"execution_plan": {
+        "schema_version": controller.EXECUTION_PLAN_SCHEMA,
+        "operation_id": "op-123", "input": {"information_id": "info-123", "revision": {},
+                                           "source_path": str(working / "info-123.md")},
+        "operations": {key: {} for key in ("STORE", "UPDATE", "INDEX", "IGNORE")},
+    }}
+    assert controller.validate_execution_plan(plan)["operation_id"] == "op-123"
