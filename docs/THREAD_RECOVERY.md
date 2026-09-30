@@ -63,14 +63,17 @@ CLI journals automatically. Old two-field plans remain readable but cannot be
 recovered automatically because their snapshots are missing. Manual migration is
 required. The original top-level Event listing does not aggregate these journals.
 
-Only coordinated new repository writers participate in locks. Legacy writers
-must not run concurrently against the same data. Direct low-level Thread writes
-after a crash can cause a recovery conflict; they cannot silently be overwritten.
+Only coordinated new repository writers participate in the Thread operation
+journals. Legacy writers must not run concurrently against the same Thread
+data. Direct low-level Thread writes after a crash can cause a recovery
+conflict; they cannot silently be overwritten.
 
 Storage format 0.2 preserves arbitrary Markdown strings. Legacy 0.1 snapshots
 remain readable. A new operation still verifies its snapshots round-trip exactly.
-The service does not change the previous deletion protocol or promise multi-file
-crash recovery for Information deletion.
+This Thread recovery command does not resume Information deletions. New core
+deletion requests have a separate `APPLYING_DELETE` receipt and the explicit
+`python -m core.information.deletion_recovery --root ROOT --apply` path. Older
+ambiguous requests require review; neither command is a boot job yet.
 
 ## Rollback
 
