@@ -1,4 +1,5 @@
 import json
+import pytest
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
@@ -54,3 +55,30 @@ def test_audit_flags_ambiguous_concerns_target(tmp_path):
     assert audit_links(tmp_path) == {"threads_checked": 1, "links_checked": 1, "issues": [{
         "thread": "memory/persistent/threads/thread-1.md", "reason": "invalid_target_id",
     }]}
+
+
+def test_audit_rejects_symlinked_engine_ancestor(tmp_path):
+    actual = tmp_path / "actual"
+    threads = actual / "engine/memory/persistent/threads"
+    threads.mkdir(parents=True)
+    (threads / "private.md").write_text("private thread")
+    (tmp_path / "linked").symlink_to(actual, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="symlinked directory"):
+        audit_links(tmp_path / "linked/engine")
+    assert (threads / "private.md").read_text() == "private thread"
+
+
+def test_audit_skips_symlinked_memory_directory(tmp_path):
+    external = tmp_path / "external"
+    threads = external / "persistent/threads"
+    threads.mkdir(parents=True)
+    (threads / "private.md").write_text("private thread")
+    root = tmp_path / "engine"
+    root.mkdir()
+    (root / "memory").symlink_to(external, target_is_directory=True)
+
+    assert audit_links(root) == {"threads_checked": 0, "links_checked": 0, "issues": [{
+        "thread": "memory/persistent/threads", "reason": "symlink_skipped",
+    }]}
+    assert (threads / "private.md").read_text() == "private thread"

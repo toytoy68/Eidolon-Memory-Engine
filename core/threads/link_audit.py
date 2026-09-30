@@ -9,17 +9,20 @@ import re
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.errors import InvalidMemory
+from core.persistence import has_symlink_component
 from core.threads.storage import ThreadStorage, ThreadStorageError
 
 
 def audit_links(engine_root: Path) -> dict:
     root = Path(engine_root)
+    if has_symlink_component(root):
+        raise ValueError("engine root contains a symlinked directory")
     if not root.is_dir():
         raise ValueError(f"engine root is not a directory: {root}")
     persistent = root / "memory" / "persistent"
     threads = persistent / "threads"
     report = {"threads_checked": 0, "links_checked": 0, "issues": []}
-    if persistent.is_symlink() or threads.is_symlink():
+    if has_symlink_component(threads):
         report["issues"].append({"thread": "memory/persistent/threads", "reason": "symlink_skipped"})
         return report
     if not threads.is_dir():
