@@ -80,6 +80,7 @@ before deciding to restore data. The Git tag alone rolls back code, not data.
 - Explicit migration between legacy CLI formats and new repositories.
 - Editable note views and migration of legacy CLI front-matter documents.
 - Validate power-loss durability and reader consistency across multi-file
-  operations on the Debian storage stack; process-crash tests are separate.
+  operations on the Debian storage stack; process-crash tests cover linked
+  Thread creation and each persisted Information deletion boundary separately.
 - Integration tests using representative user datasets.
 - Debian validation and application smoke tests on the actual host.

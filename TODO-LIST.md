@@ -425,6 +425,11 @@ stables du moteur avant l'intégration aux agents.
   frontières de la création Thread liée (journal préparé, en application,
   Thread, Event, commit) ; reprise et rejeu sans Event dupliqué. Cela ne simule
   pas une coupure d'alimentation (2026-09-29).
+- **【FAIT】** T-035f — Sortie brutale d'un processus aux quatre états de
+  suppression Information (demande, marqueur `APPLYING_DELETE`, fichier retiré,
+  reçu `DELETED`) ; contrôle de la reprise explicite et de son idempotence sur
+  répertoire isolé. Ce test ne simule pas une coupure d'alimentation
+  (2026-09-30).
 - **【FAIT】** T-035d — Script de mesure sur données synthétiques temporaires,
   exécuté localement à 15 000 fichiers ; chiffres et limites dans
   `docs/PERFORMANCE.md`. À refaire sur copie représentative de la VM
