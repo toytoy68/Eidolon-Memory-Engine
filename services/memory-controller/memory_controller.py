@@ -29,7 +29,7 @@ from core.config import (
     REVIEWS_ROOT,
     OPERATIONS_ROOT,
 )
-from core.persistence import exclusive_write, atomic_write_text
+from core.persistence import exclusive_write, atomic_write_text, has_symlink_component
 from core.migration.legacy_guard import require_legacy_persistent_only
 
 
@@ -504,11 +504,14 @@ def _resolve_review_unlocked(review_path: Path, decision: str, reason: str) -> i
         return 1
 
     information_id = review_fields.get("information_id")
-    if not information_id:
-        print("ERREUR : information_id absent de la Review.")
+    if not isinstance(information_id, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
+        print("ERREUR : information_id absent ou invalide dans la Review.")
         return 1
 
     information_path = WORKING_ROOT / f"{information_id}.md"
+    if information_path.is_symlink():
+        print("ERREUR : Information liée symbolique interdite")
+        return 1
     if not information_path.is_file():
         print(f"ERREUR : Information liée introuvable : {information_path}")
         return 1
@@ -1981,14 +1984,25 @@ def _execute_execution_plan_unlocked(
     return decision
 
 
+def _legacy_write_paths_linked() -> bool:
+    return any(has_symlink_component(root) for root in (
+        WORKING_ROOT, PERSISTENT_ROOT, HISTORY_ROOT,
+        EVENTS_ROOT, REVIEWS_ROOT, OPERATIONS_ROOT,
+    ))
+
+
 def ingest(args: argparse.Namespace) -> int:
+    if _legacy_write_paths_linked():
+        print("ERREUR : répertoire historique symbolique interdit")
+        return 1
     WORKING_ROOT.mkdir(parents=True, exist_ok=True)
     with exclusive_write(WORKING_ROOT):
         return _ingest_unlocked(args)
 
 
 def resolve_review(review_path: Path, decision: str, reason: str) -> int:
-    if (review_path.is_symlink() or review_path.parent.resolve() != REVIEWS_ROOT.resolve()
+    if (_legacy_write_paths_linked() or has_symlink_component(review_path)
+            or review_path.parent.resolve() != REVIEWS_ROOT.resolve()
             or review_path.suffix != ".md"):
         print("ERREUR : Review doit être un fichier Markdown de l'historique")
         return 1
@@ -2003,7 +2017,7 @@ def update_information(
     reason: str, event_type: str, event_id_out: list[str] | None = None,
 ) -> int:
     """Reject updates to Persistent Memory while core data shares the root."""
-    if path.is_symlink() or path.suffix != ".md":
+    if _legacy_write_paths_linked() or has_symlink_component(path) or path.suffix != ".md":
         print("ERREUR : source doit être un fichier Markdown sans lien symbolique")
         return 1
     if path.parent.resolve() == WORKING_ROOT.resolve():
@@ -2030,6 +2044,10 @@ def update_information(
 
 def execute_execution_plan(execution: dict[str, Any]) -> dict[str, Any]:
     """Keep the legacy decision and writes away from core persistent data."""
+    if _legacy_write_paths_linked():
+        return {"result": "BLOCK", "reason": "historical storage contains a symlink",
+                "writes_performed": False, "operation_id": execution.get("operation_id"),
+                "information_id": execution.get("input", {}).get("information_id")}
     PERSISTENT_ROOT.mkdir(parents=True, exist_ok=True)
     with exclusive_write(PERSISTENT_ROOT):
         try:

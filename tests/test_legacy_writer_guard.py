@@ -141,3 +141,62 @@ def test_legacy_guard_blocks_orphan_core_event_journal(tmp_path):
     (events / "event.md").write_text("core Event")
     with pytest.raises(ValueError, match="journal"):
         require_legacy_persistent_only(persistent, history)
+
+
+def test_controller_rejects_linked_review_parent_before_resolution(tmp_path, monkeypatch):
+    controller = load_controller()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    review = outside / "review-1.md"
+    review.write_text("private")
+    history = tmp_path / "history"
+    history.mkdir()
+    linked = history / "reviews"
+    linked.symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(controller, "REVIEWS_ROOT", linked)
+    monkeypatch.setattr(controller, "WORKING_ROOT", tmp_path / "working")
+    monkeypatch.setattr(controller, "_resolve_review_unlocked", lambda *args: pytest.fail("read outside"))
+    assert controller.resolve_review(linked / review.name, "CONFIRMED", "reason") == 1
+    assert review.read_text() == "private"
+
+
+def test_controller_ingest_rejects_linked_event_parent(tmp_path, monkeypatch):
+    import argparse
+    controller = load_controller()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    history = tmp_path / "history"
+    history.mkdir()
+    (history / "events").symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(controller, "WORKING_ROOT", tmp_path / "working")
+    monkeypatch.setattr(controller, "EVENTS_ROOT", history / "events")
+    monkeypatch.setattr(controller, "_ingest_unlocked", lambda _: pytest.fail("wrote"))
+    assert controller.ingest(argparse.Namespace()) == 1
+    assert list(outside.iterdir()) == []
+
+
+def test_controller_review_rejects_traversal_id_before_information_read(tmp_path, monkeypatch):
+    controller = load_controller()
+    working = tmp_path / "working"
+    working.mkdir()
+    review = tmp_path / "review.md"
+    review.write_text("---\nstatus: PENDING_REVIEW\n"
+                      "information_id: ../outside\n---\nprivate\n")
+    monkeypatch.setattr(controller, "WORKING_ROOT", working)
+    monkeypatch.setattr(controller, "validate_information", lambda _: pytest.fail("read outside"))
+    assert controller._resolve_review_unlocked(review, "CONFIRMED", "reason") == 1
+
+
+def test_controller_execution_rejects_linked_operations_parent(tmp_path, monkeypatch):
+    controller = load_controller()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    history = tmp_path / "history"
+    history.mkdir()
+    (history / "operations").symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(controller, "PERSISTENT_ROOT", tmp_path / "persistent")
+    monkeypatch.setattr(controller, "OPERATIONS_ROOT", history / "operations")
+    monkeypatch.setattr(controller, "_execute_execution_plan_unlocked", lambda _: pytest.fail("wrote"))
+    result = controller.execute_execution_plan({"operation_id": "op", "input": {"information_id": "i"}})
+    assert result["result"] == "BLOCK" and result["writes_performed"] is False
+    assert list(outside.iterdir()) == []

@@ -307,6 +307,10 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031ad — Le verrou d'écriture partagé refuse une racine ou un
   fichier `.write.lock` symbolique avant ouverture ; tests isolés sans écriture
   sur une cible externe (2026-09-30).
+- **【FAIT】** T-031ae — Les entrées d'écriture du controller historique
+  refusent les racines de sortie liées ; la résolution de Review refuse un
+  `information_id` contenant un chemin et une cible Information symbolique
+  avant lecture (tests isolés, 2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,
