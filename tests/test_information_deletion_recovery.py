@@ -60,9 +60,9 @@ def test_deletion_recovery_blocks_changed_file_and_linked_thread(tmp_path):
 
 def test_deletion_recovery_blocks_new_information_reference_after_removal(tmp_path):
     backend, document, receipt = applying(tmp_path, "target", removed=True)
-    backend.store(Memory("source", relations=[
-        {"type": "RELATED_TO", "target_id": "target"},
-    ]))
+    # Simulate an older writer bypassing the guarded backend after the crash.
+    source = Memory("source", relations=[{"type": "RELATED_TO", "target_id": "target"}])
+    backend._path("source").write_text(backend._serialize(source))
     report = recover_deletions(tmp_path)
     assert report == {"recovered": [], "blocked": [
         {"path": "memory/history/pending-delete/target.json",

@@ -22,6 +22,13 @@ id: info-YYYYMMDD-00000
 revision: 1
 ```
 
+L'identifiant ci-dessus illustre un format historique, sans imposer une date
+dans l'identité. Le backend core accepte les caractères ASCII alphanumériques,
+le point, le tiret et le soulignement. Un producteur peut choisir un identifiant
+stable et déterministe, par exemple `info-hermes-<empreinte>`, afin qu'un rejeu
+ne crée pas une seconde Information après minuit. La date de création appartient
+au bloc temporel ; elle ne doit pas être déduite de l'identifiant.
+
 ---
 
 # 2. Content

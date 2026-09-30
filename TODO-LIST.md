@@ -217,6 +217,11 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-032o — Un reçu de suppression réserve l’identité
   Information : la création refuse sa réutilisation après suppression ou
   interruption, ainsi qu’un reçu symbolique (2026-09-29).
+- **【FAIT】** T-032p — Les écritures Information refusent une nouvelle relation
+  structurée vers une identité réservée par un reçu de suppression lorsque la
+  cible n'existe plus. Une demande encore en attente laisse les liens vers sa
+  cible présente possibles ; ils bloquent alors l'approbation. Tests de
+  création, mise à jour et demande en attente (2026-09-30).
 - **【FAIT】** T-032n — L’audit et la reprise des suppressions refusent aussi
   les parents symboliques situés au-dessus de `--root`, avant tout parcours
   ou toute mutation (2026-09-29).

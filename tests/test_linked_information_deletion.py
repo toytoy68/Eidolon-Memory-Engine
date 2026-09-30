@@ -169,3 +169,37 @@ def test_direct_backend_approval_rejects_ambiguous_concerns_relation(tmp_path, r
     assert backend.get("info-1").content == "keep"
     request = json.loads((tmp_path / "history/pending-delete/info-1.json").read_text())
     assert request["status"] == "PENDING_DELETE"
+
+
+def test_store_cannot_link_to_reserved_information_identity(tmp_path):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("target"))
+    backend.delete_request("target", "human", "obsolete", 1, "delete-target")
+    assert backend.approve_delete("target", "delete-target").status == "DELETED"
+    with pytest.raises(Exception, match="reserved Information identity"):
+        backend.store(Memory("source", relations=[
+            {"type": "RELATED_TO", "target_id": "target"}]))
+    assert backend.get("source") is None
+
+
+def test_update_cannot_link_to_reserved_information_identity(tmp_path):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("target"))
+    backend.store(Memory("source"))
+    backend.delete_request("target", "human", "obsolete", 1, "delete-target")
+    assert backend.approve_delete("target", "delete-target").status == "DELETED"
+    with pytest.raises(Exception, match="reserved Information identity"):
+        backend.update("source", Memory("source", relations=[
+            {"type": "RELATED_TO", "target": "target"}]), previous_revision=1)
+    assert backend.get("source").revision == 1
+
+
+def test_pending_delete_does_not_forbid_link_to_existing_information(tmp_path):
+    backend, _, _ = stores(tmp_path)
+    backend.store(Memory("target"))
+    backend.delete_request("target", "human", "obsolete", 1, "delete-target")
+    backend.store(Memory("source", relations=[
+        {"type": "RELATED_TO", "target_id": "target"}]))
+    with pytest.raises(InformationDeletionBlocked):
+        backend.approve_delete("target", "delete-target")
+    assert backend.get("target") is not None

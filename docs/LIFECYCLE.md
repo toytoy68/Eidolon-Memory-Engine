@@ -67,6 +67,12 @@ la cible apparaît après un retrait interrompu, le reçu reste bloqué pour rev
 humaine au lieu d'être déclaré terminé. Les écrivains directs actuels ne
 valident pas encore toutes les cibles lors de leur création ; cette frontière
 reste à traiter avant une ouverture aux agents.
+Une écriture core refuse désormais une relation structurée vers l'identité
+d'une Information déjà retirée et réservée par un reçu de suppression. Si la
+cible existe encore pendant une demande en attente, le lien est autorisé et
+l'approbation de la suppression est bloquée par le contrôle des relations.
+Les références dans le corps libre et les anciens écrivains ne sont pas
+couverts par ce contrôle.
 
 Sur une copie arrêtée, un inventaire distinct aide à mesurer cette frontière :
 

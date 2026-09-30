@@ -78,6 +78,27 @@ class FilesystemBackend(MemoryBackend):
         self._validate_id(information_id)
         return self.persistent_root / f"{information_id}.md"
 
+    def _ensure_relations_do_not_reuse_deleted_identity(self, memory: Memory) -> None:
+        """A receipt reserves its Information identity, including for new links.
+
+        Called under the Persistent writer lock, shared with deletion decisions.
+        Other targets may represent non-Information objects and remain allowed.
+        """
+        if not isinstance(memory.relations, list):
+            return
+        for relation in memory.relations:
+            if not isinstance(relation, dict):
+                continue
+            for target in (relation.get("target_id"), relation.get("target")):
+                if not isinstance(target, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", target):
+                    continue
+                receipt = self.pending_delete_root / f"{target}.json"
+                if receipt.is_symlink():
+                    raise InvalidMemory("relation target deletion receipt is a symlink")
+                target_path = self.persistent_root / f"{target}.md"
+                if receipt.exists() and (target_path.is_symlink() or not target_path.is_file()):
+                    raise RevisionConflict("relation targets a reserved Information identity")
+
     # ------------------------------------------------------------------
     # Serialization
     # ------------------------------------------------------------------
@@ -208,6 +229,8 @@ class FilesystemBackend(MemoryBackend):
         if receipt.exists():
             raise RevisionConflict("deletion history reserves Information identity")
 
+        self._ensure_relations_do_not_reuse_deleted_identity(memory)
+
         self._atomic_write(path, self._serialize(memory))
 
         return StoreResult(
@@ -267,6 +290,8 @@ class FilesystemBackend(MemoryBackend):
 
         new_revision = current.revision + 1
         updated = replace(memory, revision=new_revision)
+
+        self._ensure_relations_do_not_reuse_deleted_identity(updated)
 
         self._atomic_write(
             self._path(information_id),
