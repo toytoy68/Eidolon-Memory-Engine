@@ -63,6 +63,9 @@ Persistent. Les relations ambiguës, documents illisibles et liens symboliques
 bloquent également la suppression. Le scanner ne déduit pas des références
 textuelles cachées dans un corps libre ; la migration historique et ses
 relations textuelles restent à examiner avant déploiement.
+Un journal de création liée Thread non terminé réserve aussi sa cible avant
+l'apparition du fichier Thread. L'approbation refuse la suppression tant que
+ce journal attend une reprise, ou s'il est illisible.
 Une relation sortante du document supprimé, y compris vers lui-même, disparaît
 avec ce document ; elle ne bloque donc pas sa propre suppression. Les autres
 Informations sont inspectées avant le retrait.
