@@ -1,0 +1,217 @@
+{
+  "seed": 70427,
+  "count": 500,
+  "assessment": "partial synthetic specificity judgments; REFUTED, CONFLICTED and SUPERSEDED targets are relevant to their queries regardless of truth status",
+  "cases": [
+    {
+      "query": "refroidissement GPU V100 Module série 02",
+      "relevance": {
+        "info-fixture-0020": 3,
+        "info-fixture-0070": 1
+      }
+    },
+    {
+      "query": "réseau fibre SFP Module série 02",
+      "relevance": {
+        "info-fixture-0021": 3,
+        "info-fixture-0071": 1
+      }
+    },
+    {
+      "query": "stockage RAIDZ1 Module série 02",
+      "relevance": {
+        "info-fixture-0022": 3,
+        "info-fixture-0072": 1
+      }
+    },
+    {
+      "query": "robotique moteur Module série 02",
+      "relevance": {
+        "info-fixture-0023": 3,
+        "info-fixture-0073": 1
+      }
+    },
+    {
+      "query": "chauffage pompe chaleur Module série 02",
+      "relevance": {
+        "info-fixture-0024": 3,
+        "info-fixture-0074": 1
+      }
+    },
+    {
+      "query": "journaux reprise Module série 02",
+      "relevance": {
+        "info-fixture-0025": 3,
+        "info-fixture-0075": 1
+      }
+    },
+    {
+      "query": "mémoire épistémique Module série 02",
+      "relevance": {
+        "info-fixture-0026": 3,
+        "info-fixture-0076": 1
+      }
+    },
+    {
+      "query": "capteur caméra Module série 02",
+      "relevance": {
+        "info-fixture-0027": 3,
+        "info-fixture-0077": 1
+      }
+    },
+    {
+      "query": "alimentation UPS Module série 02",
+      "relevance": {
+        "info-fixture-0028": 3,
+        "info-fixture-0078": 1
+      }
+    },
+    {
+      "query": "index recherche Module série 02",
+      "relevance": {
+        "info-fixture-0029": 3,
+        "info-fixture-0079": 1
+      }
+    },
+    {
+      "query": "refroidissement GPU V100 Module série 03",
+      "relevance": {
+        "info-fixture-0030": 3,
+        "info-fixture-0080": 1
+      }
+    },
+    {
+      "query": "réseau fibre SFP Module série 03",
+      "relevance": {
+        "info-fixture-0031": 3,
+        "info-fixture-0081": 1
+      }
+    },
+    {
+      "query": "stockage RAIDZ1 Module série 03",
+      "relevance": {
+        "info-fixture-0032": 3,
+        "info-fixture-0082": 1
+      }
+    },
+    {
+      "query": "robotique moteur Module série 03",
+      "relevance": {
+        "info-fixture-0033": 3,
+        "info-fixture-0083": 1
+      }
+    },
+    {
+      "query": "chauffage pompe chaleur Module série 03",
+      "relevance": {
+        "info-fixture-0034": 3,
+        "info-fixture-0084": 1
+      }
+    },
+    {
+      "query": "journaux reprise Module série 03",
+      "relevance": {
+        "info-fixture-0035": 3,
+        "info-fixture-0085": 1
+      }
+    },
+    {
+      "query": "mémoire épistémique Module série 03",
+      "relevance": {
+        "info-fixture-0036": 3,
+        "info-fixture-0086": 1
+      }
+    },
+    {
+      "query": "capteur caméra Module série 03",
+      "relevance": {
+        "info-fixture-0037": 3,
+        "info-fixture-0087": 1
+      }
+    },
+    {
+      "query": "alimentation UPS Module série 03",
+      "relevance": {
+        "info-fixture-0038": 3,
+        "info-fixture-0088": 1
+      }
+    },
+    {
+      "query": "index recherche Module série 03",
+      "relevance": {
+        "info-fixture-0039": 3,
+        "info-fixture-0089": 1
+      }
+    },
+    {
+      "query": "refroidissement GPU V100 Module série 04",
+      "relevance": {
+        "info-fixture-0040": 3,
+        "info-fixture-0090": 1
+      }
+    },
+    {
+      "query": "réseau fibre SFP Module série 04",
+      "relevance": {
+        "info-fixture-0041": 3,
+        "info-fixture-0091": 1
+      }
+    },
+    {
+      "query": "stockage RAIDZ1 Module série 04",
+      "relevance": {
+        "info-fixture-0042": 3,
+        "info-fixture-0092": 1
+      }
+    },
+    {
+      "query": "robotique moteur Module série 04",
+      "relevance": {
+        "info-fixture-0043": 3,
+        "info-fixture-0093": 1
+      }
+    },
+    {
+      "query": "chauffage pompe chaleur Module série 04",
+      "relevance": {
+        "info-fixture-0044": 3,
+        "info-fixture-0094": 1
+      }
+    },
+    {
+      "query": "journaux reprise Module série 04",
+      "relevance": {
+        "info-fixture-0045": 3,
+        "info-fixture-0095": 1
+      }
+    },
+    {
+      "query": "mémoire épistémique Module série 04",
+      "relevance": {
+        "info-fixture-0046": 3,
+        "info-fixture-0096": 1
+      }
+    },
+    {
+      "query": "capteur caméra Module série 04",
+      "relevance": {
+        "info-fixture-0047": 3,
+        "info-fixture-0097": 1
+      }
+    },
+    {
+      "query": "alimentation UPS Module série 04",
+      "relevance": {
+        "info-fixture-0048": 3,
+        "info-fixture-0098": 1
+      }
+    },
+    {
+      "query": "index recherche Module série 04",
+      "relevance": {
+        "info-fixture-0049": 3,
+        "info-fixture-0099": 1
+      }
+    }
+  ]
+}

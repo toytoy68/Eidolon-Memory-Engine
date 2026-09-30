@@ -1,0 +1,12 @@
+{
+  "cases": 30,
+  "documents": 499,
+  "judgments": "partial_synthetic",
+  "judgments_sha256": "bb033f7a9228a9d8559d354dcbbaa1f122932c69e2bc9634d815f5c4d405aa34",
+  "metrics": {
+    "mrr_at_5": 1.0,
+    "ndcg_at_5": 0.9173,
+    "recall_at_5": 0.5
+  },
+  "ranking": "lexical_v1"
+}

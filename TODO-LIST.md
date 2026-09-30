@@ -166,6 +166,10 @@ manifeste et le stockage fichier restent canoniques. Voir `docs/INDEXING.md`.
 `lexical_v1` et compare au score versionné : rappel@5 0,7, MRR@5 1,0,
 nDCG@5 0,9495. Un test détecte la divergence. Les jugements sont partiels
 et volontairement faciles ; aucun score sur mémoire VM n'est affirmé.
+Un second jeu de 30 requêtes spécifiques traverse `REFUTED`, `CONFLICTED`
+et `SUPERSEDED` sans les confondre avec un score de vérité : rappel@5 0,5,
+MRR@5 1,0 et nDCG@5 0,9173. La référence détecte un masque implicite des
+`REFUTED` ; elle demeure synthétique et partiellement jugée.
 
 **Point de départ de l'audit du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés

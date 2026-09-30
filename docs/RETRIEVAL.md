@@ -10,6 +10,25 @@ régression sur un corpus fabriqué et facile ; il ne mesure pas la qualité sur
 les données réelles. Les documents non listés dans un jugement sont **non
 jugés**, et le rappel ne porte que sur les identifiants annotés.
 
+Un second jeu de 30 jugements, dans
+`tests/fixtures/scenario-status-judgments.json`, demande une mesure précise
+pour des Informations `REFUTED`, `CONFLICTED` et `SUPERSEDED`. Ces étiquettes
+ne font pas disparaître une Information pertinente pour la requête ; elles
+restent un signal séparé pour le consommateur. Recalculer sa référence par :
+
+```sh
+python -B -m tools.evaluate_scenario \
+  --judgments tests/fixtures/scenario-status-judgments.json \
+  --baseline tests/fixtures/scenario-status-baseline.json --check
+```
+
+Sur ce corpus synthétique, le rappel@5 est de 0,50, MRR@5 de 1,00 et
+nDCG@5 de 0,9173. Le rappel partiel inclut ici un document apparenté de
+grade 1, souvent absent des cinq premiers résultats. Un test retire
+artificiellement les `REFUTED` pour vérifier que le score de référence
+détecterait un tel filtrage implicite. Aucun de ces chiffres ne démontre la
+qualité sur les mémoires réelles, ni qu'une Information réfutée soit vraie.
+
 `core.retrieval.ContextAssembler` reçoit un backend conforme à `MemoryBackend`
 et une requête textuelle. Il retourne des extraits avec leurs identifiants,
 révisions, scores, indicateurs de troncature et étiquettes distinctes
