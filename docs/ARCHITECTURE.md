@@ -1,6 +1,6 @@
 # Frontières actuelles du Memory Engine
 
-État du dépôt au 2026-09-29. Les décisions ci-dessous concernent le code
+État du dépôt au 2026-09-30. Les décisions ci-dessous concernent le code
 présent ; leur adoption sur la VM 110 reste soumise à sauvegarde, inventaire et
 tests. La source de vérité est le stockage en fichiers sous `memory/`, pas un
 index Qdrant. La forme future des API et de la migration reste ouverte.
@@ -36,15 +36,18 @@ modèle qui consommera le contexte. Le choix du tokenizer reste hors du moteur.
 | Composant | Lecture | Écriture actuelle | Règle de coexistence |
 | --- | --- | --- | --- |
 | `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads et journaux `thread-create-v1` lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread et Information ainsi que des créations liées inachevées | Seul écrivain nouveau des Informations core ; partager la même racine d'historique avec le coordinateur Thread et ne pas lancer le controller historique sur les mêmes fichiers. |
-| `core/threads/ThreadStorage` | `persistent/threads/*.md` | Threads sous verrou, avec contrôle de révision | Les changements de statut doivent passer par le coordinateur d'Operations pour être récupérables. |
+| `core/threads/ThreadStorage` | `persistent/threads/*.md` | Création/mise à jour sous verrou et suppression via `thread-delete-v1` | Création et mise à jour directes restent hors journal ; `delete` sans coordinateur injecté ne consulte pas les opérations de statut ou création inachevées (T-039). |
 | `core/threads/ThreadInformationLinkService` | Information ciblée | Crée un Thread avec relation `CONCERNS` | Vérifie l'existence sous le verrou partagé de `persistent/` au moment de la création ; ne garantit pas que la cible restera présente après une suppression ultérieure. |
 | `core/operations/FilesystemLinkedThreadCreation` | Information, Thread, Event et Operation | Journal `thread-create-v1`, Thread lié et Event `CREATED` | Prend les verrous Persistent → Thread → Operation → Event ; reprendre avec `recover-creations` avant d'autres mutations. |
 | `core/information/LinkedInformationDeletionService` | Backend partagé avec les Threads | Délègue l'approbation au backend | Façade de compatibilité ; la protection est appliquée aussi aux appels directs au backend. Les anciens CLI restent indépendants. |
 | `core/operations/FilesystemThreadOperations` | Thread, Event et Operation | Journaux `thread-status-v1`, nouveau Thread ; ordre de verrous Thread → Operation → Event | Exécuter `recover` après redémarrage avant de reprendre les mutations. |
+| `core/operations/FilesystemThreadDeletion` | Thread et Operation | Journal `thread-delete-v1` et retrait synchronisé du Thread | Reprise explicite après interruption ; le CLI vérifie les familles création/statut inachevées. Aucun Event métier de suppression n'est produit. |
 | `core/events/FilesystemEventRepository` | Events de son répertoire configuré | Nouveaux Events append-only | Le listing d'un dépôt n'agrège pas les autres sous-répertoires ni les Events anciens. |
 | `services/memory-controller` | Working, Persistent, Reviews, anciens plans | YAML en `working/`, `persistent/`, `history/{events,reviews}/` et reçus JSON dans `history/operations/` | Verrous partagés sur Working ou Persistent selon l'opération, contrôle de format Persistent et publication atomique de chaque fichier ; Events/Reviews/reçus ne forment pas une transaction. Garder les données historiques isolées. |
 | `services/memory-relations` | Informations Working, Reviews | Modifie Working ; crée Events et Reviews historiques | Ajout limité à Working sous le verrou partagé, fichiers publiés atomiquement ; son Event n'a pas le format core et l'ensemble des écritures n'est pas transactionnel. |
-| `core/migration/{inventory,preflight,simulation}` | Signatures, métadonnées et aperçus en mémoire | Aucune | Exécuter sur une copie sauvegardée. Ce ne sont pas des convertisseurs. |
+| `core/migration/{inventory,preflight,simulation,verification}` | Source, cible et rapports de migration | Aucune | Contrôles en lecture seule sur copie arrêtée ; `verification` compare les octets attendus à la cible. |
+| `core/migration/converter` | Informations historiques et autres fichiers | Nouvelle destination core et archive historique | Rejeu idempotent avec rapport de rejets ; correspondance métier et essais VM non validés. |
+| `core/indexing/IndexPort` | Fichiers de vérité | Index mémoire de référence, dérivé | Contrat de mutation et reconstruction testé en local, sans synchronisation des écrivains. |
 | `core/monitoring/*` | Mesures, statuts, aperçus `.md` autorisés | Aucune | Le TDB peut lire pendant une écriture et afficher un état provisoire ; ne pas interpréter ses chiffres comme un snapshot atomique. |
 
 Les autres anciens services lisent principalement les Informations YAML et
@@ -106,7 +109,7 @@ via `ThreadService.create_linked` ou le CLI
 elle prépare un snapshot et un journal dans `thread-create-v1`, puis écrit le
 Thread et son Event `CREATED`. Après interruption, exécuter
 `python -m core.operations.cli recover-all` : la commande reprend les créations,
-puis les changements de statut, et renvoie un code non nul si un journal reste
+puis les changements de statut et les suppressions Thread, et renvoie un code non nul si un journal reste
 bloqué. Les commandes `recover-creations` et `recover` restent disponibles pour
 chaque famille. Un Thread ou Event divergent bloque la
 reprise sans écrasement. La création directe via `ThreadInformationLinkService`
@@ -117,7 +120,8 @@ liée non terminés sous le verrou Persistent : une cible réservée bloque la
 suppression avant même que le fichier Thread existe. Un journal illisible
 bloque également la suppression pour revue.
 `ThreadService.recover_all` fournit le même ordre de reprise aux appelants
-Python lorsque les deux coordinateurs lui sont injectés.
+Python lorsque les coordinateurs lui sont injectés. La reprise des suppressions
+Information reste distincte et explicitement contrôlée.
 L'écriture directe de `ThreadStorage.create` prend maintenant les verrous
 `persistent/` puis `threads/` et vérifie que chaque cible `CONCERNS` est une
 Information core lisible au même identifiant. `ThreadStorage.update` refuse
@@ -154,8 +158,10 @@ d'opération réutilisé avec un autre contenu est refusé.
 5. Le TDB peut être servi en lecture seule sur le réseau local après validation
    de l'authentification et du port ; voir `docs/MONITORING.md`.
 
-La conversion des données anciennes, les Events d'Information coordonnés et la
-cohérence globale des lectures multi-fichiers restent à concevoir.
+La correspondance métier de la conversion des données anciennes, les Events
+d'Information coordonnés et la cohérence globale des lectures multi-fichiers
+restent à valider ou concevoir. Le convertisseur local et son vérificateur
+ne sont pas validés sur la VM.
 Seul le nouveau chemin de création journalisée produit un Event `CREATED` ;
 les lecteurs d'un répertoire Event n'agrègent pas les sous-répertoires.
 La suppression du backend prend les verrous `persistent/` puis `threads/`

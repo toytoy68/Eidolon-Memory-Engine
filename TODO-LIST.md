@@ -899,10 +899,11 @@ stables du moteur avant l'intégration aux agents.
   `APPLYING_DELETE` sont reprenables explicitement, mais les anciennes demandes
   ambiguës exigent toujours une revue humaine. Ne pas annoncer une garantie
   générale de suppression avant les essais sur VM et l'audit des écrivains.
-- **【À FAIRE】** T-028 — Documenter les décisions validées dans
-  `docs/ARCHITECTURE.md`, puis adapter l'arborescence cible ci-dessus. T-028a
-  couvre l'architecture existante ; les choix futurs doivent être ajoutés après
-  validation.
+- **【PARTIEL】** T-028 — `docs/ARCHITECTURE.md` et
+  `docs/THREAD_RECOVERY.md` décrivent désormais le convertisseur local, le
+  port d'index, la suppression Thread et son conflit T-039. T-028a couvre les
+  frontières préexistantes. Le plan d'exploitation VM et les choix futurs
+  restent à valider avant d'adapter l'arborescence cible.
 - **【EN ATTENTE】** T-029 — Construire un tableau de bord HTML servi sur le réseau
   local depuis la VM, consultable sur le PC principal : volumes, statuts,
   opérations en attente et erreurs, RAM utilisée/disponible,

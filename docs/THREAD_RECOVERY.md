@@ -1,8 +1,8 @@
 # Recoverable Thread operations
 
 The filesystem coordinators connect Thread state, immutable Event and Operation
-records. Linked creation and status changes use separate `thread-create-v1` and
-`thread-status-v1` journals. Both are available through
+records. Linked creation, status changes and deletion use separate
+`thread-create-v1`, `thread-status-v1` and `thread-delete-v1` journals. They are available through
 `python -m core.operations.cli`; the status coordinator can also be injected into
 `ThreadService`.
 
@@ -10,6 +10,7 @@ records. Linked creation and status changes use separate `thread-create-v1` and
 
 ```sh
 python -m core.operations.cli change-status THREAD_ID VALIDATED --previous-revision 1 --operation-id UNIQUE_OPERATION_ID
+python -m core.operations.cli delete-thread THREAD_ID --previous-revision 2 --operation-id UNIQUE_DELETE_ID
 python -m core.operations.cli recover-all
 ```
 
@@ -19,11 +20,12 @@ result without another revision or Event. Reusing its ID for another command is
 rejected. The default Event ID is derived deterministically from the operation ID.
 
 Recovery is explicit: run `recover-all` before accepting mutations after a
-process restart. It processes linked creations before status changes. No daemon
+process restart. It processes linked creations, then status changes, then
+Thread deletions. No daemon
 or scheduled recovery job is installed. The command returns a
 nonzero exit status if a record needs intervention, while independent records are
 still processed. Pending operations block new commands for the same Thread.
-`recover-creations` and `recover` remain available for separate families. The
+`recover-creations`, `recover` and `recover-deletions` remain available for separate families. The
 CLI `create-linked` journals creation with an explicit timestamp and emits a
 Thread `CREATED` Event; direct storage writes do not provide this guarantee.
 An unfinished linked creation reserves its Information target for deletion:
@@ -63,7 +65,13 @@ readers can observe a Thread before its Event or commit marker becomes visible.
 
 The CLI uses `memory/history/operations/thread-status-v1` and
 `memory/history/events/thread-status-v1`, plus the analogous `thread-create-v1`
-directories. It never migrates or replays the legacy
+directories, plus `memory/history/operations/thread-delete-v1` for deletion.
+The deletion journal has no corresponding business Event. A bare
+`ThreadStorage.delete` constructs only the deletion repository: with a pending
+status Operation, it can remove the Thread before recovery of that status.
+This reproduced conflict is tracked as T-039; use the CLI coordinator with
+all three journal families, and review pending operations before writes.
+It never migrates or replays the legacy
 CLI journals automatically. Old two-field plans remain readable but cannot be
 recovered automatically because their snapshots are missing. Manual migration is
 required. The original top-level Event listing does not aggregate these journals.
