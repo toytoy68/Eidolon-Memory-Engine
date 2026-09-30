@@ -135,6 +135,19 @@ def test_event_writer_refuses_lossy_json_round_trip(tmp_path, changed):
     assert repository.get("event-lossy") is None
 
 
+@pytest.mark.parametrize("field,value", [
+    ("event_type", "UPDATED"), ("state_transition", None),
+    ("cause", object()), ("relations", [object()]),
+])
+def test_event_writer_uses_domain_error_for_invalid_structures(tmp_path, field, value):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    event = Event("event-invalid", 1, EventType.CREATED, information_id="info-1")
+    setattr(event, field, value)
+    with pytest.raises(InvalidEvent):
+        repository.save(event)
+    assert repository.get("event-invalid") is None
+
+
 def test_save_rejects_duplicate_event_id(tmp_path):
     repository = FilesystemEventRepository(
         events_root=tmp_path / "events",

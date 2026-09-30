@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .models import Event, EventType
+from .models import Event, EventType, StateTransition
 
 
 def validate_event(event: Event) -> list[str]:
@@ -23,7 +23,13 @@ def validate_event(event: Event) -> list[str]:
     ):
         errors.append("thread_id invalide")
 
-    if not isinstance(event.state_transition.before, dict) or not isinstance(
+    if not isinstance(event.event_type, EventType):
+        errors.append("event_type invalide")
+        return errors
+
+    if not isinstance(event.state_transition, StateTransition) or not isinstance(
+        event.state_transition.before, dict
+    ) or not isinstance(
         event.state_transition.after, dict
     ):
         errors.append("state_transition invalide")

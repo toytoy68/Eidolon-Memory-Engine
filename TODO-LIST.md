@@ -408,6 +408,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031ar — Le stockage Thread rejette les identifiants non textuels
   avec son erreur de domaine sur création comme sur lecture, sans écrire de
   fichier (2026-09-30).
+- **【FAIT】** T-031as — Le dépôt Event refuse les types et transitions de mauvais
+  type ainsi que les structures imbriquées non sérialisables avec `InvalidEvent`,
+  sans publier de fichier (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,
