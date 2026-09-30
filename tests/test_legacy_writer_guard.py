@@ -107,3 +107,26 @@ def test_controller_rejects_updates_outside_memory_roots(tmp_path, monkeypatch):
     outside.write_text("private")
     assert controller.update_information(outside, None, None, None, None, "reason", "UPDATED") == 1
     assert outside.read_text() == "private"
+
+
+def test_legacy_guard_rejects_linked_parent_before_scanning(tmp_path):
+    outside = tmp_path / "outside"
+    (outside / "persistent").mkdir(parents=True)
+    (outside / "persistent/private.md").write_text("private")
+    linked = tmp_path / "memory"
+    linked.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError, match="symlink"):
+        require_legacy_persistent_only(linked / "persistent", tmp_path / "history")
+    assert (outside / "persistent/private.md").read_text() == "private"
+
+
+def test_legacy_guard_rejects_linked_journal_parent(tmp_path):
+    persistent = tmp_path / "persistent"
+    persistent.mkdir()
+    history = tmp_path / "history"
+    history.mkdir()
+    outside = tmp_path / "external-operations"
+    (outside / "thread-create-v1").mkdir(parents=True)
+    (history / "operations").symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError, match="journal"):
+        require_legacy_persistent_only(persistent, history)

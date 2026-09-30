@@ -4,13 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from core.persistence import has_symlink_component
+
 
 def require_legacy_persistent_only(persistent_root: Path, history_root: Path) -> None:
     """Call under the persistent writer lock before a legacy persistent mutation."""
     persistent = Path(persistent_root)
     history = Path(history_root)
-    if persistent.is_symlink():
-        raise ValueError("legacy writer blocked: persistent directory is a symlink")
+    if has_symlink_component(persistent) or has_symlink_component(history):
+        raise ValueError("legacy writer blocked: storage directory contains a symlink")
     for path in persistent.glob("*.md"):
         if path.is_symlink():
             raise ValueError("legacy writer blocked: symlink in persistent Information")
@@ -22,9 +24,9 @@ def require_legacy_persistent_only(persistent_root: Path, history_root: Path) ->
         if header.startswith(b"# Eidolon Information Object"):
             raise ValueError("legacy writer blocked: core Information exists")
     threads = persistent / "threads"
-    if threads.is_symlink() or (threads.is_dir() and any(threads.glob("*.md"))):
+    if has_symlink_component(threads) or (threads.is_dir() and any(threads.glob("*.md"))):
         raise ValueError("legacy writer blocked: core Thread storage exists")
     for name in ("thread-create-v1", "thread-status-v1"):
         operations = history / "operations" / name
-        if operations.is_symlink() or (operations.is_dir() and any(operations.iterdir())):
+        if has_symlink_component(operations) or (operations.is_dir() and any(operations.iterdir())):
             raise ValueError("legacy writer blocked: core operation journal exists")

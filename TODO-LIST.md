@@ -292,6 +292,10 @@ stables du moteur avant l'intégration aux agents.
   racine contenant Information/Thread/journaux core. `memory-relations` reste
   limité à Working historique jusqu'à migration ; tests de refus isolés
   (2026-09-29).
+- **【FAIT】** T-031aa — Le garde du controller historique refuse aussi les
+  ancêtres symboliques des répertoires Persistent/History et du journal
+  d'opérations, avant de parcourir des données potentiellement externes
+  (tests isolés, 2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,
