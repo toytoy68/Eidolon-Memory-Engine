@@ -58,6 +58,24 @@ def test_audit_accepts_completed_deletion_and_flags_malformed_record(tmp_path):
     }]}
 
 
+def test_audit_rejects_receipt_filename_unusable_by_backend(tmp_path):
+    requests = tmp_path / "memory/history/pending-delete"
+    requests.mkdir(parents=True)
+    request = requests / "bad id.json"
+    request.write_text(json.dumps({
+        "information_id": "bad id", "operation_id": "op-1", "revision": 1,
+        "status": "DELETED", "content_sha256": "a" * 64,
+        "requested_by": "human", "reason": "test",
+    }))
+    before = request.read_bytes()
+
+    assert audit_deletions(tmp_path) == {"requests_checked": 0, "issues": [{
+        "request": "memory/history/pending-delete/bad id.json",
+        "reason": "invalid_request",
+    }]}
+    assert request.read_bytes() == before
+
+
 def test_audit_rejects_completed_receipt_without_content_hash(tmp_path):
     store = backend(tmp_path)
     store.store(Memory("info-1"))

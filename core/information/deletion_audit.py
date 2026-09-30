@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
@@ -46,6 +47,8 @@ def audit_deletions(engine_root: Path) -> dict:
         location = path.relative_to(root).as_posix()
         if path.is_symlink():
             reason = "symlink_skipped"
+        elif not re.fullmatch(r"[A-Za-z0-9._-]+", path.stem):
+            reason = "invalid_request"
         else:
             try:
                 record = FilesystemBackend._load_delete_request(path, path.stem)
