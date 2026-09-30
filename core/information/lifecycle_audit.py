@@ -32,6 +32,7 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
     manifest = build_manifest(root)
     retention_counts: Counter[str] = Counter()
     applicability_counts: Counter[str] = Counter()
+    joint_counts: Counter[tuple[str, str]] = Counter()
     content_counts: Counter[str] = Counter()
     allowed_retention = {member.value for member in Retention}
     for entry in manifest.entries:
@@ -80,11 +81,18 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
         else:
             applicability = "unknown"
         applicability_counts[applicability] += 1
+        joint_counts[(retention_key, applicability)] += 1
     return {
         "count": len(manifest.entries), "source_digest": manifest.digest,
         "as_of": instant.isoformat(),
         "retention": dict(sorted(retention_counts.items())),
         "applicability": dict(sorted(applicability_counts.items())),
+        "retention_by_applicability": {
+            retention: dict(sorted((applicability, count)
+                                   for (policy, applicability), count in joint_counts.items()
+                                   if policy == retention))
+            for retention in sorted(retention_counts)
+        },
         "exact_content_duplicates": {
             "groups": sum(count > 1 for count in content_counts.values()),
             "documents_in_groups": sum(count for count in content_counts.values()

@@ -24,6 +24,10 @@ ou `invalid`, l'heure
 de référence et l'empreinte globale. Il n'affiche pas de contenu ni d'ID et
 n'écrit pas de fichier. Ce contrôle n'est pas un instantané atomique si un
 autre processus modifie la copie pendant l'exécution.
+La table `retention_by_applicability` croise aussi ces deux déclarations : elle
+permet de distinguer, par exemple, une mémoire `PERMANENT` dont la période
+est `ended` d'une mémoire temporaire encore dans ses bornes. Chaque document
+compte une seule fois dans cette table ; aucune case ne déclenche une action.
 L'outil compare `valid_from` et `valid_until` avec `--at` ; il signale une
 période contradictoire ou une date sans fuseau comme `invalid`. Une seule borne
 connue peut suffire à `within_known_bounds`, ce qui ne prouve pas que

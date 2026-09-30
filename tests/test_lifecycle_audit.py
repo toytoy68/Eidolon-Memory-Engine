@@ -37,6 +37,13 @@ def test_lifecycle_audit_separates_retention_from_validity(tmp_path, capsys):
         "ended": 1, "within_known_bounds": 1, "not_started": 1,
         "invalid": 2, "unknown": 1,
     }
+    assert report["retention_by_applicability"] == {
+        "PERMANENT": {"ended": 1},
+        "TEMPORARY": {"within_known_bounds": 1},
+        "invalid": {"invalid": 1},
+        "missing": {"invalid": 1, "not_started": 1, "unknown": 1},
+    }
+    assert sum(map(sum, (row.values() for row in report["retention_by_applicability"].values()))) == report["count"]
     assert report["policy"] == "read_only_no_deletion_inferred"
     assert report["exact_content_duplicates"] == {"groups": 0, "documents_in_groups": 0}
     assert "private" not in output and "old" not in output
