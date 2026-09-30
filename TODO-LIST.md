@@ -296,6 +296,10 @@ stables du moteur avant l'intégration aux agents.
   ancêtres symboliques des répertoires Persistent/History et du journal
   d'opérations, avant de parcourir des données potentiellement externes
   (tests isolés, 2026-09-30).
+- **【FAIT】** T-031ab — Le garde refuse également un journal Event core
+  `thread-create-v1` ou `thread-status-v1` conservé sans son journal Operation,
+  plutôt que de conclure à tort que la racine est purement historique
+  (test isolé, 2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

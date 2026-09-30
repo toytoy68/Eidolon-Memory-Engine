@@ -130,3 +130,14 @@ def test_legacy_guard_rejects_linked_journal_parent(tmp_path):
     (history / "operations").symlink_to(outside, target_is_directory=True)
     with pytest.raises(ValueError, match="journal"):
         require_legacy_persistent_only(persistent, history)
+
+
+def test_legacy_guard_blocks_orphan_core_event_journal(tmp_path):
+    persistent = tmp_path / "persistent"
+    persistent.mkdir()
+    history = tmp_path / "history"
+    events = history / "events/thread-create-v1"
+    events.mkdir(parents=True)
+    (events / "event.md").write_text("core Event")
+    with pytest.raises(ValueError, match="journal"):
+        require_legacy_persistent_only(persistent, history)

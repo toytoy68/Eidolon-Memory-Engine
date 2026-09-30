@@ -26,7 +26,8 @@ def require_legacy_persistent_only(persistent_root: Path, history_root: Path) ->
     threads = persistent / "threads"
     if has_symlink_component(threads) or (threads.is_dir() and any(threads.glob("*.md"))):
         raise ValueError("legacy writer blocked: core Thread storage exists")
-    for name in ("thread-create-v1", "thread-status-v1"):
-        operations = history / "operations" / name
-        if has_symlink_component(operations) or (operations.is_dir() and any(operations.iterdir())):
-            raise ValueError("legacy writer blocked: core operation journal exists")
+    for category in ("operations", "events"):
+        for name in ("thread-create-v1", "thread-status-v1"):
+            journal = history / category / name
+            if has_symlink_component(journal) or (journal.is_dir() and any(journal.iterdir())):
+                raise ValueError("legacy writer blocked: core operation journal exists")
