@@ -156,6 +156,21 @@ def test_thread_revisions_reject_booleans_before_writing(tmp_path):
     assert storage.get(wrong.thread_id).revision == 1
 
 
+@pytest.mark.parametrize("field,value,message", [
+    ("thread_id", 1, "thread_id is required"),
+    ("title", 1, "title is required"),
+    ("objective", None, "objective is required"),
+    ("created_at", 1, "created_at is required"),
+    ("updated_at", None, "updated_at is required"),
+    ("actions", "invalid", "actions must be a list"),
+    ("actions", ["invalid"], "actions must contain ThreadAction"),
+    ("relations", "invalid", "relations must be a list"),
+])
+def test_thread_domain_validation_rejects_malformed_fields(field, value, message):
+    with pytest.raises(InvalidThread, match=message):
+        ThreadManager.validate(replace(make_thread(), **{field: value}))
+
+
 def test_exists(tmp_path: Path):
     storage = ThreadStorage(tmp_path)
 

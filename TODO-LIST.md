@@ -427,6 +427,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031ax — La création d'un lien Thread reconnaît une relation
   `CONCERNS` historique avec `target` et évite d'ajouter un doublon `target_id`
   pour la même Information (2026-09-30).
+- **【FAIT】** T-031ay — La validation métier Thread signale les champs textuels
+  et listes mal formés, ainsi que les actions non typées, avec `InvalidThread`
+  plutôt qu'une exception Python brute (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

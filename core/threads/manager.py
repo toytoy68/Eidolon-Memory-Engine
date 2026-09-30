@@ -92,13 +92,13 @@ class ThreadManager:
     def validate(cls, thread: Thread) -> None:
         """Validate Thread invariants."""
 
-        if not thread.thread_id:
+        if not isinstance(thread.thread_id, str) or not thread.thread_id:
             raise InvalidThread("thread_id is required")
 
-        if not thread.title.strip():
+        if not isinstance(thread.title, str) or not thread.title.strip():
             raise InvalidThread("title is required")
 
-        if not thread.objective.strip():
+        if not isinstance(thread.objective, str) or not thread.objective.strip():
             raise InvalidThread("objective is required")
 
         if type(thread.revision) is not int or thread.revision < 1:
@@ -107,11 +107,17 @@ class ThreadManager:
         if not isinstance(thread.status, ThreadStatus):
             raise InvalidThread("invalid Thread status")
 
-        if not thread.created_at:
+        if not isinstance(thread.created_at, str) or not thread.created_at:
             raise InvalidThread("created_at is required")
 
-        if not thread.updated_at:
+        if not isinstance(thread.updated_at, str) or not thread.updated_at:
             raise InvalidThread("updated_at is required")
+
+        if not isinstance(thread.actions, list):
+            raise InvalidThread("actions must be a list")
+
+        if not isinstance(thread.relations, list):
+            raise InvalidThread("relations must be a list")
 
         if thread.completed_at and thread.status != ThreadStatus.COMPLETED:
             raise InvalidThread(
@@ -127,10 +133,12 @@ class ThreadManager:
         action_ids: set[str] = set()
 
         for action in thread.actions:
-            if not action.action_id:
+            if not isinstance(action, ThreadAction):
+                raise InvalidThread("actions must contain ThreadAction values")
+            if not isinstance(action.action_id, str) or not action.action_id:
                 raise InvalidThread("action_id is required")
 
-            if not action.description.strip():
+            if not isinstance(action.description, str) or not action.description.strip():
                 raise InvalidThread(
                     f"action description is required: {action.action_id}"
                 )
