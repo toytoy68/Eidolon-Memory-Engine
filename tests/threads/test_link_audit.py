@@ -43,6 +43,20 @@ def test_audit_flags_invalid_thread_without_writing(tmp_path):
     assert not (root / ".write.lock").exists()
 
 
+def test_audit_flags_malformed_historical_relation(tmp_path):
+    root = tmp_path / "memory/persistent/threads"
+    root.mkdir(parents=True)
+    malformed = Thread("thread-1", "Title", "Objective", relations=["invalid"])
+    path = root / "thread-1.md"
+    path.write_text(ThreadStorage._serialize(malformed))
+    before = path.read_bytes()
+
+    assert audit_links(tmp_path) == {"threads_checked": 0, "links_checked": 0,
+                                     "issues": [{"thread": "memory/persistent/threads/thread-1.md",
+                                                 "reason": "invalid_thread"}]}
+    assert path.read_bytes() == before
+
+
 def test_audit_flags_ambiguous_concerns_target(tmp_path):
     root = tmp_path / "memory"
     threads = ThreadStorage(root / "persistent")

@@ -36,6 +36,8 @@ def audit_links(engine_root: Path) -> dict:
             thread = ThreadStorage._deserialize(path.read_text(encoding="utf-8"))
             if thread.thread_id != path.stem:
                 raise ValueError("identity mismatch")
+            if any(not isinstance(relation, dict) for relation in thread.relations):
+                raise ValueError("invalid Thread relation")
         except (OSError, UnicodeError, ValueError, TypeError, KeyError, AttributeError,
                 ThreadStorageError):
             report["issues"].append({"thread": location, "reason": "invalid_thread"})

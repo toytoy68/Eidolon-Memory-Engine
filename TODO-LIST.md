@@ -710,6 +710,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-022n — L'audit des liens refuse une racine dont un ancêtre est un
   lien symbolique et ignore `memory/` lié vers un autre arbre ; deux tests de
   non-traversée sur données isolées (2026-09-30).
+- **【FAIT】** T-022o — L'audit des liens signale un Thread historique dont une
+  relation n'est pas un objet, comme le garde de suppression, sans modifier le
+  fichier (2026-09-30).
 - **【FAIT】** T-027a — Audit en lecture seule des suppressions interrompues et
   demandes incohérentes ; voir `core/information/deletion_audit.py`, deux tests
   isolés (2026-09-28).
