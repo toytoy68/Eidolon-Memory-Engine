@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timezone
+import re
 
 from .models import ActionStatus, ThreadStatus
 
@@ -146,6 +147,8 @@ class ThreadQuery:
                 raise ValueError(
                     "thread_id is required for GET_THREAD"
                 )
+            if not re.fullmatch(r"[A-Za-z0-9._-]+", self.thread_id):
+                raise ValueError("invalid thread_id for GET_THREAD")
 
         if self.query_type == ThreadQueryType.LIST_THREADS_BY_STATUS:
             if self.status is None and not self.statuses:

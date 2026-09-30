@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .manager import ThreadManager
 from .models import Thread
-from .queries import ThreadQuery
+from .queries import ThreadQuery, ThreadQueryType
 from .request_mapping import build_thread_query
 from .requests import ThreadRequest
 from .storage import ThreadStorage
@@ -28,6 +28,9 @@ class ThreadService:
     ) -> list[Thread] | list[tuple[Thread, object]]:
         """Query persisted Threads through the domain manager."""
         query.validate()
+        if query.query_type is ThreadQueryType.GET_THREAD:
+            thread = self.storage.get(query.thread_id)
+            return [thread] if thread is not None else []
         threads = self.storage.list()
 
         return ThreadManager.query(

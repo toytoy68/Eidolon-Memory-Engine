@@ -41,6 +41,21 @@ def test_get_thread(tmp_path):
     assert result.title == "Service Thread"
 
 
+def test_get_thread_query_reads_only_requested_file(tmp_path):
+    storage = ThreadStorage(tmp_path)
+    thread = make_thread()
+    storage.create(thread)
+    (storage.threads_root / "unrelated.md").write_text("invalid private Thread")
+    service = ThreadService(storage)
+
+    assert service.query(ThreadQuery(ThreadQueryType.GET_THREAD,
+                                     thread_id=thread.thread_id)) == [thread]
+    assert service.query(ThreadQuery(ThreadQueryType.GET_THREAD,
+                                     thread_id="missing")) == []
+    with pytest.raises(ValueError, match="invalid thread_id"):
+        service.query(ThreadQuery(ThreadQueryType.GET_THREAD, thread_id="../escape"))
+
+
 def test_query_threads(tmp_path):
     storage = ThreadStorage(tmp_path)
     thread = make_thread()

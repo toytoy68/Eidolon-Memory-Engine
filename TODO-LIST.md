@@ -311,6 +311,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-023d — Les filtres d'une demande JSON Thread convertissent les
   valeurs de statut et de tri vers les Enums du domaine ; les filtres invalides
   sont rejetés avant lecture du stockage (2026-09-30).
+- **【FAIT】** T-023e — La requête `GET_THREAD` lit directement son fichier après
+  validation, sans charger tous les Threads ni échouer sur un fichier étranger
+  endommagé (2026-09-30).
 - **【FAIT】** T-028b — Audit du dépôt, bilan de maturité et priorités revues dans
   `docs/AUDIT-2026-09-28.md`, entrée `README.md`, et documentation de la reprise
   synchronisée avec `recover-all` (2026-09-28).
