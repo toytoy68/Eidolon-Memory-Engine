@@ -129,6 +129,17 @@ class FilesystemBackend(MemoryBackend):
     def _serialize(cls, memory: Memory) -> str:
         return encode_document("Information", asdict(memory))
 
+    @classmethod
+    def _serialize_checked(cls, memory: Memory) -> str:
+        """Keep Information values unchanged when crossing the JSON boundary."""
+        try:
+            content = cls._serialize(memory)
+            if cls._deserialize(content) != memory:
+                raise InvalidMemory("Information changes during serialization")
+            return content
+        except (AttributeError, TypeError, ValueError) as exc:
+            raise InvalidMemory("invalid Information document") from exc
+
     @staticmethod
     def _extract_json_block(text: str, section: str) -> Any:
         pattern = (
@@ -247,7 +258,7 @@ class FilesystemBackend(MemoryBackend):
 
         self._ensure_relations_do_not_reuse_deleted_identity(memory)
 
-        self._atomic_write(path, self._serialize(memory))
+        self._atomic_write(path, self._serialize_checked(memory))
 
         return StoreResult(
             information_id=memory.information_id,
@@ -312,7 +323,7 @@ class FilesystemBackend(MemoryBackend):
 
         self._atomic_write(
             self._path(information_id),
-            self._serialize(updated),
+            self._serialize_checked(updated),
         )
 
         return UpdateResult(

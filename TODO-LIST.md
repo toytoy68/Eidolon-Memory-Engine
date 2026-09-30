@@ -366,6 +366,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031am — L'approbation de suppression Information bloque si le
   répertoire Threads existant a été remplacé par un fichier, en préservant
   l'Information et la demande en attente (2026-09-30).
+- **【FAIT】** T-031an — Le backend Information vérifie la fidélité du document
+  sérialisé avant création ou mise à jour et refuse les valeurs imbriquées
+  transformées par JSON, sans créer ni remplacer le fichier (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

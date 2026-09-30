@@ -88,6 +88,20 @@ def test_backend_rejects_boolean_revision_before_writing(tmp_path):
     assert backend.get("info-test").content == "original"
 
 
+def test_backend_rejects_lossy_information_before_create_or_update(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(InvalidMemory, match="changes during serialization"):
+        backend.store(Memory("info-test", metadata={"sequence": ("a", "b")}))
+    assert backend.get("info-test") is None
+
+    backend.store(Memory("info-test", content="original"))
+    path = backend._path("info-test")
+    before = path.read_bytes()
+    with pytest.raises(InvalidMemory, match="changes during serialization"):
+        backend.update("info-test", Memory("info-test", content=("a", "b")), 1)
+    assert path.read_bytes() == before
+
+
 @pytest.mark.parametrize("field,value", [
     ("metadata", []), ("provenance", []), ("temporal", []),
     ("verification", []), ("relations", {}),
