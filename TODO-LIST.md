@@ -432,6 +432,8 @@ stables du moteur avant l'intégration aux agents.
   exception Python brute (2026-09-30).
 - **【FAIT】** T-031az — La transition métier Thread refuse explicitement un
   statut non typé avec `InvalidThreadTransition` (2026-09-30).
+- **【FAIT】** T-031ba — L'ajout métier d'une action Thread refuse explicitement
+  un objet non typé avant d'accéder à ses attributs (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

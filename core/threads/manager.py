@@ -239,6 +239,9 @@ class ThreadManager:
                 "cannot add an action to a closed Thread"
             )
 
+        if not isinstance(action, ThreadAction):
+            raise InvalidThread("action must be a ThreadAction")
+
         if thread.has_action(action.action_id):
             raise DuplicateAction(action.action_id)
 

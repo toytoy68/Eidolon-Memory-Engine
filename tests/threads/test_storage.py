@@ -182,6 +182,11 @@ def test_thread_status_transition_rejects_untyped_status():
         ThreadManager.change_status(make_thread(), "VALIDATED")
 
 
+def test_thread_add_action_rejects_untyped_action():
+    with pytest.raises(InvalidThread, match="action must be a ThreadAction"):
+        ThreadManager.add_action(make_thread(), {"action_id": "a"})
+
+
 def test_exists(tmp_path: Path):
     storage = ThreadStorage(tmp_path)
 
