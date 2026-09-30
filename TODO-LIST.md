@@ -194,6 +194,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-036i — L’assembleur peut convertir explicitement les contenus
   structurés JSON en extraits bornés avec étiquette de format et de
   troncature ; la valeur persistée reste intacte (2026-09-29).
+- **【FAIT】** T-036j — Le lecteur des fixtures d'évaluation de recherche utilise
+  le parseur JSON strict du moteur et refuse aussi les exposants numériques
+  non finis (2026-09-30).
 - **【FAIT】** T-037a — Audit du cycle de vie sur copie arrêtée : comptes de
   rétention et de période de validité distincts à une date explicite, sans
   suppression ni sortie du contenu ; voir `docs/LIFECYCLE.md` (2026-09-29).

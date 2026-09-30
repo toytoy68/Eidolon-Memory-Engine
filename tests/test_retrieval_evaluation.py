@@ -47,3 +47,13 @@ def test_evaluation_rejects_duplicate_json_keys(tmp_path):
     with pytest.raises(SystemExit) as exc:
         main(["--fixture", str(fixture)])
     assert exc.value.code == 2
+
+
+def test_evaluation_rejects_float_overflow_in_fixture(tmp_path):
+    fixture = tmp_path / "overflow.json"
+    fixture.write_text('{"documents":[{"information_id":"a","content":"x",'
+                       '"metadata":{"score":1e10000}}],'
+                       '"cases":[{"query":"x","relevant_ids":["a"]}]}')
+    with pytest.raises(SystemExit) as exc:
+        main(["--fixture", str(fixture)])
+    assert exc.value.code == 2

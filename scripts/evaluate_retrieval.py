@@ -10,6 +10,7 @@ from tempfile import TemporaryDirectory
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
+from core.storage_format import decode_json_value
 
 
 def _validate_fixture(data: object) -> tuple[list[dict], list[dict]]:
@@ -87,20 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--top-k", type=int, default=5)
     args = parser.parse_args(argv)
     try:
-        def unique_object(pairs):
-            result = {}
-            for key, value in pairs:
-                if key in result:
-                    raise ValueError("duplicate fixture key")
-                result[key] = value
-            return result
-
-        def invalid_constant(value):
-            raise ValueError("invalid fixture constant")
-
-        data = json.loads(args.fixture.read_text(encoding="utf-8"),
-                          object_pairs_hook=unique_object,
-                          parse_constant=invalid_constant)
+        data = decode_json_value(args.fixture.read_text(encoding="utf-8"))
         report = evaluate(data, top_k=args.top_k)
     except (OSError, UnicodeError, ValueError, TypeError) as exc:
         parser.error(str(exc))
