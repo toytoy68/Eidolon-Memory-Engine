@@ -92,6 +92,9 @@ class ThreadManager:
     def validate(cls, thread: Thread) -> None:
         """Validate Thread invariants."""
 
+        if not isinstance(thread, Thread):
+            raise InvalidThread("expected a Thread")
+
         if not isinstance(thread.thread_id, str) or not thread.thread_id:
             raise InvalidThread("thread_id is required")
 

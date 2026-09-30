@@ -177,6 +177,11 @@ def test_thread_domain_validation_rejects_malformed_fields(field, value, message
         ThreadManager.validate(replace(make_thread(), **{field: value}))
 
 
+def test_thread_domain_validation_rejects_non_thread():
+    with pytest.raises(InvalidThread, match="expected a Thread"):
+        ThreadManager.validate({"thread_id": "thread-test-001"})
+
+
 def test_thread_status_transition_rejects_untyped_status():
     with pytest.raises(InvalidThreadTransition, match="new_status must be a ThreadStatus"):
         ThreadManager.change_status(make_thread(), "VALIDATED")
