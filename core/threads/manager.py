@@ -113,6 +113,20 @@ class ThreadManager:
         if not isinstance(thread.updated_at, str) or not thread.updated_at:
             raise InvalidThread("updated_at is required")
 
+        if (thread.started_at is not None
+                and not isinstance(thread.started_at, str)):
+            raise InvalidThread("started_at must be text or empty")
+
+        if (thread.completed_at is not None
+                and not isinstance(thread.completed_at, str)):
+            raise InvalidThread("completed_at must be text or empty")
+
+        if not isinstance(thread.context, dict):
+            raise InvalidThread("context must be an object")
+
+        if not isinstance(thread.provenance, dict):
+            raise InvalidThread("provenance must be an object")
+
         if not isinstance(thread.actions, list):
             raise InvalidThread("actions must be a list")
 
@@ -142,6 +156,12 @@ class ThreadManager:
                 raise InvalidThread(
                     f"action description is required: {action.action_id}"
                 )
+
+            if not isinstance(action.status, ActionStatus):
+                raise InvalidThread(f"invalid action status: {action.action_id}")
+
+            if not isinstance(action.metadata, dict):
+                raise InvalidThread(f"invalid action metadata: {action.action_id}")
 
             if action.action_id in action_ids:
                 raise InvalidThread(

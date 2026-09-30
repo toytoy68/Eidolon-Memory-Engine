@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from core.threads.models import Thread, ThreadStatus
+from core.threads.models import Thread, ThreadAction, ThreadStatus
 from core.threads.storage import ThreadStorage
 from core.threads.storage import ThreadStorageError
 from core.threads.manager import InvalidThread, ThreadManager
@@ -162,8 +162,14 @@ def test_thread_revisions_reject_booleans_before_writing(tmp_path):
     ("objective", None, "objective is required"),
     ("created_at", 1, "created_at is required"),
     ("updated_at", None, "updated_at is required"),
+    ("started_at", 1, "started_at must be text"),
+    ("completed_at", 1, "completed_at must be text"),
+    ("context", [], "context must be an object"),
+    ("provenance", [], "provenance must be an object"),
     ("actions", "invalid", "actions must be a list"),
     ("actions", ["invalid"], "actions must contain ThreadAction"),
+    ("actions", [ThreadAction("a", "task", status="PLANNED")], "invalid action status"),
+    ("actions", [ThreadAction("a", "task", metadata=[])], "invalid action metadata"),
     ("relations", "invalid", "relations must be a list"),
 ])
 def test_thread_domain_validation_rejects_malformed_fields(field, value, message):
