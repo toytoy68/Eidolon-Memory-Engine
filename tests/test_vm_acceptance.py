@@ -23,14 +23,15 @@ def test_acceptance_uses_only_explicit_workdir_and_detects_source_change(tmp_pat
     monkeypatch.setattr(vm_acceptance.subprocess, "run", runner)
     monkeypatch.setattr(vm_acceptance, "inventory", lambda root: {"categories": {}, "needs_review": []})
     monkeypatch.setattr(vm_acceptance, "audit_relations", lambda *a, **kw: {"relations": {}})
-    monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {"count": 0})
+    monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {
+        "count": 0, "retention": {}, "applicability": {}, "epistemic_by_applicability": {}})
     monkeypatch.setattr(vm_acceptance, "audit_deletions", lambda *a, **kw: {"issues": []})
     monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
 
     report = vm_acceptance.run(source, workdir, at="2026-09-30T00:00:00Z")
 
     assert len(calls) == 1
-    assert [step["status"] for step in report["steps"]] == ["OK"] * 5
+    assert [step["status"] for step in report["steps"]] == ["OK"] * 7
     assert (workdir / "vm-acceptance-report.json").is_file()
     assert json.loads((workdir / "vm-acceptance-report.json").read_text()) == report
     assert (source / "memory/persistent/info.md").read_bytes() == b"original"
@@ -65,3 +66,28 @@ def test_acceptance_reports_external_source_change(tmp_path, monkeypatch):
     report = vm_acceptance.run(source, tmp_path / "work", at="2026-09-30T00:00:00Z")
     assert report["status"] == "KO"
     assert report["steps"][-1]["name"] == "source_unchanged"
+
+
+def test_acceptance_flags_invalid_relation_and_lifecycle_counts(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "datum").write_text("before")
+    monkeypatch.setattr(vm_acceptance, "inventory", lambda root: {"needs_review": []})
+    monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
+    monkeypatch.setattr(vm_acceptance, "audit_relations", lambda *a, **kw: {
+        "relations": {"invalid": 2, "external_or_missing": 1}})
+    monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {
+        "retention": {"invalid": 1}, "applicability": {"invalid": 1},
+        "epistemic_by_applicability": {"invalid": {"unknown": 1}}})
+    monkeypatch.setattr(vm_acceptance, "audit_deletions", lambda *a, **kw: {"issues": []})
+    monkeypatch.setattr(vm_acceptance.subprocess, "run", lambda *a, **kw: type(
+        "Result", (), {"returncode": 0, "stdout": "5 passed", "stderr": ""})())
+
+    result = vm_acceptance.run(source, tmp_path / "work", at="2026-09-30T00:00:00Z")
+
+    steps = {item["name"]: item for item in result["steps"]}
+    assert steps["audit_relations"]["status"] == "KO"
+    assert steps["audit_relations"]["details"]["relations"]["invalid"] == 2
+    assert steps["audit_lifecycle"]["status"] == "KO"
+    assert steps["audit_deletions"]["status"] == "OK"
+    assert result["status"] == "KO"

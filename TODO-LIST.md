@@ -90,6 +90,10 @@ isolé, puis lance les trois audits sur la restauration. Rapport JSON et résum�
 sont pas détectables par les seuls descripteurs `/proc` et les cinq cas de
 concurrence restent à exécuter sur la VM. La copie source doit déjà être
 arrêtée avant la commande.
+Les trois audits ont chacun leur ligne OK/KO ; les relations invalides ou
+ambiguës et les champs invalides du cycle de vie font échouer la recette tout
+en conservant les décomptes. Les références externes ou absentes sont montrées
+sans présumer qu'elles sont fautives. Quatre tests locaux couvrent le script.
 
 **Contrôle de démarrage (2026-09-30) — 【FAIT EN LOCAL / NON TESTÉ SUR VM】** :
 `python -m core.preflight --root RACINE` vérifie Python ≥ 3.11, l'écriture

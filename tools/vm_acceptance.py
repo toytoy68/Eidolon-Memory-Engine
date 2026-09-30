@@ -80,12 +80,16 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
                            "platform": f"{platform.system()} {platform.release()}"},
               "steps": []}
 
-    def step(name, action):
+    def step(name, action, failures=None):
         start = monotonic()
         try:
             details = action()
-            entry = {"name": name, "status": "OK", "duration_seconds": round(monotonic() - start, 3),
+            found = failures(details) if failures is not None else []
+            entry = {"name": name, "status": "KO" if found else "OK",
+                     "duration_seconds": round(monotonic() - start, 3),
                      "details": details}
+            if found:
+                entry["error"] = ", ".join(found)
         except Exception as exc:
             entry = {"name": name, "status": "KO", "duration_seconds": round(monotonic() - start, 3),
                      "error": f"{type(exc).__name__}: {exc}"}
@@ -143,17 +147,20 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
 
     step("concurrency", concurrency)
 
-    def audits():
-        restored = workdir / "restored"
-        persistent = restored / "memory/persistent"
-        results = {"relations": audit_relations(persistent, history_root=restored / "memory/history"),
-                   "lifecycle": audit_lifecycle(persistent, as_of=at),
-                   "deletions": audit_deletions(restored)}
-        if results["deletions"]["issues"]:
-            raise ValueError(f"deletion audit has {len(results['deletions']['issues'])} issues")
-        return results
-
-    step("audits", audits)
+    restored = workdir / "restored"
+    persistent = restored / "memory/persistent"
+    step("audit_relations",
+         lambda: audit_relations(persistent, history_root=restored / "memory/history"),
+         lambda result: [f"{name}: {result['relations'].get(name, 0)}"
+                         for name in ("invalid", "ambiguous") if result["relations"].get(name, 0)])
+    step("audit_lifecycle", lambda: audit_lifecycle(persistent, as_of=at),
+         lambda result: [f"{name}: {count}" for name, count in (
+             ("invalid retention", result["retention"].get("invalid", 0)),
+             ("invalid applicability", result["applicability"].get("invalid", 0)),
+             ("invalid epistemic status", sum(result["epistemic_by_applicability"].get("invalid", {}).values())),
+         ) if count])
+    step("audit_deletions", lambda: audit_deletions(restored),
+         lambda result: [f"{len(result['issues'])} deletion issues"] if result["issues"] else [])
     if report["steps"][2]["status"] == "OK":
         verified = report["steps"][2]["details"]["source_sha256"]
         current = sha256(json.dumps(hashes(source), sort_keys=True).encode()).hexdigest()
