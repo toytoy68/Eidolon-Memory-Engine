@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 
 from core.operations.errors import OperationConflict, OperationNotFound, OperationRepositoryError
 from core.operations.filesystem import FilesystemOperationRepository
@@ -13,6 +14,16 @@ from core.threads.storage import ThreadStorage, ThreadStorageError, ThreadRevisi
 
 
 class FilesystemThreadDeletion:
+    @classmethod
+    def for_history(cls, storage: ThreadStorage, history_root: Path):
+        """Wire all canonical Thread journals for deletion and its recovery."""
+        root = Path(history_root) / "operations"
+        return cls(
+            storage, FilesystemOperationRepository(root / "thread-delete-v1"),
+            status_operations=FilesystemOperationRepository(root / "thread-status-v1"),
+            creation_operations=FilesystemOperationRepository(root / "thread-create-v1"),
+        )
+
     def __init__(self, storage: ThreadStorage, operations: FilesystemOperationRepository,
                  *, status_operations: FilesystemOperationRepository | None = None,
                  creation_operations: FilesystemOperationRepository | None = None):

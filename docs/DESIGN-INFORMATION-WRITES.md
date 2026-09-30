@@ -22,7 +22,8 @@ Un point d'assemblage commun doit garantir leur configuration complète.
 
 Les Threads ne sont pas entièrement couverts : `ThreadStorage.create/update`
 restent des primitives publiques sans Operation/Event. `delete` est journalisé,
-mais son coordinateur implicite ignore les familles création/statut (T-039).
+et son coordinateur implicite consulte désormais les familles création/statut
+canoniques via `for_history` (T-039 corrigé en local, non validé sur VM).
 Étendre la coordination Information ne résout pas ces contournements à lui seul.
 
 ## D1 à D5

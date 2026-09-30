@@ -458,11 +458,9 @@ class ThreadStorage:
         if previous_revision is None or operation_id is None:
             raise ThreadStorageError("previous_revision and operation_id are required for deletion")
         if coordinator is None:
-            from core.operations.filesystem import FilesystemOperationRepository
             from core.operations.thread_delete import FilesystemThreadDeletion
-            coordinator = FilesystemThreadDeletion(
-                self, FilesystemOperationRepository(
-                    self.persistent_root.parent / "history/operations/thread-delete-v1"))
+            coordinator = FilesystemThreadDeletion.for_history(
+                self, self.persistent_root.parent / "history")
         coordinator.delete(thread_id, previous_revision=previous_revision,
                            operation_id=operation_id)
 

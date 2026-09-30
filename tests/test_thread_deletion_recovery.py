@@ -184,3 +184,48 @@ def test_linked_creation_waits_for_pending_deletion(tmp_path, monkeypatch):
                                created_at="2026-09-30", updated_at="2026-09-30"), "info-1",
                         operation_id="new-create", event_id="new-event")
     assert storage.get("thread-1") is None
+
+
+@pytest.mark.parametrize("family", ["status", "creation"])
+def test_implicit_storage_delete_waits_for_other_family_recovery(tmp_path, monkeypatch, family):
+    storage = ThreadStorage(tmp_path / "memory/persistent")
+    history = tmp_path / "memory/history"
+    journal_name = "thread-status-v1" if family == "status" else "thread-create-v1"
+    operations = FilesystemOperationRepository(history / "operations" / journal_name)
+    events = FilesystemEventRepository(history / "events" / journal_name)
+    save = events.save
+
+    def interrupted(event):
+        save(event)
+        raise RuntimeError("interrupted after Event")
+
+    monkeypatch.setattr(events, "save", interrupted)
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-30",
+                    updated_at="2026-09-30")
+    if family == "status":
+        storage.create(thread)
+        writer = FilesystemThreadOperations(storage, events, operations)
+        with pytest.raises(RuntimeError, match="after Event"):
+            writer.change_status("thread-1", ThreadStatus.VALIDATED,
+                                 previous_revision=1, operation_id="pending", event_id="event-1")
+        revision = 2
+    else:
+        backend = FilesystemBackend(storage.persistent_root, history)
+        backend.store(Memory("info-1"))
+        writer = FilesystemLinkedThreadCreation(backend, storage, events, operations)
+        with pytest.raises(RuntimeError, match="after Event"):
+            writer.create(thread, "info-1", operation_id="pending", event_id="event-1")
+        revision = 1
+    before = storage._path("thread-1").read_bytes()
+    assert operations.get("pending").status is OperationStatus.APPLYING
+
+    with pytest.raises(OperationConflict, match="other Thread operation"):
+        storage.delete("thread-1", previous_revision=revision, operation_id="delete-1")
+    assert storage._path("thread-1").read_bytes() == before
+    assert not (history / "operations/thread-delete-v1/delete-1.json").exists()
+
+    monkeypatch.setattr(events, "save", save)
+    assert writer.recover()["pending"]["status"] == "COMMITTED"
+    storage.delete("thread-1", previous_revision=revision, operation_id="delete-1")
+    assert storage.get("thread-1") is None
+    assert operations.get("pending").status is OperationStatus.COMMITTED

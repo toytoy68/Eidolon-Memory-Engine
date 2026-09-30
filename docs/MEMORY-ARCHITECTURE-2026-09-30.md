@@ -6,6 +6,17 @@ toytoy et les propositions de Claude transmises dans la conversation.
 Il distingue les besoins retenus des mécanismes proposés, non implémentés.
 Le document complet de Claude n'était pas disponible pour cette revue.
 
+## Mise à jour après reprise des travaux
+
+Le bilan de code plus bas conserve sa base `e0c21a9`. Depuis : T-040 dispose
+maintenant du [contrat fonctionnel 0.1](../schemas/memory-policy-v0.1.md),
+de 14 scénarios attendus et de six tests du mapping Information/Memory,
+dont 500 candidats synthétiques. Le router n'exécute pas encore ces scénarios.
+T-039 est corrigé pour les journaux canoniques et couvert par deux tests de
+reprise ; les autres contournements Thread restent sous T-031. Les deux
+fonctions ont une preuve de test rouge après retrait du changement. Aucun
+essai VM et aucune modification des estimations.
+
 ## But et périmètre
 
 Fournir une mémoire durable, contextuelle, traçable et réutilisable par des
@@ -180,7 +191,8 @@ un verrou avant toute mise en service et devra couvrir les futures modifications
 
 Chaque bloc doit rester petit, avec preuve adaptée, avant d'étendre le périmètre.
 Les nouveaux travaux concernent l'architecture métier, pas une nouvelle série
-de micro-durcissements. T-039 reste seulement documenté pendant cette séance.
+de micro-durcissements. T-039 était seulement documenté au cadrage initial ;
+son traitement local est indiqué dans la mise à jour en tête de document.
 Les intégrations externes et le tableau de bord restent différés.
 
 ## Décisions encore ouvertes

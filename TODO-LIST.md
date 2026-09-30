@@ -86,13 +86,15 @@ Voir [le bilan et les scénarios](docs/MEMORY-ARCHITECTURE-2026-09-30.md) et
 [la conception Information](docs/DESIGN-INFORMATION-WRITES.md).
 Le cadrage initial ne modifiait que la documentation ; les réalisations
 suivantes sont attestées ci-dessous. Grille inchangée à 50,75
-points et estimation globale gelée à 45 %. Dernière suite locale sur
-`e0c21a9` : 666 réussis, 5 désélectionnés avec pytest 9.1.1 ; aucun essai VM.
+points et estimation globale gelée à 45 %. Après T-040 et T-039 :
+**674 tests réussis, 5 désélectionnés en 35,75 s** avec pytest 9.1.1.
+La concurrence et le disque réel restent non validés sur VM.
+Voir le [rapport de séance](docs/SESSION-2026-09-30-CONTRACT.md).
 
 | Ordre | Tâche et statut réel | Livrable et preuve attendus |
 | --- | --- | --- |
 | P0 | **【FAIT EN LOCAL — contrat et mapping / ROUTER NON IMPLÉMENTÉ】 T-040** Contrat fonctionnel et modèle canonique | `schemas/memory-policy-v0.1.md`, 14 scénarios attendus et mapping Information ↔ Memory ; six tests passent, dont 500 candidats de migration et préservation des extensions après édition |
-| P1 | **【À FAIRE】 T-031 et T-039** Chemins métier canoniques Thread | Migrer les appelants directs et traiter le coordinateur incomplet ; T-039 reste non corrigé dans cette séance, test d'interruption requis |
+| P1 | **【PARTIEL】 T-031 / 【FAIT EN LOCAL】 T-039** Chemins métier canoniques Thread | Le coordinateur implicite de suppression partage l'assemblage complet du CLI ; deux régressions création/statut passent ; les create/update directs restent à migrer |
 | P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-041** Service Information coordonné | D1–D5 documentées ; restent contrats d'import/rejeu, matrice des conflits avec suppression, implémentation et tests d'interruption |
 | P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-042** Snapshots et reçus compacts | Principe de conservation pendant reprise puis compaction documenté ; restent formats, conditions, politique de suppression et tests de transition interrompue |
 | P2 | **【À FAIRE】 T-043** Qualification et router métier | Plan expliqué par source, nature, contexte et utilité ; simulation des cas admin technique/philosophique, couloir/chat/fourchette ; aucun LLM obligatoire |
@@ -182,15 +184,18 @@ d'une identité recréée. Les 5 tests concurrents et la durabilité sur disque 
 restent non vérifiés. Aucun Event métier `DELETED` Thread n'est ajouté : la
 suppression est journalisée comme l'Information, pas intégrée à un flux Event.
 
-**【À FAIRE】 T-039 — Anomalie bloquante à traiter ultérieurement (2026-09-30)** :
-`ThreadStorage.delete` sans coordinateur injecté crée seulement le dépôt de
-suppression et ignore les journaux de création/statut inachevés. Reproduction
-isolée : interrompre un changement de statut après écriture de l'Event, puis
-appeler `storage.delete(thread_id, previous_revision=2, operation_id=...)` ;
-le Thread est retiré alors que l'opération de statut reste `APPLYING` et sa
-reprise signale `OperationConflict`. Aucun correctif ni essai VM de ce cas n'a
-été effectué. Employer le coordinateur complet du CLI et garder les écrivains
-arrêtés en attendant une résolution testée.
+**【FAIT EN LOCAL / NON TESTÉ SUR VM】 T-039 (2026-09-30)** :
+`FilesystemThreadDeletion.for_history` raccorde les trois journaux canoniques.
+`ThreadStorage.delete` implicite et le CLI utilisent cet assemblage commun.
+Une création ou un changement de statut interrompu après Event bloque la
+suppression, sans retirer le Thread ni préparer son journal de suppression ;
+après reprise, la suppression aboutit. Deux tests paramétrés reproduisent
+l'ancien défaut puis passent. Retirer les deux raccordements au correctif les
+fait de nouveau échouer (`DID NOT RAISE OperationConflict`).
+Limite : le chemin implicite suit `persistent/../history` ; pour une racine ou
+des noms de journaux personnalisés, injecter un coordinateur complet adapté.
+Les créations/mises à jour directes et les autres coordinateurs construits
+manuellement restent sous T-031. Aucune concurrence ni durabilité VM validée.
 
 **Port d'index (2026-09-30) — 【FAIT EN LOCAL】** : `IndexPort` définit
 `upsert/delete/query/rebuild/status`, `InMemoryIndex` sert de référence sans

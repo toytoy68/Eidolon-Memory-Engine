@@ -47,11 +47,7 @@ def main():
     storage = ThreadStorage(PERSISTENT_ROOT)
     deletion = None
     if args.command in {"delete-thread", "recover-deletions", "recover-all"}:
-        deletion = FilesystemThreadDeletion(
-            storage, FilesystemOperationRepository(OPERATIONS_ROOT / "thread-delete-v1"),
-            status_operations=FilesystemOperationRepository(OPERATIONS_ROOT / "thread-status-v1"),
-            creation_operations=FilesystemOperationRepository(OPERATIONS_ROOT / "thread-create-v1"),
-        )
+        deletion = FilesystemThreadDeletion.for_history(storage, HISTORY_ROOT)
         if args.command == "delete-thread":
             deletion.delete(args.thread_id, previous_revision=args.previous_revision,
                             operation_id=args.operation_id)

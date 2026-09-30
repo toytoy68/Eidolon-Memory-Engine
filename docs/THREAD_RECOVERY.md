@@ -66,11 +66,14 @@ readers can observe a Thread before its Event or commit marker becomes visible.
 The CLI uses `memory/history/operations/thread-status-v1` and
 `memory/history/events/thread-status-v1`, plus the analogous `thread-create-v1`
 directories, plus `memory/history/operations/thread-delete-v1` for deletion.
-The deletion journal has no corresponding business Event. A bare
-`ThreadStorage.delete` constructs only the deletion repository: with a pending
-status Operation, it can remove the Thread before recovery of that status.
-This reproduced conflict is tracked as T-039; use the CLI coordinator with
-all three journal families, and review pending operations before writes.
+The deletion journal has no corresponding business Event.
+`ThreadStorage.delete` and the CLI now share
+`FilesystemThreadDeletion.for_history`, which wires the canonical creation,
+status and deletion journals. Pending creation/status operations block deletion
+until recovered (T-039, two local regression cases). The implicit storage path
+uses `persistent/../history`; custom history roots or journal layouts require
+an explicitly injected complete coordinator. This does not make direct
+`ThreadStorage.create/update` coordinated, nor validate manually wired writers.
 It never migrates or replays the legacy
 CLI journals automatically. Old two-field plans remain readable but cannot be
 recovered automatically because their snapshots are missing. Manual migration is
