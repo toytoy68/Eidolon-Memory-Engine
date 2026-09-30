@@ -8,6 +8,7 @@ from core.events.models import (
     Cause,
     CauseType,
     Event,
+    Evidence,
     EventRelation,
     EventType,
     Provenance,
@@ -119,6 +120,19 @@ def test_save_and_get_event(tmp_path):
 
     assert loaded is not None
     assert loaded == event
+
+
+@pytest.mark.parametrize("changed", ["evidence", "transition"])
+def test_event_writer_refuses_lossy_json_round_trip(tmp_path, changed):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    event = Event("event-lossy", 1, EventType.CREATED, information_id="info-1")
+    if changed == "evidence":
+        event.evidence = Evidence(supporting=("source",))
+    else:
+        event.state_transition = StateTransition(after={"epistemic_status": ("UNVERIFIED",)})
+    with pytest.raises(InvalidEvent, match="changes when serialized"):
+        repository.save(event)
+    assert repository.get("event-lossy") is None
 
 
 def test_save_rejects_duplicate_event_id(tmp_path):

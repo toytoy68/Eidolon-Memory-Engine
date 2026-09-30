@@ -345,6 +345,10 @@ stables du moteur avant l'intégration aux agents.
   jour les conteneurs structurels de mauvais type que son propre lecteur 0.2
   rejetterait, ainsi qu'une identité non textuelle ; tests de non-écriture et
   de conservation de la version précédente (2026-09-30).
+- **【FAIT】** T-031ai — Le dépôt Event vérifie que l'Event sérialisé se relit
+  sans perte avant sa publication append-only ; les tuples convertis en listes
+  dans les preuves ou la transition sont refusés sans créer de fichier
+  (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

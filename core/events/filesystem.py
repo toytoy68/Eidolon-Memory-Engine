@@ -297,6 +297,8 @@ class FilesystemEventRepository(EventRepository):
             content = self._serialize(event)
         except (TypeError, ValueError) as exc:
             raise InvalidEvent("Event cannot be serialized as JSON") from exc
+        if self._deserialize(content) != event:
+            raise InvalidEvent("Event changes when serialized and read back")
         self._atomic_write(path, content)
 
         return event
