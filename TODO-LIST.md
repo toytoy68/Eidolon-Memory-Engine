@@ -349,6 +349,10 @@ stables du moteur avant l'intégration aux agents.
   sans perte avant sa publication append-only ; les tuples convertis en listes
   dans les preuves ou la transition sont refusés sans créer de fichier
   (2026-09-30).
+- **【FAIT】** T-031aj — Le dépôt Operation valide les identités et les types du
+  plan à l'écriture comme à la lecture ; une création Thread avec cible non
+  textuelle ou snapshot non textuel ne peut plus produire un journal inutilisable.
+  La sérialisation refuse les constantes numériques non JSON (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

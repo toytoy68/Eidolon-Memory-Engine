@@ -96,7 +96,7 @@ class FilesystemOperationRepository(OperationRepository):
                 if plan.keys() - plan_allowed:
                     raise InvalidOperationRecord("unknown Operation plan fields")
 
-            return OperationRecord(
+            record = OperationRecord(
                 operation_id=data["operation_id"],
                 operation_type=OperationType(data["operation_type"]),
                 target_id=data["target_id"],
@@ -122,6 +122,8 @@ class FilesystemOperationRepository(OperationRepository):
                     else None
                 ),
             )
+            self._validate_record_fields(record)
+            return record
         except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
             raise InvalidOperationRecord(operation_id) from exc
 
@@ -151,7 +153,31 @@ class FilesystemOperationRepository(OperationRepository):
 
         self._write(operation, path)
 
+    @staticmethod
+    def _validate_record_fields(operation: OperationRecord) -> None:
+        def valid_id(value):
+            return isinstance(value, str) and bool(re.fullmatch(r"[A-Za-z0-9._-]+", value))
+
+        if (not valid_id(operation.operation_id) or not valid_id(operation.target_id)
+                or not isinstance(operation.execution_plan_hash, str)
+                or not isinstance(operation.status, OperationStatus)
+                or not isinstance(operation.operation_type, OperationType)):
+            raise InvalidOperationRecord("invalid Operation identity or status")
+        plan = operation.plan
+        if isinstance(plan, ThreadCreatePlan):
+            if (not valid_id(plan.information_id) or not valid_id(plan.event_id)
+                    or not isinstance(plan.after_state, str)):
+                raise InvalidOperationRecord("invalid Thread creation plan")
+        elif isinstance(plan, ThreadStatusChangePlan):
+            if (not isinstance(plan.new_status, ThreadStatus) or not valid_id(plan.event_id)
+                    or any(value is not None and not isinstance(value, str)
+                           for value in (plan.before_state, plan.after_state))):
+                raise InvalidOperationRecord("invalid Thread status plan")
+        else:
+            raise InvalidOperationRecord("invalid Operation plan")
+
     def _write(self, operation: OperationRecord, path: Path) -> None:
+        self._validate_record_fields(operation)
         data = {
             "operation_id": operation.operation_id,
             "operation_type": operation.operation_type.value,
@@ -178,7 +204,11 @@ class FilesystemOperationRepository(OperationRepository):
             ),
         }
 
-        atomic_write_text(path, json.dumps(data, ensure_ascii=False, indent=2))
+        try:
+            content = json.dumps(data, ensure_ascii=False, indent=2, allow_nan=False)
+        except (TypeError, ValueError) as exc:
+            raise InvalidOperationRecord("Operation cannot be serialized as JSON") from exc
+        atomic_write_text(path, content)
 
     def list_incomplete(self) -> list[OperationRecord]:
         incomplete_statuses = {

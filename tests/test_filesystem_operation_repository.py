@@ -13,6 +13,7 @@ from core.operations.models import (
     OperationRecord,
     OperationStatus,
     OperationType,
+    ThreadCreatePlan,
     ThreadStatusChangePlan,
 )
 from core.threads.models import ThreadStatus
@@ -82,6 +83,40 @@ def test_operation_reader_rejects_ambiguous_json(tmp_path, content):
     with pytest.raises(InvalidOperationRecord):
         repository.get("op")
     assert path.read_text() == content
+
+
+@pytest.mark.parametrize("information_id,after_state", [
+    ("info-1", ["snapshot"]),
+    (float("nan"), "snapshot"),
+])
+def test_operation_writer_rejects_invalid_creation_plan_before_journal(
+        tmp_path, information_id, after_state):
+    repository = FilesystemOperationRepository(tmp_path)
+    operation = OperationRecord("create-1", OperationType.THREAD_CREATE, "thread-1",
+                                0, 1, "hash",
+                                plan=ThreadCreatePlan(information_id, "event-1", after_state))
+    with pytest.raises(InvalidOperationRecord, match="creation plan"):
+        repository.create(operation)
+    assert repository.get("create-1") is None
+
+
+def test_operation_reader_rejects_invalid_target_and_snapshot(tmp_path):
+    repository = FilesystemOperationRepository(tmp_path)
+    operation = OperationRecord("create-1", OperationType.THREAD_CREATE, "thread-1",
+                                0, 1, "hash",
+                                plan=ThreadCreatePlan("info-1", "event-1", "snapshot"))
+    repository.create(operation)
+    path = tmp_path / "create-1.json"
+    data = json.loads(path.read_text())
+    data["target_id"] = 12
+    path.write_text(json.dumps(data))
+    with pytest.raises(InvalidOperationRecord, match="identity"):
+        repository.get("create-1")
+    data["target_id"] = "thread-1"
+    data["plan"]["after_state"] = ["snapshot"]
+    path.write_text(json.dumps(data))
+    with pytest.raises(InvalidOperationRecord, match="creation plan"):
+        repository.get("create-1")
 
 
 def test_create_and_get_operation(tmp_path):

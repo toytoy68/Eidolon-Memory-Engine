@@ -52,6 +52,9 @@ Unknown JSON fields in an Operation or its plan are also rejected before a
 write could discard them; such a record requires explicit review.
 Duplicate JSON keys and nonstandard numeric constants are rejected for the
 same reason.
+The repository also rejects invalid target identities and plan field types on
+read and before writing a journal, rather than recording an operation that
+cannot be replayed.
 Already committed commands replay their original result even after later changes.
 This is recoverable multi-file persistence, not an atomic snapshot for readers:
 readers can observe a Thread before its Event or commit marker becomes visible.
