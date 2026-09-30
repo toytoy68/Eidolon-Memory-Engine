@@ -341,6 +341,10 @@ stables du moteur avant l'intégration aux agents.
   l'entrée d'exécution recontrôle les identités et la source, et les opérations
   STORE/UPDATE directes recontrôlent leur identité et la source avant lecture
   (tests isolés, 2026-09-30).
+- **【FAIT】** T-031ah — Le backend Information refuse avant création ou mise à
+  jour les conteneurs structurels de mauvais type que son propre lecteur 0.2
+  rejetterait, ainsi qu'une identité non textuelle ; tests de non-écriture et
+  de conservation de la version précédente (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

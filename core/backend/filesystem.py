@@ -68,7 +68,7 @@ class FilesystemBackend(MemoryBackend):
     # ------------------------------------------------------------------
 
     def _validate_id(self, information_id: str) -> None:
-        if not information_id:
+        if not isinstance(information_id, str) or not information_id:
             raise InvalidMemory("information_id is required")
 
         if not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
@@ -79,6 +79,16 @@ class FilesystemBackend(MemoryBackend):
     def _path(self, information_id: str) -> Path:
         self._validate_id(information_id)
         return self.persistent_root / f"{information_id}.md"
+
+    @staticmethod
+    def _validate_memory_shape(memory: Memory) -> None:
+        if not isinstance(memory, Memory):
+            raise InvalidMemory("Information must be a Memory object")
+        for name in ("metadata", "provenance", "temporal", "verification"):
+            if not isinstance(getattr(memory, name), dict):
+                raise InvalidMemory(f"{name} must be an object")
+        if not isinstance(memory.relations, list):
+            raise InvalidMemory("relations must be a list")
 
     def _ensure_relations_do_not_reuse_deleted_identity(self, memory: Memory) -> None:
         """A receipt reserves its Information identity, including for new links.
@@ -217,6 +227,7 @@ class FilesystemBackend(MemoryBackend):
 
     @serialized_write("persistent_root")
     def store(self, memory: Memory) -> StoreResult:
+        self._validate_memory_shape(memory)
         self._validate_id(memory.information_id)
 
         if type(memory.revision) is not int or memory.revision < 1:
@@ -273,6 +284,7 @@ class FilesystemBackend(MemoryBackend):
         memory: Memory,
         previous_revision: int,
     ) -> UpdateResult:
+        self._validate_memory_shape(memory)
         if type(previous_revision) is not int or previous_revision < 1:
             raise InvalidMemory("previous_revision must be an integer >= 1")
         current = self.get(information_id)

@@ -88,6 +88,31 @@ def test_backend_rejects_boolean_revision_before_writing(tmp_path):
     assert backend.get("info-test").content == "original"
 
 
+@pytest.mark.parametrize("field,value", [
+    ("metadata", []), ("provenance", []), ("temporal", []),
+    ("verification", []), ("relations", {}),
+])
+def test_backend_refuses_unreadable_information_shape_before_write(tmp_path, field, value):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    malformed = Memory("info-test", content="private")
+    setattr(malformed, field, value)
+    with pytest.raises(InvalidMemory, match=field):
+        backend.store(malformed)
+    assert backend.get("info-test") is None
+
+    backend.store(Memory("info-test", content="original"))
+    with pytest.raises(InvalidMemory, match=field):
+        backend.update("info-test", malformed, previous_revision=1)
+    assert backend.get("info-test").content == "original"
+
+
+def test_backend_rejects_nontext_identity_as_domain_error(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(InvalidMemory, match="information_id"):
+        backend.store(Memory(123))
+    assert list(backend.persistent_root.glob("*.md")) == []
+
+
 def test_failed_update_does_not_mutate_callers_memory(tmp_path, monkeypatch):
     backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
     backend.store(Memory("info-test", content="original"))
