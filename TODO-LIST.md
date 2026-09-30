@@ -424,6 +424,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031aw — Le rejouage d'un changement de statut refuse par conflit
   contrôlé un identifiant de journal déjà employé pour une création Thread,
   sans accéder à un plan du mauvais type (2026-09-30).
+- **【FAIT】** T-031ax — La création d'un lien Thread reconnaît une relation
+  `CONCERNS` historique avec `target` et évite d'ajouter un doublon `target_id`
+  pour la même Information (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

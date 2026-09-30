@@ -43,6 +43,11 @@ class ThreadInformationLinkService:
             raise ValueError("Thread relations must be objects")
         link = {"type": "CONCERNS", "target_id": information_id}
         relations = list(thread.relations)
-        if link not in relations:
+        if not any(
+            relation.get("type") == "CONCERNS"
+            and (relation.get("target_id") if relation.get("target_id") is not None
+                 else relation.get("target")) == information_id
+            for relation in relations
+        ):
             relations.append(link)
         return replace(thread, relations=relations)

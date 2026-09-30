@@ -49,6 +49,17 @@ def test_duplicate_link_is_not_added_twice(tmp_path):
     assert storage.get("thread-1").relations == existing.relations
 
 
+def test_legacy_target_link_is_not_added_twice(tmp_path):
+    backend, storage, links = service(tmp_path)
+    backend.store(Memory("info-1"))
+    existing = replace(thread(), relations=[{"type": "CONCERNS", "target": "info-1"}])
+
+    linked = links.create(existing, "info-1")
+
+    assert linked.relations == existing.relations
+    assert storage.get("thread-1").relations == existing.relations
+
+
 def test_link_service_rejects_different_persistent_roots(tmp_path):
     backend = FilesystemBackend(tmp_path / "one", tmp_path / "history")
     storage = ThreadStorage(tmp_path / "two")
