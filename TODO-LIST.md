@@ -130,6 +130,8 @@ stables du moteur avant l'intégration aux agents.
    même si sa cible n'existe pas (2026-09-29 ; simulation en lecture seule).
    T-033o refuse aussi un lien symbolique sur la racine du moteur ou un de ses
    ancêtres avant inventaire, précontrôle et simulation (2026-09-30).
+   T-033p classe les journaux JSON à clés dupliquées ou valeurs non standard
+   comme invalides dans l'inventaire, sans modifier les fichiers (2026-09-30).
 5. **【À VALIDER】** T-034 — Définir l'API avec Eidolon Core,
    l'identité/authentification et les erreurs. Décider ensuite si Qdrant est
    utile selon les besoins mesurés ; si oui, préciser index dérivé,
@@ -542,6 +544,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-033o — L'inventaire et le précontrôle refusent un ancêtre
   symbolique de la racine du moteur avant lecture ; la simulation échoue de
   même via l'inventaire. Test sur un chemin parent lié (2026-09-30).
+- **【FAIT】** T-033p — L'inventaire classe les fichiers JSON ambigus (clés
+  dupliquées) et les constantes non standard (`NaN`, etc.) comme invalides ;
+  test de deux journaux sans écriture ni exposition du contenu (2026-09-30).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).

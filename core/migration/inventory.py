@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 from core.persistence import has_symlink_component
+from core.storage_format import decode_json_value
 
 
 SOURCES = (
@@ -40,7 +41,7 @@ def classify(path: Path, category: str) -> str:
         return "symlink_skipped"
     try:
         if path.suffix == ".json":
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data = decode_json_value(path.read_text(encoding="utf-8"))
             if not isinstance(data, dict):
                 return "unknown"
             if category == "pending_delete":

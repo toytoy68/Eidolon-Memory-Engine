@@ -60,6 +60,20 @@ def test_inventory_skips_symlinks_and_reports_bad_json(tmp_path):
     }
 
 
+def test_inventory_flags_ambiguous_and_nonstandard_json(tmp_path):
+    first = write(tmp_path, "memory/history/operations/duplicate.json",
+                  '{"operation_id":"a","operation_id":"b","result":"STORE"}')
+    second = write(tmp_path, "memory/history/operations/nonfinite.json",
+                   '{"operation_id":"a","result":"STORE","score":NaN}')
+    report = inventory(tmp_path)
+    assert report["categories"]["operations"] == {"unreadable_or_invalid": 2}
+    assert {item["path"] for item in report["needs_review"]} == {
+        "memory/history/operations/duplicate.json",
+        "memory/history/operations/nonfinite.json",
+    }
+    assert first.exists() and second.exists()
+
+
 def test_cli_reports_inventory_without_content(tmp_path, capsys):
     write(tmp_path, "memory/working/item.md", "---\nid: i\n---\nprivate\n")
     assert main(["--root", str(tmp_path)]) == 0
