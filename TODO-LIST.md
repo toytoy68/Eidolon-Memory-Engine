@@ -304,6 +304,9 @@ stables du moteur avant l'intégration aux agents.
   ancêtres symboliques de Working/Events/Reviews et ne lit plus une cible
   Information symbolique pendant sa recherche ; tests isolés sur des chemins
   externes (2026-09-30).
+- **【FAIT】** T-031ad — Le verrou d'écriture partagé refuse une racine ou un
+  fichier `.write.lock` symbolique avant ouverture ; tests isolés sans écriture
+  sur une cible externe (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

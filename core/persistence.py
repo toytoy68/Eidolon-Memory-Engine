@@ -23,7 +23,10 @@ def has_symlink_component(path: Path) -> bool:
 @contextmanager
 def _exclusive_write(root):
     # Keep the lock file: unlinking it could split waiters across two inodes.
-    with (root / ".write.lock").open("a+b") as handle:
+    lock_path = root / ".write.lock"
+    if lock_path.is_symlink():
+        raise ValueError("writer lock file is a symlink")
+    with lock_path.open("a+b") as handle:
         if os.name == "nt":
             import msvcrt
             # Windows permits byte-range locks beyond EOF; do not initialize
@@ -55,6 +58,9 @@ def _exclusive_write(root):
 @contextmanager
 def exclusive_write(root):
     """Reentrant within a thread; other threads/processes still acquire the OS lock."""
+    root = Path(root)
+    if has_symlink_component(root) or (root / ".write.lock").is_symlink():
+        raise ValueError("writer lock path contains a symlink")
     key = str(root.resolve())
     held = getattr(_held_locks, "roots", None)
     if held is None:
