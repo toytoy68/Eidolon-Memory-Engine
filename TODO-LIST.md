@@ -317,6 +317,10 @@ stables du moteur avant l'intégration aux agents.
   refusent les racines de sortie liées ; la résolution de Review refuse un
   `information_id` contenant un chemin et une cible Information symbolique
   avant lecture (tests isolés, 2026-09-30).
+- **【FAIT】** T-031af — La configuration conserve le chemin explicite de
+  `MEMORY_ENGINE_ROOT` sans résoudre les liens avant les gardes de stockage ;
+  test en sous-processus vérifiant qu'une racine liée ne crée aucun dossier
+  dans sa cible (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

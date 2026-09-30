@@ -24,7 +24,7 @@ ENGINE_ROOT = Path(
         "MEMORY_ENGINE_ROOT",
         str(_DEFAULT_ENGINE_ROOT),
     )
-).resolve()
+).absolute()  # keep linked components visible to has_symlink_component
 
 
 DATA_ROOT = ENGINE_ROOT / "memory"
