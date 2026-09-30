@@ -127,8 +127,8 @@ class Event:
     relations: list[EventRelation] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        if self.revision < 1:
-            raise ValueError("revision doit être >= 1")
+        if type(self.revision) is not int or self.revision < 1:
+            raise ValueError("revision doit être >= 1 et de type entier")
 
         has_information = self.information_id is not None
         has_thread = self.thread_id is not None

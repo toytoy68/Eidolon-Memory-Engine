@@ -418,6 +418,9 @@ stables du moteur avant l'intégration aux agents.
   Validation d'un Event vérifient leurs types avant publication, afin de ne
   pas stocker d'objet que le schéma et les consommateurs interpréteraient mal
   (2026-09-30).
+- **【FAIT】** T-031av — Le constructeur Event refuse lui-même les révisions
+  booléennes ou non entières avec `ValueError`, avant le dépôt et sans erreur
+  Python de comparaison brute (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

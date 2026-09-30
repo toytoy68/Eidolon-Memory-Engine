@@ -147,6 +147,15 @@ def test_event_requires_positive_revision():
         )
 
 
+def test_event_constructor_rejects_noninteger_revision():
+    import pytest
+
+    for revision in (True, "1", 1.5):
+        with pytest.raises(ValueError, match="revision doit être >= 1 et de type entier"):
+            Event("event-invalid", revision, EventType.CREATED,
+                  information_id="info-1")
+
+
 def test_status_changed_is_reserved_for_threads():
     import pytest
 
