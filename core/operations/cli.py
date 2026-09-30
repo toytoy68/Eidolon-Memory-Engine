@@ -3,7 +3,8 @@ import argparse
 import hashlib
 import json
 
-from core.config import PERSISTENT_ROOT, HISTORY_ROOT, OPERATIONS_ROOT, EVENTS_ROOT
+from core.config import ENGINE_ROOT, PERSISTENT_ROOT, HISTORY_ROOT, OPERATIONS_ROOT, EVENTS_ROOT
+from core.preflight import check_environment
 from core.backend.filesystem import FilesystemBackend
 from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
@@ -36,6 +37,7 @@ def main():
     commands.add_parser("recover-creations")
     commands.add_parser("recover-all")
     args = parser.parse_args()
+    check_environment(ENGINE_ROOT)
     storage = ThreadStorage(PERSISTENT_ROOT)
     if args.command in {"recover-creations", "recover-all", "create-linked"}:
         creation = FilesystemLinkedThreadCreation(

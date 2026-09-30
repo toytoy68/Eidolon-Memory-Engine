@@ -91,6 +91,14 @@ sont pas détectables par les seuls descripteurs `/proc` et les cinq cas de
 concurrence restent à exécuter sur la VM. La copie source doit déjà être
 arrêtée avant la commande.
 
+**Contrôle de démarrage (2026-09-30) — 【FAIT EN LOCAL / NON TESTÉ SUR VM】** :
+`python -m core.preflight --root RACINE` vérifie Python ≥ 3.11, l'écriture
+effective par fichier temporaire supprimé, l'espace disponible (seuil 1 GiB
+par défaut) et le chemin réel. Un ancêtre symbolique indique le chemin réel à
+configurer. Le CLI des opérations Thread exécute ce contrôle avant d'ouvrir
+ses dépôts. Cinq tests ciblés passent ; les droits et le disque de la VM
+restent à vérifier sur place.
+
 **Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
