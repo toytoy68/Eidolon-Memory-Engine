@@ -25,6 +25,17 @@ def test_migration_tools_do_not_traverse_linked_memory_parent(tmp_path):
         {"path": "memory", "reasons": ["symlink_skipped"]}]
 
 
+@pytest.mark.parametrize("component", ["memory", "memory/persistent"])
+def test_migration_tools_flag_directory_replaced_by_file(tmp_path, component):
+    damaged = tmp_path / component
+    damaged.parent.mkdir(parents=True, exist_ok=True)
+    damaged.write_text("private")
+    expected = [{"path": component, "reasons": ["invalid_directory"]}]
+    assert preflight(tmp_path)["blocked"] == expected
+    assert simulate(tmp_path)["information"]["blocked"] == expected
+    assert damaged.read_text() == "private"
+
+
 def test_simulation_reports_mapping_and_legacy_data_without_writing(tmp_path, capsys):
     persistent = tmp_path / "memory/persistent"
     persistent.mkdir(parents=True)

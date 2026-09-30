@@ -14,7 +14,7 @@ from core.backend.filesystem import FilesystemBackend
 from core.information.models import (
     Confidence, EpistemicStatus, Importance, InformationType, OperationalState, Retention,
 )
-from core.migration.inventory import classify, symlink_ancestor
+from core.migration.inventory import classify, invalid_directory_ancestor, symlink_ancestor
 from core.persistence import has_symlink_component
 
 
@@ -139,6 +139,11 @@ def preflight(engine_root: Path) -> dict:
     if linked is not None:
         report["blocked"].append({"path": linked.relative_to(root).as_posix(),
                                   "reasons": ["symlink_skipped"]})
+        return report
+    invalid = invalid_directory_ancestor(root, persistent)
+    if invalid is not None:
+        report["blocked"].append({"path": invalid.relative_to(root).as_posix(),
+                                  "reasons": ["invalid_directory"]})
         return report
     if not persistent.is_dir():
         return report

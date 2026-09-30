@@ -15,7 +15,8 @@ from core.backend.models import Memory
 from core.events.filesystem import FilesystemEventRepository
 from core.events.errors import InvalidEvent
 from core.events.models import EventType
-from core.migration.inventory import inventory, classify, symlink_ancestor
+from core.migration.inventory import (inventory, classify, invalid_directory_ancestor,
+                                      symlink_ancestor)
 from core.migration.preflight import UniqueKeyLoader, inspect_core_information, inspect_legacy_information
 
 
@@ -254,6 +255,11 @@ def simulate(engine_root: Path) -> dict:
     if linked is not None:
         report["information"]["blocked"].append(
             {"path": linked.relative_to(root).as_posix(), "reasons": ["symlink_skipped"]})
+        return report
+    invalid = invalid_directory_ancestor(root, persistent)
+    if invalid is not None:
+        report["information"]["blocked"].append(
+            {"path": invalid.relative_to(root).as_posix(), "reasons": ["invalid_directory"]})
         return report
     if not persistent.is_dir():
         return report

@@ -36,6 +36,16 @@ def symlink_ancestor(root: Path, path: Path) -> Path | None:
     return None
 
 
+def invalid_directory_ancestor(root: Path, path: Path) -> Path | None:
+    """Find a file occupying an expected directory below the engine root."""
+    current = root
+    for part in path.relative_to(root).parts:
+        current = current / part
+        if current.exists() and not current.is_dir():
+            return current
+    return None
+
+
 def classify(path: Path, category: str) -> str:
     if path.is_symlink():
         return "symlink_skipped"
@@ -88,16 +98,13 @@ def inventory(engine_root: Path) -> dict:
             result["needs_review"].append({
                 "path": linked.relative_to(root).as_posix(), "reason": "symlink_skipped"})
         else:
-            current = root
-            for part in Path(relative).parts:
-                current = current / part
-                if current.exists() and not current.is_dir():
-                    location = current.relative_to(root).as_posix()
-                    if location not in invalid_directories:
-                        result["needs_review"].append({
-                            "path": location, "reason": "invalid_directory"})
-                        invalid_directories.add(location)
-                    break
+            invalid = invalid_directory_ancestor(root, directory)
+            if invalid is not None:
+                location = invalid.relative_to(root).as_posix()
+                if location not in invalid_directories:
+                    result["needs_review"].append({
+                        "path": location, "reason": "invalid_directory"})
+                    invalid_directories.add(location)
         if linked is None and directory.is_dir():
             for path in sorted(directory.glob(pattern)):
                 if not path.is_file() and not path.is_symlink():
