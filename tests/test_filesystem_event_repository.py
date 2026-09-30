@@ -307,6 +307,16 @@ def test_save_rejects_nonfinite_event_data_without_creating_file(tmp_path):
     assert repository.get("nonfinite") is None
 
 
+def test_event_reader_rejects_overflowing_json_number(tmp_path):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    event = Event("overflow", 1, EventType.CREATED, information_id="info")
+    source = repository._serialize(event)
+    (repository.events_root / "overflow.md").write_text(
+        source.replace('"after": {}', '"after": {"epistemic_status": 1e10000}'))
+    with pytest.raises(InvalidEvent, match="invalid Event JSON"):
+        repository.get("overflow")
+
+
 @pytest.mark.parametrize("overrides", [
     {"revision": "2"},
     {"revision": True},

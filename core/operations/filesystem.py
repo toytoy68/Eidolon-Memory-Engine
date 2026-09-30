@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 from core.persistence import serialized_write, atomic_write_text, has_symlink_component
+from core.storage_format import parse_finite_json_float
 
 from core.operations.errors import (
     InvalidOperationRecord,
@@ -77,7 +78,8 @@ class FilesystemOperationRepository(OperationRepository):
 
             with path.open("r", encoding="utf-8") as handle:
                 data = json.load(handle, object_pairs_hook=unique_object,
-                                 parse_constant=invalid_constant)
+                                 parse_constant=invalid_constant,
+                                 parse_float=parse_finite_json_float)
 
             if not isinstance(data, dict) or data.get("operation_id") != operation_id:
                 raise InvalidOperationRecord(operation_id)

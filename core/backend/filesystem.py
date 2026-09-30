@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from dataclasses import asdict, replace
 from core.storage_format import (encode_document, decode_document, decode_json_value,
+                                 parse_finite_json_float,
                                  legacy_identity_fields)
 
 from core.persistence import serialized_write, atomic_write_text, exclusive_write, has_symlink_component
@@ -394,7 +395,8 @@ class FilesystemBackend(MemoryBackend):
 
             request = json.loads(path.read_text(encoding="utf-8"),
                                  object_pairs_hook=unique_object,
-                                 parse_constant=invalid_constant)
+                                 parse_constant=invalid_constant,
+                                 parse_float=parse_finite_json_float)
         except (OSError, UnicodeError, ValueError) as exc:
             raise InvalidMemory("pending delete request is unreadable") from exc
         receipt_fields = {"information_id", "requested_by", "reason", "revision",

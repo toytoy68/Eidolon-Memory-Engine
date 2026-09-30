@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from core.persistence import serialized_write, atomic_write_text, has_symlink_component
+from core.storage_format import parse_finite_json_float
 
 from core.config import EVENTS_ROOT, ensure_directories
 
@@ -254,10 +255,11 @@ class FilesystemEventRepository(EventRepository):
             data, end = json.JSONDecoder(
                 object_pairs_hook=unique_object,
                 parse_constant=invalid_constant,
+                parse_float=parse_finite_json_float,
             ).raw_decode(payload)
             if payload[end:].strip() != "```":
                 raise InvalidEvent("invalid Event JSON boundary")
-        except json.JSONDecodeError as exc:
+        except (json.JSONDecodeError, ValueError) as exc:
             raise InvalidEvent("invalid Event JSON") from exc
 
         if not isinstance(data, dict):

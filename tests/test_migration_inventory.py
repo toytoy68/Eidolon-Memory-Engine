@@ -65,13 +65,16 @@ def test_inventory_flags_ambiguous_and_nonstandard_json(tmp_path):
                   '{"operation_id":"a","operation_id":"b","result":"STORE"}')
     second = write(tmp_path, "memory/history/operations/nonfinite.json",
                    '{"operation_id":"a","result":"STORE","score":NaN}')
+    third = write(tmp_path, "memory/history/operations/overflow.json",
+                  '{"operation_id":"a","result":"STORE","score":1e10000}')
     report = inventory(tmp_path)
-    assert report["categories"]["operations"] == {"unreadable_or_invalid": 2}
+    assert report["categories"]["operations"] == {"unreadable_or_invalid": 3}
     assert {item["path"] for item in report["needs_review"]} == {
         "memory/history/operations/duplicate.json",
         "memory/history/operations/nonfinite.json",
+        "memory/history/operations/overflow.json",
     }
-    assert first.exists() and second.exists()
+    assert first.exists() and second.exists() and third.exists()
 
 
 def test_cli_reports_inventory_without_content(tmp_path, capsys):

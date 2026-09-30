@@ -353,6 +353,10 @@ stables du moteur avant l'intégration aux agents.
   plan à l'écriture comme à la lecture ; une création Thread avec cible non
   textuelle ou snapshot non textuel ne peut plus produire un journal inutilisable.
   La sérialisation refuse les constantes numériques non JSON (2026-09-30).
+- **【FAIT】** T-031ak — Les lecteurs JSON du noyau, des Events, Operations et
+  reçus refusent un nombre dont l'exposant déborde en infini Python
+  (`1e10000`) ; l'inventaire historique le classe comme invalide au lieu de
+  reconnaître un journal exploitable (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

@@ -1,5 +1,6 @@
 """Lossless, versioned JSON documents embedded in human-readable Markdown."""
 import json
+import math
 import re
 
 
@@ -46,10 +47,19 @@ def _invalid_constant(value):
     raise ValueError(f"invalid JSON constant: {value}")
 
 
+def parse_finite_json_float(value):
+    """Reject valid JSON numeric syntax that overflows Python's float."""
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise ValueError("JSON number exceeds finite float range")
+    return parsed
+
+
 def decode_json_value(text):
     """Parse one JSON value without dropping duplicates or accepting NaN."""
     return json.loads(text, object_pairs_hook=_unique_object,
-                      parse_constant=_invalid_constant)
+                      parse_constant=_invalid_constant,
+                      parse_float=parse_finite_json_float)
 
 
 def decode_document(text, kind):
@@ -67,7 +77,8 @@ def decode_document(text, kind):
         raise ValueError("missing JSON payload")
     body = body.split("\n", 1)[1].lstrip()
     payload, end = json.JSONDecoder(object_pairs_hook=_unique_object,
-                                   parse_constant=_invalid_constant).raw_decode(body)
+                                   parse_constant=_invalid_constant,
+                                   parse_float=parse_finite_json_float).raw_decode(body)
     if body[end:].strip() != "```" or not isinstance(payload, dict):
         raise ValueError("invalid JSON document boundary")
     return payload

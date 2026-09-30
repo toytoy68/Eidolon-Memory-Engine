@@ -148,6 +148,13 @@ def test_legacy_memory_rejects_ambiguous_json_sections(replacement):
         FilesystemBackend._deserialize(malformed)
 
 
+def test_information_reader_rejects_numeric_overflow_in_json():
+    source = FilesystemBackend._serialize(Memory("overflow"))
+    malformed = source.replace('"content": null', '"content": 1e10000')
+    with pytest.raises(InvalidMemory):
+        FilesystemBackend._deserialize(malformed)
+
+
 @pytest.mark.parametrize("replacement", [
     '{"source":"first","source":"second"}',
     '{"score":Infinity}',
