@@ -1,5 +1,12 @@
 # Frontières actuelles du Memory Engine
 
+La [clarification fonctionnelle du 30/09](MEMORY-ARCHITECTURE-2026-09-30.md)
+décrit la cible contextuelle, les dossiers Markdown, les trois niveaux de
+disponibilité et l'ordre des futurs travaux. La
+[conception Information](DESIGN-INFORMATION-WRITES.md) intègre les propositions
+de la revue croisée. Ces documents ne décrivent pas des fonctions livrées ;
+le présent fichier reste l'inventaire des chemins actuels.
+
 État du dépôt au 2026-09-30. Les décisions ci-dessous concernent le code
 présent ; leur adoption sur la VM 110 reste soumise à sauvegarde, inventaire et
 tests. La source de vérité est le stockage en fichiers sous `memory/`, pas un

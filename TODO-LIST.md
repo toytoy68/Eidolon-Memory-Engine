@@ -78,7 +78,38 @@ d'intégration d'Eidolon Core. S'il est raccordé, il sera un index
 attesté par cette branche. `Eidolon-Bootstrap-Framework` est le dépôt du
 déploiement de la plateforme, distinct d'Eidolon Core et du Memory Engine.
 
-## Priorités après l'audit du dépôt
+## Priorités d'architecture après clarification avec toytoy (30/09)
+
+Cette section fixe le nouvel ordre ; les listes historiques plus bas conservent
+leurs preuves et limites mais ne constituent plus l'ordre d'exécution.
+Voir [le bilan et les scénarios](docs/MEMORY-ARCHITECTURE-2026-09-30.md) et
+[la conception Information](docs/DESIGN-INFORMATION-WRITES.md).
+Cette séance modifie seulement la documentation. Grille inchangée à 50,75
+points et estimation globale gelée à 45 %. Dernière suite locale sur
+`e0c21a9` : 666 réussis, 5 désélectionnés avec pytest 9.1.1 ; aucun essai VM.
+
+| Ordre | Tâche et statut réel | Livrable et preuve attendus |
+| --- | --- | --- |
+| P0 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-040** Contrat fonctionnel et modèle canonique | Besoins et exemples documentés ; restent schéma versionné, mapping Information ↔ Memory, contexte, autorité, durée d'utilité et attendus de tests |
+| P1 | **【À FAIRE】 T-031 et T-039** Chemins métier canoniques Thread | Migrer les appelants directs et traiter le coordinateur incomplet ; T-039 reste non corrigé dans cette séance, test d'interruption requis |
+| P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-041** Service Information coordonné | D1–D5 documentées ; restent contrats d'import/rejeu, matrice des conflits avec suppression, implémentation et tests d'interruption |
+| P1 | **【PARTIEL — conception / NON IMPLÉMENTÉ】 T-042** Snapshots et reçus compacts | Principe de conservation pendant reprise puis compaction documenté ; restent formats, conditions, politique de suppression et tests de transition interrompue |
+| P2 | **【À FAIRE】 T-043** Qualification et router métier | Plan expliqué par source, nature, contexte et utilité ; simulation des cas admin technique/philosophique, couloir/chat/fourchette ; aucun LLM obligatoire |
+| P3 | **【À FAIRE】 T-044** Dossiers Markdown vivants | Rattachement ou création, récapitulatif avec références/révisions ; préserver décisions humaines, signaler ambiguïtés et vues périmées |
+| P3 | **【À FAIRE】 T-045** Catalogue léger reconstructible | Mots-clés, contexte et pointeurs disponibles y compris pour mémoire basse ; reconstruction, corrections et suppressions testées sans index externe |
+| P4 | **【À FAIRE】 T-046** Trois niveaux et cycle de vie | Activation, fraîcheur, réexamen, échéances persistantes, distinction éviction/expiration/archive/suppression ; horloge contrôlée et redémarrage |
+| P5 | **【À FAIRE】 T-047**, avec T-036 | Rappel contextuel et parcours complets par client factice ; sources, pertinence, budgets et latence mesurés sur scénarios représentatifs |
+| VM, voie distincte | **【NON TESTÉ SUR VM】 T-010 à T-015 / T-021 / T-032** | Copie arrêtée, inventaire réel, restauration par hash, 5 tests concurrents, audits et migration ; gate avant mise en service du commit candidat |
+
+Les orientations fonctionnelles sont intégrées ; les signatures et politiques
+encore ouvertes ne sont pas considérées comme validées. Chaque futur bloc
+doit avoir une preuve comportementale, dont un test rouge après retrait de la
+fonctionnalité. Aucun nouveau test artificiel n'est ajouté pour cette édition
+documentaire. Pas de travail sur Eidolon Core, Hermes, Qdrant ou les nouveaux
+micro-durcissements. Le prochain travail est T-040, pas une reprise automatique
+de l'implémentation.
+
+## État des sept blocs après l'audit du dépôt
 
 **Recette VM (2026-09-30) — 【PARTIEL / NON TESTÉ SUR VM】** :
 `python -B -m tools.vm_acceptance --source COPIE_ARRÊTÉE --workdir DOSSIER_VIDE`
@@ -193,6 +224,9 @@ Eidolon Core et les futurs agents sont des clients susceptibles d'évoluer ou
 d'être remplacés sans migration imposée de la mémoire. L'index éventuel reste
 reconstructible. Prioriser la sûreté des données, la migration et les contrats
 stables du moteur avant l'intégration aux agents.
+
+Liste conservée pour le suivi historique ; l'ordre courant est défini par P0–P5
+en tête de ce document.
 
 1. **【À FAIRE】** T-010 à T-015 — Sur VM, identifier les écrivains et données,
    sauvegarder et vérifier une restauration sur copie, tester les cinq cas de
