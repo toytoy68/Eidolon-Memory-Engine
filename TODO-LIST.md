@@ -142,6 +142,16 @@ d'une identité recréée. Les 5 tests concurrents et la durabilité sur disque 
 restent non vérifiés. Aucun Event métier `DELETED` Thread n'est ajouté : la
 suppression est journalisée comme l'Information, pas intégrée à un flux Event.
 
+**【À FAIRE】 T-039 — Anomalie bloquante à traiter ultérieurement (2026-09-30)** :
+`ThreadStorage.delete` sans coordinateur injecté crée seulement le dépôt de
+suppression et ignore les journaux de création/statut inachevés. Reproduction
+isolée : interrompre un changement de statut après écriture de l'Event, puis
+appeler `storage.delete(thread_id, previous_revision=2, operation_id=...)` ;
+le Thread est retiré alors que l'opération de statut reste `APPLYING` et sa
+reprise signale `OperationConflict`. Aucun correctif ni essai VM de ce cas n'a
+été effectué. Employer le coordinateur complet du CLI et garder les écrivains
+arrêtés en attendant une résolution testée.
+
 **Port d'index (2026-09-30) — 【FAIT EN LOCAL】** : `IndexPort` définit
 `upsert/delete/query/rebuild/status`, `InMemoryIndex` sert de référence sans
 dépendance externe et trois tests de contrat héritables vérifient mutations,
