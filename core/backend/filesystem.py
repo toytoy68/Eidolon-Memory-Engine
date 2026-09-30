@@ -13,7 +13,8 @@ from core.storage_format import (encode_document, decode_document, decode_json_v
                                  legacy_identity_fields)
 
 from core.persistence import serialized_write, atomic_write_text, exclusive_write, has_symlink_component
-from core.information.references import ensure_no_thread_links, ensure_no_information_links
+from core.information.references import (ensure_no_thread_links, ensure_no_information_links,
+                                         ensure_no_pending_thread_creations)
 from core.backend.errors import InformationDeletionBlocked
 
 from core.config import PERSISTENT_ROOT, HISTORY_ROOT, ensure_directories
@@ -439,6 +440,7 @@ class FilesystemBackend(MemoryBackend):
         threads_root.mkdir(parents=True, exist_ok=True)
         with exclusive_write(threads_root):
             ensure_no_thread_links(threads_root, information_id)
+            ensure_no_pending_thread_creations(self.history_root, information_id)
             ensure_no_information_links(self.persistent_root, information_id,
                                         self._deserialize)
             memory_path = self._path(information_id)

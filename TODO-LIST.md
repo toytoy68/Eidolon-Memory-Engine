@@ -237,6 +237,10 @@ stables du moteur avant l'intégration aux agents.
   l'identité et la lisibilité sans exiger une révision inchangée. Aucune demande
   n'est modifiée
   (2026-09-30).
+- **【FAIT】** T-032s — L'approbation d'une suppression refuse une création
+  Thread liée dont le journal n'est pas encore `COMMITTED`, même si le fichier
+  Thread n'existe pas encore. La reprise peut ainsi terminer son lien ; test
+  d'interruption après journal et refus avant/après reprise (2026-09-30).
 - **【FAIT】** T-032n — L’audit et la reprise des suppressions refusent aussi
   les parents symboliques situés au-dessus de `--root`, avant tout parcours
   ou toute mutation (2026-09-29).

@@ -6,6 +6,10 @@ from pathlib import Path
 
 from core.backend.errors import InformationDeletionBlocked, InvalidMemory
 from core.threads.storage import ThreadStorage, ThreadStorageError
+from core.operations.filesystem import FilesystemOperationRepository
+from core.operations.models import OperationStatus, OperationType, ThreadCreatePlan
+from core.operations.errors import InvalidOperationRecord
+from core.persistence import has_symlink_component
 
 
 def ensure_no_information_links(persistent_root: Path, information_id: str,
@@ -82,3 +86,25 @@ def ensure_no_thread_links(threads_root: Path, information_id: str) -> None:
                 raise InformationDeletionBlocked(
                     f"Information is linked by Thread {thread.thread_id}"
                 )
+
+
+def ensure_no_pending_thread_creations(history_root: Path, information_id: str) -> None:
+    """A prepared Thread link reserves its target before the Thread file exists."""
+    root = history_root / "operations" / "thread-create-v1"
+    if has_symlink_component(root):
+        raise InformationDeletionBlocked("Thread creation journal contains a symlink")
+    if not root.exists():
+        return
+    if not root.is_dir():
+        raise InformationDeletionBlocked("Thread creation journal is not a directory")
+    repository = FilesystemOperationRepository(root)
+    for path in sorted(root.glob("*.json")):
+        try:
+            record = repository.get(path.stem)
+        except (OSError, UnicodeError, ValueError, InvalidOperationRecord) as exc:
+            raise InformationDeletionBlocked("unreadable Thread creation journal") from exc
+        if (record is not None and record.operation_type is OperationType.THREAD_CREATE
+                and record.status is not OperationStatus.COMMITTED
+                and isinstance(record.plan, ThreadCreatePlan)
+                and record.plan.information_id == information_id):
+            raise InformationDeletionBlocked("pending Thread creation references Information")

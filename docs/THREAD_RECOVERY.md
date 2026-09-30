@@ -26,6 +26,8 @@ still processed. Pending operations block new commands for the same Thread.
 `recover-creations` and `recover` remain available for separate families. The
 CLI `create-linked` journals creation with an explicit timestamp and emits a
 Thread `CREATED` Event; direct storage writes do not provide this guarantee.
+An unfinished linked creation reserves its Information target for deletion:
+approval checks the creation journal even before the Thread file exists.
 
 ## Protocol and guarantees
 

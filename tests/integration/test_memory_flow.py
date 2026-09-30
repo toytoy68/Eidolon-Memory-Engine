@@ -12,6 +12,7 @@ import pytest
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
+from core.backend.errors import InformationDeletionBlocked
 from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
 from core.operations.models import OperationStatus
@@ -310,6 +311,30 @@ def test_linked_creation_blocks_second_operation_for_pending_thread(tmp_path, mo
         restarted.create(thread, "info-1", operation_id="create-2", event_id="created-2")
     assert restarted.operations.get("create-2") is None
     assert restarted.recover() == {"create-1": {"status": "COMMITTED"}}
+
+
+def test_pending_thread_creation_reserves_information_until_recovery(tmp_path, monkeypatch):
+    backend, creation = open_creation(tmp_path)
+    backend.store(Memory("info-1"))
+    thread = Thread("thread-1", "Title", "Objective", created_at="2026-09-28",
+                    updated_at="2026-09-28")
+    save = creation.operations.create
+
+    def interrupt_after_journal(operation):
+        save(operation)
+        raise InterruptedError("interrupted after journal write")
+
+    monkeypatch.setattr(creation.operations, "create", interrupt_after_journal)
+    with pytest.raises(InterruptedError):
+        creation.create(thread, "info-1", operation_id="create-1", event_id="created-1")
+    assert creation.storage.get("thread-1") is None
+    backend.delete_request("info-1", "human", "obsolete", 1, "delete-1")
+    with pytest.raises(InformationDeletionBlocked, match="pending Thread creation"):
+        backend.approve_delete("info-1", "delete-1")
+    assert backend.get("info-1") is not None
+    assert creation.recover() == {"create-1": {"status": "COMMITTED"}}
+    with pytest.raises(InformationDeletionBlocked, match="linked by Thread"):
+        backend.approve_delete("info-1", "delete-1")
 
 
 def test_status_change_waits_for_interrupted_thread_creation(tmp_path, monkeypatch):
