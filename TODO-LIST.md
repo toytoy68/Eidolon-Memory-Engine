@@ -9,6 +9,10 @@ pourcentage n'est pas un ratio de cases cochées. Voir
 [l'audit détaillé](docs/AUDIT-2026-09-30.md) pour les poids, preuves et limites.
 
 Dernière mise à jour : 2026-09-30. Branche suivie : `refactor/architecture-v1`.
+Les questions et revues ponctuelles Codex/Claude sont suivies dans
+[ECHANGES.md](ECHANGES.md), selon le [mode de collaboration](docs/COLLABORATION.md).
+Le dispositif documentaire est prêt ; les accès Claude/VM annoncés pour le
+weekend restent non vérifiés et ne constituent pas un avancement fonctionnel.
 Cette arborescence décrit une **cible supposée**, pas une architecture figée. Les
 emplacements marqués `prévu` sont des propositions à confirmer avant création.
 Le dépôt Git versionne le code et les schémas ; les mémoires réelles, secrets,

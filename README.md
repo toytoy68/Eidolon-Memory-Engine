@@ -7,6 +7,8 @@ développement et n'est pas encore validée sur la VM.
 
 ## Point de départ
 
+- [Échanges et reprise Codex/Claude](ECHANGES.md), avec le
+  [mode de collaboration asynchrone](docs/COLLABORATION.md).
 - [Besoins clarifiés, architecture cible et priorités](docs/MEMORY-ARCHITECTURE-2026-09-30.md)
   et [proposition d'écritures Information coordonnées](docs/DESIGN-INFORMATION-WRITES.md)
   — cible documentée, implémentation progressive.
