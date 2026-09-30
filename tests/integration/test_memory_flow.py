@@ -440,6 +440,7 @@ def test_recover_all_cli_resumes_pending_creation(tmp_path, monkeypatch):
     )
     assert json.loads(result.stdout) == {
         "creations": {"create-1": {"status": "COMMITTED"}}, "status_changes": {},
+        "deletions": {},
     }
     _, restarted = open_creation(tmp_path)
     assert restarted.storage.get("thread-1") is not None

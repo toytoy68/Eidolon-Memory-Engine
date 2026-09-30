@@ -120,6 +120,17 @@ valider les correspondances et pertes sémantiques sur la copie VM avant tout
 usage réel ; les anciens Events/Reviews sont conservés comme archives, non
 convertis en objets métier core.
 
+**Suppression Thread (2026-09-30) — 【FAIT EN LOCAL / NON TESTÉ SUR VM】** :
+`ThreadStorage.delete` exige maintenant révision et identifiant d'opération et
+passe par le journal `thread-delete-v1` ; le service et le CLI proposent
+`delete-thread`, `recover-deletions`, puis `recover-all` reprend les créations,
+statuts et suppressions. Le plan contient le snapshot précédent, refuse les
+conflits et synchronise le retrait du fichier avant `COMMITTED`. Tests de
+reprise après arrêt brutal de processus avant/après `unlink`, rejeu et refus
+d'une identité recréée. Les 5 tests concurrents et la durabilité sur disque VM
+restent non vérifiés. Aucun Event métier `DELETED` Thread n'est ajouté : la
+suppression est journalisée comme l'Information, pas intégrée à un flux Event.
+
 **Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec

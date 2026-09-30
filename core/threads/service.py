@@ -13,10 +13,12 @@ from .storage import ThreadStorage
 class ThreadService:
     """Coordinate Thread persistence and domain queries."""
 
-    def __init__(self, storage: ThreadStorage, operations=None, creation=None) -> None:
+    def __init__(self, storage: ThreadStorage, operations=None, creation=None,
+                 deletion=None) -> None:
         self.storage = storage
         self.operations = operations
         self.creation = creation
+        self.deletion = deletion
 
     def get(self, thread_id: str) -> Thread | None:
         """Load a Thread from persistent storage."""
@@ -75,10 +77,19 @@ class ThreadService:
             raise RuntimeError("Thread recovery requires an operation coordinator")
         return self.operations.recover()
 
+    def delete(self, thread_id: str, *, previous_revision: int, operation_id: str) -> None:
+        if self.deletion is None:
+            raise RuntimeError("Thread deletion requires an operation coordinator")
+        self.deletion.delete(thread_id, previous_revision=previous_revision,
+                             operation_id=operation_id)
+
     def recover_all(self):
         """Resume linked creations before status changes."""
         if self.creation is None or self.operations is None:
             raise RuntimeError("full Thread recovery requires both coordinators")
         creations = self.creation.recover()
         status_changes = self.operations.recover()
-        return {"creations": creations, "status_changes": status_changes}
+        result = {"creations": creations, "status_changes": status_changes}
+        if self.deletion is not None:
+            result["deletions"] = self.deletion.recover()
+        return result

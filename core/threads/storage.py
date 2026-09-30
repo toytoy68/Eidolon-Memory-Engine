@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
@@ -433,9 +434,8 @@ class ThreadStorage:
             content,
         )
 
-    @serialized_write("threads_root")
-    def delete(self, thread_id: str) -> None:
-        """Delete a persistent Thread."""
+    def _delete_committed(self, thread_id: str) -> None:
+        """Unlink only after a deletion operation reached APPLYING under the lock."""
         path = self._path(thread_id)
 
         if path.is_symlink():
@@ -446,6 +446,25 @@ class ThreadStorage:
             )
 
         path.unlink()
+        descriptor = os.open(self.threads_root, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+
+    def delete(self, thread_id: str, *, previous_revision: int | None = None,
+               operation_id: str | None = None, coordinator=None) -> None:
+        """Delete through an Operation journal; direct unlink is unavailable."""
+        if previous_revision is None or operation_id is None:
+            raise ThreadStorageError("previous_revision and operation_id are required for deletion")
+        if coordinator is None:
+            from core.operations.filesystem import FilesystemOperationRepository
+            from core.operations.thread_delete import FilesystemThreadDeletion
+            coordinator = FilesystemThreadDeletion(
+                self, FilesystemOperationRepository(
+                    self.persistent_root.parent / "history/operations/thread-delete-v1"))
+        coordinator.delete(thread_id, previous_revision=previous_revision,
+                           operation_id=operation_id)
 
     def list(self) -> list[Thread]:
         """Return all persisted Threads."""

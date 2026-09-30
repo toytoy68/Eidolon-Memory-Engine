@@ -36,11 +36,13 @@ def plan_hash(operation: OperationRecord) -> str:
 class FilesystemThreadOperations:
     def __init__(self, storage: ThreadStorage, events: FilesystemEventRepository,
                  operations: FilesystemOperationRepository,
-                 creation_operations: FilesystemOperationRepository | None = None):
+                 creation_operations: FilesystemOperationRepository | None = None,
+                 deletion_operations: FilesystemOperationRepository | None = None):
         self.storage = storage
         self.events = events
         self.operations = operations
         self.creation_operations = creation_operations
+        self.deletion_operations = deletion_operations
 
     def change_status(self, thread_id: str, new_status: ThreadStatus, *,
                       previous_revision: int, operation_id: str, event_id: str) -> Thread:
@@ -51,6 +53,11 @@ class FilesystemThreadOperations:
         if not isinstance(new_status, ThreadStatus):
             raise ValueError("new_status must be a ThreadStatus")
         with exclusive_write(self.storage.threads_root):
+            if self.deletion_operations is not None and any(
+                pending.target_id == thread_id
+                for pending in self.deletion_operations.list_incomplete()
+            ):
+                raise OperationConflict("recover Thread deletion before changing status")
             if self.creation_operations is not None:
                 for pending in self.creation_operations.list_incomplete():
                     if pending.target_id == thread_id:

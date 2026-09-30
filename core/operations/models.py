@@ -22,6 +22,7 @@ class OperationType(str, Enum):
 
     THREAD_STATUS_CHANGE = "THREAD_STATUS_CHANGE"
     THREAD_CREATE = "THREAD_CREATE"
+    THREAD_DELETE = "THREAD_DELETE"
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,13 @@ class ThreadCreatePlan:
     after_state: str
 
 
+@dataclass(frozen=True)
+class ThreadDeletePlan:
+    """Immutable snapshot required to resume a Thread deletion."""
+
+    before_state: str
+
+
 @dataclass
 class OperationRecord:
     """Technical record for a recoverable persistent operation."""
@@ -54,7 +62,7 @@ class OperationRecord:
     revision: int
     execution_plan_hash: str
     status: OperationStatus = OperationStatus.PREPARED
-    plan: ThreadStatusChangePlan | ThreadCreatePlan | None = None
+    plan: ThreadStatusChangePlan | ThreadCreatePlan | ThreadDeletePlan | None = None
 
     def __post_init__(self) -> None:
         if (type(self.previous_revision) is not int or self.previous_revision < 0
@@ -76,6 +84,10 @@ class OperationRecord:
             self.previous_revision != 0 or not isinstance(self.plan, ThreadCreatePlan)
         ):
             raise ValueError("THREAD_CREATE requires revision 1 and a creation plan")
+        if self.operation_type is OperationType.THREAD_DELETE and (
+            self.previous_revision < 1 or not isinstance(self.plan, ThreadDeletePlan)
+        ):
+            raise ValueError("THREAD_DELETE requires an existing Thread snapshot")
 
 
 def validate_status_transition(

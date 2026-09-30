@@ -115,7 +115,7 @@ def test_thread_storage_rejects_symlink_without_reading_or_deleting_target(tmp_p
     with pytest.raises(ThreadStorageError, match="symlink"):
         storage.list()
     with pytest.raises(ThreadStorageError, match="symlink"):
-        storage.delete("thread-test-001")
+        storage.delete("thread-test-001", previous_revision=1, operation_id="delete-link")
     assert outside.read_bytes() == original
     assert path.is_symlink()
 
@@ -234,17 +234,18 @@ def test_update_thread(tmp_path: Path):
 
 
 def test_delete_thread(tmp_path: Path):
-    storage = ThreadStorage(tmp_path)
+    storage = ThreadStorage(tmp_path / "memory/persistent")
 
     thread = make_thread()
     storage.create(thread)
 
     assert storage.exists("thread-test-001") is True
 
-    storage.delete("thread-test-001")
+    storage.delete("thread-test-001", previous_revision=1, operation_id="delete-thread")
 
     assert storage.exists("thread-test-001") is False
     assert storage.get("thread-test-001") is None
+    assert (tmp_path / "memory/history/operations/thread-delete-v1/delete-thread.json").is_file()
 
 
 def test_list_threads(tmp_path: Path):

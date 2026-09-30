@@ -26,12 +26,14 @@ class FilesystemLinkedThreadCreation:
 
     def __init__(self, backend: FilesystemBackend, storage: ThreadStorage,
                  events: FilesystemEventRepository,
-                 operations: FilesystemOperationRepository) -> None:
+                 operations: FilesystemOperationRepository,
+                 deletion_operations: FilesystemOperationRepository | None = None) -> None:
         self.links = ThreadInformationLinkService(backend, storage)
         self.backend = backend
         self.storage = storage
         self.events = events
         self.operations = operations
+        self.deletion_operations = deletion_operations
 
     def create(self, thread: Thread, information_id: str, *,
                operation_id: str, event_id: str) -> Thread:
@@ -47,6 +49,11 @@ class FilesystemLinkedThreadCreation:
             raise OperationConflict("Thread cannot round-trip through its storage format")
         # The backend deletion guard takes persistent -> threads in this order.
         with exclusive_write(self.backend.persistent_root), exclusive_write(self.storage.threads_root):
+            if self.deletion_operations is not None and any(
+                pending.target_id == linked.thread_id
+                for pending in self.deletion_operations.list_incomplete()
+            ):
+                raise OperationConflict("recover Thread deletion before creating that identity")
             existing = self.operations.get(operation_id)
             if existing is not None:
                 expected = existing.plan

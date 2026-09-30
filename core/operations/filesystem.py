@@ -20,6 +20,7 @@ from core.operations.models import (
     OperationStatus,
     OperationType,
     ThreadCreatePlan,
+    ThreadDeletePlan,
     ThreadStatusChangePlan,
     validate_status_transition,
 )
@@ -93,6 +94,8 @@ class FilesystemOperationRepository(OperationRepository):
             if isinstance(plan, dict):
                 if data.get("operation_type") == OperationType.THREAD_CREATE.value:
                     plan_allowed = {"information_id", "event_id", "after_state"}
+                elif data.get("operation_type") == OperationType.THREAD_DELETE.value:
+                    plan_allowed = {"before_state"}
                 else:
                     plan_allowed = {"new_status", "event_id", "before_state", "after_state"}
                 if plan.keys() - plan_allowed:
@@ -114,6 +117,9 @@ class FilesystemOperationRepository(OperationRepository):
                     )
                     if data.get("plan") is not None
                     and data["operation_type"] == OperationType.THREAD_CREATE.value
+                    else ThreadDeletePlan(before_state=data["plan"]["before_state"])
+                    if data.get("plan") is not None
+                    and data["operation_type"] == OperationType.THREAD_DELETE.value
                     else ThreadStatusChangePlan(
                         new_status=ThreadStatus(data["plan"]["new_status"]),
                         event_id=data["plan"]["event_id"],
@@ -170,6 +176,9 @@ class FilesystemOperationRepository(OperationRepository):
             if (not valid_id(plan.information_id) or not valid_id(plan.event_id)
                     or not isinstance(plan.after_state, str)):
                 raise InvalidOperationRecord("invalid Thread creation plan")
+        elif isinstance(plan, ThreadDeletePlan):
+            if not isinstance(plan.before_state, str):
+                raise InvalidOperationRecord("invalid Thread deletion plan")
         elif isinstance(plan, ThreadStatusChangePlan):
             if (not isinstance(plan.new_status, ThreadStatus) or not valid_id(plan.event_id)
                     or any(value is not None and not isinstance(value, str)
@@ -195,6 +204,8 @@ class FilesystemOperationRepository(OperationRepository):
                     "after_state": operation.plan.after_state,
                 }
                 if isinstance(operation.plan, ThreadCreatePlan)
+                else {"before_state": operation.plan.before_state}
+                if isinstance(operation.plan, ThreadDeletePlan)
                 else {
                     "new_status": operation.plan.new_status.value,
                     "event_id": operation.plan.event_id,
