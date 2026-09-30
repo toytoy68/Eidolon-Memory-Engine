@@ -285,6 +285,14 @@ class ThreadManager:
 
         query.validate()
 
+        def record_timestamp(value):
+            if not value:
+                return None
+            try:
+                return parse_timestamp(value)
+            except (TypeError, ValueError, OverflowError):
+                return None
+
         if query.query_type == ThreadQueryType.GET_THREAD:
             return [
                 thread
@@ -358,51 +366,61 @@ class ThreadManager:
             ]
 
         if query.created_after is not None:
+            bound = parse_timestamp(query.created_after)
             results = [
                 thread
                 for thread in results
-                if parse_timestamp(thread.created_at) > parse_timestamp(query.created_after)
+                if (timestamp := record_timestamp(thread.created_at)) is not None
+                and timestamp > bound
             ]
 
         if query.created_before is not None:
+            bound = parse_timestamp(query.created_before)
             results = [
                 thread
                 for thread in results
-                if parse_timestamp(thread.created_at) < parse_timestamp(query.created_before)
+                if (timestamp := record_timestamp(thread.created_at)) is not None
+                and timestamp < bound
             ]
 
         if query.updated_after is not None:
+            bound = parse_timestamp(query.updated_after)
             results = [
                 thread
                 for thread in results
-                if parse_timestamp(thread.updated_at) > parse_timestamp(query.updated_after)
+                if (timestamp := record_timestamp(thread.updated_at)) is not None
+                and timestamp > bound
             ]
 
         if query.updated_before is not None:
+            bound = parse_timestamp(query.updated_before)
             results = [
                 thread
                 for thread in results
-                if parse_timestamp(thread.updated_at) < parse_timestamp(query.updated_before)
+                if (timestamp := record_timestamp(thread.updated_at)) is not None
+                and timestamp < bound
             ]
 
         if query.started_after is not None:
+            bound = parse_timestamp(query.started_after)
             results = [
                 thread
                 for thread in results
-                if thread.started_at is not None
-                and parse_timestamp(thread.started_at) > parse_timestamp(query.started_after)
+                if (timestamp := record_timestamp(thread.started_at)) is not None
+                and timestamp > bound
             ]
 
         if query.started_before is not None:
+            bound = parse_timestamp(query.started_before)
             results = [
                 thread
                 for thread in results
-                if thread.started_at is not None
-                and parse_timestamp(thread.started_at) < parse_timestamp(query.started_before)
+                if (timestamp := record_timestamp(thread.started_at)) is not None
+                and timestamp < bound
             ]
 
         def date_key(value):
-            return parse_timestamp(value) if value else datetime.min.replace(tzinfo=timezone.utc)
+            return record_timestamp(value) or datetime.min.replace(tzinfo=timezone.utc)
 
         sort_key_map = {
             ThreadSortField.CREATED_AT: lambda thread: date_key(thread.created_at),

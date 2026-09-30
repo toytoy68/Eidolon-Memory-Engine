@@ -44,6 +44,19 @@ def test_legacy_naive_dates_are_utc():
     assert ThreadManager.query([value], query) == [value]
 
 
+def test_invalid_persisted_dates_do_not_break_other_thread_queries():
+    damaged = Thread("bad", "Bad", "x", created_at="not-a-date", updated_at="broken")
+    valid = Thread("good", "Good", "x", created_at="2026-01-01",
+                   updated_at="2026-01-02")
+    query = ThreadQuery(ThreadQueryType.LIST_THREADS, created_after="2025-01-01",
+                        sort_by=ThreadSortField.UPDATED_AT)
+    assert ThreadManager.query([damaged, valid], query) == [valid]
+    ordered = ThreadManager.query([valid, damaged], ThreadQuery(
+        ThreadQueryType.LIST_THREADS, sort_by=ThreadSortField.UPDATED_AT,
+        sort_order=ThreadSortOrder.ASC))
+    assert ordered == [damaged, valid]
+
+
 @pytest.mark.parametrize("parameters", [{"include_completed":"false"}, {"limit":True},
                                         {"created_after":"not-a-date"}])
 def test_invalid_query_values_are_rejected(parameters):

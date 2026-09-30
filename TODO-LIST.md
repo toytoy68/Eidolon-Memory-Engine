@@ -314,6 +314,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-023e — La requête `GET_THREAD` lit directement son fichier après
   validation, sans charger tous les Threads ni échouer sur un fichier étranger
   endommagé (2026-09-30).
+- **【FAIT】** T-023f — Les requêtes Thread écartent les dates stockées illisibles
+  lors des filtres temporels et les classent à la borne minimale pour le tri,
+  afin que les autres résultats restent accessibles (2026-09-30).
 - **【FAIT】** T-028b — Audit du dépôt, bilan de maturité et priorités revues dans
   `docs/AUDIT-2026-09-28.md`, entrée `README.md`, et documentation de la reprise
   synchronisée avec `recover-all` (2026-09-28).
