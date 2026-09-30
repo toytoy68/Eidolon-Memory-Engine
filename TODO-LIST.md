@@ -80,6 +80,17 @@ déploiement de la plateforme, distinct d'Eidolon Core et du Memory Engine.
 
 ## Priorités après l'audit du dépôt
 
+**Recette VM (2026-09-30) — 【PARTIEL / NON TESTÉ SUR VM】** :
+`python -B -m tools.vm_acceptance --source COPIE_ARRÊTÉE --workdir DOSSIER_VIDE`
+inventorie les descripteurs ouverts en écriture et les formats, sauvegarde et
+restaure dans le seul dossier explicite avec comparaison des empreintes de
+tous les fichiers, tente les cinq tests concurrents dans un environnement
+isolé, puis lance les trois audits sur la restauration. Rapport JSON et résumé
+à l'écran. Trois tests isolés passent ; les services inactifs ou planifiés ne
+sont pas détectables par les seuls descripteurs `/proc` et les cinq cas de
+concurrence restent à exécuter sur la VM. La copie source doit déjà être
+arrêtée avant la commande.
+
 **Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
