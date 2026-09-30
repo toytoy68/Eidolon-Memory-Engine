@@ -224,6 +224,11 @@ stables du moteur avant l'intégration aux agents.
   core vers une cible présente, elle-même, externe ou absente, invalide ou
   ambiguë, sans imposer que toute relation cible une Information
   (2026-09-29).
+- **【FAIT】** T-032t — L'inventaire des relations distingue, lorsque la racine
+  historique est fournie, une cible absente dont l'identité Information est
+  réservée par un reçu de suppression valide. Il refuse un reçu illisible ou
+  symbolique, sans exposer les identifiants ni modifier les données
+  (2026-09-30).
 - **【FAIT】** T-032o — Un reçu de suppression réserve l’identité
   Information : la création refuse sa réutilisation après suppression ou
   interruption, ainsi qu’un reçu symbolique (2026-09-29).

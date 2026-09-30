@@ -7,6 +7,7 @@ from collections import Counter
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 
 from core.backend.errors import InvalidMemory
 from core.backend.filesystem import FilesystemBackend
@@ -14,11 +15,14 @@ from core.indexing import build_manifest
 from core.persistence import has_symlink_component
 
 
-def audit_relations(persistent_root: Path) -> dict:
+def audit_relations(persistent_root: Path, *, history_root: Path | None = None) -> dict:
     """Count targets without assuming every relation points to an Information."""
     root = Path(persistent_root)
     if has_symlink_component(root):
         raise ValueError("relation source contains a symlinked directory")
+    receipts = Path(history_root) / "pending-delete" if history_root is not None else None
+    if receipts is not None and has_symlink_component(receipts):
+        raise ValueError("deletion receipt source contains a symlinked directory")
     manifest = build_manifest(root)
     known_ids = {entry.information_id for entry in manifest.entries}
     counts: Counter[str] = Counter()
@@ -48,6 +52,15 @@ def audit_relations(persistent_root: Path) -> dict:
                 counts["self"] += 1
             elif target in known_ids:
                 counts["information_target"] += 1
+            elif receipts is not None and re.fullmatch(r"[A-Za-z0-9._-]+", target):
+                receipt = receipts / f"{target}.json"
+                if receipt.is_symlink():
+                    raise InvalidMemory("relation target deletion receipt is a symlink")
+                if receipt.exists():
+                    FilesystemBackend._load_delete_request(receipt, target)
+                    counts["reserved_information_target"] += 1
+                else:
+                    counts["external_or_missing"] += 1
             else:
                 counts["external_or_missing"] += 1
     return {"information_count": len(manifest.entries),
@@ -62,7 +75,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="Stopped engine copy containing memory/persistent")
     args = parser.parse_args(argv)
     try:
-        report = audit_relations(args.root / "memory/persistent")
+        report = audit_relations(args.root / "memory/persistent",
+                                 history_root=args.root / "memory/history")
     except (OSError, UnicodeError, ValueError, InvalidMemory) as exc:
         parser.error(str(exc))
     print(json.dumps(report, ensure_ascii=False, sort_keys=True))

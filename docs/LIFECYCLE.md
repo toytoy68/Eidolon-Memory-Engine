@@ -96,5 +96,9 @@ Il vérifie les Informations core et leur empreinte, puis compte les relations
 vers une Information présente, vers le document lui-même, vers une cible
 **externe ou absente**, ainsi que les cibles invalides ou contradictoires.
 Une cible externe peut désigner un objet non Information ; le rapport ne la
-qualifie donc pas automatiquement de lien cassé. Il ne révèle ni ID, ni texte
-et ne modifie aucun document.
+qualifie donc pas automatiquement de lien cassé. Si une cible absente possède
+un reçu de suppression Information valide, le compteur distinct
+`reserved_information_target` la signale pour revue ; un reçu illisible ou
+symbolique fait échouer l'audit. L'API Python accepte `history_root` pour ce
+contrôle ; sans cette racine, elle conserve le classement générique. Le rapport
+ne révèle ni ID, ni texte et ne modifie aucun document.
