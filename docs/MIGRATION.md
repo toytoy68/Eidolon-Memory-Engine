@@ -106,6 +106,11 @@ La variante `RELATES_TO` dans une relation Information est bloquée pour revue :
 le modèle Relation et l'ancien CLI utilisent `RELATED_TO`, tandis que
 `RELATES_TO` reste un type possible dans le contrat des Events. La simulation
 ne renomme aucun type automatiquement.
+`INSTANCE_OF` figure dans `memory-relation.md` et dans l'ancien CLI, mais pas
+dans la liste de `information.md` : la simulation signale
+`relation_schema_mismatch_requires_policy` au lieu de déclarer le document
+convertible. Il faut trancher ce désaccord de schéma avant une conversion ;
+aucune relation n'est supprimée ni renommée par l'outil.
 
 **Une candidate n'est pas une conversion validée** : le rapport ne crée
 pas de document converti et ne vérifie pas tous les sens métier, notamment

@@ -168,6 +168,22 @@ def test_simulation_blocks_unknown_relation_type_with_existing_target(tmp_path):
     }]
 
 
+def test_simulation_flags_instance_of_contract_mismatch(tmp_path):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    source = persistent / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\ntype: FACT\n"
+                      "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+                      "relations:\n  - type: INSTANCE_OF\n    target: info-1\n"
+                      "---\nbody\n")
+    before = source.read_bytes()
+    assert simulate(tmp_path)["information"]["blocked"] == [{
+        "path": "memory/persistent/info-1.md",
+        "reasons": ["relation_schema_mismatch_requires_policy"],
+    }]
+    assert source.read_bytes() == before
+
+
 def test_simulation_counts_plain_events_and_flags_unknown_history_values(tmp_path):
     events = tmp_path / "memory/history/events"
     reviews = tmp_path / "memory/history/reviews"

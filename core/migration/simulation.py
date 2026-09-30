@@ -188,6 +188,8 @@ def _candidate_issues(path: Path, persistent: Path) -> list[str]:
         relation_type = relation.get("type")
         if relation_type == "RELATES_TO" and "legacy_relation_alias_requires_policy" not in reasons:
             reasons.append("legacy_relation_alias_requires_policy")
+        elif relation_type == "INSTANCE_OF" and "relation_schema_mismatch_requires_policy" not in reasons:
+            reasons.append("relation_schema_mismatch_requires_policy")
         elif not isinstance(relation_type, str) or relation_type not in RELATION_TYPES:
             if "unknown_relation_type" not in reasons:
                 reasons.append("unknown_relation_type")

@@ -571,6 +571,10 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-033p — L'inventaire classe les fichiers JSON ambigus (clés
   dupliquées) et les constantes non standard (`NaN`, etc.) comme invalides ;
   test de deux journaux sans écriture ni exposition du contenu (2026-09-30).
+- **【FAIT】** T-033q — La simulation bloque `INSTANCE_OF` avec un motif distinct
+  car l'ancien modèle Relation et son CLI l'acceptent alors que la liste du
+  schéma Information l'omet ; aucune décision de renommage n'est implicite
+  (2026-09-30).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).
