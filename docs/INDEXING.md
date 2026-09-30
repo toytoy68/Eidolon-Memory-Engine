@@ -1,5 +1,15 @@
 # Index dérivé — manifeste de source
 
+Le port `IndexPort` expose `upsert`, `delete`, `query`, `rebuild` et `status`.
+`InMemoryIndex` fournit une implémentation de référence sans service externe :
+il classe lexicalement et se reconstruit intégralement à partir des fichiers.
+Il reste volontairement éphémère. `tests/contracts/index_port_contract.py`
+définit les tests partagés : un autre adaptateur fournit simplement son
+fixture `index` et hérite de `IndexPortContract`, sans changer ces tests.
+`status().source_digest` désigne le dernier manifeste reconstruit ; toute
+mutation incrémentale l'efface jusqu'à une nouvelle reconstruction. Ce port
+ne branche pas encore les écritures métier sur un index.
+
 `core.indexing.build_manifest(persistent_root)` lit les fichiers Information
 core de `memory/persistent/*.md` sans écrire. Il renvoie, dans l'ordre des noms
 de fichiers, l'identifiant, la révision et SHA-256 des octets du fichier, ainsi

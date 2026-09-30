@@ -131,6 +131,13 @@ d'une identité recréée. Les 5 tests concurrents et la durabilité sur disque 
 restent non vérifiés. Aucun Event métier `DELETED` Thread n'est ajouté : la
 suppression est journalisée comme l'Information, pas intégrée à un flux Event.
 
+**Port d'index (2026-09-30) — 【FAIT EN LOCAL】** : `IndexPort` définit
+`upsert/delete/query/rebuild/status`, `InMemoryIndex` sert de référence sans
+dépendance externe et trois tests de contrat héritables vérifient mutations,
+reconstruction depuis les fichiers et préservation de l'état après échec.
+L'index n'est pas synchronisé automatiquement avec les écrivains : le
+manifeste et le stockage fichier restent canoniques. Voir `docs/INDEXING.md`.
+
 **Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
