@@ -27,6 +27,8 @@ def test_acceptance_uses_only_explicit_workdir_and_detects_source_change(tmp_pat
         "count": 0, "retention": {}, "applicability": {}, "epistemic_by_applicability": {}})
     monkeypatch.setattr(vm_acceptance, "audit_deletions", lambda *a, **kw: {"issues": []})
     monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
+    monkeypatch.setattr(vm_acceptance, "discover_writers", lambda: {
+        "running": [], "configured": [], "unreadable": [], "coverage": "heuristic_manual_service_review_required"})
 
     report = vm_acceptance.run(source, workdir, at="2026-09-30T00:00:00Z")
 
@@ -54,6 +56,8 @@ def test_acceptance_reports_external_source_change(tmp_path, monkeypatch):
     (source / "datum").write_text("before")
     monkeypatch.setattr(vm_acceptance, "inventory", lambda root: {"needs_review": []})
     monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
+    monkeypatch.setattr(vm_acceptance, "discover_writers", lambda: {
+        "running": [], "configured": [], "unreadable": [], "coverage": "heuristic_manual_service_review_required"})
     monkeypatch.setattr(vm_acceptance, "audit_relations", lambda *a, **kw: {})
     monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {})
     monkeypatch.setattr(vm_acceptance, "audit_deletions", lambda *a, **kw: {"issues": []})
@@ -74,6 +78,8 @@ def test_acceptance_flags_invalid_relation_and_lifecycle_counts(tmp_path, monkey
     (source / "datum").write_text("before")
     monkeypatch.setattr(vm_acceptance, "inventory", lambda root: {"needs_review": []})
     monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
+    monkeypatch.setattr(vm_acceptance, "discover_writers", lambda: {
+        "running": [], "configured": [], "unreadable": [], "coverage": "heuristic_manual_service_review_required"})
     monkeypatch.setattr(vm_acceptance, "audit_relations", lambda *a, **kw: {
         "relations": {"invalid": 2, "external_or_missing": 1}})
     monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {
@@ -91,3 +97,28 @@ def test_acceptance_flags_invalid_relation_and_lifecycle_counts(tmp_path, monkey
     assert steps["audit_lifecycle"]["status"] == "KO"
     assert steps["audit_deletions"]["status"] == "OK"
     assert result["status"] == "KO"
+
+
+def test_acceptance_reports_idle_unit_and_flags_active_writer(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    source.mkdir()
+    monkeypatch.setattr(vm_acceptance, "inventory", lambda root: {"needs_review": []})
+    monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
+    monkeypatch.setattr(vm_acceptance, "discover_writers", lambda: {
+        "running": [{"pid": 123, "marker": "memory_controller.py"}],
+        "configured": [{"path": "/etc/systemd/system/memory.service", "marker": "memory_controller.py"}],
+        "unreadable": [], "coverage": "heuristic_manual_service_review_required"})
+    monkeypatch.setattr(vm_acceptance, "audit_relations", lambda *a, **kw: {"relations": {}})
+    monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {
+        "retention": {}, "applicability": {}, "epistemic_by_applicability": {}})
+    monkeypatch.setattr(vm_acceptance, "audit_deletions", lambda *a, **kw: {"issues": []})
+    monkeypatch.setattr(vm_acceptance.subprocess, "run", lambda *a, **kw: type(
+        "Result", (), {"returncode": 0, "stdout": "5 passed", "stderr": ""})())
+
+    report = vm_acceptance.run(source, tmp_path / "work", at="2026-09-30T00:00:00Z")
+
+    assert report["status"] == "KO"
+    writers = report["steps"][0]
+    assert writers["status"] == "KO"
+    assert writers["details"]["system_writers"]["configured"][0]["path"].endswith("memory.service")
+    assert writers["details"]["system_writers"]["running"][0]["pid"] == 123

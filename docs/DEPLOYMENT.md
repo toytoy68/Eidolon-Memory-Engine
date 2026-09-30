@@ -26,6 +26,9 @@ updating production.
 
 1. Identify and stop all processes writing the engine's data. Record the actual
    service names and restart commands; the repository defines no systemd units.
+   `python -B -m tools.writer_inventory` lists matching running commands and
+   configured systemd/cron entries without showing full arguments. It is only
+   a hint: inspect other services, custom jobs and the effective data root.
 2. Inspect `git status --short`, `git rev-parse HEAD`, and the active branch in
    `/opt/eidolon-memory-engine`. Preserve any uncommitted changes; do not reset.
 3. Create a timestamped backup outside the engine directory containing the entire
@@ -40,6 +43,10 @@ updating production.
    `PYTHONDONTWRITEBYTECODE=1`. Include the five multiprocessing concurrency
    tests that could not run in the restricted development environment. Never
    run regression fixtures on live memory.
+   On a stopped copy, `python -B -m tools.vm_acceptance --source COPIE --workdir
+   DOSSIER_VIDE` reports the writer candidates, formats, hash-verified restore,
+   five concurrency tests and three separate read-only audit results. Review
+   the full JSON report and every candidate before treating an OK as evidence.
 6. On the isolated copy, inspect pending Operation records and test
    `python -m core.operations.cli recover-all` after keeping a restorable copy.
    The command writes to finish pending records and must not be run on the live

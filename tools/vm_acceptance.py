@@ -22,6 +22,7 @@ from core.information.lifecycle_audit import audit_lifecycle
 from core.information.relation_audit import audit_relations
 from core.migration.inventory import inventory
 from core.persistence import has_symlink_component
+from tools.writer_inventory import discover_writers
 
 
 def hashes(root: Path) -> dict[str, str]:
@@ -97,10 +98,9 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
 
     def writers():
         found = active_writers(source)
-        if found:
-            raise ValueError(f"{len(found)} writable descriptors open on source")
-        return {"open_writable_descriptors": [],
-                "limitation": "idle services and scheduled jobs require manual inspection"}
+        return {"open_writable_descriptors": found,
+                "system_writers": discover_writers(),
+                "limitation": "known command markers are heuristic; inspect services and jobs manually"}
 
     def formats():
         result = inventory(source)
@@ -108,7 +108,13 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
             raise ValueError(f"{len(result['needs_review'])} formats or paths need review")
         return result
 
-    step("writers", writers)
+    step("writers", writers, lambda result: (
+        [f"{len(result['open_writable_descriptors'])} writable descriptors on source"]
+        if result["open_writable_descriptors"] else []
+    ) + (
+        [f"{len(result['system_writers']['running'])} possible running writers"]
+        if result["system_writers"]["running"] else []
+    ))
     step("formats", formats)
 
     def backup_restore():

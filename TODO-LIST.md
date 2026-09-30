@@ -86,14 +86,16 @@ inventorie les descripteurs ouverts en écriture et les formats, sauvegarde et
 restaure dans le seul dossier explicite avec comparaison des empreintes de
 tous les fichiers, tente les cinq tests concurrents dans un environnement
 isolé, puis lance les trois audits sur la restauration. Rapport JSON et résumé
-à l'écran. Trois tests isolés passent ; les services inactifs ou planifiés ne
-sont pas détectables par les seuls descripteurs `/proc` et les cinq cas de
-concurrence restent à exécuter sur la VM. La copie source doit déjà être
-arrêtée avant la commande.
+à l'écran. L'inventaire recense aussi les processus repérés par les commandes
+du moteur et les unités systemd/entrées cron configurées, y compris inactives,
+sans afficher leurs arguments. Il reste heuristique : un écrivain renommé ou
+piloté de l'extérieur peut échapper au balayage. Les cinq cas de concurrence
+restent à exécuter sur la VM. La copie source doit déjà être arrêtée.
 Les trois audits ont chacun leur ligne OK/KO ; les relations invalides ou
 ambiguës et les champs invalides du cycle de vie font échouer la recette tout
 en conservant les décomptes. Les références externes ou absentes sont montrées
-sans présumer qu'elles sont fautives. Quatre tests locaux couvrent le script.
+sans présumer qu'elles sont fautives. Les tests locaux couvrent le script et
+l'inventaire ; examiner à la main les candidats configurés sur la VM.
 
 **Contrôle de démarrage (2026-09-30) — 【FAIT EN LOCAL / NON TESTÉ SUR VM】** :
 `python -m core.preflight --root RACINE` vérifie Python ≥ 3.11, l'écriture
