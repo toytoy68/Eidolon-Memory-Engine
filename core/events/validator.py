@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .models import Event, EventType, StateTransition
+from .models import Event, EventRelation, EventType, RelationType, StateTransition
 
 
 def validate_event(event: Event) -> list[str]:
@@ -26,6 +26,12 @@ def validate_event(event: Event) -> list[str]:
     if not isinstance(event.event_type, EventType):
         errors.append("event_type invalide")
         return errors
+    if (not isinstance(event.relations, list)
+            or any(not isinstance(relation, EventRelation)
+                   or not isinstance(relation.type, RelationType)
+                   or not isinstance(relation.target, str) or not relation.target
+                   for relation in event.relations)):
+        errors.append("relations invalides")
 
     if not isinstance(event.state_transition, StateTransition) or not isinstance(
         event.state_transition.before, dict

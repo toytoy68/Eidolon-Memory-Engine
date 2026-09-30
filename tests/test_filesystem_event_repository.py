@@ -148,6 +148,20 @@ def test_event_writer_uses_domain_error_for_invalid_structures(tmp_path, field, 
     assert repository.get("event-invalid") is None
 
 
+@pytest.mark.parametrize("target", [42, ""])
+def test_event_relation_target_is_validated_on_read_and_write(tmp_path, target):
+    repository = FilesystemEventRepository(tmp_path / "events")
+    event = Event("event-relation", 1, EventType.CREATED, information_id="info-1",
+                  relations=[EventRelation(RelationType.CONCERNS, target)])
+    with pytest.raises(InvalidEvent, match="relations invalides"):
+        repository.save(event)
+    payload = repository._to_dict(event)
+    text = "# Eidolon Memory Event\n\nVersion: 0.2\n\n```json\n" + json.dumps(payload) + "\n```\n"
+    with pytest.raises(InvalidEvent, match="relations invalides"):
+        repository._deserialize(text)
+    assert repository.get("event-relation") is None
+
+
 def test_save_rejects_duplicate_event_id(tmp_path):
     repository = FilesystemEventRepository(
         events_root=tmp_path / "events",
