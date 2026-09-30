@@ -116,6 +116,19 @@ def test_backend_rejects_nonobject_relations_before_create_or_update(tmp_path):
     assert path.read_bytes() == before
 
 
+@pytest.mark.parametrize("relation", [
+    {"type": "RELATED_TO"},
+    {"type": "RELATED_TO", "target_id": "one", "target": "two"},
+    {"type": "RELATED_TO", "target_id": 3},
+    {"target_id": "one"},
+])
+def test_backend_rejects_invalid_relation_targets_before_write(tmp_path, relation):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    with pytest.raises(InvalidMemory, match="invalid Information relation"):
+        backend.store(Memory("source", relations=[relation]))
+    assert backend.get("source") is None
+
+
 @pytest.mark.parametrize("field,value", [
     ("metadata", []), ("provenance", []), ("temporal", []),
     ("verification", []), ("relations", {}),

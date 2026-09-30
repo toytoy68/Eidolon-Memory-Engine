@@ -82,7 +82,8 @@ def test_unreadable_information_blocks_other_information_deletion(tmp_path):
 def test_information_relation_aliases_or_ambiguity_block_delete(tmp_path, relation):
     backend, _, _ = stores(tmp_path)
     backend.store(Memory("target"))
-    backend.store(Memory("source", relations=[relation]))
+    # Historical files can bypass the current writer's relation validation.
+    backend._path("source").write_text(backend._serialize(Memory("source", relations=[relation])))
     backend.delete_request("target", "human", "reason", 1, "delete-target")
     with pytest.raises(InformationDeletionBlocked):
         backend.approve_delete("target", "delete-target")

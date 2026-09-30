@@ -11,13 +11,14 @@ from core.information.relation_audit import audit_relations, main
 def test_relation_audit_counts_targets_without_inferring_external_type(tmp_path, capsys):
     backend = FilesystemBackend(tmp_path / "memory/persistent", tmp_path / "memory/history")
     backend.store(Memory("target", content="private target"))
-    backend.store(Memory("source", content="private source", relations=[
+    legacy_source = Memory("source", content="private source", relations=[
         {"type": "RELATED_TO", "target_id": "target"},
         {"type": "CONCERNS", "target": "robot"},
         {"type": "RELATED_TO", "target": "source"},
         {"type": "RELATED_TO", "target_id": "target", "target": "robot"},
         {"type": "RELATED_TO"},
-    ]))
+    ])
+    backend._path("source").write_text(backend._serialize(legacy_source))
     before = {path: path.read_bytes() for path in tmp_path.rglob("*") if path.is_file()}
     assert main(["--root", str(tmp_path)]) == 0
     output = capsys.readouterr().out

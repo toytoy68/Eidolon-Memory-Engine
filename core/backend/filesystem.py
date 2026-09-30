@@ -91,6 +91,16 @@ class FilesystemBackend(MemoryBackend):
         if (not isinstance(memory.relations, list)
                 or any(not isinstance(relation, dict) for relation in memory.relations)):
             raise InvalidMemory("relations must be a list of objects")
+        for relation in memory.relations:
+            target_id = relation.get("target_id")
+            legacy_target = relation.get("target")
+            if (not isinstance(relation.get("type"), str) or not relation["type"]
+                    or (target_id is not None and legacy_target is not None
+                        and target_id != legacy_target)):
+                raise InvalidMemory("invalid Information relation")
+            target = target_id if target_id is not None else legacy_target
+            if not isinstance(target, str) or not target:
+                raise InvalidMemory("invalid Information relation target")
 
     def _ensure_relations_do_not_reuse_deleted_identity(self, memory: Memory) -> None:
         """A receipt reserves its Information identity, including for new links.

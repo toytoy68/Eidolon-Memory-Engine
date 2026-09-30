@@ -79,7 +79,10 @@ def test_simulation_blocks_ambiguous_or_non_json_metadata(tmp_path):
     assert main(["--root", str(tmp_path)]) == 1
 
 
-def test_preflight_and_simulation_flag_malformed_core_relations(tmp_path):
+@pytest.mark.parametrize("relation", ['"invalid"', '{"type":"RELATED_TO"}',
+                                      '{"type":"RELATED_TO","target":"one",'
+                                      '"target_id":"two"}'])
+def test_preflight_and_simulation_flag_malformed_core_relations(tmp_path, relation):
     persistent = tmp_path / "memory/persistent"
     persistent.mkdir(parents=True)
     path = persistent / "damaged.md"
@@ -87,7 +90,7 @@ def test_preflight_and_simulation_flag_malformed_core_relations(tmp_path):
         '# Eidolon Information Object\n\nVersion: 0.2\n\n```json\n'
         '{"information_id":"damaged","revision":1,"content":"private",'
         '"metadata":{},"provenance":{},"temporal":{},"verification":{},'
-        '"relations":["invalid"]}\n```\n')
+        f'"relations":[{relation}]}}\n```\n')
     before = path.read_bytes()
 
     assert preflight(tmp_path)["blocked"] == [{

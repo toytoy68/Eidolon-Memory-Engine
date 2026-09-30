@@ -117,12 +117,12 @@ def inspect_core_information(path: Path) -> list[str]:
     """Verify a recognized core document can be read without creating directories."""
     try:
         memory = FilesystemBackend._deserialize(path.read_text(encoding="utf-8"))
+        FilesystemBackend._validate_memory_shape(memory)
     except (OSError, UnicodeError, InvalidMemory, ValueError, TypeError):
         return ["invalid_core_information"]
     if (memory.information_id != path.stem
             or not re.fullmatch(r"[A-Za-z0-9._-]+", path.stem)
-            or type(memory.revision) is not int or memory.revision < 1
-            or any(not isinstance(relation, dict) for relation in memory.relations)):
+            or type(memory.revision) is not int or memory.revision < 1):
         return ["invalid_core_information"]
     return []
 

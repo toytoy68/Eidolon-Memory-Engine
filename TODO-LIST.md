@@ -384,6 +384,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-031ap — Le backend Information refuse les entrées de relation
   qui ne sont pas des objets avant création ou mise à jour, évitant d'écrire
   une Information qui bloquerait ensuite toute suppression (2026-09-30).
+- **【FAIT】** T-031aq — Les écritures Information refusent les relations sans
+  type ou cible textuelle et les deux alias de cible contradictoires ; les
+  audits conservent la détection des anciens fichiers malformés (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,
@@ -610,8 +613,8 @@ stables du moteur avant l'intégration aux agents.
   seulement dans `information.md` des types totalement inconnus. Ces extensions
   restent bloquées en attente d'une décision de contrat (2026-09-30).
 - **【FAIT】** T-033s — Le précontrôle et la simulation signalent aussi les
-  Informations core historiques dont une relation n'est pas un objet, avant
-  de les considérer déjà migrées (2026-09-30).
+  Informations core historiques dont une relation est non structurée, sans
+  cible ou contradictoire, avant de les considérer déjà migrées (2026-09-30).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).
