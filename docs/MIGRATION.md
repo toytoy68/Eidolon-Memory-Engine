@@ -1,9 +1,39 @@
 # Inventaire préalable à la migration des données
 
-État : **inventaire en lecture seule disponible ; migration non implémentée**.
+État : **convertisseur explicite et vérification indépendante disponibles en
+local ; correspondance métier non validée sur les données de la VM**.
 Le code historique dans `services/` et les nouveaux dépôts dans `core/` ne
 partagent ni tous leurs formats, ni leur protocole d'écriture. Cette analyse
 porte sur le dépôt ; les données et services de la VM restent à examiner.
+
+## Conversion sur une copie et contrôle après écriture
+
+Après l'inventaire, le précontrôle et la simulation décrits plus bas, utiliser
+deux dossiers **distincts** sur une copie arrêtée. La destination doit être
+neuve ou contenir uniquement un rejeu identique :
+
+```sh
+python -B -m core.migration.converter --source /copie/historique --destination /copie/convertie
+python -B -m core.migration.verification --source /copie/historique --destination /copie/convertie
+```
+
+Le convertisseur écrit les Informations compatibles dans la destination core,
+les Events, Reviews, opérations et Working anciens sous `archive/`, et les
+rejets dans `migration-report.json` avec une raison et une action suggérée.
+Les Events et Reviews archivés restent des octets historiques, pas des objets
+métier core. La vérification relit directement les sources, reconstruit le
+document core attendu et compare les octets ; elle compare aussi toutes les
+archives et confronte les comptes du rapport au résultat. Elle n'écrit rien,
+affiche `ok`, les comptes et les anomalies, et sort avec le code 1 en cas de
+rejet ou d'écart. Les données rejetées exigent une décision humaine, même si le
+rapport les documente correctement. Aucun des deux outils ne doit être lancé
+sur la racine active de la VM. Ce contrôle établit l'égalité technique des
+copies suivant la correspondance actuelle ; il ne certifie pas la fidélité
+sémantique de cette correspondance sur les données réelles.
+
+Les sections historiques ci-dessous décrivent les capacités propres aux
+outils d'inventaire, de précontrôle et de simulation ; leurs mentions d'une
+conversion encore à décider restent des avertissements sur la politique métier.
 
 ## Inventaire sur une copie des données
 

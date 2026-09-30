@@ -119,6 +119,11 @@ ont été convertis sans rejet puis relus par le manifeste core. Il reste à
 valider les correspondances et pertes sémantiques sur la copie VM avant tout
 usage réel ; les anciens Events/Reviews sont conservés comme archives, non
 convertis en objets métier core.
+Le contrôle indépendant `python -B -m core.migration.verification --source
+COPIE_HISTORIQUE --destination NOUVELLE_RACINE` compare désormais les octets
+des Informations core reconstruites, les archives et les comptes du rapport,
+sans écrire ; quatre tests ciblés couvrent le corpus et la détection de
+documents ou Reviews perdus, altérés et de rejets inexacts.
 
 **Suppression Thread (2026-09-30) — 【FAIT EN LOCAL / NON TESTÉ SUR VM】** :
 `ThreadStorage.delete` exige maintenant révision et identifiant d'opération et
@@ -173,8 +178,9 @@ stables du moteur avant l'intégration aux agents.
    et aux anciens CLI ; adapter ou isoler ceux qui contournent les journaux,
    verrous ou Events. T-031a/b raccordent création et reprise dans le service ;
    les API bas niveau et les anciens services restent à adapter après migration.
-   `ThreadStorage.delete` reste notamment une suppression directe sans journal
-   ni Event : décider son remplacement avant de l'exposer comme parcours métier.
+   `ThreadStorage.delete` passe désormais par un journal et la reprise explicite,
+   mais la création directe reste hors journal et aucun Event métier de
+   suppression Thread n'est produit.
    Un garde-fou empêche déjà le controller historique d'écrire dans Persistent
    Memory si des données core y sont détectées. Vérifier sur
    une copie que deux écrivains ne partagent pas une famille de fichiers.
@@ -191,7 +197,7 @@ stables du moteur avant l'intégration aux agents.
    Informations historiques propose une correspondance champ par champ et
    signale les blocages ainsi que les Events/Reviews à décider. Restent la
    validation des pertes sémantiques, des relations, de la révision structurée
-   et du format cible avant un convertisseur effectif.
+   et du format cible avant usage réel du convertisseur sur données VM.
    T-033a refuse désormais les liens symboliques dans les répertoires parents
    des sources lors de l'inventaire, du précontrôle et de la simulation
    (2026-09-29 ; test de non-parcours sur une racine `memory/` liée).
@@ -845,12 +851,13 @@ stables du moteur avant l'intégration aux agents.
 
 ## Changements de code et tests suivants
 
-- **【À FAIRE】** T-021 — Concevoir une migration explicite, réexécutable et
-  vérifiable des documents CLI/front-matter et des anciens journaux. Prévoir
-  simulation, sauvegarde, rapport de rejets, contrôle des identifiants/révisions
-  et tests sur copies anonymisées. T-021a/b/c/d/e couvrent seulement le contrôle
-  préalable ; aucune conversion n'est autorisée. Ne jamais migrer silencieusement
-  au démarrage.
+- **【PARTIEL / NON TESTÉ SUR VM】** T-021 — Convertisseur explicite et réexécutable
+  des Informations CLI/front-matter vers une destination séparée, rapport de
+  rejets et archivage exact des journaux, Events et Reviews historiques ;
+  vérification indépendante des octets convertis et archivés sur corpus
+  synthétique. Il manque la revue des pertes de sens, des rejets et des données
+  réelles sur copie VM avant tout usage ; ne jamais migrer silencieusement
+  au démarrage. Voir `docs/MIGRATION.md` et `tests/test_migration_verification.py`.
 - **【À FAIRE】** T-022 — Tester le parcours complet Information → Thread →
   Operation → Event → reprise après crash sur un répertoire isolé ; vérifier
   idempotence, conflits et absence de perte de données. T-022a/b couvrent la
