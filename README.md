@@ -11,7 +11,8 @@ développement et n'est pas encore validée sur la VM.
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
-- [Reprise des opérations Thread](docs/THREAD_RECOVERY.md)
+- [Reprise des opérations Thread](docs/THREAD_RECOVERY.md) et
+  [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
 - [Première interface d'assemblage de contexte](docs/RETRIEVAL.md)
 - [Manifeste de source pour un index dérivé](docs/INDEXING.md)
 - [Mesures synthétiques et procédure de répétition](docs/PERFORMANCE.md)
@@ -34,3 +35,8 @@ La reprise des journaux Thread se fait explicitement avec
 `MEMORY_ENGINE_ROOT` vers la racine voulue. Cette commande **écrit** pour
 terminer les opérations en attente : consulter la procédure de déploiement et
 ne pas la lancer sur la VM sans sauvegarde et arrêt des autres écrivains.
+Les nouvelles suppressions Information en `APPLYING_DELETE` ont une reprise
+séparée : `python -m core.information.deletion_recovery --root RACINE` réalise
+l'audit, et l'option `--apply` reprend les reçus compatibles. Les anciens
+reçus ambigus restent à examiner humainement ; aucun de ces chemins n'est
+automatisé au démarrage.
