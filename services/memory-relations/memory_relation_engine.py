@@ -20,7 +20,7 @@ from core.config import (
     EVENTS_ROOT,
     REVIEWS_ROOT,
 )
-from core.persistence import exclusive_write, atomic_write_text
+from core.persistence import exclusive_write, atomic_write_text, has_symlink_component
 
 WORKING = WORKING_ROOT
 EVENTS = EVENTS_ROOT
@@ -54,6 +54,8 @@ def status(path):
 
 def find_information(target_id):
     for path in WORKING.glob("info-*.md"):
+        if path.is_symlink():
+            return None  # Do not follow an external candidate while resolving targets.
         if information_id(path) == target_id:
             return path
     return None
@@ -286,7 +288,9 @@ def _command_add_locked(args):
 
 def command_add(args):
     source = Path(args.source)
-    if (source.is_symlink() or source.parent.resolve() != WORKING.resolve()
+    if (has_symlink_component(WORKING) or has_symlink_component(EVENTS)
+            or has_symlink_component(REVIEWS) or has_symlink_component(source)
+            or source.parent.resolve() != WORKING.resolve()
             or source.suffix != ".md"):
         print("Ajout de relation : REFUSÉ")
         print("- la source doit être un fichier Markdown de Working Memory")

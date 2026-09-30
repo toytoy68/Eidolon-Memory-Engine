@@ -300,6 +300,10 @@ stables du moteur avant l'intégration aux agents.
   `thread-create-v1` ou `thread-status-v1` conservé sans son journal Operation,
   plutôt que de conclure à tort que la racine est purement historique
   (test isolé, 2026-09-30).
+- **【FAIT】** T-031ac — L'ancien CLI `memory-relations add` refuse les
+  ancêtres symboliques de Working/Events/Reviews et ne lit plus une cible
+  Information symbolique pendant sa recherche ; tests isolés sur des chemins
+  externes (2026-09-30).
 - **【FAIT】** T-031d — `ThreadStorage.create` vérifie les cibles `CONCERNS` sous
   les verrous persistent → threads ; la mise à jour directe ne peut plus changer
   ces cibles. Cela empêche une relation orpheline produite par l'API bas niveau,

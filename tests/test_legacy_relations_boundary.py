@@ -84,3 +84,63 @@ def test_legacy_relation_add_rejects_unsupported_relation_block(tmp_path):
     assert result.returncode == 1
     assert "bloc relations non pris en charge" in result.stdout
     assert source.read_bytes() == original
+
+
+def test_legacy_relation_rejects_linked_working_parent(tmp_path):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    source = outside / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\n---\nprivate\n")
+    memory = tmp_path / "memory"
+    memory.mkdir()
+    (memory / "working").symlink_to(outside, target_is_directory=True)
+    original = source.read_bytes()
+    result = invoke(tmp_path, source)
+    assert result.returncode == 1
+    assert "Working Memory" in result.stdout
+    assert source.read_bytes() == original
+
+
+def test_legacy_relation_rejects_symlinked_target(tmp_path):
+    working = tmp_path / "memory/working"
+    working.mkdir(parents=True)
+    source = working / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\n"
+                      "epistemic_status: UNVERIFIED\nrelations: []\n---\nbody\n")
+    outside = tmp_path / "outside.md"
+    outside.write_text("---\nid: info-2\nrevision: 1\n"
+                       "epistemic_status: UNVERIFIED\nrelations: []\n---\nprivate\n")
+    (working / "info-2.md").symlink_to(outside)
+    before = source.read_bytes()
+    result = invoke(tmp_path, source, relation="SUPPORTS")
+    assert result.returncode == 1
+    assert source.read_bytes() == before
+    assert outside.read_text().endswith("private\n")
+
+
+def test_legacy_relation_rejects_linked_history_parent(tmp_path):
+    working = tmp_path / "memory/working"
+    working.mkdir(parents=True)
+    source = working / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\n---\nprivate\n")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (tmp_path / "memory/history").symlink_to(outside, target_is_directory=True)
+    before = source.read_bytes()
+    result = invoke(tmp_path, source)
+    assert result.returncode == 1
+    assert "Working Memory" in result.stdout
+    assert source.read_bytes() == before
+
+
+def test_legacy_relation_rejects_linked_alias_to_working(tmp_path):
+    working = tmp_path / "memory/working"
+    working.mkdir(parents=True)
+    source = working / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\n---\nprivate\n")
+    alias = tmp_path / "working-alias"
+    alias.symlink_to(working, target_is_directory=True)
+    result = invoke(tmp_path, alias / source.name)
+    assert result.returncode == 1
+    assert "Working Memory" in result.stdout
+    assert source.read_text().endswith("private\n")
