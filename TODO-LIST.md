@@ -149,8 +149,8 @@ stables du moteur avant l'intégration aux agents.
    politique explicite pour les Informations réfutées, conflictuelles et
    périmées ; ne pas déduire la vérité d'un score. Garder les critères et
    explications du classement indépendants d'Eidolon Core et d'un fournisseur
-   d'index. Ajouter un budget de tokens via un compteur injectable adapté au
-   consommateur, en conservant les bornes actuelles en caractères.
+   d'index. Le budget de tokens accepte déjà un compteur injectable ; choisir
+   celui du consommateur et conserver les bornes en caractères.
 9. **【À VALIDER】** T-037 — Définir le cycle de vie mémoire : consolidation,
    révisions, rétention et oubli. Préciser les liens, la provenance, les
    conflits, l'archivage et la reprise avant toute mutation automatique ;
