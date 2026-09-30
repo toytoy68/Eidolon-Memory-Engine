@@ -170,7 +170,7 @@ def test_legacy_plan_is_not_guessed(tmp_path, monkeypatch):
     payload["plan"].pop("before_state")
     payload["plan"].pop("after_state")
     path.write_text(json.dumps(payload))
-    assert "migration" in engine.recover()["op"]["error"]
+    assert engine.recover()["op"] == {"status": "BLOCKED", "error": "OperationConflict"}
     assert engine.storage.get("t") == before
 
 

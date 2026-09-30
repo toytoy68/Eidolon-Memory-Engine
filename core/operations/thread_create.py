@@ -142,5 +142,5 @@ class FilesystemLinkedThreadCreation:
                 results[path.stem] = {"status": "COMMITTED"}
             except (OSError, ValueError, TypeError, AttributeError, OperationRepositoryError,
                     EventRepositoryError, ThreadStorageError, ThreadError) as exc:
-                results[path.stem] = {"status": "BLOCKED", "error": str(exc)}
+                results[path.stem] = {"status": "BLOCKED", "error": type(exc).__name__}
         return results

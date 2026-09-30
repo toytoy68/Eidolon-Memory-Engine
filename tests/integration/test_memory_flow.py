@@ -15,9 +15,10 @@ from core.backend.models import Memory
 from core.backend.errors import InformationDeletionBlocked
 from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
-from core.operations.models import OperationStatus
+from core.operations.models import (OperationRecord, OperationStatus, OperationType,
+                                    ThreadCreatePlan, ThreadStatusChangePlan)
 from core.operations.errors import OperationConflict
-from core.operations.thread_status import FilesystemThreadOperations
+from core.operations.thread_status import FilesystemThreadOperations, plan_hash
 from core.operations.thread_create import FilesystemLinkedThreadCreation
 from core.threads.link_service import ThreadInformationLinkService
 from core.threads.models import Thread, ThreadStatus
@@ -43,6 +44,29 @@ def open_creation(root):
     operations = FilesystemOperationRepository(history / "operations/thread-create-v1")
     events = FilesystemEventRepository(history / "events/thread-create-v1")
     return backend, FilesystemLinkedThreadCreation(backend, threads, events, operations)
+
+
+@pytest.mark.parametrize("kind", ["creation", "status"])
+def test_recovery_report_does_not_expose_invalid_snapshot_content(tmp_path, kind):
+    private = "PRIVATE_SNAPSHOT_VALUE"
+    snapshot = ("# Eidolon Thread Object\n\nVersion: 0.1\n\n## Identity\n"
+                "thread_id: thread-1\nrevision: 1\ntitle: Title\n"
+                f"status: {private}\n---\n")
+    if kind == "creation":
+        _, service = open_creation(tmp_path)
+        operation = OperationRecord(
+            "op-1", OperationType.THREAD_CREATE, "thread-1", 0, 1, "",
+            plan=ThreadCreatePlan("info-1", "event-1", snapshot))
+    else:
+        _, service = open_engine(tmp_path)
+        operation = OperationRecord(
+            "op-1", OperationType.THREAD_STATUS_CHANGE, "thread-1", 1, 2, "",
+            plan=ThreadStatusChangePlan(ThreadStatus.VALIDATED, "event-1", snapshot, snapshot))
+    service.operations.create(replace(operation, execution_plan_hash=plan_hash(operation)))
+
+    report = service.recover()
+    assert report == {"op-1": {"status": "BLOCKED", "error": "ThreadStorageError"}}
+    assert private not in json.dumps(report)
 
 
 def crash_creation_worker(root, phase):
