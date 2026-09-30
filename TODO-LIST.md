@@ -98,6 +98,8 @@ stables du moteur avant l'intégration aux agents.
    et aux anciens CLI ; adapter ou isoler ceux qui contournent les journaux,
    verrous ou Events. T-031a/b raccordent création et reprise dans le service ;
    les API bas niveau et les anciens services restent à adapter après migration.
+   `ThreadStorage.delete` reste notamment une suppression directe sans journal
+   ni Event : décider son remplacement avant de l'exposer comme parcours métier.
    Un garde-fou empêche déjà le controller historique d'écrire dans Persistent
    Memory si des données core y sont détectées. Vérifier sur
    une copie que deux écrivains ne partagent pas une famille de fichiers.
