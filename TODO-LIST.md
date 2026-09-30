@@ -431,8 +431,10 @@ stables du moteur avant l'intégration aux agents.
   (2026-09-29).
 - **【FAIT】** T-034a — Première interface interne d'assemblage de contexte
   structurée, bornée en caractères et traçable par ID/révision ; vérification
-  sur fichiers core. Pertinence, budgets en tokens, politique d'accès et
-  intégration Core/Qdrant restent à définir (2026-09-29).
+  sur fichiers core. Un budget de tokens avec compteur injectable a ensuite
+  été ajouté ; la pertinence, le choix du compteur côté consommateur, la
+  politique d'accès et l'intégration Core/Qdrant restent à définir
+  (2026-09-29).
 - **【FAIT】** T-034b — Les extraits de contexte portent séparément les étiquettes
   épistémique, opérationnelle et de confiance lorsqu'elles existent ; leur
   politique de sélection et leur rendu pour le modèle restent à définir
