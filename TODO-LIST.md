@@ -99,6 +99,15 @@ configurer. Le CLI des opérations Thread exécute ce contrôle avant d'ouvrir
 ses dépôts. Cinq tests ciblés passent ; les droits et le disque de la VM
 restent à vérifier sur place.
 
+**Jeu de données anonymisé (2026-09-30) — 【FAIT EN LOCAL】** :
+`python -B -m tools.generate_scenario --output DOSSIER_VIDE --seed 70427`
+reproduit 500 Informations historiques, 499 Informations core après une
+suppression terminée, 12 Threads, des relations, cinq statuts épistémiques,
+deux autres suppressions non terminées et six Events/Reviews historiques
+chacun. Deux tests vérifient les empreintes identiques entre deux générations,
+le précontrôle des 500 candidats et le refus d'écraser une sortie existante.
+Corpus synthétique : représentatif de formes choisies, pas des données VM.
+
 **Revue du 2026-09-30 :** 624 tests locaux réussis, 5 tests multiprocessus
 non exécutés ici. Les tests d'interruption couvrent les parcours Thread liés
 et les nouvelles suppressions Information ; ils ne prouvent pas la sûreté avec
