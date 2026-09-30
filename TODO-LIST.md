@@ -627,6 +627,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-033s — Le précontrôle et la simulation signalent aussi les
   Informations core historiques dont une relation est non structurée, sans
   cible ou contradictoire, avant de les considérer déjà migrées (2026-09-30).
+- **【FAIT】** T-033t — L'inventaire en lecture seule signale une source dont un
+  répertoire a été remplacé par un fichier, même si aucune catégorie de fichier
+  ne peut alors être parcourue (2026-09-30).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).

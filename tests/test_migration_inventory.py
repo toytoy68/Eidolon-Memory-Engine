@@ -77,6 +77,24 @@ def test_inventory_flags_ambiguous_and_nonstandard_json(tmp_path):
     assert first.exists() and second.exists() and third.exists()
 
 
+def test_inventory_reports_directory_replaced_by_file_without_writing(tmp_path):
+    broken = write(tmp_path, "memory/history/pending-delete", "private broken directory")
+    before = broken.read_bytes()
+    report = inventory(tmp_path)
+    assert report["categories"]["pending_delete"] == {}
+    assert report["needs_review"] == [{
+        "path": "memory/history/pending-delete", "reason": "invalid_directory",
+    }]
+    assert broken.read_bytes() == before
+    assert "private" not in json.dumps(report)
+
+
+def test_inventory_reports_broken_memory_parent_once(tmp_path):
+    (tmp_path / "memory").write_text("private")
+    report = inventory(tmp_path)
+    assert report["needs_review"] == [{"path": "memory", "reason": "invalid_directory"}]
+
+
 def test_cli_reports_inventory_without_content(tmp_path, capsys):
     write(tmp_path, "memory/working/item.md", "---\nid: i\n---\nprivate\n")
     assert main(["--root", str(tmp_path)]) == 0

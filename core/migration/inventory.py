@@ -79,6 +79,7 @@ def inventory(engine_root: Path) -> dict:
     if not root.is_dir():
         raise ValueError(f"engine root is not a directory: {root}")
     result = {"categories": {}, "needs_review": []}
+    invalid_directories = set()
     for category, relative, pattern in SOURCES:
         directory = root / relative
         counts: Counter[str] = Counter()
@@ -86,7 +87,18 @@ def inventory(engine_root: Path) -> dict:
         if linked is not None:
             result["needs_review"].append({
                 "path": linked.relative_to(root).as_posix(), "reason": "symlink_skipped"})
-        elif directory.is_dir():
+        else:
+            current = root
+            for part in Path(relative).parts:
+                current = current / part
+                if current.exists() and not current.is_dir():
+                    location = current.relative_to(root).as_posix()
+                    if location not in invalid_directories:
+                        result["needs_review"].append({
+                            "path": location, "reason": "invalid_directory"})
+                        invalid_directories.add(location)
+                    break
+        if linked is None and directory.is_dir():
             for path in sorted(directory.glob(pattern)):
                 if not path.is_file() and not path.is_symlink():
                     continue
