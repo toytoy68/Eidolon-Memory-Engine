@@ -47,6 +47,29 @@ def test_parse_request_rejects_invalid_json():
         parse_request("{invalid")
 
 
+@pytest.mark.parametrize("fragment", [
+    '"domain":"THREAD","domain":"OTHER",',
+    '"filters":{"id":"a","id":"b"},',
+    '"filters":{"score":NaN},',
+    '"filters":{"score":1e10000},',
+])
+def test_parse_request_rejects_ambiguous_or_nonfinite_json(fragment):
+    payload = ('{"request":{"schema_version":"0.1",' + fragment
+               + '"domain":"THREAD","intent":"LIST_THREADS"}}')
+    with pytest.raises(ValueError, match="Invalid request JSON"):
+        parse_request(payload)
+
+
+@pytest.mark.parametrize("field,value", [("domain", 1), ("intent", [])])
+def test_parse_request_rejects_nontext_domain_or_intent(field, value):
+    import json
+    data = {"request": {"schema_version": "0.1", "domain": "THREAD",
+                        "intent": "LIST_THREADS"}}
+    data["request"][field] = value
+    with pytest.raises(ValueError):
+        parse_request(json.dumps(data))
+
+
 def test_parse_request_requires_object():
     with pytest.raises(ValueError):
         parse_request("[]")

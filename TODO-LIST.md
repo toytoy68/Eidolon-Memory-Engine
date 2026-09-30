@@ -305,6 +305,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-023b — Les requêtes Thread rejettent les filtres titre, listes
   de statuts et provenance de mauvais type avec `ValueError`, avant leur
   utilisation dans la requête (2026-09-30).
+- **【FAIT】** T-023c — Le parseur de requêtes refuse les clés JSON répétées,
+  constantes non standard, exposants non finis et domaines ou intentions de
+  mauvais type avant le routage (2026-09-30).
 - **【FAIT】** T-028b — Audit du dépôt, bilan de maturité et priorités revues dans
   `docs/AUDIT-2026-09-28.md`, entrée `README.md`, et documentation de la reprise
   synchronisée avec `recover-all` (2026-09-28).

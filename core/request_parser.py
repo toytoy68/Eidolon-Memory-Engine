@@ -2,18 +2,16 @@
 
 from __future__ import annotations
 
-import json
-from typing import Any
-
 from .requests import RequestEnvelope
+from .storage_format import decode_json_value
 
 
 def parse_request(data: str | bytes) -> RequestEnvelope:
     """Parse a JSON request envelope."""
     try:
-        payload = json.loads(data)
-    except (TypeError, json.JSONDecodeError) as exc:
-        raise ValueError(f"Invalid request JSON: {exc}") from exc
+        payload = decode_json_value(data)
+    except (TypeError, ValueError, UnicodeError) as exc:
+        raise ValueError("Invalid request JSON") from exc
 
     if not isinstance(payload, dict):
         raise ValueError("Request JSON must be an object.")

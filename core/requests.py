@@ -25,11 +25,11 @@ class RequestEnvelope:
                 f"Expected: {SUPPORTED_SCHEMA}."
             )
 
-        if not self.domain:
-            raise ValueError("Request domain cannot be empty.")
+        if not isinstance(self.domain, str) or not self.domain:
+            raise ValueError("Request domain must be nonempty text.")
 
-        if not self.intent:
-            raise ValueError("Request intent cannot be empty.")
+        if not isinstance(self.intent, str) or not self.intent:
+            raise ValueError("Request intent must be nonempty text.")
 
         if not isinstance(self.filters, dict):
             raise ValueError("Request filters must be an object.")
