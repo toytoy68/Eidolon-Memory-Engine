@@ -200,6 +200,10 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-037e — L’audit croise les politiques de rétention
   déclarées et les périodes d’applicabilité, sans identifier les documents
   ni déduire une action automatique (2026-09-30).
+- **【FAIT】** T-037f — L'audit croise aussi les statuts épistémiques déclarés
+  et les périodes d'applicabilité, avec catégories `missing` et `invalid`,
+  sans exposer de contenu, modifier le classement ou inférer un oubli
+  (2026-09-30).
 - **【FAIT】** T-037d — Prévisualisation Python en lecture seule des groupes
   exacts avec IDs et noms de champs divergents pour revue humaine ; aucune
   proposition de fusion automatique (2026-09-29).

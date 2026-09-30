@@ -12,7 +12,7 @@ from pathlib import Path
 from core.backend.errors import InvalidMemory
 from core.backend.filesystem import FilesystemBackend
 from core.indexing import build_manifest
-from core.information.models import Retention
+from core.information.models import EpistemicStatus, Retention
 from core.persistence import has_symlink_component
 
 
@@ -33,8 +33,10 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
     retention_counts: Counter[str] = Counter()
     applicability_counts: Counter[str] = Counter()
     joint_counts: Counter[tuple[str, str]] = Counter()
+    epistemic_joint_counts: Counter[tuple[str, str]] = Counter()
     content_counts: Counter[str] = Counter()
     allowed_retention = {member.value for member in Retention}
+    allowed_epistemic = {member.value for member in EpistemicStatus}
     for entry in manifest.entries:
         path = root / f"{entry.information_id}.md"
         if path.is_symlink():
@@ -82,6 +84,14 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
             applicability = "unknown"
         applicability_counts[applicability] += 1
         joint_counts[(retention_key, applicability)] += 1
+        epistemic = memory.metadata.get("epistemic_status")
+        if epistemic is None:
+            epistemic_key = "missing"
+        elif type(epistemic) is str and epistemic in allowed_epistemic:
+            epistemic_key = epistemic
+        else:
+            epistemic_key = "invalid"
+        epistemic_joint_counts[(epistemic_key, applicability)] += 1
     return {
         "count": len(manifest.entries), "source_digest": manifest.digest,
         "as_of": instant.isoformat(),
@@ -92,6 +102,12 @@ def audit_lifecycle(persistent_root: Path, *, as_of: str) -> dict:
                                    for (policy, applicability), count in joint_counts.items()
                                    if policy == retention))
             for retention in sorted(retention_counts)
+        },
+        "epistemic_by_applicability": {
+            status: dict(sorted((applicability, count)
+                                for (label, applicability), count in epistemic_joint_counts.items()
+                                if label == status))
+            for status in sorted({label for label, _ in epistemic_joint_counts})
         },
         "exact_content_duplicates": {
             "groups": sum(count > 1 for count in content_counts.values()),

@@ -28,6 +28,10 @@ La table `retention_by_applicability` croise aussi ces deux déclarations : elle
 permet de distinguer, par exemple, une mémoire `PERMANENT` dont la période
 est `ended` d'une mémoire temporaire encore dans ses bornes. Chaque document
 compte une seule fois dans cette table ; aucune case ne déclenche une action.
+La table `epistemic_by_applicability` croise séparément le statut épistémique
+déclaré (`missing` et `invalid` inclus) avec la même période. Elle permet
+d'examiner les souvenirs réfutés ou conflictuels sans confondre fin de validité
+et preuve de fausseté, et sans modifier le classement de recherche.
 L'outil compare `valid_from` et `valid_until` avec `--at` ; il signale une
 période contradictoire ou une date sans fuseau comme `invalid`. Une seule borne
 connue peut suffire à `within_known_bounds`, ce qui ne prouve pas que

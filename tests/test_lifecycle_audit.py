@@ -99,3 +99,21 @@ def test_lifecycle_refuses_source_changed_after_manifest(tmp_path, monkeypatch):
     monkeypatch.setattr(lifecycle_module, "build_manifest", changed_after_snapshot)
     with pytest.raises(InvalidMemory, match="changed during audit"):
         audit_lifecycle(backend.persistent_root, as_of="2026-09-29T12:00:00Z")
+
+
+def test_lifecycle_crosses_epistemic_status_with_applicability(tmp_path):
+    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
+    backend.store(Memory("refuted", content="private a",
+                         metadata={"epistemic_status": "REFUTED"},
+                         temporal={"valid_until": "2026-09-01T00:00:00Z"}))
+    backend.store(Memory("conflicted", content="private b",
+                         metadata={"epistemic_status": "CONFLICTED"},
+                         temporal={"valid_until": "2026-12-01T00:00:00Z"}))
+    backend.store(Memory("unlabeled", content="private c"))
+    report = audit_lifecycle(backend.persistent_root, as_of="2026-09-30T00:00:00Z")
+    assert report["epistemic_by_applicability"] == {
+        "CONFLICTED": {"within_known_bounds": 1},
+        "REFUTED": {"ended": 1},
+        "missing": {"unknown": 1},
+    }
+    assert "private" not in json.dumps(report)
