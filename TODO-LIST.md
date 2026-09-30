@@ -232,6 +232,9 @@ stables du moteur avant l'intégration aux agents.
 - **【FAIT】** T-032u — Un reçu de suppression terminé sans empreinte du contenu
   est signalé invalide par l'audit ; cette empreinte est toujours produite par
   la procédure d'approbation core (2026-09-30).
+- **【FAIT】** T-032v — L'audit et la reprise des suppressions signalent un
+  répertoire runtime remplacé par un fichier, au lieu de conclure qu'il n'y a
+  aucune demande à examiner (2026-09-30).
 - **【FAIT】** T-032o — Un reçu de suppression réserve l’identité
   Information : la création refuse sa réutilisation après suppression ou
   interruption, ainsi qu’un reçu symbolique (2026-09-29).

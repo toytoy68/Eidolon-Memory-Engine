@@ -102,6 +102,17 @@ def test_audit_reports_actual_symlinked_directory(tmp_path):
     }]}
 
 
+@pytest.mark.parametrize("component", ["memory", "memory/history",
+                                       "memory/history/pending-delete"])
+def test_audit_flags_directory_replaced_by_file(tmp_path, component):
+    path = tmp_path / component
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("damaged")
+    assert audit_deletions(tmp_path) == {"requests_checked": 0, "issues": [{
+        "request": component, "reason": "invalid_directory",
+    }]}
+
+
 @pytest.mark.parametrize("component", ["memory", "memory/history"])
 def test_audit_does_not_follow_symlinked_parent_directory(tmp_path, component):
     external = tmp_path / "external"

@@ -103,3 +103,14 @@ def test_deletion_recovery_rejects_symlink_above_engine_root(tmp_path):
     assert recover_deletions(linked / "engine") == {"recovered": [], "blocked": [
         {"path": ".", "reason": "symlink_directory"},
     ]}
+
+
+@pytest.mark.parametrize("component", ["memory/history", "memory/persistent",
+                                       "memory/history/pending-delete"])
+def test_deletion_recovery_blocks_directory_replaced_by_file(tmp_path, component):
+    path = tmp_path / component
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("damaged")
+    assert recover_deletions(tmp_path) == {"recovered": [], "blocked": [{
+        "path": component, "reason": "invalid_directory",
+    }]}

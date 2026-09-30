@@ -29,6 +29,13 @@ def recover_deletions(engine_root: Path) -> dict:
             or pending.is_symlink() or persistent.is_symlink()):
         report["blocked"].append({"path": "memory", "reason": "symlink_directory"})
         return report
+    for directory, location in ((root / "memory", "memory"),
+                                (history, "memory/history"),
+                                (persistent, "memory/persistent"),
+                                (pending, "memory/history/pending-delete")):
+        if directory.exists() and not directory.is_dir():
+            report["blocked"].append({"path": location, "reason": "invalid_directory"})
+            return report
     if not pending.is_dir():
         return report
     if not persistent.is_dir():

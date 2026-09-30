@@ -34,6 +34,12 @@ def audit_deletions(engine_root: Path) -> dict:
                                  "reason": "symlink_skipped"})
     if report["issues"]:
         return report
+    for directory, location in ((memory, "memory"), (history, "memory/history"),
+                                (persistent, "memory/persistent"),
+                                (requests, "memory/history/pending-delete")):
+        if directory.exists() and not directory.is_dir():
+            report["issues"].append({"request": location, "reason": "invalid_directory"})
+            return report
     if not requests.is_dir():
         return report
     for path in sorted(requests.glob("*.json")):
