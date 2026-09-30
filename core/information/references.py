@@ -55,6 +55,8 @@ def ensure_no_thread_links(threads_root: Path, information_id: str) -> None:
     """Fail closed on links or unreadable Threads; caller holds the writer lock."""
     if threads_root.is_symlink():
         raise InformationDeletionBlocked("Thread directory is a symlink")
+    if threads_root.exists() and not threads_root.is_dir():
+        raise InformationDeletionBlocked("Thread directory is not a directory")
     if not threads_root.is_dir():
         return
     for path in sorted(threads_root.glob("*.md")):

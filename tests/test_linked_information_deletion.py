@@ -118,6 +118,20 @@ def test_unreadable_thread_blocks_guarded_deletion(tmp_path):
     assert backend.get("info-1") is not None
 
 
+def test_thread_directory_replaced_by_file_blocks_deletion(tmp_path):
+    backend, threads, _ = stores(tmp_path)
+    backend.store(Memory("info-1", content="keep"))
+    backend.delete_request("info-1", "human", "reason", 1, "delete-1")
+    threads.threads_root.rmdir()
+    threads.threads_root.write_text("damaged directory")
+
+    with pytest.raises(InformationDeletionBlocked, match="not a directory"):
+        backend.approve_delete("info-1", "delete-1")
+    assert backend.get("info-1").content == "keep"
+    receipt = json.loads((backend.pending_delete_root / "info-1.json").read_text())
+    assert receipt["status"] == "PENDING_DELETE"
+
+
 def test_direct_backend_approval_cannot_bypass_link_guard(tmp_path):
     backend, threads, _ = stores(tmp_path)
     backend.store(Memory("info-1", content="keep"))

@@ -451,6 +451,8 @@ class FilesystemBackend(MemoryBackend):
         threads_root = self.persistent_root / "threads"
         if threads_root.is_symlink():
             raise InformationDeletionBlocked("Thread directory is a symlink")
+        if threads_root.exists() and not threads_root.is_dir():
+            raise InformationDeletionBlocked("Thread directory is not a directory")
         threads_root.mkdir(parents=True, exist_ok=True)
         with exclusive_write(threads_root):
             ensure_no_thread_links(threads_root, information_id)
