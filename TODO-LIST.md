@@ -436,6 +436,8 @@ stables du moteur avant l'intégration aux agents.
   un objet non typé avant d'accéder à ses attributs (2026-09-30).
 - **【FAIT】** T-031bb — La validation métier Thread refuse un objet qui n'est
   pas un `Thread` avec une erreur de domaine (2026-09-30).
+- **【FAIT】** T-031bc — Le constructeur Event refuse un type d'Event non Enum,
+  y compris une liste non hachable, avec `ValueError` explicite (2026-09-30).
 - **【FAIT】** T-032w — L'audit des suppressions signale comme invalide un reçu
   dont le nom de fichier contient un identifiant inutilisable par le backend,
   même si son JSON est autrement valide (2026-09-30).

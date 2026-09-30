@@ -129,6 +129,8 @@ class Event:
     def __post_init__(self) -> None:
         if type(self.revision) is not int or self.revision < 1:
             raise ValueError("revision doit être >= 1 et de type entier")
+        if not isinstance(self.event_type, EventType):
+            raise ValueError("event_type invalide")
 
         has_information = self.information_id is not None
         has_thread = self.thread_id is not None

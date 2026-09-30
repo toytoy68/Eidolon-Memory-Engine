@@ -1,3 +1,5 @@
+import pytest
+
 from core.events.models import (
     Cause,
     CauseType,
@@ -11,6 +13,12 @@ from core.events.models import (
     ValidationMode,
     ValidationStatus,
 )
+
+
+@pytest.mark.parametrize("event_type", [[], {}, "UPDATED"])
+def test_event_constructor_rejects_untyped_event_type(event_type):
+    with pytest.raises(ValueError, match="event_type invalide"):
+        Event("event-invalid", 1, event_type, information_id="info-1")
 
 
 def test_information_event_model():
