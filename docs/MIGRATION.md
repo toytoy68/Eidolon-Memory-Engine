@@ -111,6 +111,11 @@ dans la liste de `information.md` : la simulation signale
 `relation_schema_mismatch_requires_policy` au lieu de déclarer le document
 convertible. Il faut trancher ce désaccord de schéma avant une conversion ;
 aucune relation n'est supprimée ni renommée par l'outil.
+Inversement, des types tels que `CONFIRMS` ou `ASSOCIATED_WITH` figurent dans
+`information.md` mais pas dans le modèle Relation historique. Ils reçoivent
+`relation_schema_extension_requires_policy`, distinct d'un type totalement
+inconnu. Ce classement expose le choix de contrat à faire sans présumer de la
+sémantique d'une donnée ancienne.
 
 **Une candidate n'est pas une conversion validée** : le rapport ne crée
 pas de document converti et ne vérifie pas tous les sens métier, notamment

@@ -44,6 +44,10 @@ RELATION_TYPES = {
     "SUPPORTS", "CONTRADICTS", "DERIVED_FROM", "DEPENDS_ON", "SUPERSEDES",
     "RELATED_TO", "PART_OF", "INSTANCE_OF", "CAUSED_BY", "FOLLOWS",
 }
+INFORMATION_SCHEMA_ONLY_RELATION_TYPES = {
+    "CONCERNS", "CONFIRMS", "REFUTES", "REQUIRES", "USES", "PRODUCES",
+    "CAUSES", "PRECEDES", "REPLACES", "BELONGS_TO", "ASSOCIATED_WITH",
+}
 
 
 def _history_summary(root: Path, category: str, field: str, allowed: set[str]) -> tuple[dict, list]:
@@ -190,6 +194,10 @@ def _candidate_issues(path: Path, persistent: Path) -> list[str]:
             reasons.append("legacy_relation_alias_requires_policy")
         elif relation_type == "INSTANCE_OF" and "relation_schema_mismatch_requires_policy" not in reasons:
             reasons.append("relation_schema_mismatch_requires_policy")
+        elif (isinstance(relation_type, str)
+              and relation_type in INFORMATION_SCHEMA_ONLY_RELATION_TYPES
+              and "relation_schema_extension_requires_policy" not in reasons):
+            reasons.append("relation_schema_extension_requires_policy")
         elif not isinstance(relation_type, str) or relation_type not in RELATION_TYPES:
             if "unknown_relation_type" not in reasons:
                 reasons.append("unknown_relation_type")

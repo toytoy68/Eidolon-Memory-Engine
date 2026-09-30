@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from core.events.filesystem import FilesystemEventRepository
 from core.events.models import Event, EventType
 from core.migration.simulation import main, simulate, preview_legacy_information
@@ -182,6 +184,21 @@ def test_simulation_flags_instance_of_contract_mismatch(tmp_path):
         "reasons": ["relation_schema_mismatch_requires_policy"],
     }]
     assert source.read_bytes() == before
+
+
+@pytest.mark.parametrize("relation_type", ["CONFIRMS", "ASSOCIATED_WITH"])
+def test_simulation_distinguishes_information_schema_only_relation(tmp_path, relation_type):
+    persistent = tmp_path / "memory/persistent"
+    persistent.mkdir(parents=True)
+    source = persistent / "info-1.md"
+    source.write_text("---\nid: info-1\nrevision: 1\ntype: FACT\n"
+                      "epistemic_status: UNVERIFIED\noperational_state: ACTIVE\n"
+                      f"relations:\n  - type: {relation_type}\n    target: info-1\n"
+                      "---\nbody\n")
+    assert simulate(tmp_path)["information"]["blocked"] == [{
+        "path": "memory/persistent/info-1.md",
+        "reasons": ["relation_schema_extension_requires_policy"],
+    }]
 
 
 def test_simulation_counts_plain_events_and_flags_unknown_history_values(tmp_path):

@@ -575,6 +575,9 @@ stables du moteur avant l'intégration aux agents.
   car l'ancien modèle Relation et son CLI l'acceptent alors que la liste du
   schéma Information l'omet ; aucune décision de renommage n'est implicite
   (2026-09-30).
+- **【FAIT】** T-033r — La simulation distingue aussi les types présents
+  seulement dans `information.md` des types totalement inconnus. Ces extensions
+  restent bloquées en attente d'une décision de contrat (2026-09-30).
 - **【FAIT】** T-030 — Lecture des Events : rejet des révisions converties
   implicitement (`"2"`, booléen), des identifiants et structures JSON de mauvais
   type ; six tests de régression (2026-09-28).
