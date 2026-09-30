@@ -116,11 +116,30 @@ class ThreadQuery:
         if self.offset < 0:
             raise ValueError("offset must be >= 0")
 
-        if self.title is not None and not self.title.strip():
+        if ((self.status is not None and not isinstance(self.status, ThreadStatus))
+                or (self.action_status is not None
+                    and not isinstance(self.action_status, ActionStatus))
+                or not isinstance(self.statuses, list)
+                or any(not isinstance(status, ThreadStatus) for status in self.statuses)
+                or not isinstance(self.action_statuses, list)
+                or any(not isinstance(status, ActionStatus) for status in self.action_statuses)):
+            raise ValueError("status filters must be lists of status values")
+        if not isinstance(self.provenance, dict) or any(
+                not isinstance(key, str) for key in self.provenance):
+            raise ValueError("provenance filter must be a mapping with text keys")
+
+        if self.title is not None and (not isinstance(self.title, str) or not self.title.strip()):
             raise ValueError("title cannot be empty")
 
-        if self.title_contains is not None and not self.title_contains.strip():
+        if (self.title_contains is not None
+                and (not isinstance(self.title_contains, str)
+                     or not self.title_contains.strip())):
             raise ValueError("title_contains cannot be empty")
+
+        for name in ("thread_id", "action_id", "relation_type", "related_to"):
+            value = getattr(self, name)
+            if value is not None and (not isinstance(value, str) or not value):
+                raise ValueError(f"{name} must be nonempty text")
 
         if self.query_type == ThreadQueryType.GET_THREAD:
             if not self.thread_id:

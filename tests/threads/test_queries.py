@@ -5,6 +5,7 @@ from core.threads.queries import (
     ThreadSortField,
     ThreadSortOrder,
 )
+import pytest
 
 
 def test_list_open_threads():
@@ -83,3 +84,17 @@ def test_query_limits():
         assert "limit must be <= 1000" in str(exc)
     else:
         raise AssertionError("Expected ValueError")
+
+
+@pytest.mark.parametrize("field,value", [
+    ("title_contains", 4), ("title", []), ("statuses", None),
+    ("status", []), ("action_status", []),
+    ("action_statuses", "PLANNED"), ("provenance", []),
+    ("provenance", {1: "source"}),
+    ("thread_id", 1), ("relation_type", []),
+])
+def test_query_rejects_wrong_filter_shapes(field, value):
+    query = ThreadQuery(query_type=ThreadQueryType.LIST_THREADS)
+    setattr(query, field, value)
+    with pytest.raises(ValueError):
+        query.validate()

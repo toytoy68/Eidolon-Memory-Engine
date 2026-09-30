@@ -302,6 +302,9 @@ stables du moteur avant l'intégration aux agents.
   `core/monitoring/files.py` (tests isolés, 2026-09-28).
 - **【FAIT】** T-023a / T-028a — Frontières des écrivains et protocole Thread
   documentés dans `docs/ARCHITECTURE.md` (revue du code, 2026-09-28).
+- **【FAIT】** T-023b — Les requêtes Thread rejettent les filtres titre, listes
+  de statuts et provenance de mauvais type avec `ValueError`, avant leur
+  utilisation dans la requête (2026-09-30).
 - **【FAIT】** T-028b — Audit du dépôt, bilan de maturité et priorités revues dans
   `docs/AUDIT-2026-09-28.md`, entrée `README.md`, et documentation de la reprise
   synchronisée avec `recover-all` (2026-09-28).
