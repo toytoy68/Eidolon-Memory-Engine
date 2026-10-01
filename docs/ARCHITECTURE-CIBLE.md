@@ -158,8 +158,11 @@ charger tous leurs textes en contexte. Il reste reconstructible ; les mots-clés
 et qualifications qui ne peuvent pas être recalculés appartiennent aux objets
 canoniques. Le catalogue n'est pas à lui seul une politique de disponibilité.
 
-Proposition à comparer dans T-044/T-045 : rapprochement régulier par manifeste
-et suivi durable des projections en attente. Une simple notification volatile
+Orientation issue de la revue Claude, à implémenter dans T-044/T-045 :
+rapprochement régulier par manifeste comme mécanisme de réparation des dérivés.
+Garder les IDs/révisions et hashes (les accès directs peuvent modifier les
+fichiers sans révision). Le suivi durable reste requis pour les intentions et
+échéances ; il n'est pas une dépendance obligatoire de chaque projection. Une simple notification volatile
 après COMMITTED ne suffit pas : une panne à cet instant perdrait la mise à jour.
 Pour le premier parcours, reconstruction explicite idempotente et contrôle des
 dépendances ; avant automatisation, reprise testée du retard et des suppressions.
@@ -251,5 +254,27 @@ restauration par hash, concurrence, audits et reprise conditionnent la mise en s
 
 Les choix techniques courants dans les décisions déjà approuvées ne demandent
 pas de nouvelle permission. Un choix métier nouveau est présenté avec ses
-conséquences avant implémentation. La revue Claude est demandée dans E-005 à
-E-007 ; elle n'est pas encore reçue et ne constitue pas une validation implicite.
+conséquences avant implémentation. La revue Claude E-005 à E-007 est reçue avec
+un patch testé en isolation mais non intégré. Voir [la contre-revue](REVUE-CLAUDE-2026-10-01.md).
+Elle confirme les blocages ; certaines propositions demandent les réserves
+ci-dessous et ne constituent pas une validation VM.
+
+## Précisions après revue Claude du 01/10
+
+- Le contrôle de démarrage différencie PENDING_DELETE valide et reprise
+  non terminée, inclut APPLYING_DELETE et ne suppose pas qu'un ordre fixe
+  résout toutes les dépendances. La résolution humaine d'un FAILED doit
+  qualifier ses effets déjà écrits, ses réservations et le comportement de rejeu.
+- La commande d'exécution distingue identifiant stable d'intention et hash
+  du plan figé. Même contenu ne signifie pas nécessairement même demande.
+- La purge des dérivés doit avoir une clôture reprenable pour les vues gérées
+  par le moteur. Le DELETED canonique actuel ne l'atteste pas ; notes humaines,
+  sauvegardes et copies clientes exigent leurs propres règles explicites.
+- Une archive de révisions complète est optionnelle, sans activation implicite
+  par LONG_TERM/PERMANENT. Sa publication et sa suppression doivent être reprises
+  après interruption si cette politique est retenue.
+- L'entretien récurrent doit être reportable si le système est occupé et
+  reprendre par lots. Profil quotidien léger/hebdomadaire approfondi proposé,
+  fréquence et critères de charge à décider ; horaire exact à consolider avec
+  le souhait 3–4 h. Aucun ordonnanceur n'est livré et aucune revue nocturne
+  ne transforme seule une contradiction en réfutation.

@@ -25,7 +25,8 @@ anciennes sous-tâches ne sont pas renumérotées.
 Pas de travail sur Eidolon Core, Hermes, Qdrant ni de nouvelles validations
 ou micro-durcissements T-031a…bc. Les défauts de l'audit sont enregistrés,
 **pas corrigés pendant cette séance**. Revue Claude demandée E-005 à E-007 ;
-une réponse absente ne vaut pas validation.
+revue complète reçue par fichier, patch vérifié mais non intégré. Voir
+[la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
 ## Dernière vérification
 
@@ -66,7 +67,15 @@ inter-familles ; ne pas se limiter aux résultats renvoyés par recover-all.
 Preuves attendues : transition valide PREPARED → FAILED → rapport/code non nul ;
 journal Thread delete corrompu → KO ; état sain → succès ; reprises et
 interdiction de démarrage sur état bloquant. Tests rouges sur le code audité.
-Claude E-005. Rien implémenté, aucune VM validée.
+Claude E-005 confirmé. Patch proposé testé en isolation : FAILED et famille
+Thread delete corrigés dans le candidat, pas sur la branche. Compléter le scan
+des inconnus (fichiers et sous-familles imbriquées) sans traverser d'ancêtre
+symbolique ; reconnaître les fichiers techniques et archives légitimes.
+PENDING_DELETE valide n'est pas un échec ; APPLYING_DELETE reste à reprendre.
+BLOCKED est un résultat de contrôle, pas un état persisté d'Operation.
+Résolution humaine de FAILED : examiner effets partiels, réservations et rejeu,
+tracer la décision sans simple déblocage ni rollback implicite. Tests des trois
+familles et du CLI attendus. Aucun contrôle global livré, aucune VM validée.
 
 ### T-021 / T-033 — Migration opérationnelle — PARTIEL / NON TESTÉ VM
 
@@ -83,7 +92,12 @@ Tester PENDING_DELETE/APPLYING_DELETE/DELETED/CANCELLED, révisions historiques,
 liens et Threads/actions. Distinguer actif, archivé et rejeté dans le rapport.
 Les suppressions du générateur sont dans core/, pas legacy/. Conserver D1/D4/D9 :
 import distinct, aucun CREATED historique fabriqué, réservation d'identité.
-Revue des pertes de sens sur copie réelle. Claude E-006.
+Revue des pertes de sens sur copie réelle. Claude E-006 confirmé.
+Le patch proposé rejette les reçus mais seulement après conversion des autres
+Informations : destination partielle, non activable. Décider refus avant toute
+conversion versus résultat partiel explicitement bloquant. Un import étroit
+DELETED est une proposition, à compléter par les réservations CANCELLED et les
+reçus de rejeu ; aucune copie de journal actif exécutée automatiquement.
 
 ### T-031 / T-041 — Services métier canoniques — PARTIEL / NON TESTÉ VM
 
@@ -113,7 +127,9 @@ Restant : raccordement aux services T-031/T-041, contrôle de révision à
 l'exécution, version des règles et revue des ambiguïtés. Premier parcours
 explicitement qualifié ; extraction de texte brut différée. Un trigger proposé
 n'est pas une échéance durable. Tests : simulation sans écriture, plan périmé,
-exécution répétée sans double Information/projet.
+exécution répétée sans double Information/projet. Conserver une identité stable
+d'intention et l'empreinte du plan : deux intentions distinctes de même contenu
+ne sont pas nécessairement des doublons.
 
 ### T-044 — Dossiers vivants — PARTIEL
 
@@ -127,6 +143,10 @@ la lecture automatique. Sauvegarder les notes humaines non reconstructibles,
 définir édition concurrente/ingestion explicite. Lieux/thèmes après projets.
 Tests : deuxième apport, correction propagée, source retirée, projection
 interrompue puis reprise sans rejouer le canonique, notes conservées.
+Retenir le rapprochement par manifeste comme réparation, avec IDs/révisions
+et hashes tant que les écritures directes existent. Définir la clôture de purge
+sur les vues gérées par le moteur, distincte du DELETED canonique actuel et des
+copies hors de son contrôle. Aucun effacement automatique de notes humaines.
 
 ### T-045 — Catalogue léger — À FAIRE
 
@@ -147,6 +167,10 @@ local ne doit masquer ni écriture concurrente ni divergence journal/reçu.
 Preuves : benchmark reproductible à plusieurs tailles, comptage des lectures,
 régressions de conflits/rejeu/compaction. Fixer ensuite les objectifs VM, sans
 seuil arbitraire. Nécessaire avant ingestion intensive, pas avant une démo minime.
+La proposition Claude reste non intégrée : son décodage léger accepte un reçu
+version 999 que la base bloque. Préserver cette garantie. Elle lit encore tous
+les reçus ; gain de constante possible, pas suppression du coût linéaire par
+commande. Mesure 120 create+compact rapportée par Claude, non reproduite ici.
 
 ### T-046 / T-037 — Disponibilité et cycle de vie — À FAIRE, AUDITS EXISTANTS
 
@@ -159,6 +183,12 @@ Tests à horloge contrôlée : échéance dépassée pendant l'arrêt, révision
 annulation, rejeu, chat non présenté comme position actuelle, obstacle contourné
 à revérifier. Consolidation autonome après contrat ; contenu identique ne
 signifie pas même sens.
+Entretien récurrent retenu comme besoin, pas implémenté : fenêtre matinale,
+report si occupé, lots reprenables et rattrapage après arrêt. Le profil léger
+quotidien / approfondi hebdomadaire proposé dans la discussion reste à fixer,
+ainsi que l'heure exacte (souhait 3–4 h, fenêtre documentaire 4–8 h), les critères
+d'occupation et d'inactivité. Il ne doit ni décider une vérité ni supprimer sur
+le seul critère d'âge. Aucun cron, timer système ou automation externe créé.
 
 ### T-047 / T-036 / T-022 — Rappel et parcours complet — PARTIEL POUR LES PRIMITIVES
 
@@ -177,7 +207,10 @@ Le reçu compact ne restitue pas l'ancien texte. Décider si une archive de
 révisions est nécessaire et son interaction avec suppression, snapshots Thread,
 dossiers/notes et sauvegardes. Pas de conservation cachée de contenu supprimé.
 Tests futurs : histoire conservée selon politique, dérivés retirés, rejeu sans
-résurrection ; limites d'effacement explicites. Claude E-006/E-007.
+résurrection ; limites d'effacement explicites. Claude E-006/E-007 propose des
+archives optionnelles ; les statuts LONG_TERM/PERMANENT ne suffisent pas à
+activer la conservation de toutes les versions. Aucun choix métier nouveau
+considéré comme approuvé par la seule revue.
 
 ## Recette VM — NON TESTÉE
 

@@ -102,3 +102,14 @@ un reçu de suppression Information valide, le compteur distinct
 symbolique fait échouer l'audit. L'API Python accepte `history_root` pour ce
 contrôle ; sans cette racine, elle conserve le classement générique. Le rapport
 ne révèle ni ID, ni texte et ne modifie aucun document.
+
+## Empreintes et limites d'effacement (D2/D8)
+
+Les Events d'écriture Information conservent un `content_sha256` non salé
+après suppression de l'Information. Un contenu court peut être testé par
+hypothèse. Les reçus compacts conservent également des empreintes. C'est une
+trace acceptée par D2/D8, **pas une garantie d'effacement** ni de confidentialité.
+Les dossiers périmés, notes humaines, sauvegardes et copies clientes sont des
+périmètres distincts ; la suppression canonique actuelle ne garantit pas leur
+purge. Les extensions correspondantes restent T-044/T-050, sans effacement
+implicite des notes ni conservation automatique des anciennes révisions.

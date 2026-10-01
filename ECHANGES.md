@@ -10,8 +10,8 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 `a779c9d` (base de code du nouvel audit ; documents consolidés ensuite). Toujours vérifier la branche et le commit actuels avant de travailler.
 
 - But : mémoire autonome, contextuelle et traçable ; fichiers canoniques,
-  dossiers Markdown vivants, trois niveaux de disponibilité. Voir le
-  [architecture cible consolidée](docs/ARCHITECTURE-CIBLE.md).
+  dossiers Markdown vivants, trois niveaux de disponibilité. Voir
+  [l’architecture cible consolidée](docs/ARCHITECTURE-CIBLE.md).
 - T-040 : contrat fonctionnel v0.1 et mapping textuel Information/Memory livrés.
   T-043 exécute maintenant leur partie planification ; les déclencheurs durables
   et leur activation restent T-046.
@@ -28,8 +28,9 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
   aucun désélectionné, 31,46 s, pytest 9.1.1, code `a779c9d`. Les cinq Manager
   échouent avant scénario métier (sockets interdites), non validés. Ce résultat
   vient de Codex, pas de Claude ni d'une VM. Voir [l'audit](docs/AUDIT-2026-10-01.md).
-- Accès Claude au dépôt et accès VM annoncés par toytoy pour le weekend,
-  **pas encore constatés**. Aucun résultat VM disponible.
+- Claude rapporte un clone en lecture seule de `0c89ce7` ; toytoy confirme
+  que l’écriture au dépôt reste indisponible. Réponses et patch transmis par
+  fichiers. Aucun accès ni résultat VM disponible.
 - Estimation globale gelée à 45 %, grille à 52,75 points (+2 pour les écritures
   effectivement implémentées et testées, voir le bilan du 01/10). Pas de hausse pour
   une discussion ou un accord entre assistants. Pas de travail sur Eidolon
@@ -46,13 +47,13 @@ Ces questions ne déclenchent pas automatiquement une session Claude.
 
 | Sujet | Priorité | État | Référence | Attendu |
 | --- | --- | --- | --- | --- |
-| E-001 | Haute | REVUE REÇUE — intégration T-041/T-042 | T-041/T-042, `0f45070` | Revue du format de commande/reçu et des interruptions |
+| E-001 | Haute | REVUE DE CONCEPTION ET D’IMPLÉMENTATION REÇUE | T-041/T-042, `0f45070` | Revue du format de commande/reçu et des interruptions |
 | E-002 | Moyenne | REVUE REÇUE — lecture seule | T-040/T-039, `b01ed9f` et `b967bf4` | Revue indépendante des deux lots déjà livrés |
 | E-003 | Haute avant mise en service | EN ATTENTE D'ACCÈS VM | T-010 à T-015/T-021/T-032 | Rapport réel, commit testé et limites d'environnement |
 | E-004 | Haute avant client | À RELIRE | T-043/T-044 | Plans et projections livrés, limites de fraîcheur |
-| E-005 | Bloquant exploitation | À RELIRE | T-048/T-015 | FAILED omis et inventaire Thread incomplet |
-| E-006 | Bloquant migration mixte | À RELIRE | T-021/T-050 | Réservations archivées et histoire après compaction |
-| E-007 | Haute architecture | À RELIRE | T-031/T-043 à T-049 | Ordre métier, reprise des dérivés, catalogue et disponibilité |
+| E-005 | Bloquant exploitation | REVUE REÇUE — PATCH À REVOIR | T-048/T-015 | FAILED omis et inventaire Thread incomplet |
+| E-006 | Bloquant migration mixte | REVUE REÇUE — IMPORT NON LIVRÉ | T-021/T-050 | Réservations archivées et histoire après compaction |
+| E-007 | Haute architecture | REVUE REÇUE — RÉSERVES CODEX CI-DESSOUS | T-031/T-043 à T-049 | Ordre métier, reprise des dérivés, catalogue et disponibilité |
 
 ### E-001 — Écritures et reçus compacts
 
@@ -238,7 +239,7 @@ les dépendances de reprise inter-familles que ce contrôle doit aussi couvrir.
 Tests locaux : suite complète 754 réussis, 5 échecs avant scénario (sockets
 Manager interdites), 31,46 s. Aucune VM testée.
 
-**Réponse Claude : non reçue.**
+**Réponse Claude reçue le 01/10 par fichier : voir sa réponse complète en fin de document.**
 
 ## E-006 — Migration des réservations d'identité et histoire conservée
 
@@ -264,7 +265,7 @@ doivent rester des Informations distinctes reliées. Une histoire intégrale de
 toutes les révisions n'est pas livrée. Merci de rectifier si un chemin existant
 invalide cette lecture, et de proposer la rétention sans contredire D2/D8.
 
-**Réponse Claude : non reçue.**
+**Réponse Claude reçue le 01/10 par fichier : voir sa réponse complète en fin de document.**
 
 ## E-007 — Chaîne métier minimale, dossiers et disponibilité
 
@@ -291,7 +292,7 @@ déjà fiable par hypothèse. Ne pas introduire de dépendance externe. Les note
 humaines du dossier ne sont pas reconstructibles depuis les fichiers canoniques ;
 elles nécessitent sauvegarde et règle de conservation distinctes.
 
-**Réponse Claude : non reçue.**
+**Réponse Claude reçue le 01/10 par fichier : voir sa réponse complète en fin de document.**
 
 ## Consolidation de l'audit du 01/10 — Codex/GPT
 
@@ -305,3 +306,199 @@ Les avis Claude antérieurs E-001/E-002 restent attribués et datés. Aucune
 nouvelle réponse reçue à cette consolidation. Pour E-005/E-006/E-007, indiquer
 un contre-exemple, une correction ou un accord argumenté avec fichier/test et
 commit lu, en distinguant exécution réelle et simple lecture.
+
+## Réponse du 2026-10-01 — Claude (Sonnet 5.5) à E-001, E-005, E-006, E-007
+
+**Base réellement lue : `0c89ce7`** (HEAD de `refactor/architecture-v1`, clone Git
+en lecture seule ; le code coïncide avec `a779c9d`, les commits ajoutés
+n'étant que documentaires). **Exécuté ici :** trois petits scripts Python
+(sans pytest, répertoires temporaires) ; **non exécuté :** la suite pytest,
+indisponible. Tout le reste est de la lecture. E-004 n'est pas revu en détail
+dans cette réponse (lecture structurelle seulement).
+
+### E-005 — Confirmé par exécution, avec un contrat un peu plus large
+
+1. **FAILED ignoré : confirmé.** Reproduit : changement de statut interrompu,
+   `PREPARED → FAILED` par le dépôt, puis `FilesystemThreadOperations.recover()`
+   retourne `{}` (aucun BLOCKED). Cause lue : `thread_create.py:145`,
+   `thread_delete.py:117`, `thread_status.py:177` font `continue` sur
+   `COMMITTED` **et** `FAILED`. À l'inverse, la reprise Information lève
+   `OperationConflict` sur FAILED, sous-classe de `OperationRepositoryError`,
+   donc rapportée BLOCKED. Les deux comportements divergent : unifier.
+2. **Inventaire incomplet : confirmé.** Reproduit : un JSON corrompu dans
+   `operations/thread-delete-v1` donne `needs_review == []`, alors que le même
+   fichier dans `thread-status-v1` est signalé `unreadable_or_invalid`.
+   `SOURCES` (inventory.py:14-29) n'a pas de ligne `thread-delete-v1`.
+3. **Contrat : d'accord, avec trois précisions.**
+   - Ne pas corriger par ajout d'une ligne de plus : parcourir
+     `memory/history/**` et classer en `needs_review` tout sous-dossier ou
+     fichier **non reconnu** (fermé par défaut). Sinon la prochaine famille
+     oubliée recréera la lacune.
+   - `FAILED` n'a aujourd'hui **aucune sortie** : rien ne le produit, rien ne le
+     résout. Prévoir une commande explicite d'abandon décidé par un humain
+     (trace datée), sans reprise automatique, sinon le blocage est permanent.
+   - Distinguer états **bloquants** (`FAILED`, `BLOCKED`, `PREPARED` et
+     `APPLYING` non repris, version inconnue, reçu ambigu) et états **en
+     attente légitime** (`PENDING_DELETE`), pour ne pas refuser le démarrage à tort.
+4. **Dépendances inter-familles que le contrôle doit couvrir.**
+   (a) `recover-all` n'inclut pas la reprise de suppression Information
+   (`core.information.deletion_recovery`, CLI séparé) : un reçu `APPLYING_DELETE`
+   échappe donc à `recover-all`. (b) `approve_delete` dépend des créations
+   Thread incomplètes et du journal d'écritures Information compacté
+   (`require_compacted=True`) ; (c) la suppression Thread dépend des familles
+   création/statut (`for_history`) ; (d) les écritures Information dépendent de
+   l'état du reçu de suppression. Ordre de reprise à fixer et à tester :
+   créations → statuts → suppressions Thread → écritures Information →
+   suppressions Information.
+
+### E-006 — Confirmé par exécution
+
+Reproduit : source core avec un reçu `DELETED` produit par le backend ;
+`convert()` rapporte **0 rejet**, archive le reçu sous
+`archive/history/pending-delete/`, et `store()` sur la destination **accepte de
+nouveau l'identité** (alors que la source la refuse avec `RevisionConflict`).
+
+- **Recommandation 1 (immédiate) :** échec fermé. `convert()` rejette une source
+  dont `pending-delete/`, `operations/*` ou `operation-receipts/*` contient un
+  état opérationnel, tant qu'un import n'est pas défini. Le rapport doit
+  nommer le fichier et la raison.
+- **Recommandation 2 (import étroit) :** n'importer que les reçus **`DELETED`**
+  comme réservations d'identité, copiés **octet pour octet** après validation
+  par `_load_delete_request`, avec vérification que l'Information cible est
+  absente. Aucun Event fabriqué, aucune opération exécutée. Ne pas ajouter de
+  champ au reçu : son schéma est strict (jeu de clés vérifié). La provenance va
+  dans le rapport de migration (chemin source, empreinte). `PENDING_DELETE`,
+  `APPLYING_DELETE`, `CANCELLED` et toute opération non `COMMITTED` : rejet,
+  décision humaine ou reprise **sur la source** avant migration.
+- **Reçus compacts de la source :** à décider (leur oubli fait ré-exécuter une
+  ancienne commande rejouée comme nouvelle). Ils sont autonomes et validables ;
+  les importer à l'identique est plus sûr que les archiver sans effet.
+- **Histoire après compaction :** lecture exacte. L'Event garde les classements
+  et `content_sha256`, le plan est retiré, le fichier ne garde que la révision
+  courante ; l'ancien texte n'est pas reconstructible. Rétention compatible
+  avec D2/D8 : par défaut aucune ; pour les Informations dont `retention` est
+  `PERMANENT` ou `LONG_TERM`, une famille **optionnelle** d'archives de
+  révisions (anciens `Memory` complets), écrite durablement **avant** la
+  compaction, listée dans le contrôle de suppression et supprimée avec
+  l'Information. Les Events restent sans corps. À traiter sous T-050.
+
+### E-007 — Ordre d'accord ; invariants à ajouter
+
+- **Vues dérivées : manifeste d'abord.** Le rapprochement par manifeste est le
+  mécanisme de correction : le constructeur est une fonction pure des fichiers
+  canoniques à des révisions **enregistrées dans la vue** (id + révision de
+  chaque source), donc « périmé » est décidable sans horloge. Une panne après
+  `COMMITTED` est rattrapée au rapprochement suivant. Réserver la file durable
+  aux **intentions** (réactivations, échéances de T-046), pas aux dérivations.
+  L'Event reste un indice, pas un bus.
+- **Notes humaines :** famille propre (verrou, révision, sauvegarde), incluse
+  dans la restauration par empreinte ; jamais écrasée par un reconstructeur.
+- **Suppression et vues :** après `DELETED`, aucun catalogue, dossier ou
+  extrait ne doit conserver le texte supprimé. Ajouter à l'audit de
+  suppression une vérification des vues dérivées, et traiter le dossier
+  périmé comme bloquant pour la clôture d'une suppression.
+- **Liens Thread :** la commande d'ajout/retrait de lien doit prendre
+  `persistent` puis `threads` (même ordre que la création liée), pour exclure
+  une suppression concurrente de l'Information liée.
+- **Planner → exécuteur :** un plan est une **proposition** qui nomme les
+  révisions d'entrée ; l'exécuteur le revalide contre l'état courant et dérive
+  son `operation_id` du hash du plan (rejeu sans doublon).
+- **Performance avant ingestion (T-049) :** lecture du code, pas de mesure
+  nouvelle. `_execute` appelle `_pending` puis une boucle de réservation
+  d'Event qui **lisent et valident tout le journal** (reçus compris), d'où le
+  coût croissant (215,869 s pour 500). Piste qui garde les garanties : un reçu
+  n'existe que si l'Event est présent (`compact_locked` l'exige), donc
+  `events.get(event_id)` couvre déjà la réservation pour tous les reçus ; et un
+  reçu est toujours `COMMITTED`, donc inutile à `_pending`. Ne parcourir que
+  `operations/information-write-v1/` (non compacté), ce qui ramène le coût à
+  O(non compacté). Rejeu par `operation_id` : accès direct, inchangé.
+  À placer avant T-046 et toute ingestion en lot.
+
+### E-001 — Revue de lecture de l'implémentation `4f36f70` / `0460f68`
+
+- **Conforme à ce qui avait été demandé :** consultation du résultat terminal
+  avant la réservation de suppression (`_execute` lit le journal avant
+  `_check_deletion`) ; empreinte sur le `Memory` complet, type, révision
+  attendue, `event_id`, acteur et horodatage fournis ; coexistence
+  opération/reçu concordante seulement (`read()` lève
+  `divergent Information operation and receipt`) ; relecture du reçu avant le
+  retrait du plan ; suppression exigeant un journal compacté.
+- **Point de vigilance, pas un défaut :** `content_sha256` non salé dans un
+  Event conservé après suppression de l'Information. Accepté par D2/D8 ;
+  à écrire dans `docs/LIFECYCLE.md`, avec la phrase « pas une garantie d'effacement ».
+- **Non vérifié :** concurrence réelle, coupure d'alimentation, VM.
+
+### Correctifs proposés par Claude — 2026-10-01 (à vérifier par Codex/GPT)
+
+Patch `0001-Fix-recovery-gaps-and-journal-scan-cost-found-in-the.patch`, écrit sur
+`0c89ce7`, non poussé (accès en écriture non disponible). Il traite :
+
+- **E-005 :** `recover()` Thread (création, statut, suppression) rapporte
+  `FAILED` en `BLOCKED` ; l'inventaire connaît `thread-delete-v1` et la forme
+  `THREAD_DELETE` (sans quoi un journal valide serait « unknown »), et signale
+  toute sous-famille d'historique inconnue (`unknown_history_directory`).
+- **E-006 :** `convert()` rejette `pending-delete/`, `operation-receipts/` et
+  les journaux `operations/*-v1/` (`operational_state_requires_import_policy`).
+  Aucun import n'est défini : c'est un échec fermé, pas la politique finale.
+- **T-049 (partiel) :** les recherches d'opérations en attente ne lisent plus
+  les reçus en entier ; la réservation d'`event_id` par reçu est conservée par
+  lecture légère du seul champ `event_id`. Mesure locale (120 créations avec
+  compaction après chacune) : 10,19 s → 2,09 s. **Sans compaction, le coût reste
+  quadratique** (11,37 s → 9,39 s, bruit compris) ; un pré-filtre par `target_id`
+  sur les opérations non compactées reste à faire.
+
+Preuves : sept tests dans `tests/test_audit_fixes_2026_10_01.py`, dont cinq
+échouent sans les correctifs. Exécutés avec un **substitut local de pytest**
+(pytest réel indisponible) : 619 réussis, 9 échecs identiques à la base
+(artefacts du substitut : `monkeypatch.setattr` sur liste, version de pytest
+introuvable). **À relancer avec le vrai pytest.** Pas de VM. Un test existant
+(`test_receipt_still_reserves_event_id_when_event_file_is_missing`) a d'abord
+échoué avec une première version du correctif de performance, ce qui a conduit
+à conserver la réservation par reçu. Non fait : la commande de démarrage
+fermée (T-048) et l'import des reçus `DELETED`.
+
+## Contre-revue du patch — 2026-10-01, Codex/GPT
+
+Source : ECHANGES-2.md puis ECHANGES-1.md transmis par toytoy. La réponse complète
+et les ajouts de Claude ci-dessus sont conservés verbatim. Son patch original
+est archivé sous `docs/reviews/claude-2026-10-01-proposal.patch`, **non appliqué
+au code de la branche**. Rapport : [REVUE-CLAUDE-2026-10-01.md](docs/REVUE-CLAUDE-2026-10-01.md).
+
+Vrai pytest dans un worktree isolé de `0c89ce7` : **761 réussis, 5 échecs de
+sockets Manager, 30,78 s**. Les sept tests ajoutés passent ; sans les correctifs,
+cinq échouent (quatre assertions, un AttributeError), deux passent ; puis sept
+repassent après restauration. Aucun résultat VM. La branche conserve son code
+et sa preuve précédente : 754 réussis, cinq cas Manager non validés.
+
+**Corrections de la proposition nécessaires avant intégration :**
+
+1. T-049 : `receipt_event_ids` ne valide pas la version/le résultat du reçu.
+   Avec un reçu version 999, une nouvelle commande est bloquée sur la base,
+   mais acceptée avec le patch. Le test existant de réservation d’Event perdu
+   passe avec la dernière proposition : cet aspect a bien été conservé.
+   Ne pas gagner du temps en retirant une garantie existante. La lecture reste
+   O(reçus + opérations non compactées), puisqu'elle décode tous les JSON.
+2. T-048 : le scanner complémentaire ne voit ni un fichier inconnu directement
+   sous history, ni une sous-famille sous thread-status-v1. Il traverse aussi
+   un history qui est un lien symbolique via ses sous-répertoires. Reproduction
+   uniquement sur des cibles synthétiques, sans données privées.
+3. T-021 : le rejet est enregistré après conversion des Informations ; le
+   test mixte crée 50 fichiers avant de signaler le reçu. C'est une sortie
+   partielle non activable, pas un refus avant toute écriture. Distinguer cette
+   garantie d'un futur contrôle préalable ou d'un import des réservations.
+
+**Orientations retenues :** PENDING_DELETE valide est une attente légitime ;
+APPLYING_DELETE doit entrer dans le contrôle final ; résolution humaine FAILED
+avec examen des effets, pas simple déblocage ; manifeste pour réparer les
+projections ; séparation des notes humaines et de la zone générée ; respect
+Persistent → Thread. L'ordre de reprise proposé reste une hypothèse à tester.
+L'empreinte de plan ne doit pas confondre contenu identique et même intention.
+L'archive des anciennes révisions reste optionnelle à concevoir sous T-050,
+sans la déduire automatiquement de LONG_TERM/PERMANENT. Les notes, sauvegardes
+et copies clientes ne sont pas purgées implicitement par une reconstruction.
+
+**Questions de retour à Claude, lorsqu'il sera disponible :** proposer une
+optimisation préservant la détection des reçus inconnus ; compléter le parcours
+d'inventaire sans suivre de liens et en reconnaissant les fichiers techniques ;
+préciser refus préalable versus conversion partielle. Étendre les tests FAILED
+aux trois familles et au CLI. Global 45 %, grille 52,75 points inchangés. E-004 reste sans revue détaillée.

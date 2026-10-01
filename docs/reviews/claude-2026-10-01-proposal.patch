@@ -1,0 +1,346 @@
+From 0c7601243158a71a20336af25addf74b3ddd008e Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 1 Oct 2026 12:01:28 +0200
+Subject: [PATCH] Fix recovery gaps and journal scan cost found in the
+ 2026-10-01 audit
+
+- Thread create/status/delete recover() report FAILED operations as BLOCKED
+  instead of silently skipping them (E-005).
+- Inventory knows thread-delete-v1 and the THREAD_DELETE operation shape, and
+  flags unknown history directories instead of ignoring them (E-005).
+- convert() rejects pending-delete receipts and core operation journals with
+  operational_state_requires_import_policy instead of archiving them and
+  releasing reserved identities (E-006).
+- Information write scans for pending work and reserved event ids no longer
+  read and validate compact receipts in full; receipts are still checked by
+  event_id (T-049). 120 create+compact: 10.19 s -> 2.09 s.
+
+Tests run with a local stand-in for pytest (real pytest unavailable): new
+file passes, five of seven new tests fail without the fixes. Not run on a VM.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U9DWcKCTRBRvino8xnFZsW
+---
+ core/information/write_journal.py    |  33 +++++++++
+ core/information/writes.py           |   7 +-
+ core/migration/converter.py          |   8 ++
+ core/migration/inventory.py          |  20 ++++-
+ core/operations/thread_create.py     |   8 +-
+ core/operations/thread_delete.py     |   8 +-
+ core/operations/thread_status.py     |   8 +-
+ tests/test_audit_fixes_2026_10_01.py | 106 +++++++++++++++++++++++++++
+ 8 files changed, 186 insertions(+), 12 deletions(-)
+ create mode 100644 tests/test_audit_fixes_2026_10_01.py
+
+diff --git a/core/information/write_journal.py b/core/information/write_journal.py
+index ffc8e81..e1fd48e 100644
+--- a/core/information/write_journal.py
++++ b/core/information/write_journal.py
+@@ -71,6 +71,39 @@ class InformationWriteJournal:
+         return sorted({p.stem for root in (self.operations_root, self.receipts_root)
+                        for p in root.glob('*.json')})
+ 
++    def uncompacted_ids(self):
++        """Operations that still have a full plan on disk.
++
++        A compact receipt is always COMMITTED, so receipts can never be pending
++        work. Scans that look for pending operations can skip them; the cost is
++        then bounded by uncompacted operations instead of the whole history.
++        Receipts are still read by ``receipt_event_ids`` and by full audits.
++        """
++        self._check_roots()
++        return sorted(p.stem for p in self.operations_root.glob('*.json'))
++
++    def receipt_event_ids(self):
++        """Event ids reserved by compact receipts, read without full validation.
++
++        A receipt keeps reserving its event_id even if the Event file is later
++        lost, so this cannot be replaced by an Event repository lookup. Only the
++        event_id field is parsed here; ``read``/audits remain the validators.
++        """
++        self._check_roots()
++        found = set()
++        if self.receipts_root.is_dir():
++            for path in self.receipts_root.glob('*.json'):
++                try:
++                    if path.is_symlink():
++                        raise ValueError('compact receipt is a symlink')
++                    value = decode_json_value(path.read_text(encoding='utf-8')).get('event_id')
++                    if not isinstance(value, str):
++                        raise ValueError('compact receipt without event_id')
++                except (OSError, UnicodeError, ValueError, AttributeError, TypeError) as exc:
++                    raise OperationConflict('invalid compact receipt') from exc
++                found.add(value)
++        return found
++
+     def receipt_path(self, operation_id):
+         return self.receipts_root / self.operations._path(operation_id).name
+ 
+diff --git a/core/information/writes.py b/core/information/writes.py
+index a0b786c..ec82340 100644
+--- a/core/information/writes.py
++++ b/core/information/writes.py
+@@ -124,7 +124,7 @@ class FilesystemInformationWrites:
+             raise OperationConflict(f'Information reserved by {status}')
+ 
+     def _pending(self, target_id, *, excluding=None):
+-        for opid in self.journal.ids():
++        for opid in self.journal.uncompacted_ids():
+             entry = self.journal.read(opid)
+             op = entry.operation if entry is not None else None
+             if (op and op.operation_id != excluding and op.target_id == target_id
+@@ -167,7 +167,10 @@ class FilesystemInformationWrites:
+             if self.events.get(event_id) is not None:
+                 raise OperationConflict('event_id already contains an event')
+             # Reserve an Event even before it is persisted by another pending command.
+-            for prior_id in self.journal.ids():
++            # Uncompacted operations are read in full; receipts only by event_id.
++            if event_id in self.journal.receipt_event_ids():
++                raise OperationConflict('event_id reserved by another operation')
++            for prior_id in self.journal.uncompacted_ids():
+                 prior = self.journal.read(prior_id)
+                 if prior is not None and prior.result['event_id'] == event_id:
+                     raise OperationConflict('event_id reserved by another operation')
+diff --git a/core/migration/converter.py b/core/migration/converter.py
+index 6912245..4470f6d 100644
+--- a/core/migration/converter.py
++++ b/core/migration/converter.py
+@@ -118,6 +118,14 @@ def convert(source: Path, destination: Path) -> dict:
+         if path.is_symlink() or not path.is_file():
+             reject(path, "unsafe_archive_path", "Review and copy manually after resolving the link")
+             continue
++        parts = relative.parts
++        if (parts[:2] in {("history", "pending-delete"), ("history", "operation-receipts")}
++                or (parts[:2] == ("history", "operations") and len(parts) > 3)):
++            # Archiving would keep the bytes but silently release reserved identities
++            # and forget idempotent commands. Fail closed until an import policy exists.
++            reject(path, "operational_state_requires_import_policy",
++                   "Resolve on the source or define an explicit import before converting")
++            continue
+         archive = destination / "archive" / relative
+         raw = path.read_bytes()
+         if archive.is_symlink() or (archive.exists() and archive.read_bytes() != raw):
+diff --git a/core/migration/inventory.py b/core/migration/inventory.py
+index 5ea062f..07146ec 100644
+--- a/core/migration/inventory.py
++++ b/core/migration/inventory.py
+@@ -25,6 +25,7 @@ SOURCES = (
+     ("operations", "memory/history/operations", "*.json"),
+     ("thread_status_operations", "memory/history/operations/thread-status-v1", "*.json"),
+     ("thread_create_operations", "memory/history/operations/thread-create-v1", "*.json"),
++    ("thread_delete_operations", "memory/history/operations/thread-delete-v1", "*.json"),
+     ("pending_delete", "memory/history/pending-delete", "*.json"),
+ )
+ 
+@@ -61,7 +62,7 @@ def classify(path: Path, category: str) -> str:
+                 return "pending_delete" if "information_id" in data else "unknown"
+             if category == "information_write_receipts":
+                 return "core_information_receipt_v1" if data.get("format_version") == 1 else "unknown"
+-            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE", "INFORMATION_CREATE", "INFORMATION_UPDATE"}:
++            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE", "THREAD_DELETE", "INFORMATION_CREATE", "INFORMATION_UPDATE"}:
+                 return "core_operation"
+             if "operation_id" in data and "result" in data:
+                 return "legacy_operation"
+@@ -86,6 +87,22 @@ def classify(path: Path, category: str) -> str:
+     return "unknown"
+ 
+ 
++def unknown_history_entries(root: Path) -> list[dict]:
++    """Fail closed: report history sub-directories that no SOURCES entry covers."""
++    known = {Path(relative).as_posix() for _, relative, _ in SOURCES}
++    parents = {Path(relative).parent.as_posix() for _, relative, _ in SOURCES}
++    found = []
++    for base in sorted(parents | {"memory/history"}):
++        directory = root / base
++        if directory.is_symlink() or not directory.is_dir():
++            continue
++        for child in sorted(directory.iterdir()):
++            relative = child.relative_to(root).as_posix()
++            if child.is_dir() and not child.is_symlink() and relative not in known and relative not in parents:
++                found.append({"path": relative, "reason": "unknown_history_directory"})
++    return found
++
++
+ def inventory(engine_root: Path) -> dict:
+     """Count recognized file shapes; never parse or expose memory content."""
+     root = Path(engine_root)
+@@ -121,6 +138,7 @@ def inventory(engine_root: Path) -> dict:
+                         "path": path.relative_to(root).as_posix(), "reason": kind,
+                     })
+         result["categories"][category] = dict(sorted(counts.items()))
++    result["needs_review"].extend(unknown_history_entries(root))
+     from core.information.write_audit import audit_information_writes
+     result["information_writes"] = audit_information_writes(root)
+     for issue in result["information_writes"]["issues"]:
+diff --git a/core/operations/thread_create.py b/core/operations/thread_create.py
+index 68a5f73..c4c6d3d 100644
+--- a/core/operations/thread_create.py
++++ b/core/operations/thread_create.py
+@@ -141,9 +141,11 @@ class FilesystemLinkedThreadCreation:
+             try:
+                 with exclusive_write(self.backend.persistent_root), exclusive_write(self.storage.threads_root):
+                     operation = self.operations.get(path.stem)
+-                    if operation is None or operation.status in {
+-                        OperationStatus.COMMITTED, OperationStatus.FAILED,
+-                    }:
++                    if operation is None or operation.status is OperationStatus.COMMITTED:
++                        continue
++                    if operation.status is OperationStatus.FAILED:
++                        # A FAILED record needs a human decision; never report it as resolved.
++                        results[path.stem] = {"status": "BLOCKED", "error": "FAILED"}
+                         continue
+                     self._resume(operation)
+                 results[path.stem] = {"status": "COMMITTED"}
+diff --git a/core/operations/thread_delete.py b/core/operations/thread_delete.py
+index deb799e..7ebff4f 100644
+--- a/core/operations/thread_delete.py
++++ b/core/operations/thread_delete.py
+@@ -113,9 +113,11 @@ class FilesystemThreadDeletion:
+             try:
+                 with exclusive_write(self.storage.threads_root):
+                     operation = self.operations.get(path.stem)
+-                    if operation is None or operation.status in {
+-                        OperationStatus.COMMITTED, OperationStatus.FAILED,
+-                    }:
++                    if operation is None or operation.status is OperationStatus.COMMITTED:
++                        continue
++                    if operation.status is OperationStatus.FAILED:
++                        # A FAILED record needs a human decision; never report it as resolved.
++                        result[path.stem] = {"status": "BLOCKED", "error": "FAILED"}
+                         continue
+                     self._resume(operation)
+                 result[path.stem] = {"status": "COMMITTED"}
+diff --git a/core/operations/thread_status.py b/core/operations/thread_status.py
+index 188ef9f..f30b539 100644
+--- a/core/operations/thread_status.py
++++ b/core/operations/thread_status.py
+@@ -173,9 +173,11 @@ class FilesystemThreadOperations:
+             try:
+                 with exclusive_write(self.storage.threads_root):
+                     operation = self.operations.get(path.stem)
+-                    if operation is None or operation.status in {
+-                        OperationStatus.COMMITTED, OperationStatus.FAILED,
+-                    }:
++                    if operation is None or operation.status is OperationStatus.COMMITTED:
++                        continue
++                    if operation.status is OperationStatus.FAILED:
++                        # A FAILED record needs a human decision; never report it as resolved.
++                        results[path.stem] = {"status": "BLOCKED", "error": "FAILED"}
+                         continue
+                     self._resume(operation)
+                 results[path.stem] = {"status": "COMMITTED"}
+diff --git a/tests/test_audit_fixes_2026_10_01.py b/tests/test_audit_fixes_2026_10_01.py
+new file mode 100644
+index 0000000..ff5445b
+--- /dev/null
++++ b/tests/test_audit_fixes_2026_10_01.py
+@@ -0,0 +1,106 @@
++"""Regression tests for the 2026-10-01 audit findings E-005 and E-006 (Claude proposal)."""
++from dataclasses import replace
++
++import pytest
++
++from core.backend.filesystem import FilesystemBackend
++from core.backend.models import Memory
++from core.events.filesystem import FilesystemEventRepository
++from core.information.writes import FilesystemInformationWrites
++from core.migration.converter import convert
++from core.migration.inventory import inventory
++from core.operations.errors import OperationConflict
++from core.operations.filesystem import FilesystemOperationRepository
++from core.operations.models import OperationStatus
++from core.operations.thread_status import FilesystemThreadOperations
++from core.threads.models import Thread, ThreadStatus
++from core.threads.storage import ThreadStorage
++
++META = {"type": "FACT", "epistemic_status": "UNVERIFIED", "operational_state": "ACTIVE",
++        "confidence": "LOW", "importance": "NORMAL", "retention": "NORMAL"}
++
++
++def write(writes, number, event=None):
++    return writes.create(
++        Memory(f"info-{number}", content=f"content {number}", metadata=dict(META)),
++        operation_id=f"op-{number}", event_id=event or f"ev-{number}",
++        actor="tester", timestamp="2026-10-01T00:00:00Z")
++
++
++def test_failed_thread_status_operation_is_reported_blocked_not_skipped(tmp_path, monkeypatch):
++    storage = ThreadStorage(tmp_path / "memory/persistent")
++    history = tmp_path / "memory/history"
++    operations = FilesystemOperationRepository(history / "operations/thread-status-v1")
++    events = FilesystemEventRepository(history / "events/thread-status-v1")
++    storage.create(Thread("t1", "T", "O", created_at="2026-10-01", updated_at="2026-10-01"))
++    writer = FilesystemThreadOperations(storage, events, operations)
++    update = operations.update
++
++    def interrupted(operation):
++        raise RuntimeError("interrupted before APPLYING")
++
++    monkeypatch.setattr(operations, "update", interrupted)
++    with pytest.raises(RuntimeError, match="interrupted"):
++        writer.change_status("t1", ThreadStatus.VALIDATED, previous_revision=1,
++                             operation_id="o1", event_id="e1")
++    monkeypatch.setattr(operations, "update", update)
++    operations.update(replace(operations.get("o1"), status=OperationStatus.FAILED))
++    assert writer.recover() == {"o1": {"status": "BLOCKED", "error": "FAILED"}}
++
++
++def test_inventory_sees_a_corrupt_thread_delete_journal(tmp_path):
++    (tmp_path / "memory/persistent").mkdir(parents=True)
++    journal = tmp_path / "memory/history/operations/thread-delete-v1"
++    journal.mkdir(parents=True)
++    (journal / "broken.json").write_text("{not json", encoding="utf-8")
++    review = inventory(tmp_path)["needs_review"]
++    assert {"path": "memory/history/operations/thread-delete-v1/broken.json",
++            "reason": "unreadable_or_invalid"} in review
++
++
++def test_inventory_flags_an_unknown_history_directory(tmp_path):
++    (tmp_path / "memory/persistent").mkdir(parents=True)
++    (tmp_path / "memory/history/operations/future-family-v9").mkdir(parents=True)
++    assert {"path": "memory/history/operations/future-family-v9",
++            "reason": "unknown_history_directory"} in inventory(tmp_path)["needs_review"]
++
++
++def test_inventory_accepts_a_valid_empty_core_layout(tmp_path):
++    backend = FilesystemBackend(tmp_path / "memory/persistent", tmp_path / "memory/history")
++    write(FilesystemInformationWrites(backend), 1)
++    assert inventory(tmp_path)["needs_review"] == []
++
++
++def test_conversion_rejects_a_deleted_receipt_instead_of_releasing_the_identity(tmp_path):
++    source = tmp_path / "source"
++    backend = FilesystemBackend(source / "memory/persistent", source / "memory/history")
++    backend.store(Memory("info-gone", content="x"))
++    backend.delete_request("info-gone", "tester", "test", 1, "delete-1")
++    backend.approve_delete("info-gone", "delete-1")
++    report = convert(source, tmp_path / "destination")
++    assert [(item["file"], item["reason"]) for item in report["rejected"]] == [
++        ("memory/history/pending-delete/info-gone.json", "operational_state_requires_import_policy")]
++    assert not (tmp_path / "destination/archive/history/pending-delete/info-gone.json").exists()
++
++
++def test_compacted_event_id_stays_reserved_and_receipts_are_not_pending_work(tmp_path):
++    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
++    writes = FilesystemInformationWrites(backend)
++    write(writes, 1, event="shared-event")
++    writes.compact("op-1")
++    assert writes.journal.uncompacted_ids() == []
++    with pytest.raises(OperationConflict, match="event_id"):
++        write(writes, 2, event="shared-event")
++    assert backend.get("info-2") is None
++
++
++def test_compacted_operations_do_not_count_as_pending(tmp_path):
++    backend = FilesystemBackend(tmp_path / "persistent", tmp_path / "history")
++    writes = FilesystemInformationWrites(backend)
++    write(writes, 1)
++    writes.compact("op-1")
++    updated = writes.update(
++        Memory("info-1", revision=1, content="changed", metadata=dict(META)),
++        previous_revision=1, operation_id="op-1b", event_id="ev-1b",
++        actor="tester", timestamp="2026-10-01T00:00:01Z")
++    assert updated["revision"] == 2
+-- 
+2.43.0
+
