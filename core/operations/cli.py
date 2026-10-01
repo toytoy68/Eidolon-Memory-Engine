@@ -5,6 +5,7 @@ import json
 
 from core.config import ENGINE_ROOT, PERSISTENT_ROOT, HISTORY_ROOT, OPERATIONS_ROOT, EVENTS_ROOT
 from core.preflight import check_environment
+from core.information.writes import FilesystemInformationWrites
 from core.backend.filesystem import FilesystemBackend
 from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
@@ -91,6 +92,8 @@ def main():
         return int(any(record["status"] == "BLOCKED" for record in result.values()))
     if args.command == "recover-all":
         result = service.recover_all()
+        result["information-writes"] = FilesystemInformationWrites(
+            FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT)).recover()
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(any(record["status"] == "BLOCKED"
                    for group in result.values() for record in group.values()))

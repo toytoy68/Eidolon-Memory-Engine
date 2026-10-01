@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import asdict
 from pathlib import Path
 
 from core.persistence import serialized_write, atomic_write_text, has_symlink_component
@@ -16,6 +17,8 @@ from core.operations.errors import (
     OperationNotFound,
 )
 from core.operations.models import (
+    InformationCreatePlan,
+    InformationUpdatePlan,
     OperationRecord,
     OperationStatus,
     OperationType,
@@ -92,7 +95,13 @@ class FilesystemOperationRepository(OperationRepository):
                 raise InvalidOperationRecord("unknown Operation fields")
             plan = data.get("plan")
             if isinstance(plan, dict):
-                if data.get("operation_type") == OperationType.THREAD_CREATE.value:
+                if data.get("operation_type") in {
+                    OperationType.INFORMATION_CREATE.value, OperationType.INFORMATION_UPDATE.value,
+                }:
+                    plan_allowed = {"event_id", "after_state", "actor", "timestamp", "command_fingerprint"}
+                    if data["operation_type"] == OperationType.INFORMATION_UPDATE.value:
+                        plan_allowed.add("before_state")
+                elif data.get("operation_type") == OperationType.THREAD_CREATE.value:
                     plan_allowed = {"information_id", "event_id", "after_state"}
                 elif data.get("operation_type") == OperationType.THREAD_DELETE.value:
                     plan_allowed = {"before_state"}
@@ -110,7 +119,11 @@ class FilesystemOperationRepository(OperationRepository):
                 execution_plan_hash=data["execution_plan_hash"],
                 status=OperationStatus(data["status"]),
                 plan=(
-                    ThreadCreatePlan(
+                    InformationCreatePlan(**data["plan"])
+                    if data["operation_type"] == OperationType.INFORMATION_CREATE.value
+                    else InformationUpdatePlan(**data["plan"])
+                    if data["operation_type"] == OperationType.INFORMATION_UPDATE.value
+                    else ThreadCreatePlan(
                         information_id=data["plan"]["information_id"],
                         event_id=data["plan"]["event_id"],
                         after_state=data["plan"]["after_state"],
@@ -172,7 +185,13 @@ class FilesystemOperationRepository(OperationRepository):
                 or not isinstance(operation.operation_type, OperationType)):
             raise InvalidOperationRecord("invalid Operation identity or status")
         plan = operation.plan
-        if isinstance(plan, ThreadCreatePlan):
+        if isinstance(plan, InformationCreatePlan):
+            if (not valid_id(plan.event_id)
+                    or any(not isinstance(value, str) for value in
+                           (plan.after_state, plan.actor, plan.timestamp, plan.command_fingerprint))
+                    or (isinstance(plan, InformationUpdatePlan) and not isinstance(plan.before_state, str))):
+                raise InvalidOperationRecord("invalid Information write plan")
+        elif isinstance(plan, ThreadCreatePlan):
             if (not valid_id(plan.information_id) or not valid_id(plan.event_id)
                     or not isinstance(plan.after_state, str)):
                 raise InvalidOperationRecord("invalid Thread creation plan")
@@ -198,7 +217,9 @@ class FilesystemOperationRepository(OperationRepository):
             "execution_plan_hash": operation.execution_plan_hash,
             "status": operation.status.value,
             "plan": (
-                {
+                asdict(operation.plan)
+                if isinstance(operation.plan, InformationCreatePlan)
+                else {
                     "information_id": operation.plan.information_id,
                     "event_id": operation.plan.event_id,
                     "after_state": operation.plan.after_state,

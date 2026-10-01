@@ -23,6 +23,8 @@ class OperationType(str, Enum):
     THREAD_STATUS_CHANGE = "THREAD_STATUS_CHANGE"
     THREAD_CREATE = "THREAD_CREATE"
     THREAD_DELETE = "THREAD_DELETE"
+    INFORMATION_CREATE = "INFORMATION_CREATE"
+    INFORMATION_UPDATE = "INFORMATION_UPDATE"
 
 
 @dataclass(frozen=True)
@@ -51,6 +53,22 @@ class ThreadDeletePlan:
     before_state: str
 
 
+@dataclass(frozen=True)
+class InformationCreatePlan:
+    """Complete frozen Memory and deterministic Event/command metadata."""
+
+    event_id: str
+    after_state: str
+    actor: str
+    timestamp: str
+    command_fingerprint: str
+
+
+@dataclass(frozen=True)
+class InformationUpdatePlan(InformationCreatePlan):
+    before_state: str
+
+
 @dataclass
 class OperationRecord:
     """Technical record for a recoverable persistent operation."""
@@ -62,7 +80,8 @@ class OperationRecord:
     revision: int
     execution_plan_hash: str
     status: OperationStatus = OperationStatus.PREPARED
-    plan: ThreadStatusChangePlan | ThreadCreatePlan | ThreadDeletePlan | None = None
+    plan: (ThreadStatusChangePlan | ThreadCreatePlan | ThreadDeletePlan
+           | InformationCreatePlan | InformationUpdatePlan | None) = None
 
     def __post_init__(self) -> None:
         if (type(self.previous_revision) is not int or self.previous_revision < 0
@@ -88,6 +107,15 @@ class OperationRecord:
             self.previous_revision < 1 or not isinstance(self.plan, ThreadDeletePlan)
         ):
             raise ValueError("THREAD_DELETE requires an existing Thread snapshot")
+
+        if self.operation_type is OperationType.INFORMATION_CREATE and (
+            self.previous_revision != 0 or type(self.plan) is not InformationCreatePlan
+        ):
+            raise ValueError("INFORMATION_CREATE requires revision 1 and a creation plan")
+        if self.operation_type is OperationType.INFORMATION_UPDATE and (
+            self.previous_revision < 1 or type(self.plan) is not InformationUpdatePlan
+        ):
+            raise ValueError("INFORMATION_UPDATE requires an existing Information snapshot")
 
 
 def validate_status_transition(

@@ -15,7 +15,7 @@ from core.storage_format import (encode_document, decode_document, decode_json_v
 
 from core.persistence import serialized_write, atomic_write_text, exclusive_write, has_symlink_component
 from core.information.references import (ensure_no_thread_links, ensure_no_information_links,
-                                         ensure_no_pending_thread_creations)
+                                         ensure_no_pending_thread_creations, ensure_information_write_safety)
 from core.backend.errors import InformationDeletionBlocked
 
 from core.config import PERSISTENT_ROOT, HISTORY_ROOT, ensure_directories
@@ -369,6 +369,8 @@ class FilesystemBackend(MemoryBackend):
                 f"{memory.revision}"
             )
 
+        ensure_information_write_safety(self.history_root, information_id)
+
         request = {
             "information_id": information_id,
             "requested_by": requested_by,
@@ -469,6 +471,8 @@ class FilesystemBackend(MemoryBackend):
 
         if request.get("status") not in {"PENDING_DELETE", "APPLYING_DELETE"}:
             raise RevisionConflict("deletion request is not pending")
+
+        ensure_information_write_safety(self.history_root, information_id, require_compacted=True)
 
         threads_root = self.persistent_root / "threads"
         if threads_root.is_symlink():

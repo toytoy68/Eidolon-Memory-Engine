@@ -41,3 +41,11 @@ de la racine active ont été arrêtés.
 Après l'arrêt vérifié et la sauvegarde, exécuter la recette sur une **copie
 arrêtée** dans un dossier de travail vide et séparé. Ne pas donner la racine
 active en `--source`. Voir `docs/DEPLOYMENT.md` et `docs/MIGRATION.md`.
+
+## Information coordonnée (01/10)
+
+`core.information.cli` et `FilesystemInformationWrites` journalisent create/update
+et leurs Events dans les familles `information-write-v1`. Reprise explicite
+également raccordée à `core.operations.cli recover-all`. Voir
+[INFORMATION-WRITES.md](INFORMATION-WRITES.md). Les appels directs au backend
+restent destinés au stockage/import et ne fournissent pas ces garanties.
