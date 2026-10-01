@@ -48,7 +48,10 @@ class ContextAssembler:
                  ranking: str | None = None, max_tokens: int | None = None,
                  token_counter: Callable[[str], int] | None = None,
                  allowed_epistemic_statuses: set[str | None] | frozenset[str | None] | None = None,
-                 include_structured_content: bool = False) -> ContextBundle:
+                 include_structured_content: bool = False,
+                 candidate_filter: Callable | None = None) -> ContextBundle:
+        if candidate_filter is not None and not callable(candidate_filter):
+            raise ValueError("candidate_filter must be callable")
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be nonempty text")
         if any(type(value) is not int or value < 1
@@ -99,6 +102,12 @@ class ContextAssembler:
                         and self._label(memory.metadata, "epistemic_status")
                         not in selected_statuses):
                     continue
+                if candidate_filter is not None:
+                    accepted = candidate_filter(memory)
+                    if type(accepted) is not bool:
+                        raise ValueError("candidate_filter must return a boolean")
+                    if not accepted:
+                        continue
                 content = memory.content
                 content_format = "text"
                 if include_structured_content and isinstance(content, (dict, list)):

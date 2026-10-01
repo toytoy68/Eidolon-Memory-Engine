@@ -44,8 +44,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après le parcours de projet reprenable du 01/10/2026 :
-**827 tests réussis, 5 échecs d’environnement en 41,54 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après le rappel contextualisé du 01/10/2026 :
+**842 tests réussis, 5 échecs d’environnement en 55,32 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -76,12 +76,15 @@ n’est encore installé sur la VM.
   projet existant et son dossier est livré avec reprise et rejeu ; voir
   [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md). Les commandes Thread
   restent décrites dans [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
-- Raccorder l’actualisation des dossiers et le rappel au contexte et à la validité.
+- Étendre l’actualisation des dossiers hors du parcours qualifié. Le rappel
+  applique maintenant contexte/validité/statuts et expose sources et incertitudes ;
+  voir [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
 - Construire le catalogue et les déclencheurs durables ; réduire les scans de
   journaux avant ingestion intensive.
 
-Le parcours Information → projet existant → dossier actualisé est livré
-pour les entrées explicitement qualifiées ; son rappel contextualisé reste
-à raccorder. Les autres mutations ne rafraîchissent pas encore toutes les vues. Les anciens services legacy constituent une pile distincte.
+Le premier parcours Information → projet existant → dossier actualisé → rappel
+contextualisé est livré pour les entrées explicitement qualifiées. Les autres
+mutations ne rafraîchissent pas encore toutes les vues ; leur retard est signalé
+au rappel, qui utilise le canonique. Disponibilité autonome et échéances restent ouvertes. Les anciens services legacy constituent une pile distincte.
 La [TODO active](TODO-LIST.md) précise les preuves, priorités et limites actuelles ;
 les audits datés conservent leurs constats historiques.

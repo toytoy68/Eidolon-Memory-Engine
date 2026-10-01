@@ -22,17 +22,18 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
 - T-041/T-042 livrés en local ; T-043 exécute désormais STORE/UPDATE vers un
   projet existant avec intention durable, lien et dossier actualisé. Les autres
   branches restent ouvertes. T-044 : actualisation hors de ce parcours,
-  catalogue T-045, disponibilité T-046 et rappel contextualisé T-047 à terminer.
-- Dernière suite : **827 réussis, 5 échecs de sockets Manager avant scénario,
-  41,54 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 31 nouveaux cas
-  dans cette séance ; aucun essai VM ni coupure de stockage.
+  catalogue T-045 et disponibilité T-046 à terminer. T-047 livre un premier rappel
+  contextualisé avec sources, modes explicites et incertitudes.
+- Dernière suite : **842 réussis, 5 échecs de sockets Manager avant scénario,
+  55,32 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 36 nouveaux cas
+  dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
   reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
-Prochaine livraison : rappel contextualisé de ce parcours ; extension des
-plans et actualisation des dérivés hors parcours à poursuivre. Optimisation des
+Prochaine livraison : rapprochement des dérivés hors parcours et catalogue ;
+extension des plans à poursuivre. Optimisation des
 journaux T-049 avant ingestion intensive ; recette VM distincte.
 
 ## Sujets à relire lors d'une prochaine session disponible
@@ -570,3 +571,19 @@ branches non prises en charge refusées avant mutation. Pas de VM.
 négatives comportementales (réservation, projection, reçu compact), code remis
 après chaque expérience. Quatre arrêts de processus et deux courses sans Manager.
 Autorisation de toytoy de publier à la fin de chaque tâche ; estimations gelées.
+
+### T-047 — Rappel contextualisé, premier parcours de bout en bout
+
+Base `b1edf45` (T-043 publié, arbre identique au commit local `0e5dc2a`).
+ContextualRecall et RoutingExecutor.recall raccordent portée/validité/statuts,
+sources, raisons et budgets. Modes operational/historical explicites, inconnus
+et conflits conservés avec needs_review, aucune promotion. Les vues périmées
+sont signalées ; leurs anciens textes ne sont pas injectés dans le rappel.
+La reprise globale doit être résolue avant lecture. CLI et contrat dans
+docs/CONTEXTUAL-RECALL.md. Clients réels, catalogue, VM toujours non validés.
+
+15 nouveaux tests ; groupe ciblé 65 réussis. Retrait temporaire du filtre,
+du contrôle readiness et des avertissements : 1 + 1 + 3 échecs comportementaux,
+code restauré. Suite complète **842 réussis, 5 échecs sockets Manager en 55,32 s**,
+aucun désélectionné. Aucun nouveau score qualité/latence sur corpus réel.
+README/TODO actualisés, publication autorisée par toytoy en fin de tâche.

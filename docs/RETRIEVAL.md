@@ -98,3 +98,12 @@ un choix par défaut, constituer un jeu représentatif anonymisé, relever les
 latences et examiner séparément les cas `REFUTED`, `CONFLICTED` et les sources
 contradictoires. Les fichiers source restent la vérité canonique ; ce banc
 n'écrit aucun index externe ni donnée réelle.
+
+## Profil contextuel explicite ajouté le 01/10
+
+Le comportement ci-dessus de ContextAssembler reste disponible sans filtre
+contextuel implicite. ContextualRecall ajoute le profil versionné
+operational/historical, les sources et avertissements, le contrôle de reprise,
+la cohérence canonique et la sélection par projet. Voir
+[CONTEXTUAL-RECALL.md](CONTEXTUAL-RECALL.md). Les anciens scores synthétiques de
+classement ne mesurent pas la qualité de ce nouveau parcours contextuel.

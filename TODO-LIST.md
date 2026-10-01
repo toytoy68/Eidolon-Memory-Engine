@@ -30,13 +30,13 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après T-043 (premier parcours) : **827 réussis, 5 échecs
-d’environnement, 41,54 s**, pytest 9.1.1/Python 3.12.14, aucun désélectionné.
-Les cinq tests Manager échouent à la création d’une socket interdite avant
-scénario métier. Les 21 nouveaux cas du parcours passent, dont quatre arrêts
-de processus et deux courses sans Manager. Aucune VM, donnée réelle ou coupure
-électrique testée. Trois garanties retirées temporairement donnent chacune
-un échec comportemental (réservation, projection, reçu sans corps), puis code restauré.
+Suite complète après les premières tranches T-043/T-047 : **842 réussis,
+5 échecs d’environnement, 55,32 s**, pytest 9.1.1/Python 3.12.14, aucun
+désélectionné. Les cinq tests Manager échouent à la création d’une socket
+interdite avant scénario métier. 36 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel). Arrêts de processus, courses sans Manager et preuves négatives
+comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
+coupure électrique testée.
 
 ## Ordre prioritaire
 
@@ -154,8 +154,8 @@ Fait en plus via T-043 : actualisation après STORE/UPDATE et rattachement du
 nouveau parcours, avec reprise après l’écriture canonique.
 
 Restant : actualisation après les autres mutations/liens/suppressions, suivi des dépendances,
-reprise entre COMMITTED et projection ; écarter/signaler les vues périmées à
-la lecture automatique. Sauvegarder les notes humaines non reconstructibles,
+reprise entre COMMITTED et projection pour les autres parcours. Le rappel
+contextualisé écarte le texte des vues et signale leur fraîcheur. Sauvegarder les notes humaines non reconstructibles,
 définir édition concurrente/ingestion explicite. Lieux/thèmes après projets.
 Tests : deuxième apport, correction propagée, source retirée, projection
 interrompue puis reprise sans rejouer le canonique, notes conservées.
@@ -206,15 +206,25 @@ ainsi que l'heure exacte (souhait 3–4 h, fenêtre documentaire 4–8 h), les c
 d'occupation et d'inactivité. Il ne doit ni décider une vérité ni supprimer sur
 le seul critère d'âge. Aucun cron, timer système ou automation externe créé.
 
-### T-047 / T-036 / T-022 — Rappel et parcours complet — PARTIEL POUR LES PRIMITIVES
+### T-047 / T-036 / T-022 — Rappel et parcours complet — PREMIÈRE TRANCHE LOCALE
 
-Fait : lexical_v1, extraits bornés, filtre épistémique explicite, deux jeux
-synthétiques de 30 requêtes, parcours isolés de reprise. Restant : appliquer
-contexte/temps, exposer provenance/preuves/fraîcheur/raisons ; client factice
-via façade métier. Tester projet repris, recommandations conditionnelles,
-contexte inconnu, conflit non résolu et mode historique REFUTED/CONFLICTED.
-Mesurer qualité/latence sur données représentatives. Aucun client externe à
-modifier dans ce lot.
+Fait : lexical_v1, budgets d’extraits, rappel appliquant contexte/temps et profil
+operational/historical. Expiré/hors contexte/réfuté/supplanté/suppression en attente
+exclus du mode operational ; inconnus et conflits visibles avec needs_review.
+Provenance, temporalité, contexte, vérification, relations et raisons exposés.
+Filtrage avant budgets et pagination ; sélection projet par CONCERNS ; canonique
+courant et signalement CURRENT/STALE/MISSING du dossier. Reprise non résolue bloquante.
+
+Parcours client factice démontré : entrée qualifiée → écriture → projet existant
+→ dossier → rappel, puis correction canonique et dossier STALE. API sur la même
+façade RoutingExecutor et CLI. Contrat : [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
+15 nouveaux cas, groupe ciblé 65 réussis. Retirer filtre/readiness/needs_review
+produit 1 + 1 + 3 échecs comportementaux ; code restauré.
+
+Restant : qualité/latence sur corpus représentatif, politiques plus fines,
+catalogue/recherche sémantique, clients réels et VM. Le mode historique ne restaure
+pas les révisions textuelles remplacées. Les budgets ne couvrent pas les
+métadonnées ni le prompt final ; verrou/scans à mesurer sous T-049.
 
 ### T-050 — Histoire et effacement — À CONCEVOIR
 
@@ -264,10 +274,11 @@ heuristique et exécution VM toujours manquante.
 | T-040 | FAIT EN LOCAL v0.1 : contrat/mapping, 500 candidats ; pas de qualification automatique |
 | T-042 | FAIT EN LOCAL v1 : compaction/reçus/rejeu testés ; rétention globale/snapshots Thread T-050, VM non testée |
 
-## Prochaine livraison démontrable
+## Prochaines livraisons démontrables
 
-Une entrée explicitement qualifiée crée une Information, la rattache à un projet
-existant, actualise son dossier et se rappelle avec son contexte via un client
-factice. Rejeu/interruption sans doublon, refus des états non résolus, fraîcheur
-visible, pas de résurrection. La mise en service exige en plus migration décidée,
+Le premier parcours qualifié vers un projet existant et son rappel est désormais
+livré en local. Prochaine priorité : rapprochement des dossiers après les
+mutations effectuées hors parcours, catalogue reconstructible et optimisation
+des scans T-049 avant ingestion intensive. Extension des plans et disponibilité
+T-046 ensuite. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.

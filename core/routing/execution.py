@@ -47,6 +47,11 @@ class RoutingExecutor:
         self.journal = ExecutionJournal(backend.history_root)
         self.dossiers = ProjectDossiers(backend, self.storage, backend.persistent_root.parent / 'dossiers')
 
+    def recall(self, query, **options):
+        """Read canonical contextual memory; no implicit projection rebuild."""
+        from core.retrieval.contextual import ContextualRecall
+        return ContextualRecall(self.backend).recall(query, **options)
+
     @staticmethod
     def child_id(intent, step):
         return 'routing-' + sha256(intent.encode()).hexdigest() + '-' + step

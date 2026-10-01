@@ -290,3 +290,13 @@ La migration mixte est refusée avant toute écriture de destination ; l’impor
 opérationnel reste à définir. Ces livraisons lèvent deux prérequis de la chaîne
 métier ; la façade d’exécution des plans et l’actualisation automatique des
 dossiers restent ouvertes. Voir la TODO et THREAD-UPDATES.md.
+
+## Parcours local exécuté et rappel — suite du 01/10
+
+La tranche qualifiée STORE/UPDATE → projet existant → dossier est maintenant
+journalisée par RoutingExecutor et reprise par recover-all. Son rappel applique
+applicabilité/statuts avant budgets, expose provenance/preuves et incertitudes,
+et lit le canonique en signalant les dossiers périmés. Les intentions en cours
+réservent leurs cibles jusqu’au reçu compact final. Contrats : ROUTING-EXECUTION.md
+et CONTEXTUAL-RECALL.md. Catalogue, nouvelles branches métier, maintenance et
+activation/échéances ne sont pas déduits de cette livraison.

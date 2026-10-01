@@ -1,5 +1,6 @@
 """Preview or explicitly execute a qualified plan on an existing engine tree."""
 import argparse
+from dataclasses import asdict
 import json
 from pathlib import Path
 
@@ -27,6 +28,13 @@ def main(argv=None):
     execute.add_argument('--intent-id', required=True)
     execute.add_argument('--actor', required=True)
     execute.add_argument('--timestamp', required=True)
+    recall = sub.add_parser('recall')
+    recall.add_argument('query')
+    recall.add_argument('--scope', type=Path, required=True)
+    recall.add_argument('--at')
+    recall.add_argument('--mode', choices=['operational', 'historical'], default='operational')
+    recall.add_argument('--project-id')
+    recall.add_argument('--max-chars', type=int, default=4000)
     args = parser.parse_args(argv)
     try:
         # A reader facade avoids constructor mkdir during preview. Existing
@@ -42,6 +50,10 @@ def main(argv=None):
             memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
             context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
             result = executor.preview(memory, context, project_revision=args.project_revision)
+        elif args.action == 'recall':
+            result = asdict(executor.recall(args.query,
+                            query_scope=decode_json_value(args.scope.read_text(encoding='utf-8')),
+                            at=args.at, mode=args.mode, project_id=args.project_id, max_chars=args.max_chars))
         else:
             prepared = decode_json_value(args.plan.read_text(encoding='utf-8'))
             result = executor.execute(prepared, intent_id=args.intent_id, actor=args.actor, timestamp=args.timestamp)
