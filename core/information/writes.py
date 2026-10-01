@@ -124,12 +124,7 @@ class FilesystemInformationWrites:
             raise OperationConflict(f'Information reserved by {status}')
 
     def _pending(self, target_id, *, excluding=None):
-        for opid in self.journal.ids():
-            entry = self.journal.read(opid)
-            op = entry.operation if entry is not None else None
-            if (op and op.operation_id != excluding and op.target_id == target_id
-                    and op.status is not OperationStatus.COMMITTED):
-                raise OperationConflict('recover pending Information operation first')
+        self.journal.reservations().require_available(target_id, excluding)
 
     def _execute(self, kind, memory, previous, opid, event_id, actor, timestamp):
         self.backend._validate_memory_shape(memory)
@@ -148,7 +143,8 @@ class FilesystemInformationWrites:
             from core.routing.execution_journal import require_available
             require_available(self.backend.history_root, information_id=after.information_id)
             self._check_deletion(kind, after.information_id)
-            self._pending(after.information_id)
+            reservations = self.journal.reservations()
+            reservations.require_available(after.information_id)
             current = self.backend.get(after.information_id)
             if kind is OperationType.INFORMATION_CREATE:
                 if current is not None:
@@ -169,14 +165,14 @@ class FilesystemInformationWrites:
             if self.events.get(event_id) is not None:
                 raise OperationConflict('event_id already contains an event')
             # Reserve an Event even before it is persisted by another pending command.
-            for prior_id in self.journal.ids():
-                prior = self.journal.read(prior_id)
-                if prior is not None and prior.result['event_id'] == event_id:
-                    raise OperationConflict('event_id reserved by another operation')
+            if event_id in reservations.event_ids:
+                raise OperationConflict('event_id reserved by another operation')
             self.operations.create(op)
-            return self._resume(op)
+            # The same Persistent/Operation/Event locks remain held. Only our
+            # new operation was added; _resume excludes that operation anyway.
+            return self._resume(op, reservations)
 
-    def _resume(self, op):
+    def _resume(self, op, reservations=None):
         before, after = validate_operation(op, self.backend)
         if op.status is OperationStatus.COMMITTED:
             return operation_result(op)
@@ -185,7 +181,9 @@ class FilesystemInformationWrites:
         from core.routing.execution_journal import require_available
         require_available(self.backend.history_root, information_id=op.target_id)
         self._check_deletion(op.operation_type, op.target_id)
-        self._pending(op.target_id, excluding=op.operation_id)
+        if reservations is None:
+            reservations = self.journal.reservations()
+        reservations.require_available(op.target_id, excluding=op.operation_id)
         current = self.backend.get(op.target_id)
         if current != before and current != after:
             raise OperationConflict('Information diverged from write snapshots')

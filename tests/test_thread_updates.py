@@ -154,7 +154,7 @@ def test_link_refuses_pending_information_write_and_prior_delete_request(tmp_pat
     backend, writer = seed(tmp_path)
     writes = FilesystemInformationWrites(backend)
     with monkeypatch.context() as patch:
-        patch.setattr(writes, '_resume', lambda op: (_ for _ in ()).throw(RuntimeError('stop')))
+        patch.setattr(writes, '_resume', lambda *args: (_ for _ in ()).throw(RuntimeError('stop')))
         with pytest.raises(RuntimeError):
             writes.update(Memory('two', content='changed'), previous_revision=1, operation_id='info-update',
                           event_id='info-event', actor='human', timestamp=STAMP)

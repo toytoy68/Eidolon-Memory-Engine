@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import hashlib
 from pathlib import Path
 import re
+from types import MappingProxyType
 
 from core.operations.errors import OperationConflict
 from core.operations.filesystem import FilesystemOperationRepository
@@ -53,6 +54,21 @@ class JournalEntry:
                 else self.operation.plan.command_fingerprint)
 
 
+@dataclass(frozen=True)
+class JournalReservations:
+    """Validated, content-free view valid only within the caller's writer lock.
+
+    Not cached on a writer, persisted, or reused across commands. All receipt
+    formats and operation/receipt pairs were checked before constructing it.
+    """
+    pending_by_target: MappingProxyType
+    event_ids: frozenset[str]
+
+    def require_available(self, target_id, excluding=None):
+        if self.pending_by_target.get(target_id, frozenset()) - {excluding}:
+            raise OperationConflict('recover pending Information operation first')
+
+
 class InformationWriteJournal:
     def __init__(self, history_root):
         self.operations_root = Path(history_root) / 'operations' / JOURNAL
@@ -70,6 +86,20 @@ class InformationWriteJournal:
         self._check_roots()
         return sorted({p.stem for root in (self.operations_root, self.receipts_root)
                        for p in root.glob('*.json')})
+
+    def reservations(self):
+        """One full validated scan; caller holds Persistent through final use."""
+        pending, events = {}, set()
+        for operation_id in self.ids():
+            entry = self.read(operation_id)
+            if entry is None:
+                raise OperationConflict('Information journal disappeared during locked scan')
+            events.add(entry.result['event_id'])
+            operation = entry.operation
+            if operation is not None and operation.status is not OperationStatus.COMMITTED:
+                pending.setdefault(operation.target_id, set()).add(operation.operation_id)
+        return JournalReservations(MappingProxyType({key: frozenset(value) for key, value in pending.items()}),
+                                   frozenset(events))
 
     def receipt_path(self, operation_id):
         return self.receipts_root / self.operations._path(operation_id).name

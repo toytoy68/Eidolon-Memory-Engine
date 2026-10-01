@@ -25,17 +25,18 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
   par rapprochement explicite reprenable. Catalogue T-045 livré avec reconstruction et contrôle de fraîcheur ;
   disponibilité T-046 encore ouverte. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **875 réussis, 5 échecs de sockets Manager avant scénario,
-  51,28 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 69 nouveaux cas
+- Dernière suite : **883 réussis, 5 échecs de sockets Manager avant scénario,
+  51,84 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 77 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
   reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
-Prochaine livraison : réduction du coût des scans de journaux ;
-extension des plans à poursuivre. Optimisation des
-journaux T-049 avant ingestion intensive ; recette VM distincte.
+Fin de séance : catalogue et première réduction des scans livrés. T-049 reste
+partiel pour l'ingestion intensive : annuaire reconstructible, autres familles
+et mesures VM ouverts. Extension des plans et disponibilité à poursuivre ;
+recette VM distincte. Pas de tâche automatique ou de travail nocturne lancé.
 
 ### Lot T-044 — rapprochement des dossiers, base `7517cc6`
 
@@ -61,6 +62,20 @@ correction/suppression et relance après arrêt testées. 16 nouveaux cas ; grou
 ciblé 28 réussis, trois preuves négatives. Suite complète 875 réussis et les mêmes
 cinq échecs de sockets, 51,28 s. Pas de VM, de Qdrant ni d'accélération de recherche
 revendiquée. Contrat : [INFORMATION-CATALOGUE.md](docs/INFORMATION-CATALOGUE.md).
+
+### Lot T-049 — scans redondants supprimés, base `2d21739`
+
+Une nouvelle écriture Information partage un seul scan strict des réservations
+entre ses contrôles, sous les mêmes verrous. Aucune réutilisation entre commandes,
+aucun format simplifié ; version 999 et paire divergente bloquantes. La compaction
+relit sa publication. 8 nouveaux tests (dont deux scénarios multiprocessus sans
+Manager), 69 tests existants ciblés réussis ; preuves négatives 2 + 1 + 1 échecs.
+Suite complète : 883 réussis, cinq sockets bloquées, 51,84 s. Aucun essai VM.
+
+Benchmark 50/150/300 livré : à 300, création 59,39 → 20,42 s, création+compaction
+57,11 → 30,01 s. Contrats et rapports : [JOURNAL-SCAN-COST.md](docs/JOURNAL-SCAN-COST.md).
+Gain de constante, pas suppression du coût quadratique d'ingestion : ne pas
+assimiler cette livraison à une validation de charge intensive.
 
 ## Sujets à relire lors d'une prochaine session disponible
 

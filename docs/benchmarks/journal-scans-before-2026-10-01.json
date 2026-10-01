@@ -1,0 +1,65 @@
+{
+  "label": "baseline-2d21739",
+  "python": "3.12.14",
+  "source_commit": "2d2173904f1c67ce33856c9eacd07ba8051011ff",
+  "scope": "local synthetic warm filesystem; not VM, not a scalability guarantee",
+  "instrumentation": "logical journal reads, full scans, successful journal JSON read opens; excludes final audits",
+  "workloads": [
+    {
+      "mode": "create",
+      "checkpoints": [
+        {
+          "records": 50,
+          "seconds": 2.011067,
+          "journal_reads": 3775,
+          "journal_scans": 150,
+          "journal_json_opens": 3825
+        },
+        {
+          "records": 150,
+          "seconds": 16.654045,
+          "journal_reads": 33825,
+          "journal_scans": 450,
+          "journal_json_opens": 33975
+        },
+        {
+          "records": 300,
+          "seconds": 59.392376,
+          "journal_reads": 135150,
+          "journal_scans": 900,
+          "journal_json_opens": 135450
+        }
+      ],
+      "final_audit_issues": 0,
+      "roundtrip_equal": 300
+    },
+    {
+      "mode": "create-compact",
+      "checkpoints": [
+        {
+          "records": 50,
+          "seconds": 1.889665,
+          "journal_reads": 5150,
+          "journal_scans": 200,
+          "journal_json_opens": 5250
+        },
+        {
+          "records": 150,
+          "seconds": 14.703767,
+          "journal_reads": 45450,
+          "journal_scans": 600,
+          "journal_json_opens": 45750
+        },
+        {
+          "records": 300,
+          "seconds": 57.109193,
+          "journal_reads": 180900,
+          "journal_scans": 1200,
+          "journal_json_opens": 181500
+        }
+      ],
+      "final_audit_issues": 0,
+      "roundtrip_equal": 300
+    }
+  ]
+}

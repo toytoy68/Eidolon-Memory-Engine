@@ -46,8 +46,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après le catalogue reconstructible du 01/10/2026 :
-**875 tests réussis, 5 échecs d’environnement en 51,28 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après le catalogue et la réduction des scans du 01/10/2026 :
+**883 tests réussis, 5 échecs d’environnement en 51,84 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -82,8 +82,11 @@ n’est encore installé sur la VM.
   hors du parcours qualifié. Le rappel
   applique maintenant contexte/validité/statuts et expose sources et incertitudes ;
   voir [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
-- Réduire les scans de journaux avant ingestion intensive ; le catalogue est
-  livré à la demande. Déclencheurs durables et rattrapage automatique restent ouverts.
+- Poursuivre T-049 avant ingestion intensive : les nouvelles écritures font
+  désormais un scan au lieu de trois, mais le coût reste linéaire par commande.
+  [Mesures reproductibles](docs/JOURNAL-SCAN-COST.md) : 300 créations en 20,42 s
+  contre 59,39 s sur le corpus synthétique local. Catalogue livré à la demande ;
+  déclencheurs durables et rattrapage automatique restent ouverts.
 
 Le premier parcours Information → projet existant → dossier actualisé → rappel
 contextualisé est livré pour les entrées explicitement qualifiées. Les autres

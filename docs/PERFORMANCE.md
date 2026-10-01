@@ -1,5 +1,11 @@
 # Mesures synthétiques du backend fichier
 
+Pour les **écritures métier journalisées**, consulter le
+[benchmark T-049](JOURNAL-SCAN-COST.md) et ses rapports avant/après du 01/10.
+Il distingue create et create+compact, mesure 50/150/300 Informations et compte
+les lectures de journaux. Ces coûts diffèrent de ceux des primitives backend
+mesurées ci-dessous.
+
 Depuis la racine du dépôt :
 
 ```sh

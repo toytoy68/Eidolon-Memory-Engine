@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après le catalogue T-045 : **875 réussis,
-5 échecs d’environnement, 51,28 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après T-045 et la réduction T-049 : **883 réussis,
+5 échecs d’environnement, 51,84 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 69 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 77 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -186,7 +186,26 @@ Restant : rattrapage automatique T-046, mesure sur corpus réel et accélératio
 des lectures ; cette version scanne le canonique pour prouver la fraîcheur.
 Aucun connecteur externe ni activation autonome des disponibilités.
 
-### T-049 — Coût des journaux — À FAIRE
+### T-049 — Coût des journaux — RÉDUCTION LIVRÉE / INGESTION INTENSIVE NON VALIDÉE
+
+Trois scans par nouvelle écriture Information ramenés à un seul : réservations
+validées une fois sous verrous, puis abandonnées en fin de commande. Aucun cache
+entre commandes ; lecteur complet des reçus conservé, version 999 et divergences
+bloquantes. La compaction relit toujours son reçu avant retrait du snapshot.
+
+Benchmark reproductible livré, 50/150/300 create et create+compact. À 300 :
+59,39 → 20,42 s pour create, 57,11 → 30,01 s pour create+compact ; ouvertures
+JSON 135 450 → 45 450 et 181 500 → 91 500. Audit et égalité canoniques valides.
+8 nouveaux tests, dont échanges/concurrence multiprocessus sans Manager ;
+preuves négatives 2 + 1 + 1 échecs, code restauré.
+Contrat et rapports : [JOURNAL-SCAN-COST.md](docs/JOURNAL-SCAN-COST.md).
+
+Restant : suppression du scan linéaire par commande, annuaire reconstructible
+et preuve de divergence/reprise, autres familles, scans des dérivés, corpus et
+objectifs VM. L'ingestion totale demeure quadratique. Pas d'autorisation
+d'ingestion intensive déduite de la réduction locale.
+
+Contexte de la mesure antérieure et de la proposition Claude :
 
 [Mesure antérieure](docs/benchmarks/information-writes-2026-10-01.json) : 500
 créations en 215,869 s ; 9,517 s pour les 100 premières, 75,585 s pour les 100
@@ -292,7 +311,8 @@ heuristique et exécution VM toujours manquante.
 
 Le premier parcours qualifié vers un projet existant et son rappel est désormais
 livré en local ; le rapprochement global des dossiers hors parcours est maintenant
-disponible à la demande, comme le catalogue reconstructible T-045. Prochaine priorité : optimisation
-des scans T-049 avant ingestion intensive. Extension des plans et disponibilité
+disponible à la demande, comme le catalogue reconstructible T-045. T-049 réduit
+les scans par commande ; un annuaire reconstructible et la mesure VM restent
+nécessaires avant ingestion intensive. Extension des plans et disponibilité
 T-046 ensuite. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.

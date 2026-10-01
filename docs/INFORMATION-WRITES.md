@@ -121,6 +121,11 @@ compaction, rétention automatique ou effacement des empreintes n'est ajouté.
 
 ## Histoire après compaction
 
+Le [lot T-049](JOURNAL-SCAN-COST.md) réduit les trois scans par nouvelle écriture
+à un seul, par vue de réservations validée locale à la commande sous verrous.
+Les reçus restent strictement validés et la compaction relit sa publication.
+Aucun cache n'est réutilisé entre commandes ; le coût reste linéaire par écriture.
+
 La compaction retire les snapshots avant/après. Le reçu et l'Event permettent
 la traçabilité/reprise, pas la reconstruction intégrale des anciens textes.
 Conserver les observations historiques nécessaires comme Informations distinctes
