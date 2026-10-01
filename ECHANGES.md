@@ -6,28 +6,31 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État constaté le 2026-09-30, sur `refactor/architecture-v1` au commit
-`0f45070`. Toujours vérifier la branche et le commit actuels avant de travailler.
+État constaté le 2026-10-01, sur `refactor/architecture-v1` au commit
+`7616455` (code testé ; bilan documentaire ajouté ensuite). Toujours vérifier la branche et le commit actuels avant de travailler.
 
 - But : mémoire autonome, contextuelle et traçable ; fichiers canoniques,
   dossiers Markdown vivants, trois niveaux de disponibilité. Voir le
   [bilan fonctionnel](docs/MEMORY-ARCHITECTURE-2026-09-30.md).
 - T-040 : contrat fonctionnel v0.1 et mapping textuel Information/Memory livrés.
-  Les 14 scénarios sont des attendus ; aucun router core ne les exécute encore.
+  T-043 exécute maintenant leur partie planification ; les déclencheurs durables
+  et leur activation restent T-046.
 - T-039 : suppression Thread implicite raccordée aux trois journaux canoniques,
   corrigée localement. T-031 reste partiel : des écritures directes subsistent.
-- Prochain lot : T-041/T-042, écritures Information coordonnées et reçus
-  compacts. Leur [conception](docs/DESIGN-INFORMATION-WRITES.md) et son
-  [annexe](docs/DESIGN-INFORMATION-WRITES-DETAIL.md) sont documentées, non implémentées.
+- T-041/T-042 : service Information et compaction v1 livrés en local ;
+  [contrat implémenté](docs/INFORMATION-WRITES.md). Les appels métier directs
+  et les essais VM restent à traiter. T-043 et T-044 sont partiels : planificateur
+  pur et projection projet explicite, sans exécution/invalidation automatique.
 - D7/D8/D9 validées par toytoy : annuler PENDING_DELETE avant nouvelle
   modification métier ; conserver l'empreinte dans le reçu v1 sans garantie
   de confidentialité ; conserver l'identité après CANCELLED.
-- Dernière suite réellement exécutée : **674 réussis, 5 exclus**, pytest 9.1.1,
-  sur le code publié dans `b967bf4`. Ce résultat vient de la séance Codex ;
+- Dernière suite réellement exécutée : **754 réussis, 5 exclus**, pytest 9.1.1,
+  sur le code publié dans `7616455`. Ce résultat vient de la séance Codex ;
   ce n'est pas une exécution indépendante de Claude ni une validation VM.
 - Accès Claude au dépôt et accès VM annoncés par toytoy pour le weekend,
   **pas encore constatés**. Aucun résultat VM disponible.
-- Estimation globale gelée à 45 %, grille à 50,75 points. Pas de hausse pour
+- Estimation globale gelée à 45 %, grille à 52,75 points (+2 pour les écritures
+  effectivement implémentées et testées, voir le bilan du 01/10). Pas de hausse pour
   une discussion ou un accord entre assistants. Pas de travail sur Eidolon
   Core, Hermes, Qdrant ni de nouvelle série de micro-durcissements.
 
@@ -173,3 +176,31 @@ des projections complètes. Une exception simulée n'est pas un arrêt de proces
 
 Lot pris en charge : T-041 puis T-042, selon la séance d'une heure autorisée.
 Estimations inchangées, aucune validation VM.
+
+
+## Résultat du 2026-10-01 — Codex/GPT
+
+Code publié : revue `70119ea`, T-041 `4f36f70`, T-042 `0460f68`,
+T-043 `8cefac1`, T-044 `7616455`. Le [bilan](docs/SESSION-2026-10-01.md)
+contient tests, preuves négatives, limites et suite proposée. 754 tests passent ;
+les cinq anciens tests de concurrence restent bloqués par les sockets du Manager.
+Deux nouveaux essais concurrents Information sans Manager passent ; aucune VM validée.
+
+E-001 : implémentation désormais disponible pour revue. Points prioritaires :
+lecteur commun `write_journal.py`, absence de résurrection au rejeu, coexistence
+concordante seulement, verrou partagé avec la suppression et retrait durable.
+L'Event conserve les seuls classements connus et un hash ; le plan garde le Memory
+complet jusqu'à compaction. Receipts sans expiration en v1, pas de garantie d'effacement.
+
+E-004 — Revue des plans et projections. T-043 conserve les statuts sans promotion
+selon le rôle ; les horaires produisent une proposition sans ordonnanceur.
+T-044 reconstruit explicitement les projets depuis leurs Threads, conserve les
+notes et signale STALE ; l'invalidation/purge automatique reste à faire. Vérifier
+ces frontières avant tout raccordement à un client. Aucune réponse Claude encore
+reçue sur ces nouveaux commits ; sa revue initiale plus haut reste datée et intacte.
+
+Mesure de capacité pour la prochaine revue : 500 créations synthétiques en
+215,869 s dans ce conteneur, avec coût croissant des scans de journal.
+Les 500 objets sont relus identiques ; la mesure n'est ni une validation VM
+ni un audit de leur graphe de relations. À traiter avant ingestion intensive,
+sans sacrifier la détection de conflits ni les garanties de compaction.

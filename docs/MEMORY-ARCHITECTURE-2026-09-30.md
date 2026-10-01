@@ -11,7 +11,8 @@ Le document complet de Claude n'était pas disponible pour cette revue.
 Le bilan de code plus bas conserve sa base `e0c21a9`. Depuis : T-040 dispose
 maintenant du [contrat fonctionnel 0.1](../schemas/memory-policy-v0.1.md),
 de 14 scénarios attendus et de six tests du mapping Information/Memory,
-dont 500 candidats synthétiques. Le router n'exécute pas encore ces scénarios.
+dont 500 candidats synthétiques. Le planificateur du 01/10 exécute désormais leur partie planification ;
+les déclencheurs persistants restent non implémentés.
 T-039 est corrigé pour les journaux canoniques et couvert par deux tests de
 reprise ; les autres contournements Thread restent sous T-031. Les deux
 fonctions ont une preuve de test rouge après retrait du changement. Aucun
@@ -205,6 +206,18 @@ Les intégrations externes et le tableau de bord restent différés.
 - Conditions de compaction, résultat minimal de rejeu, politique des sauvegardes
   et traitement des opérations bloquées avant suppression de leurs snapshots.
 
-La grille pondérée reste **50,75 points** et l'estimation globale **45 %**.
+La grille pondérée passe à **52,75 points** au 01/10 pour le bloc des écritures
+coordonnées uniquement, avec preuves dans le rapport de séance. L'estimation
+globale reste **45 %**.
 Documenter une cible n'implémente aucun bloc ; aucune progression chiffrée
 n'est créditée pour cette mise à jour.
+
+
+## Mise à jour d'implémentation du 01/10
+
+Le tableau de code initial garde sa base datée ; l'état plus récent est le suivant :
+T-041/T-042 livrent service Information, Events, reprise et reçus compacts v1 ;
+T-043 livre un planificateur déterministe, sans extraction automatique ; T-044
+livre une projection projet explicite, sans actualisation/purge automatique.
+T-045 et T-046 restent à faire. Les preuves et limites précises figurent dans
+[SESSION-2026-10-01.md](SESSION-2026-10-01.md). Aucun client réel ni VM validés.

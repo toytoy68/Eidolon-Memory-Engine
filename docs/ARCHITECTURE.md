@@ -55,7 +55,7 @@ tableau ci-dessous précise les frontières de coordination dans le code.
 
 | Composant | Lecture | Écriture actuelle | Règle de coexistence |
 | --- | --- | --- | --- |
-| `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads et journaux `thread-create-v1` lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread et Information ainsi que des créations liées inachevées | Seul écrivain nouveau des Informations core ; partager la même racine d'historique avec le coordinateur Thread et ne pas lancer le controller historique sur les mêmes fichiers. |
+| `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads et journaux `thread-create-v1` lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread et Information ainsi que des créations liées inachevées | Primitive de stockage/import ; préférer le service Information coordonné pour les mutations métier. Partager la même racine d'historique et ne pas lancer le controller historique sur ces fichiers. |
 | `core/threads/ThreadStorage` | `persistent/threads/*.md` | Création/mise à jour sous verrou et suppression via `thread-delete-v1` | Création et mise à jour directes restent hors journal ; `delete` implicite consulte désormais les trois journaux canoniques via le même assemblage que le CLI (T-039 corrigé en local). |
 | `core/threads/ThreadInformationLinkService` | Information ciblée | Crée un Thread avec relation `CONCERNS` | Vérifie l'existence sous le verrou partagé de `persistent/` au moment de la création ; ne garantit pas que la cible restera présente après une suppression ultérieure. |
 | `core/operations/FilesystemLinkedThreadCreation` | Information, Thread, Event et Operation | Journal `thread-create-v1`, Thread lié et Event `CREATED` | Prend les verrous Persistent → Thread → Operation → Event ; reprendre avec `recover-creations` avant d'autres mutations. |
@@ -178,9 +178,9 @@ d'opération réutilisé avec un autre contenu est refusé.
 5. Le TDB peut être servi en lecture seule sur le réseau local après validation
    de l'authentification et du port ; voir `docs/MONITORING.md`.
 
-La correspondance métier de la conversion des données anciennes, les Events
-d'Information coordonnés et la cohérence globale des lectures multi-fichiers
-restent à valider ou concevoir. Le convertisseur local et son vérificateur
+Le service Information coordonné et ses Events sont livrés en local le 01/10 ;
+la migration de tous les appelants, la correspondance métier de la conversion
+et la cohérence globale des lectures multi-fichiers restent à valider ou concevoir. Le convertisseur local et son vérificateur
 ne sont pas validés sur la VM.
 Seul le nouveau chemin de création journalisée produit un Event `CREATED` ;
 les lecteurs d'un répertoire Event n'agrègent pas les sous-répertoires.
@@ -254,3 +254,19 @@ Code retour 1 en cas d'anomalie. Elle accepte les documents core lisibles ; un
 ancien front matter Information est signalé invalide jusqu'à migration. Le
 résultat peut changer si un écrivain intervient pendant l'audit : utiliser une
 copie arrêtée pour une décision de migration ou de suppression.
+
+
+## Réalisation du 01/10 — frontières actuelles
+
+- `core.information.writes` et son CLI : nouvelles écritures métier avec Operation,
+  Event et reprise ; `store/update` directs restent bas niveau/import (T-031 partiel).
+- `core.information.compaction` : reçus v1, contrôle commun journal/reçu,
+  approbation de suppression après retrait des plans. Voir [le contrat](INFORMATION-WRITES.md).
+- `core.routing.policy` : plan contextuel pur sur qualification explicite ; aucune
+  exécution automatique ni qualification depuis un texte brut. Voir [le router](MEMORY-ROUTING.md).
+- `core.dossiers.projects` : vue projet Markdown depuis Thread/CONCERNS, notes humaines
+  préservées, reconstruction explicite. Voir [les dossiers](PROJECT-DOSSIERS.md).
+  Ces nouvelles copies dérivées doivent encore être raccordées à l'invalidation
+  et à la purge ; aucune promesse d'effacement global n'est faite.
+
+Résultats, versions, preuves négatives et limites VM : [séance du 01/10](SESSION-2026-10-01.md).

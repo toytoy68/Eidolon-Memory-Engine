@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-01",
+  "environment": "local container, Python 3.12.14, no VM or cold-disk claim",
+  "records": 500,
+  "fixture": "tools.generate_scenario default seed",
+  "operation": "new synthetic business identities, revision 1; NOT historical import",
+  "create_total_seconds": 215.869,
+  "batches": [
+    {
+      "records": 100,
+      "cumulative_seconds": 9.517
+    },
+    {
+      "records": 200,
+      "cumulative_seconds": 38.417
+    },
+    {
+      "records": 300,
+      "cumulative_seconds": 80.94
+    },
+    {
+      "records": 400,
+      "cumulative_seconds": 140.284
+    },
+    {
+      "records": 500,
+      "cumulative_seconds": 215.869
+    }
+  ],
+  "first_compaction_seconds_at_500_records": 0.275,
+  "compacted_replay_seconds": 0.000976,
+  "full_memory_roundtrip": "500/500 equal",
+  "audit": "500 committed, no issues before first compaction",
+  "limitation": "New writes scan the journal: no scalability guarantee; measurements are environment-specific.",
+  "relation_audit": "not executed; existing relation IDs were not remapped to the new benchmark identities"
+}

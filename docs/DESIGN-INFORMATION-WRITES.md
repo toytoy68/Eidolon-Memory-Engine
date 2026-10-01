@@ -1,12 +1,13 @@
 # Proposition — écritures Information coordonnées
 
-Date : 2026-09-30. Statut : **orientations D7–D9 validées, service et
-compaction non implémentés**. Synthèse de la revue croisée avec Claude et
+Conception du 2026-09-30, mise à jour le 01/10 : **service et compaction v1
+livrés en local, non validés sur VM**. Voir le contrat implémenté dans
+[INFORMATION-WRITES.md](INFORMATION-WRITES.md). Synthèse de la revue croisée avec Claude et
 toytoy. L'annexe reçue dans `eidolon_memory_engine_2026-09-30_maj2.zip` est
 intégrée et harmonisée avec les décisions validées le 30/09 :
 [conflits, reçus et reprise détaillés](DESIGN-INFORMATION-WRITES-DETAIL.md).
-Les signatures et schémas sérialisés précis restent à définir lors de
-l'implémentation. Voir le [bilan d'architecture](MEMORY-ARCHITECTURE-2026-09-30.md).
+Les signatures et le schéma du reçu v1 sont maintenant documentés dans le
+contrat livré ; les paragraphes de conception conservent leur contexte initial. Voir le [bilan d'architecture](MEMORY-ARCHITECTURE-2026-09-30.md).
 
 ## Problème et frontières
 
@@ -146,8 +147,8 @@ politique explicite distincte des besoins techniques du journal.
   aussi les tests du backend. Validation multiprocessus et disque réel sur VM
   séparée des simulations locales.
 
-Aucun nouveau test du service ou de la compaction n'est ajouté ou exécuté
-pendant cette édition documentaire. Le dernier résultat du code inchangé
-reste 674 réussis et 5 exclus ; ni la VM ni la durabilité du disque après
-coupure électrique ne sont validées. Un arrêt de VM ne prouve pas une coupure
-physique. Cette publication concerne la conception, pas son implémentation.
+La première édition du 30/09 était uniquement documentaire (674 tests réussis
+et 5 exclus rapportés). L'implémentation et les nouveaux tests du 01/10 sont
+attestés dans [le rapport de séance](SESSION-2026-10-01.md). Ni la VM ni la
+durabilité après coupure électrique ne sont validées. Un arrêt de processus
+ne prouve ni un arrêt de VM ni une coupure physique.

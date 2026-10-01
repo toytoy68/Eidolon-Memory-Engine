@@ -15,10 +15,9 @@ développement et n'est pas encore validée sur la VM.
   sources/révisions et notes humaines conservées ; actualisation automatique à venir.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
-  — cible documentée, implémentation progressive.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
   correspondance Information/Memory et [planificateur contextuel v0.1](docs/MEMORY-ROUTING.md)
-  testés ; exécution des dossiers et déclencheurs encore à implémenter.
+  testés ; actualisation automatique des dossiers et déclencheurs encore à implémenter.
 - [Bilan de l'audit](docs/AUDIT-2026-09-30.md) et [todo list](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)

@@ -89,15 +89,16 @@ leurs preuves et limites mais ne constituent plus l'ordre d'exécution.
 Voir [le bilan et les scénarios](docs/MEMORY-ARCHITECTURE-2026-09-30.md) et
 [la conception Information](docs/DESIGN-INFORMATION-WRITES.md).
 Le cadrage initial ne modifiait que la documentation ; les réalisations
-suivantes sont attestées ci-dessous. Grille inchangée à 50,75
-points et estimation globale gelée à 45 %. Après T-040 et T-039 :
-**674 tests réussis, 5 désélectionnés en 35,75 s** avec pytest 9.1.1.
+suivantes sont attestées ci-dessous. Au 01/10 : grille à 52,75 points (+2 pour T-041/T-042 réellement livrés),
+estimation globale gelée à 45 %. **754 tests réussis, 5 désélectionnés en
+34,69 s**, pytest 9.1.1. Voir [le bilan du 01/10](docs/SESSION-2026-10-01.md).
+Le résultat précédent au 30/09 était 674 réussis et 5 exclus.
 La concurrence et le disque réel restent non validés sur VM.
 Voir le [rapport de séance](docs/SESSION-2026-09-30-CONTRACT.md).
 
 | Ordre | Tâche et statut réel | Livrable et preuve attendus |
 | --- | --- | --- |
-| P0 | **【FAIT EN LOCAL — contrat et mapping / ROUTER NON IMPLÉMENTÉ】 T-040** Contrat fonctionnel et modèle canonique | `schemas/memory-policy-v0.1.md`, 14 scénarios attendus et mapping Information ↔ Memory ; six tests passent, dont 500 candidats de migration et préservation des extensions après édition |
+| P0 | **【FAIT EN LOCAL — contrat et mapping / ROUTER PARTIEL T-043】 T-040** Contrat fonctionnel et modèle canonique | `schemas/memory-policy-v0.1.md`, 14 scénarios attendus et mapping Information ↔ Memory ; six tests passent, dont 500 candidats de migration et préservation des extensions après édition |
 | P1 | **【PARTIEL】 T-031 / 【FAIT EN LOCAL】 T-039** Chemins métier canoniques Thread | Le coordinateur implicite de suppression partage l'assemblage complet du CLI ; deux régressions création/statut passent ; les create/update directs restent à migrer |
 | P1 | **【PARTIEL — service livré en local / NON TESTÉ VM】 T-041** Service Information coordonné | API et CLI create/update/recover, plans complets, Events et suppression coordonnés ; tests d'interruption et arrêt de processus ; migration des appelants métier/import distinct encore à poursuivre (T-031/T-021), compaction T-042 requise |
 | P1 | **【FAIT EN LOCAL v1 / NON TESTÉ VM】 T-042** Snapshots et reçus compacts | Reçu v1, commande compact, lecteur commun aux reprises/audits/inventaire/suppression, arrêts de processus et rejeu après suppression ; rétention sans expiration, sauvegardes et effacement futur hors v1 |
@@ -122,7 +123,9 @@ encore ouvertes ne sont pas considérées comme validées. Chaque futur bloc
 doit avoir une preuve comportementale, dont un test rouge après retrait de la
 fonctionnalité. Aucun nouveau test artificiel n'est ajouté pour cette édition
 documentaire. Pas de travail sur Eidolon Core, Hermes, Qdrant ou les nouveaux
-micro-durcissements. T-040 a livré le contrat v0.1 et son mapping ; le prochain lot est P1.
+micro-durcissements. Après les lots du 01/10, poursuivre le raccordement métier
+T-031/T-043/T-044 puis le catalogue T-045 et l'activation T-046 ; la validation
+VM reste une voie séparée.
 Les 14 cas sont des attendus pour le futur router, pas des tests de routage
 déjà réussis. Le mapping a d'abord échoué faute de module ; retirer ensuite
 la préservation des extensions fait échouer le test d'édition persistée
@@ -1010,3 +1013,21 @@ racine isolée, qu'une sauvegarde restaurable sera vérifiée, et que la reprise
 opérationnelle et les services réellement utilisés seront validés. Ces critères
 ne supposent pas que toutes les extensions proposées soient nécessaires à la
 première mise en service.
+
+
+## Écarts relevés pendant la séance du 01/10, sans correctif hors lot
+
+- L'inventaire préexistant `core/migration/inventory.py` n'énumère pas la famille
+  `thread-delete-v1` dans SOURCES. La couverture de l'inventaire Thread est donc
+  incomplète ; à traiter dans la recette/inventaire, sans prétendre qu'il couvre
+  déjà tous les journaux. Ce lot a seulement ajouté ses propres familles Information.
+- T-044 est une projection explicite : des dossiers non reconstruits peuvent
+  conserver des extraits anciens après modification/suppression des sources.
+  L'invalidation/purge automatique et les notes humaines doivent entrer dans
+  le futur contrat d'effacement global avant consommation automatique.
+
+- T-041/T-042, limite de volume mesurée : 500 nouvelles commandes synthétiques
+  prennent 215,869 s ici (100 premières : 9,517 s ; 100 dernières : 75,585 s).
+  Les scans complets de journal rendent la charge cumulative croissante.
+  Réduire ce coût sans perdre réservations/rejeu/coexistence avant ingestion
+  intensive ; pas d'optimisation ajoutée hors du lot. Voir le benchmark versionné.
