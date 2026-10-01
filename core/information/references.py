@@ -119,19 +119,16 @@ def ensure_information_write_safety(history_root: Path, information_id: str,
     Approval also requires committed snapshots of the deleted identity to be
     compacted first. Unreadable plans fail closed, with no silent purge.
     """
-    root = history_root / 'operations' / 'information-write-v1'
-    if not root.exists():
-        return
     from core.backend.filesystem import FilesystemBackend
-    from core.operations.models import InformationCreatePlan
-    from core.operations.thread_status import plan_hash
+    from core.information.write_journal import InformationWriteJournal
+    from core.operations.errors import OperationRepositoryError
     try:
-        repository = FilesystemOperationRepository(root)
-        for path in sorted(root.glob('*.json')):
-            record = repository.get(path.stem)
-            if (record is None or not isinstance(record.plan, InformationCreatePlan)
-                    or plan_hash(record) != record.execution_plan_hash):
-                raise ValueError('unexpected Information operation')
+        journal = InformationWriteJournal(history_root)
+        for opid in journal.ids():
+            entry = journal.read(opid)
+            record = entry.operation if entry is not None else None
+            if record is None:
+                continue
             if record.target_id == information_id:
                 if record.status is not OperationStatus.COMMITTED:
                     raise InformationDeletionBlocked('pending Information write requires recovery')
@@ -141,5 +138,5 @@ def ensure_information_write_safety(history_root: Path, information_id: str,
                 after = FilesystemBackend._deserialize(record.plan.after_state)
                 if any(r.get('target_id', r.get('target')) == information_id for r in after.relations):
                     raise InformationDeletionBlocked('pending Information write references target')
-    except (OSError, UnicodeError, ValueError, TypeError, InvalidMemory, InvalidOperationRecord) as exc:
+    except (OSError, UnicodeError, ValueError, TypeError, InvalidMemory, OperationRepositoryError) as exc:
         raise InformationDeletionBlocked('unreadable Information write journal') from exc

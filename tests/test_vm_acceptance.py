@@ -35,7 +35,7 @@ def test_acceptance_uses_only_explicit_workdir_and_detects_source_change(tmp_pat
 
     assert len(calls) == 1
     assert len(report["versions"]["engine_commit"]) == 40
-    assert [step["status"] for step in report["steps"]] == ["OK"] * 7
+    assert [step["status"] for step in report["steps"]] == ["OK"] * 8
     assert (workdir / "vm-acceptance-report.json").is_file()
     assert json.loads((workdir / "vm-acceptance-report.json").read_text()) == report
     assert (source / "memory/persistent/info.md").read_bytes() == b"original"

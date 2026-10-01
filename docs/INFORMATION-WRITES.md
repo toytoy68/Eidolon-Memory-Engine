@@ -81,3 +81,40 @@ Tests : `tests/test_information_writes.py` et
 échoue si son raccordement est retiré. Aucun essai VM ni coupure de stockage réel.
 La compaction est le lot T-042, nécessaire avant d'approuver une suppression ayant
 un plan d'écriture conservé.
+
+## Compaction récupérable T-042
+
+```sh
+MEMORY_ENGINE_ROOT=/chemin/reel python -B -m core.information.cli compact create-001
+python -B -m core.information.write_audit --root /copie-arretee
+```
+
+La commande compact traite un seul identifiant explicite. Elle vérifie l'Event
+et les opérations en attente, écrit un reçu versionné dans
+`history/operation-receipts/information-write-v1`, le relit, compare tous les
+champs avec l'Operation, puis retire durablement le plan. Le verrou journal
+Information couvre également les reçus ; l'ordre reste Persistent → journal
+Information → Events. Les nouveaux répertoires de reçus et le répertoire du
+journal sont synchronisés sur POSIX. Windows n'a pas cette même garantie de
+fsync de répertoire ; aucun test Windows n'est revendiqué.
+
+Un reçu et un plan concordants décrivent COMPACTING ; recovery termine le
+retrait. Un reçu seul décrit COMPACTED. Toute divergence ou version inconnue
+bloque. Le rejeu de commande lit ces deux emplacements avant les contrôles
+sur la cible ; il ne modifie aucun fichier métier. Le résultat minimal du reçu
+n'est pas une copie de l'Information ni une preuve de sa présence actuelle.
+
+Le lecteur partagé `InformationWriteJournal` est utilisé par service, reprise,
+compaction, garde de suppression et audit. L'inventaire de formats inclut cet
+audit logique ; la recette VM ajoute `audit_information_writes`. Les audits
+ne créent aucun dossier ni verrou et doivent tourner sur une copie arrêtée
+pour un résultat stable. COMPACTING appelle une reprise explicite, signalée
+par l'audit. Les familles Thread conservent leur propre format.
+
+Le schéma exact est dans [information-write-receipt-v1.md](../schemas/information-write-receipt-v1.md).
+D8 : les empreintes restent conservées après suppression ; un contenu court
+peut être testé par devinette. Il n'y a ni chiffrement ni garantie d'effacement
+physique. Dossiers de sauvegarde, archives et snapshots du système de fichiers
+peuvent conserver des copies anciennes ; la commande ne les purge pas.
+Les reçus sont conservés sans expiration dans cette v1. Aucun ordonnanceur de
+compaction, rétention automatique ou effacement des empreintes n'est ajouté.

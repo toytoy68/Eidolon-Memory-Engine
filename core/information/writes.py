@@ -21,9 +21,9 @@ from core.operations.models import (
 )
 from core.operations.thread_status import plan_hash
 from core.persistence import exclusive_write
+from core.information.write_journal import InformationWriteJournal, JOURNAL
 
 
-JOURNAL = 'information-write-v1'
 CLASSIFICATION = ('type', 'epistemic_status', 'operational_state', 'confidence', 'importance', 'retention')
 
 
@@ -71,12 +71,30 @@ def expected_event(operation, backend):
                  relations=[EventRelation(RelationType.CAUSED_BY, operation.operation_id)])
 
 
+def validate_operation(op, backend):
+    if (not isinstance(op.plan, InformationCreatePlan)
+            or op.operation_type not in {OperationType.INFORMATION_CREATE, OperationType.INFORMATION_UPDATE}
+            or plan_hash(op) != op.execution_plan_hash):
+        raise OperationConflict('invalid Information write plan')
+    plan = op.plan
+    after = backend._deserialize(plan.after_state)
+    before = backend._deserialize(plan.before_state) if isinstance(plan, InformationUpdatePlan) else None
+    if (after.information_id != op.target_id or after.revision != op.revision
+            or (before is not None and (before.information_id != op.target_id
+                                       or before.revision != op.previous_revision))
+            or fingerprint(op.operation_type, after, op.previous_revision, plan.event_id,
+                           plan.actor, plan.timestamp) != plan.command_fingerprint):
+        raise OperationConflict('Information snapshots differ from command')
+    return before, after
+
+
 class FilesystemInformationWrites:
     def __init__(self, backend: FilesystemBackend):
         # Canonical locations ensure deletion sees every business operation.
         self.backend = backend
         self.operations = FilesystemOperationRepository(backend.history_root / 'operations' / JOURNAL)
         self.events = FilesystemEventRepository(backend.history_root / 'events' / JOURNAL)
+        self.journal = InformationWriteJournal(backend.history_root)
 
     def create(self, memory: Memory, *, operation_id: str, event_id: str,
                actor: str, timestamp: str) -> dict:
@@ -106,8 +124,9 @@ class FilesystemInformationWrites:
             raise OperationConflict(f'Information reserved by {status}')
 
     def _pending(self, target_id, *, excluding=None):
-        for path in sorted(self.operations.root.glob('*.json')):
-            op = self.operations.get(path.stem)
+        for opid in self.journal.ids():
+            entry = self.journal.read(opid)
+            op = entry.operation if entry is not None else None
             if (op and op.operation_id != excluding and op.target_id == target_id
                     and op.status is not OperationStatus.COMMITTED):
                 raise OperationConflict('recover pending Information operation first')
@@ -121,11 +140,11 @@ class FilesystemInformationWrites:
         snapshot = self.backend._serialize_checked(after)
         digest = fingerprint(kind, after, previous, event_id, actor, timestamp)
         with exclusive_write(self.backend.persistent_root), exclusive_write(self.operations.root), exclusive_write(self.events.events_root):
-            existing = self.operations.get(opid)
-            if existing is not None:
-                if (existing.operation_type is not kind or existing.plan.command_fingerprint != digest):
+            entry = self.journal.read(opid)
+            if entry is not None:
+                if entry.fingerprint != digest:
                     raise OperationConflict('operation_id reused with a different command')
-                return self._resume(existing)
+                return entry.result if entry.receipt is not None else self._resume(entry.operation)
             self._check_deletion(kind, after.information_id)
             self._pending(after.information_id)
             current = self.backend.get(after.information_id)
@@ -148,31 +167,15 @@ class FilesystemInformationWrites:
             if self.events.get(event_id) is not None:
                 raise OperationConflict('event_id already contains an event')
             # Reserve an Event even before it is persisted by another pending command.
-            for path in self.operations.root.glob('*.json'):
-                prior = self.operations.get(path.stem)
-                if prior and prior.plan.event_id == event_id:
+            for prior_id in self.journal.ids():
+                prior = self.journal.read(prior_id)
+                if prior is not None and prior.result['event_id'] == event_id:
                     raise OperationConflict('event_id reserved by another operation')
             self.operations.create(op)
             return self._resume(op)
 
-    def _validate_plan(self, op):
-        if (not isinstance(op.plan, InformationCreatePlan)
-                or op.operation_type not in {OperationType.INFORMATION_CREATE, OperationType.INFORMATION_UPDATE}
-                or plan_hash(op) != op.execution_plan_hash):
-            raise OperationConflict('invalid Information write plan')
-        plan = op.plan
-        after = self.backend._deserialize(plan.after_state)
-        before = self.backend._deserialize(plan.before_state) if isinstance(plan, InformationUpdatePlan) else None
-        if (after.information_id != op.target_id or after.revision != op.revision
-                or (before is not None and (before.information_id != op.target_id
-                                           or before.revision != op.previous_revision))
-                or fingerprint(op.operation_type, after, op.previous_revision, plan.event_id,
-                               plan.actor, plan.timestamp) != plan.command_fingerprint):
-            raise OperationConflict('Information snapshots differ from command')
-        return before, after
-
     def _resume(self, op):
-        before, after = self._validate_plan(op)
+        before, after = validate_operation(op, self.backend)
         if op.status is OperationStatus.COMMITTED:
             return operation_result(op)
         if op.status is OperationStatus.FAILED:
@@ -199,17 +202,27 @@ class FilesystemInformationWrites:
 
     def resume(self, operation_id):
         with exclusive_write(self.backend.persistent_root), exclusive_write(self.operations.root), exclusive_write(self.events.events_root):
-            op = self.operations.get(operation_id)
-            if op is None:
+            entry = self.journal.read(operation_id)
+            if entry is None:
                 raise OperationNotFound(operation_id)
-            return self._resume(op)
+            if entry.receipt is not None:
+                if entry.operation is not None:
+                    from core.information.compaction import compact_locked
+                    return compact_locked(self, operation_id)
+                return entry.result
+            return self._resume(entry.operation)
 
     def recover(self):
         results = {}
-        for path in sorted(self.operations.root.glob('*.json')):
+        for opid in self.journal.ids():
             try:
-                self.resume(path.stem)
-                results[path.stem] = {'status': 'COMMITTED'}
+                self.resume(opid)
+                results[opid] = {'status': 'COMMITTED'}
             except (OSError, ValueError, TypeError, BackendError, OperationRepositoryError, EventRepositoryError) as exc:
-                results[path.stem] = {'status': 'BLOCKED', 'error': type(exc).__name__}
+                results[opid] = {'status': 'BLOCKED', 'error': type(exc).__name__}
         return results
+
+    def compact(self, operation_id):
+        from core.information.compaction import compact_locked
+        with exclusive_write(self.backend.persistent_root), exclusive_write(self.operations.root), exclusive_write(self.events.events_root):
+            return compact_locked(self, operation_id)

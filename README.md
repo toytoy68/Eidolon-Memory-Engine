@@ -10,7 +10,9 @@ développement et n'est pas encore validée sur la VM.
 - [Échanges et reprise Codex/Claude](ECHANGES.md), avec le
   [mode de collaboration asynchrone](docs/COLLABORATION.md).
 - [Besoins clarifiés, architecture cible et priorités](docs/MEMORY-ARCHITECTURE-2026-09-30.md)
-  et [proposition d'écritures Information coordonnées](docs/DESIGN-INFORMATION-WRITES.md)
+  et [conception des écritures Information](docs/DESIGN-INFORMATION-WRITES.md)
+- [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
+  reprise et audit ; livré en local, essais VM encore requis.
   — cible documentée, implémentation progressive.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
   correspondance Information/Memory testée ; politiques de routage à implémenter.

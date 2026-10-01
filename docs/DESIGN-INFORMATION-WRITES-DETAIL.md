@@ -4,8 +4,10 @@ Annexe de [DESIGN-INFORMATION-WRITES.md](DESIGN-INFORMATION-WRITES.md), texte
 de référence. Importée de la proposition Claude `maj2`, revue puis harmonisée
 avec les décisions D7, D8 et D9 validées par toytoy le 2026-09-30.
 
-Statut : **conception validée sur ces orientations, service et compaction non
-implémentés**. Les formats précis et les signatures seront versionnés lors de
+Statut au 01/10 : **service et compaction v1 implémentés et testés en local,
+non validés sur VM**. Le contrat livré est décrit dans
+[INFORMATION-WRITES.md](INFORMATION-WRITES.md) ; les sections ci-dessous
+conservent la conception et ses limites initiales. Les formats précis et les signatures seront versionnés lors de
 l'implémentation. Aucun test nouveau ni aucune validation VM n'est apporté par
 ce document ; les estimations d'avancement restent inchangées.
 
@@ -324,15 +326,15 @@ D7, D8 et D9 sont validées. Restent à spécifier pendant T-041/T-042 : schéma
 sérialisé précis, normalisation de commande, durée de conservation des reçus,
 politique des sauvegardes et protocole futur d'effacement des empreintes. Tant
 que ce protocole n'existe pas, les reçus sont conservés même après suppression
-de la cible. Les nouveaux contrôles ne sont pas présentés comme déjà implémentés.
+de la cible. Les contrôles livrés le 01/10 sont référencés dans INFORMATION-WRITES.md.
 
 ## 11. Limites
 
 Claude n'a pas exécuté de tests dans son environnement de rédaction. La revue
 de cette annexe et son intégration sont documentaires ; la suite n'a pas été
 relancée pour cette édition. Le dernier résultat du code inchangé reste 674
-réussis et 5 exclus. Aucun essai VM ni test du futur service/compaction n'est
-revendiqué. Les noms de modules et signatures futurs sont indicatifs.
+réussis et 5 exclus. Ce bilan initial précède le lot du 01/10 : ses tests du service et de la
+compaction sont décrits dans INFORMATION-WRITES.md. Aucun essai VM revendiqué.
 
 ## 12. Précisions de la revue reçue le 2026-10-01
 

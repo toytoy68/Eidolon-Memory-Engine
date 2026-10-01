@@ -18,6 +18,9 @@ SOURCES = (
     ("events", "memory/history/events", "*.md"),
     ("thread_status_events", "memory/history/events/thread-status-v1", "*.md"),
     ("thread_create_events", "memory/history/events/thread-create-v1", "*.md"),
+    ("information_write_events", "memory/history/events/information-write-v1", "*.md"),
+    ("information_write_operations", "memory/history/operations/information-write-v1", "*.json"),
+    ("information_write_receipts", "memory/history/operation-receipts/information-write-v1", "*.json"),
     ("reviews", "memory/history/reviews", "*.md"),
     ("operations", "memory/history/operations", "*.json"),
     ("thread_status_operations", "memory/history/operations/thread-status-v1", "*.json"),
@@ -56,7 +59,9 @@ def classify(path: Path, category: str) -> str:
                 return "unknown"
             if category == "pending_delete":
                 return "pending_delete" if "information_id" in data else "unknown"
-            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE"}:
+            if category == "information_write_receipts":
+                return "core_information_receipt_v1" if data.get("format_version") == 1 else "unknown"
+            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE", "INFORMATION_CREATE", "INFORMATION_UPDATE"}:
                 return "core_operation"
             if "operation_id" in data and "result" in data:
                 return "legacy_operation"
@@ -116,6 +121,11 @@ def inventory(engine_root: Path) -> dict:
                         "path": path.relative_to(root).as_posix(), "reason": kind,
                     })
         result["categories"][category] = dict(sorted(counts.items()))
+    from core.information.write_audit import audit_information_writes
+    result["information_writes"] = audit_information_writes(root)
+    for issue in result["information_writes"]["issues"]:
+        result["needs_review"].append({"path": "memory/history/information-write-v1",
+                                     "reason": issue["reason"], "operation_id": issue["operation_id"]})
     return result
 
 

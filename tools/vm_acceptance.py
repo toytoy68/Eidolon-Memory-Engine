@@ -18,6 +18,7 @@ import subprocess
 from time import monotonic
 
 from core.information.deletion_audit import audit_deletions
+from core.information.write_audit import audit_information_writes
 from core.information.lifecycle_audit import audit_lifecycle
 from core.information.relation_audit import audit_relations
 from core.migration.inventory import inventory
@@ -189,6 +190,8 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
          ) if count])
     step("audit_deletions", lambda: audit_deletions(restored),
          lambda result: [f"{len(result['issues'])} deletion issues"] if result["issues"] else [])
+    step("audit_information_writes", lambda: audit_information_writes(restored),
+         lambda result: [f"{len(result['issues'])} Information journal issues"] if result["issues"] else [])
     if report["steps"][2]["status"] == "OK":
         verified = report["steps"][2]["details"]["source_sha256"]
         current = sha256(json.dumps(hashes(source), sort_keys=True).encode()).hexdigest()

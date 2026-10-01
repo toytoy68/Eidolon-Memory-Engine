@@ -210,3 +210,68 @@ def test_event_collision_checked_before_information_write(tmp_path):
         writer.create(replace(memory(), information_id='other'), **(command() | {'operation_id': 'other'}))
     assert writer.backend.get('other') is None
     assert writer.operations.get('other') is None
+
+
+def test_event_divergence_at_recovery_preserves_snapshot_and_event(tmp_path, monkeypatch):
+    writer = service(tmp_path)
+    real = writer.operations.create
+    def prepared(op):
+        real(op)
+        raise RuntimeError()
+    monkeypatch.setattr(writer.operations, 'create', prepared)
+    with pytest.raises(RuntimeError):
+        writer.create(memory(), **command())
+    from core.information.writes import expected_event
+    event = expected_event(writer.operations.get('create'), writer.backend)
+    event.provenance.actor = 'elsewhere'
+    writer.events.save(event)
+    before = writer.events._path(event.event_id).read_bytes()
+    assert writer.recover()['create']['status'] == 'BLOCKED'
+    assert writer.events._path(event.event_id).read_bytes() == before
+    assert writer.backend.get('info-1') is None
+
+
+@pytest.mark.parametrize('state', ['PENDING_DELETE', 'APPLYING_DELETE', 'DELETED', 'CANCELLED'])
+def test_deletion_state_matrix_for_new_business_commands(tmp_path, state):
+    import hashlib
+    writer = service(tmp_path)
+    writer.create(memory(), **command())
+    writer.backend.delete_request('info-1', 'human', 'obsolete', 1, 'delete')
+    path = writer.backend.pending_delete_root / 'info-1.json'
+    if state == 'CANCELLED':
+        writer.backend.cancel_delete('info-1', 'delete')
+    elif state in {'APPLYING_DELETE', 'DELETED'}:
+        receipt = json.loads(path.read_text())
+        receipt['status'] = state
+        receipt['content_sha256'] = hashlib.sha256(writer.backend._path('info-1').read_bytes()).hexdigest()
+        path.write_text(json.dumps(receipt))
+        if state == 'DELETED':
+            writer.backend._path('info-1').unlink()
+    with pytest.raises(OperationConflict, match=state):
+        writer.create(memory(), **command('new-create'))
+    if state == 'CANCELLED':
+        assert writer.update(memory(), previous_revision=1, **command('update'))['revision'] == 2
+    else:
+        with pytest.raises(OperationConflict, match=state):
+            writer.update(memory(), previous_revision=1, **command('update'))
+
+
+def test_command_key_order_does_not_change_fingerprint(tmp_path):
+    writer = service(tmp_path)
+    original = memory()
+    result = writer.create(original, **command())
+    reordered = replace(original, metadata=dict(reversed(list(original.metadata.items()))))
+    assert writer.create(reordered, **command()) == result
+
+
+def test_cancelled_receipt_with_missing_target_does_not_recreate(tmp_path):
+    writer = service(tmp_path)
+    writer.create(memory(), **command())
+    writer.backend.delete_request('info-1', 'human', 'obsolete', 1, 'delete')
+    writer.backend.cancel_delete('info-1', 'delete')
+    writer.backend._path('info-1').unlink()  # Simulate inconsistent external data.
+    with pytest.raises(OperationConflict, match='CANCELLED'):
+        writer.create(memory(), **command('other'))
+    with pytest.raises(OperationConflict, match='revision'):
+        writer.update(memory(), previous_revision=1, **command('update'))
+    assert writer.backend.get('info-1') is None

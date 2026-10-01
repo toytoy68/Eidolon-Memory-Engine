@@ -23,10 +23,15 @@ def main(argv=None):
         if name == 'update':
             sub.add_argument('--previous-revision', type=int, required=True)
     commands.add_parser('recover')
+    compact = commands.add_parser('compact')
+    compact.add_argument('operation_id')
     args = parser.parse_args(argv)
     check_environment(ENGINE_ROOT)
     writer = FilesystemInformationWrites(FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT))
-    if args.command == 'recover':
+    if args.command == 'compact':
+        result = writer.compact(args.operation_id)
+        status = 0
+    elif args.command == 'recover':
         result = writer.recover()
         status = int(any(value['status'] == 'BLOCKED' for value in result.values()))
     else:
