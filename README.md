@@ -13,12 +13,12 @@ développement et n'est pas encore validée sur la VM.
 - [Architecture cible complète, consolidée au 01/10](docs/ARCHITECTURE-CIBLE.md)
   et [conception des écritures Information](docs/DESIGN-INFORMATION-WRITES.md)
 - [Dossiers Markdown de projet](docs/PROJECT-DOSSIERS.md) : reconstruction explicite,
-  sources/révisions et notes humaines conservées ; actualisation automatique à venir.
+  rapprochement global reprenable, sources/révisions et notes humaines conservées.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
   correspondance Information/Memory et [planificateur contextuel v0.1](docs/MEMORY-ROUTING.md)
-  testés ; actualisation automatique des dossiers et déclencheurs encore à implémenter.
+  testés ; dossiers actualisés dans le parcours qualifié, déclencheurs encore à implémenter.
 - [Audit transversal du 01/10](docs/AUDIT-2026-10-01.md) et [TODO active](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
@@ -44,8 +44,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après le rappel contextualisé du 01/10/2026 :
-**842 tests réussis, 5 échecs d’environnement en 55,32 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après le rapprochement des dossiers du 01/10/2026 :
+**859 tests réussis, 5 échecs d’environnement en 50,08 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -76,7 +76,8 @@ n’est encore installé sur la VM.
   projet existant et son dossier est livré avec reprise et rejeu ; voir
   [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md). Les commandes Thread
   restent décrites dans [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
-- Étendre l’actualisation des dossiers hors du parcours qualifié. Le rappel
+- Automatiser le rapprochement des dossiers, maintenant disponible à la demande
+  hors du parcours qualifié. Le rappel
   applique maintenant contexte/validité/statuts et expose sources et incertitudes ;
   voir [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
 - Construire le catalogue et les déclencheurs durables ; réduire les scans de
@@ -84,7 +85,11 @@ n’est encore installé sur la VM.
 
 Le premier parcours Information → projet existant → dossier actualisé → rappel
 contextualisé est livré pour les entrées explicitement qualifiées. Les autres
-mutations ne rafraîchissent pas encore toutes les vues ; leur retard est signalé
-au rappel, qui utilise le canonique. Disponibilité autonome et échéances restent ouvertes. Les anciens services legacy constituent une pile distincte.
+mutations peuvent laisser du retard, signalé au rappel qui utilise le canonique.
+`python -B -m core.dossiers.cli --root RACINE reconcile` inspecte toutes les vues
+sans écriture ; ajouter `--apply` répare celles qui manquent ou sont périmées,
+y compris après suppression, en conservant les notes humaines. Une interruption
+se reprend par relance. Disponibilité autonome et échéances restent ouvertes.
+Les anciens services legacy constituent une pile distincte.
 La [TODO active](TODO-LIST.md) précise les preuves, priorités et limites actuelles ;
 les audits datés conservent leurs constats historiques.

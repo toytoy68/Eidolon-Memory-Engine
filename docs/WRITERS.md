@@ -13,7 +13,7 @@ leurs racines de données et leurs formats à cette carte.
 | `core/threads/ThreadStorage` appelé directement | `memory/persistent/threads/*.md`, `history/operations/thread-delete-v1/*.json` pour `delete` | Création/mise à jour sans Event ni Operation ; suppression journalisée avec consultation des trois familles canoniques via `for_history` (T-039 corrigé en local). Journaux personnalisés : injecter leur coordinateur complet. |
 | `core.operations.cli` : `create-linked`, `change-status`, `delete-thread` | Thread, `history/operations/thread-{create,status,delete}-v1/`, `history/events/thread-{create,status}-v1/` | Coordinateurs sous verrous ; `recover-all` reprend création, statut, suppression Thread puis Information ; FAILED Thread omis, T-048 requis. |
 | `core.information.cli` / `FilesystemInformationWrites` | Information, operations/events information-write-v1, operation-receipts information-write-v1 | Persistent → Operation → Event ; create/update/recover/compact explicites |
-| `core.dossiers.cli rebuild` / `ProjectDossiers` | memory/dossiers ou sortie dédiée, notes humaines incluses | Persistent → Thread → Dossier ; projection explicite, sans invalidation automatique |
+| `core.dossiers.cli rebuild/reconcile --apply` / `ProjectDossiers` / `DossierReconciler` | memory/dossiers ou sortie dédiée, notes humaines incluses | Persistent → Thread → Dossier ; réparation explicite reprenable, sans ordonnanceur |
 | `core.migration.converter` | Destination explicite : Information core, `archive/`, `migration-report.json` | Ne modifie pas la source ; copier et vérifier hors de la racine active. |
 
 Les CLI historiques classifier, router, executor et semantic-validator sont

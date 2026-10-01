@@ -5,6 +5,7 @@ from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
 from core.dossiers.projects import DossierConflict, ProjectDossiers
+from core.dossiers.reconciliation import DossierReconciler, READ_ERRORS
 from core.preflight import check_environment
 from core.threads.storage import ThreadStorage
 
@@ -19,6 +20,8 @@ def main(argv=None):
     resolve = commands.add_parser('resolve')
     resolve.add_argument('information_id')
     resolve.add_argument('--selected-thread')
+    reconcile = commands.add_parser('reconcile', help='Inspect all project views; --apply repairs them')
+    reconcile.add_argument('--apply', action='store_true')
     args = parser.parse_args(argv)
     persistent, history = args.root / 'memory/persistent', args.root / 'memory/history'
     if args.command == 'rebuild':
@@ -36,13 +39,18 @@ def main(argv=None):
         dossiers = ProjectDossiers(backend, storage, args.output or args.root / 'memory/dossiers')
         if args.command == 'resolve':
             result = dossiers.resolve(args.information_id, selected_thread=args.selected_thread)
+        elif args.command == 'reconcile':
+            reconciler = DossierReconciler(dossiers)
+            if args.apply:
+                check_environment(args.root)
+            result = reconciler.apply() if args.apply else reconciler.inspect()
         else:
             result = getattr(dossiers, args.command)(args.thread_id)
-    except DossierConflict as exc:
+    except READ_ERRORS as exc:
         print(json.dumps({'status': 'BLOCKED', 'reason': str(exc)}, ensure_ascii=False))
         return 1
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return int(result['status'] in {'STALE', 'REVIEW', 'UNASSIGNED', 'MISSING'})
+    return int(result['status'] in {'STALE', 'REVIEW', 'UNASSIGNED', 'MISSING', 'DRIFT', 'BLOCKED'})
 
 
 if __name__ == '__main__':

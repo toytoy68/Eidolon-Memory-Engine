@@ -86,9 +86,10 @@ par exception entre étapes, deux interruptions dans les enfants, quatre arrêts
 réels de processus à code 74 et deux scénarios concurrents sans Manager.
 
 Actualisation automatique limitée à ce parcours. Les autres commandes canoniques
-peuvent encore rendre une vue STALE ; leur rapprochement global reste T-044/T-045.
+peuvent encore rendre une vue STALE ; `core.dossiers.cli reconcile --apply`
+répare maintenant ce retard à la demande (voir PROJECT-DOSSIERS.md).
 Aucun ordonnanceur, aucun catalogue, aucun modèle/extracteur et aucun client
-externe connecté. Le rappel contextualisé est le prochain lot T-047. Aucun
+externe connecté. Le rappel contextualisé T-047 est livré (CONTEXTUAL-RECALL.md). Aucun
 résultat VM, coupure de stockage ou corpus réel n’est acquis.
 
 Suite complète locale : 827 réussis, cinq échecs sockets Manager avant scénario,

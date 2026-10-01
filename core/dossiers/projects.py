@@ -4,6 +4,7 @@ Generated text is reconstructible. Text outside the generated region is human
 notes, preserved verbatim and not automatically ingested as canonical memory.
 """
 from hashlib import sha256
+from contextlib import ExitStack
 import html
 import json
 from pathlib import Path
@@ -56,6 +57,12 @@ class ProjectDossiers:
         if has_symlink_component(path):
             raise DossierConflict('dossier path contains a symlink')
         return path
+
+    @staticmethod
+    def _read_text(path):
+        # Human notes may use CRLF even when generated text uses LF.
+        with path.open(encoding='utf-8', newline='') as handle:
+            return handle.read()
 
     def _source(self, thread_id):
         from core.routing.execution_journal import require_available
@@ -157,19 +164,22 @@ class ProjectDossiers:
         if not path.exists():
             return {'status': 'MISSING', 'path': str(path)}
         source = self._source(thread_id)
-        _, generated, _ = self._parts(path.read_text(encoding='utf-8'))
+        _, generated, _ = self._parts(self._read_text(path))
         return {'status': 'CURRENT' if generated == self._generated(thread_id, source) else 'STALE',
                 'path': str(path), 'source_digest': source[3]}
 
     def rebuild(self, thread_id):
         path = self._path(thread_id)
-        with exclusive_write(self.backend.persistent_root), exclusive_write(self.storage.threads_root):
+        with ExitStack() as locks:
+            locks.enter_context(exclusive_write(self.backend.persistent_root))
+            if self.storage.threads_root.is_dir():
+                locks.enter_context(exclusive_write(self.storage.threads_root))
             source = self._source(thread_id)
             if source[0] is None and not path.exists():
                 raise DossierConflict('cannot create dossier without a source Thread')
             self.root.mkdir(parents=True, exist_ok=True)
             with exclusive_write(self.root):
-                previous = path.read_text(encoding='utf-8') if path.exists() else None
+                previous = self._read_text(path) if path.exists() else None
                 before, _, after = self._parts(previous) if previous is not None else (HUMAN, '', '\n')
                 updated = before + self._generated(thread_id, source) + after
                 if updated == previous:

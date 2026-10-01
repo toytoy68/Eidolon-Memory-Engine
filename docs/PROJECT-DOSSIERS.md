@@ -13,6 +13,8 @@ Aucun résumé interprétatif par LLM ni rapprochement par mots-clés n'est util
 python -B -m core.dossiers.cli --root /chemin/reel resolve info-1
 python -B -m core.dossiers.cli --root /chemin/reel rebuild thread-cooling
 python -B -m core.dossiers.cli --root /chemin/reel status thread-cooling
+python -B -m core.dossiers.cli --root /chemin/reel reconcile
+python -B -m core.dossiers.cli --root /chemin/reel reconcile --apply
 ```
 
 La création d'un dossier est automatique **à l'appel de rebuild pour un Thread
@@ -53,13 +55,66 @@ n'est pas une fusion concurrente d'éditeurs arbitraires.
 Quand le Thread source a disparu, un rebuild du dossier existant retire son
 ancien bloc calculé et affiche l'absence de source, tout en conservant les notes.
 Une Information liée absente est signalée sans recopier son ancien contenu.
-**Aucune invalidation automatique ni purge globale n'est encore raccordée aux
-écritures/suppressions.** Un dossier non reconstruit peut donc garder une ancienne
-copie : ne pas le consommer sans contrôle de fraîcheur et ne pas compter la
-suppression canonique comme effacement des dossiers/notes/sauvegardes.
-Le raccordement automatique, le traitement des vues après suppression et les
-vues de lieu/thème restent la partie ouverte de T-044 ; l'ordonnancement relève
-ensuite de T-046.
+Le parcours qualifié T-043 actualise son dossier. Pour les autres commandes,
+le rapprochement global décrit ci-dessous répare le retard à la demande.
+Un dossier non reconstruit peut garder une ancienne copie : ne pas le consommer
+sans contrôle de fraîcheur et ne pas compter la suppression canonique comme
+effacement des dossiers/notes/sauvegardes. Aucun ordonnanceur n'est installé.
+
+## Rapprochement global — T-044, tranche du 01/10 au soir
+
+`DossierReconciler(dossiers).inspect()` et le CLI `reconcile` ne créent ni
+répertoire, ni verrou, ni fichier. Ils contrôlent la readiness et examinent
+l'union des Threads présents et des dossiers `.md` présents dans la sortie
+configurée. Cela retrouve aussi les vues dont le Thread a été supprimé.
+Le rapport contient les IDs/révisions et SHA-256 de chaque dépendance, les
+absences explicites et le digest de source. Ce manifeste est recalculé ; aucune
+copie de contenu ni cache persistant ne devient une autorité supplémentaire.
+Une modification directe sans augmentation de révision est donc détectée.
+
+| État d'une vue | Sens |
+| --- | --- |
+| MISSING | Thread présent, dossier à créer |
+| STALE | Bloc généré différent de celui attendu depuis les sources courantes |
+| ORPHANED | Thread absent, ancien bloc généré à remplacer par l'avis d'absence |
+| CURRENT | Bloc généré conforme, y compris l'avis d'un Thread déjà retiré |
+| UNMANAGED | Markdown sans marqueur et sans Thread homonyme ; ignoré |
+| BLOCKED | Source illisible, marqueurs endommagés ou collision avec un fichier humain |
+
+Le bilan vaut CLEAN, DRIFT ou BLOCKED. Une readiness bloquante interrompt
+l'examen avant toute réparation. Un fichier humain homonyme d'un projet n'est
+jamais adopté implicitement. Une vue gérée utilise les deux marqueurs réservés ;
+un seul marqueur n'est pas interprété comme une simple note. Les autres sorties
+configurées, sous-répertoires et copies externes ne sont pas parcourus.
+
+`apply()` / `reconcile --apply` reprend un scan complet sous verrous
+Persistent → Thread (si présent) → Dossiers. Les blocages découverts sont
+rapportés avant toute publication de vue. Chaque dossier à réparer est écrit
+atomiquement ; les autres restent inchangés. Les zones humaines avant/après le
+bloc conservent leurs caractères et leurs fins de ligne, y compris CRLF.
+L'application **ne réutilise pas un ancien rapport** : une source modifiée après
+l'inspection est relue. Après publication, un nouveau contrôle confirme CLEAN ;
+le résultat vaut RECONCILED si des vues ont changé. Le CLI retourne 1 pour DRIFT
+ou BLOCKED, 0 pour CLEAN/RECONCILED.
+
+Une interruption peut laisser une partie des dossiers actualisés. Relancer la
+même commande suffit : les vues restantes sont retrouvées par comparaison des
+fichiers, sans rejouer les commandes canoniques, leurs Events ni leurs reçus.
+Le lot entier n'est pas une transaction atomique. Une erreur de publication
+ne transforme pas les réparations précédentes en échec canonique.
+
+Après UNLINK/suppression d'Information ou suppression de Thread, les anciens
+extraits **de la zone générée** disparaissent lors du rapprochement réussi.
+Les notes humaines ne sont ni effacées ni automatiquement ingérées. CLEAN ne
+certifie donc pas une purge globale de l'information : notes, autres sorties,
+sauvegardes et copies échappent à cette portée. La clôture globale de purge,
+l'édition humaine coopérative et les vues lieu/thème restent ouvertes.
+
+Les écrivains legacy et les éditeurs externes doivent rester arrêtés. Le scan
+sans écriture est ponctuel ; seule l'application tient les verrous coopératifs.
+Les scans complets, répétés par les projections, peuvent être coûteux et garder
+les verrous longtemps : optimisation T-049 avant ingestion intensive. Aucun
+service automatique, minuterie ou ordonnanceur T-046 ajouté.
 
 ## Preuves
 
@@ -69,3 +124,16 @@ Thread, marqueurs endommagés, opération incomplète, contenu contenant un marq
 et CLI en lecture seule (les scénarios sont regroupés dans certains tests).
 Supprimer la préservation des notes fait échouer le test de mise à jour.
 Aucune validation VM ni édition concurrente par outil externe.
+
+17 cas supplémentaires dans `tests/test_dossier_reconciliation.py` : manifeste
+sans écriture, deux projets dépendants, correction et CRLF conservés, liens,
+suppression, édition directe sans révision, frontière endommagée, fichier humain,
+reprise canonique préalable, deux interruptions par exception, arrêt réel de
+processus, CLI, lien symbolique, objectif/action, journal inconnu et deux
+réparateurs concurrents sans Manager. Groupe ciblé : 69 réussis.
+Retirer temporairement le rafraîchissement, la préservation des notes ou la
+barrière readiness provoque respectivement 1 + 1 + 1 échec d'assertion ; code
+restauré. Aucun résultat VM, corpus réel ou coupure électrique.
+Suite complète du lot : **859 réussis, 5 échecs de sockets Manager**, 50,08 s,
+Python 3.12.14/pytest 9.1.1, aucun désélectionné. Les cinq scénarios bloqués
+avant leur logique métier restent à valider sur la VM.

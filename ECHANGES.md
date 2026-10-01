@@ -21,20 +21,36 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
   Lire docs/THREAD-UPDATES.md. Les appels bas niveau restent distincts.
 - T-041/T-042 livrés en local ; T-043 exécute désormais STORE/UPDATE vers un
   projet existant avec intention durable, lien et dossier actualisé. Les autres
-  branches restent ouvertes. T-044 : actualisation hors de ce parcours,
-  catalogue T-045 et disponibilité T-046 à terminer. T-047 livre un premier rappel
+  branches restent ouvertes. T-044 répare désormais les dossiers hors parcours
+  par rapprochement explicite reprenable. Catalogue T-045 et disponibilité T-046
+  restent à terminer. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **842 réussis, 5 échecs de sockets Manager avant scénario,
-  55,32 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 36 nouveaux cas
+- Dernière suite : **859 réussis, 5 échecs de sockets Manager avant scénario,
+  50,08 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 53 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
   reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
-Prochaine livraison : rapprochement des dérivés hors parcours et catalogue ;
+Prochaine livraison : catalogue reconstructible ;
 extension des plans à poursuivre. Optimisation des
 journaux T-049 avant ingestion intensive ; recette VM distincte.
+
+### Lot T-044 — rapprochement des dossiers, base `7517cc6`
+
+`reconcile` examine sans écrire les Threads et dossiers présents ; `--apply`
+recalcule les écarts sous verrous et les répare. Manifeste IDs/révisions/hashes,
+détection d'une édition directe sans révision, sources disparues et notes humaines
+préservées (CRLF compris). Un blocage readiness ou une frontière endommagée
+empêche les publications. Une panne pendant le lot se reprend par relance, sans
+rejouer d'écriture canonique. Aucun ordonnanceur ajouté ni clôture globale de purge.
+
+17 nouveaux cas ; groupe ciblé 69 réussis, suite complète ci-dessus. Deux
+interruptions par exception, un arrêt réel de processus (code 74), deux
+réparateurs concurrents sans Manager. Retrait du rafraîchissement, des notes ou
+de la barrière readiness : 1 + 1 + 1 assertions rouges ; code restauré.
+Contrat, commandes et limites : [PROJECT-DOSSIERS.md](docs/PROJECT-DOSSIERS.md).
 
 ## Sujets à relire lors d'une prochaine session disponible
 

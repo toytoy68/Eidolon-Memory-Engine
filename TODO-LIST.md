@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après les premières tranches T-043/T-047 : **842 réussis,
-5 échecs d’environnement, 55,32 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après le rapprochement T-044 : **859 réussis,
+5 échecs d’environnement, 50,08 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 36 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 53 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -153,14 +153,20 @@ actions/décisions, mots-clés, notes préservées et état de fraîcheur ; 8 te
 Fait en plus via T-043 : actualisation après STORE/UPDATE et rattachement du
 nouveau parcours, avec reprise après l’écriture canonique.
 
-Restant : actualisation après les autres mutations/liens/suppressions, suivi des dépendances,
-reprise entre COMMITTED et projection pour les autres parcours. Le rappel
-contextualisé écarte le texte des vues et signale leur fraîcheur. Sauvegarder les notes humaines non reconstructibles,
-définir édition concurrente/ingestion explicite. Lieux/thèmes après projets.
-Tests : deuxième apport, correction propagée, source retirée, projection
-interrompue puis reprise sans rejouer le canonique, notes conservées.
-Retenir le rapprochement par manifeste comme réparation, avec IDs/révisions
-et hashes tant que les écritures directes existent. Définir la clôture de purge
+Nouvelle tranche livrée : `reconcile` sans écriture et `reconcile --apply`,
+rapprochement de tous les Threads/vues présents avec manifeste de dépendances
+IDs/révisions/SHA-256. Répare créations, corrections, liens/actions et suppressions
+hors routage ; les vues orphelines sont retrouvées depuis les fichiers dérivés.
+Reprise par relance, sans réexécuter de commande canonique ; notes et CRLF
+conservés. Readiness et frontières endommagées bloquent avant publication.
+17 nouveaux cas dont arrêt de processus et deux réparateurs concurrents ;
+groupe ciblé 69 réussis. Retraits de garanties : 1 + 1 + 1 assertions rouges,
+code restauré. Contrat : [PROJECT-DOSSIERS.md](docs/PROJECT-DOSSIERS.md).
+
+Restant : déclenchement automatique du rapprochement, coût des scans/verrous
+T-049, édition concurrente/ingestion explicite des notes non reconstructibles.
+Le rappel écarte le texte des vues et signale leur fraîcheur. Lieux/thèmes après
+projets. Le manifeste est recalculé, pas un index incrémental. Définir la clôture de purge
 sur les vues gérées par le moteur, distincte du DELETED canonique actuel et des
 copies hors de son contrôle. Aucun effacement automatique de notes humaines.
 
@@ -277,8 +283,8 @@ heuristique et exécution VM toujours manquante.
 ## Prochaines livraisons démontrables
 
 Le premier parcours qualifié vers un projet existant et son rappel est désormais
-livré en local. Prochaine priorité : rapprochement des dossiers après les
-mutations effectuées hors parcours, catalogue reconstructible et optimisation
+livré en local ; le rapprochement global des dossiers hors parcours est maintenant
+disponible à la demande. Prochaine priorité : catalogue reconstructible et optimisation
 des scans T-049 avant ingestion intensive. Extension des plans et disponibilité
 T-046 ensuite. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.
