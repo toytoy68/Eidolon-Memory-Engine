@@ -333,3 +333,22 @@ de cette annexe et son intégration sont documentaires ; la suite n'a pas été
 relancée pour cette édition. Le dernier résultat du code inchangé reste 674
 réussis et 5 exclus. Aucun essai VM ni test du futur service/compaction n'est
 revendiqué. Les noms de modules et signatures futurs sont indicatifs.
+
+## 12. Précisions de la revue reçue le 2026-10-01
+
+- La commande v1 distingue création/modification, identité, révision attendue,
+  Memory complet (extensions comprises), event_id, acteur et horodatage explicite.
+  operation_id sert de clé de recherche, hors empreinte. La canonicalisation
+  JSON conserve les valeurs, trie les clés, conserve l'ordre des listes, utilise
+  UTF-8 sans espaces de présentation et refuse les nombres non JSON. Aucun
+  horodatage n'est régénéré au rejeu. La forme précise sera documentée avec le code.
+- L'opération/reçu terminal est consulté et comparé à la commande avant les
+  contrôles de nouvelle écriture (cible actuelle, réservation de suppression).
+  Le rejeu rend un résultat minimal, sans restaurer un snapshot historique.
+- Annuler PENDING_DELETE et modifier sont deux commandes distinctes, non une
+  transaction. Une interruption entre elles conserve CANCELLED et l'Information
+  inchangée ; une nouvelle suppression peut s'intercaler et bloquer la modification.
+- Recovery, inventaire et audit doivent consulter journal et reçu ensemble. Une
+  coexistence divergente bloque ; le reçu ne gagne jamais automatiquement.
+- Une trace des acquisitions complète les tests d'interruption. Elle ne remplace
+  ni les tests concurrents ni les essais de durabilité sur VM.
