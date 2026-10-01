@@ -11,6 +11,8 @@ développement et n'est pas encore validée sur la VM.
   [mode de collaboration asynchrone](docs/COLLABORATION.md).
 - [Besoins clarifiés, architecture cible et priorités](docs/MEMORY-ARCHITECTURE-2026-09-30.md)
   et [conception des écritures Information](docs/DESIGN-INFORMATION-WRITES.md)
+- [Dossiers Markdown de projet](docs/PROJECT-DOSSIERS.md) : reconstruction explicite,
+  sources/révisions et notes humaines conservées ; actualisation automatique à venir.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
   — cible documentée, implémentation progressive.
