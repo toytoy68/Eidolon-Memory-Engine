@@ -11,6 +11,7 @@ from tempfile import NamedTemporaryFile
 
 from core.backend.filesystem import FilesystemBackend
 from core.migration.preflight import inspect_legacy_information
+from core.migration.inventory import classify
 from core.migration.simulation import _candidate_issues, preview_legacy_information
 from core.persistence import has_symlink_component
 
@@ -35,6 +36,47 @@ def _atomic_bytes(path: Path, data: bytes) -> None:
             temporary.unlink(missing_ok=True)
 
 
+def operational_import_blockers(source: Path) -> list[dict]:
+    """Inspect a stopped source before creating or touching the destination.
+
+    Only legacy records directly under operations are archival input. Versioned
+    journals and receipts carry live invariants, including terminal reservations.
+    Do not decode their payloads or descend through symbolic links.
+    """
+    blockers = []
+
+    def block(path):
+        blockers.append({"file": path.relative_to(source).as_posix(),
+                         "reason": "operational_state_requires_import_policy",
+                         "action_suggested": "Use a dedicated operational import; do not activate an archival copy"})
+
+    def visit(path, *, legacy_root=False):
+        if path.is_symlink():
+            block(path)
+        elif not path.exists():
+            return
+        elif not path.is_dir():
+            block(path)
+        else:
+            for child in sorted(path.iterdir()):
+                if child.is_symlink():
+                    block(child)
+                elif child.is_dir():
+                    visit(child)
+                elif child.name == '.write.lock' and child.is_file():
+                    continue
+                elif (legacy_root and child.suffix == '.json'
+                      and classify(child, 'operations') == 'legacy_operation'):
+                    continue
+                else:
+                    block(child)
+
+    history = source / 'memory/history'
+    for name in ('pending-delete', 'operation-receipts', 'operations'):
+        visit(history / name, legacy_root=name == 'operations')
+    return sorted(blockers, key=lambda item: item['file'])
+
+
 def convert(source: Path, destination: Path) -> dict:
     source, destination = Path(source).absolute(), Path(destination).absolute()
     if (not source.is_dir() or has_symlink_component(source)
@@ -47,6 +89,15 @@ def convert(source: Path, destination: Path) -> dict:
         raise ValueError("source memory tree contains a symlinked directory")
     if not persistent.is_dir():
         raise ValueError("source has no memory/persistent directory")
+    blockers = operational_import_blockers(source)
+    if blockers:
+        # Return the report to the caller/CLI. Even migration-report.json would
+        # violate the guarantee that an existing destination stays untouched.
+        return {"converted": 0, "archived_events": 0, "archived_reviews": 0,
+                "archived_other": 0, "rejected": blockers,
+                "source": str(source), "destination": str(destination),
+                "policy": "separate_destination_no_source_writes",
+                "blocked_before_writes": True}
     destination.mkdir(parents=True, exist_ok=True)
     target = FilesystemBackend(destination / "memory/persistent", destination / "memory/history")
     rejected = []

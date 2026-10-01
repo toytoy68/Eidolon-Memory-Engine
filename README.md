@@ -69,9 +69,9 @@ n’est encore installé sur la VM.
 
 ## Prochaines étapes
 
-- Sécuriser la migration des sources mixtes : les reçus archivés ne réactivent
-  pas leurs réservations d’identité. Ne pas activer une destination sur le seul
-  critère d’absence de rejets.
+- Définir l’import opérationnel des sources mixtes. Le convertisseur refuse
+  désormais leurs reçus/journaux avant toute écriture dans la destination ;
+  il ne les archive plus silencieusement en perdant leurs contraintes actives.
 - Compléter les commandes de liens/actions Thread et exécuter les plans par
   les services coordonnés.
 - Raccorder l’actualisation des dossiers et le rappel au contexte et à la validité.

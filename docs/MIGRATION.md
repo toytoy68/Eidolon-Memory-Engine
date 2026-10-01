@@ -204,3 +204,22 @@ des erreurs de lecture.
 
 Ne jamais effectuer une conversion automatique au démarrage. Ne pas lancer les
 anciens CLI en écriture sur des données déjà converties au format 0.2.
+
+## Refus préalable des sources mixtes — 01/10, lot du soir
+
+`convert` inspecte pending-delete, operation-receipts et les sous-familles
+operations avant de créer la destination. Tout enregistrement opérationnel,
+même terminal, inconnu ou corrompu, exige une politique d’import dédiée.
+Un lien dans ces chemins est refusé sans être suivi. Les répertoires vides et
+les fichiers réguliers .write.lock ne constituent pas un état opérationnel.
+Les anciens JSON reconnus legacy directement sous operations restent archivables.
+
+En cas de blocage, `converted=0`, `blocked_before_writes=true` et les chemins
+figurent dans `rejected`. Le CLI affiche le rapport et retourne 1 ; aucun fichier
+rapport n’est écrit dans la destination, même si celle-ci existe déjà. Cette
+garantie suppose une source arrêtée, comme toute la procédure de migration.
+Elle ne rend pas atomiques les conversions legacy ordinaires avec rejets de
+contenu. Aucun reçu n’est importé ni aucune opération exécutée.
+
+Validation locale : 12 nouvelles régressions échouent avant le correctif,
+47 tests de migration passent après. Import opérationnel et VM restent ouverts.

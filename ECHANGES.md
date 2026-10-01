@@ -530,3 +530,11 @@ corrigés confirmés ; A-03 migration mixte toujours reproduit. README actualis�
 Suite demandée par toytoy : correction préalable de migration puis commandes
 Thread manquantes, avec vérification et mise à jour documentaire par lot.
 Aucun nouveau résultat Claude ni VM supposé.
+
+### T-021 — Refus préalable des sources mixtes livré
+
+Le lot du soir ferme A-03 sans importer les reçus : refus avant toute écriture
+de destination, rapport explicite, anciens journaux legacy reconnus conservés.
+12 nouveaux tests échouent sur la base puis passent ; groupe migration : 47
+réussis. Contrat dans docs/MIGRATION.md, suite dans la TODO. Aucun test VM et
+aucune politique de réservation nouvelle. Estimations inchangées.

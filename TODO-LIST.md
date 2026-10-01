@@ -82,21 +82,22 @@ Fait : simulation, conversion séparée idempotente, rejets, archives exactes
 Events/Reviews/Working/opérations, vérification indépendante ; 500 Informations
 legacy couvertes par les tests.
 
-Restant prioritaire A-03 : une source mixte avec reçu DELETED est archivée sans
-réactiver la réservation, autorisant la recréation de l'identité en destination.
-Définir un rejet explicite ou un import dédié conservant ces invariants.
-Ne pas copier des journaux sous un chemin actif pour les reprendre implicitement.
+A-03 corrigé par refus préalable : avant toute création ou écriture dans la
+destination, le convertisseur rejette les reçus de suppression (tous états),
+les reçus compacts et les journaux opérationnels, y compris familles inconnues.
+Le rapport est retourné à l’appelant/CLI (code non nul), sans même écrire
+migration-report.json. Une destination préexistante reste inchangée. Les seules
+opérations archivables par ce chemin sont les anciens enregistrements legacy
+reconnus directement dans history/operations ; les liens ne sont pas suivis.
 
-Tester PENDING_DELETE/APPLYING_DELETE/DELETED/CANCELLED, révisions historiques,
-liens et Threads/actions. Distinguer actif, archivé et rejeté dans le rapport.
-Les suppressions du générateur sont dans core/, pas legacy/. Conserver D1/D4/D9 :
-import distinct, aucun CREATED historique fabriqué, réservation d'identité.
-Revue des pertes de sens sur copie réelle. Claude E-006 confirmé.
-Le patch proposé rejette les reçus mais seulement après conversion des autres
-Informations : destination partielle, non activable. Décider refus avant toute
-conversion versus résultat partiel explicitement bloquant. Un import étroit
-DELETED est une proposition, à compléter par les réservations CANCELLED et les
-reçus de rejeu ; aucune copie de journal actif exécutée automatiquement.
+Preuves : 12 nouveaux cas rouges sur la base puis verts ; **47 tests de migration
+réussis** avec conversion, simulation et vérification. La source demeure intacte.
+Les versions de reçus injectées sont des données synthétiques ; aucune VM.
+
+Restant : import opérationnel dédié conservant réservations DELETED/CANCELLED,
+reçus de rejeu, Threads/actions et révisions ; aucune activation implicite des
+journaux archivés. Le refus préalable ferme le défaut, mais ne livre pas cet
+import. Migration réelle et revue des pertes de sens toujours non testées.
 
 ### T-031 / T-041 — Services métier canoniques — PARTIEL / NON TESTÉ VM
 
