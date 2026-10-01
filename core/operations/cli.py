@@ -2,6 +2,8 @@
 import argparse
 import hashlib
 import json
+from pathlib import Path
+from core.storage_format import decode_json_value
 
 from core.config import ENGINE_ROOT, PERSISTENT_ROOT, HISTORY_ROOT, OPERATIONS_ROOT, EVENTS_ROOT
 from core.preflight import check_environment
@@ -35,6 +37,14 @@ def main():
     change.add_argument("--previous-revision", type=int, required=True)
     change.add_argument("--operation-id", required=True)
     change.add_argument("--event-id")
+    update = commands.add_parser("update-thread")
+    update.add_argument("thread_id")
+    update.add_argument("--command-file", type=Path, required=True)
+    update.add_argument("--previous-revision", type=int, required=True)
+    update.add_argument("--operation-id", required=True)
+    update.add_argument("--event-id", required=True)
+    update.add_argument("--actor", required=True)
+    update.add_argument("--timestamp", required=True)
     commands.add_parser("recover")
     commands.add_parser("recover-creations")
     commands.add_parser("recover-deletions")
@@ -54,6 +64,13 @@ def main():
         result = recover_all(ENGINE_ROOT)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(not result["readiness"]["ready"])
+    if args.command == "update-thread":
+        command = decode_json_value(args.command_file.read_text(encoding='utf-8'))
+        result = ThreadService.for_backend(FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT)).update_thread(
+            args.thread_id, command, previous_revision=args.previous_revision,
+            operation_id=args.operation_id, event_id=args.event_id, actor=args.actor, timestamp=args.timestamp)
+        print(json.dumps(thread_to_dict(result), ensure_ascii=False, indent=2))
+        return 0
     storage = ThreadStorage(PERSISTENT_ROOT)
     deletion = None
     if args.command in {"delete-thread", "recover-deletions"}:

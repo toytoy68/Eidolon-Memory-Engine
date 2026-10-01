@@ -24,6 +24,7 @@ from core.operations.models import (
     OperationType,
     ThreadCreatePlan,
     ThreadDeletePlan,
+    ThreadUpdatePlan,
     ThreadStatusChangePlan,
     validate_status_transition,
 )
@@ -101,6 +102,8 @@ class FilesystemOperationRepository(OperationRepository):
                     plan_allowed = {"event_id", "after_state", "actor", "timestamp", "command_fingerprint"}
                     if data["operation_type"] == OperationType.INFORMATION_UPDATE.value:
                         plan_allowed.add("before_state")
+                elif data.get("operation_type") == OperationType.THREAD_UPDATE.value:
+                    plan_allowed = {"command", "event_id", "actor", "timestamp", "before_state", "after_state"}
                 elif data.get("operation_type") == OperationType.THREAD_CREATE.value:
                     plan_allowed = {"information_id", "event_id", "after_state"}
                 elif data.get("operation_type") == OperationType.THREAD_DELETE.value:
@@ -123,6 +126,8 @@ class FilesystemOperationRepository(OperationRepository):
                     if data["operation_type"] == OperationType.INFORMATION_CREATE.value
                     else InformationUpdatePlan(**data["plan"])
                     if data["operation_type"] == OperationType.INFORMATION_UPDATE.value
+                    else ThreadUpdatePlan(**data["plan"])
+                    if data["operation_type"] == OperationType.THREAD_UPDATE.value
                     else ThreadCreatePlan(
                         information_id=data["plan"]["information_id"],
                         event_id=data["plan"]["event_id"],
@@ -191,6 +196,10 @@ class FilesystemOperationRepository(OperationRepository):
                            (plan.after_state, plan.actor, plan.timestamp, plan.command_fingerprint))
                     or (isinstance(plan, InformationUpdatePlan) and not isinstance(plan.before_state, str))):
                 raise InvalidOperationRecord("invalid Information write plan")
+        elif isinstance(plan, ThreadUpdatePlan):
+            if (not valid_id(plan.event_id) or any(not isinstance(value, str) for value in
+                    (plan.command, plan.actor, plan.timestamp, plan.before_state, plan.after_state))):
+                raise InvalidOperationRecord("invalid Thread update plan")
         elif isinstance(plan, ThreadCreatePlan):
             if (not valid_id(plan.information_id) or not valid_id(plan.event_id)
                     or not isinstance(plan.after_state, str)):
@@ -218,7 +227,7 @@ class FilesystemOperationRepository(OperationRepository):
             "status": operation.status.value,
             "plan": (
                 asdict(operation.plan)
-                if isinstance(operation.plan, InformationCreatePlan)
+                if isinstance(operation.plan, (InformationCreatePlan, ThreadUpdatePlan))
                 else {
                     "information_id": operation.plan.information_id,
                     "event_id": operation.plan.event_id,

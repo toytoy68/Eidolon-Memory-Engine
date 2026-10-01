@@ -280,3 +280,13 @@ ci-dessous et ne constituent pas une validation VM.
   fréquence et critères de charge à décider ; horaire exact à consolider avec
   le souhait 3–4 h. Aucun ordonnanceur n'est livré et aucune revue nocturne
   ne transforme seule une contradiction en réfutation.
+
+## Avancée du lot du 01/10 au soir
+
+Les commandes de mutation des liens/actions et titre/objectif/contexte Thread
+sont désormais livrées avec journal THREAD_UPDATE, Event UPDATED, révision et
+reprise. ThreadService.for_backend assemble les coordinateurs canoniques.
+La migration mixte est refusée avant toute écriture de destination ; l’import
+opérationnel reste à définir. Ces livraisons lèvent deux prérequis de la chaîne
+métier ; la façade d’exécution des plans et l’actualisation automatique des
+dossiers restent ouvertes. Voir la TODO et THREAD-UPDATES.md.

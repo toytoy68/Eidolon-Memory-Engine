@@ -23,6 +23,7 @@ class OperationType(str, Enum):
     THREAD_STATUS_CHANGE = "THREAD_STATUS_CHANGE"
     THREAD_CREATE = "THREAD_CREATE"
     THREAD_DELETE = "THREAD_DELETE"
+    THREAD_UPDATE = "THREAD_UPDATE"
     INFORMATION_CREATE = "INFORMATION_CREATE"
     INFORMATION_UPDATE = "INFORMATION_UPDATE"
 
@@ -54,6 +55,18 @@ class ThreadDeletePlan:
 
 
 @dataclass(frozen=True)
+class ThreadUpdatePlan:
+    """Explicit command and frozen snapshots for project mutations."""
+
+    command: str
+    event_id: str
+    actor: str
+    timestamp: str
+    before_state: str
+    after_state: str
+
+
+@dataclass(frozen=True)
 class InformationCreatePlan:
     """Complete frozen Memory and deterministic Event/command metadata."""
 
@@ -80,7 +93,7 @@ class OperationRecord:
     revision: int
     execution_plan_hash: str
     status: OperationStatus = OperationStatus.PREPARED
-    plan: (ThreadStatusChangePlan | ThreadCreatePlan | ThreadDeletePlan
+    plan: (ThreadStatusChangePlan | ThreadCreatePlan | ThreadDeletePlan | ThreadUpdatePlan
            | InformationCreatePlan | InformationUpdatePlan | None) = None
 
     def __post_init__(self) -> None:
@@ -107,6 +120,11 @@ class OperationRecord:
             self.previous_revision < 1 or not isinstance(self.plan, ThreadDeletePlan)
         ):
             raise ValueError("THREAD_DELETE requires an existing Thread snapshot")
+
+        if self.operation_type is OperationType.THREAD_UPDATE and (
+            self.previous_revision < 1 or type(self.plan) is not ThreadUpdatePlan
+        ):
+            raise ValueError("THREAD_UPDATE requires an existing Thread and command")
 
         if self.operation_type is OperationType.INFORMATION_CREATE and (
             self.previous_revision != 0 or type(self.plan) is not InformationCreatePlan

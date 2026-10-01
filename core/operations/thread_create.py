@@ -49,6 +49,8 @@ class FilesystemLinkedThreadCreation:
             raise OperationConflict("Thread cannot round-trip through its storage format")
         # The backend deletion guard takes persistent -> threads in this order.
         with exclusive_write(self.backend.persistent_root), exclusive_write(self.storage.threads_root):
+            from core.operations.thread_update import require_no_thread_update
+            require_no_thread_update(self.operations.root.parent / 'thread-update-v1', linked.thread_id)
             if self.deletion_operations is not None and any(
                 pending.target_id == linked.thread_id
                 for pending in self.deletion_operations.list_incomplete()
@@ -97,6 +99,8 @@ class FilesystemLinkedThreadCreation:
             return linked
         if operation.status is OperationStatus.FAILED:
             raise OperationConflict("failed operation requires manual resolution")
+        from core.operations.thread_update import require_no_thread_update
+        require_no_thread_update(self.operations.root.parent / 'thread-update-v1', operation.target_id)
         if self.backend.get(plan.information_id) is None:
             raise MissingLinkedInformation(plan.information_id)
         event = Event(

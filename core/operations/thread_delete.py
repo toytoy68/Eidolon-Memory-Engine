@@ -36,6 +36,8 @@ class FilesystemThreadDeletion:
         self.storage._path(thread_id)
         self.operations._path(operation_id)
         with exclusive_write(self.storage.threads_root):
+            from core.operations.thread_update import require_no_thread_update
+            require_no_thread_update(self.operations.root.parent / 'thread-update-v1', thread_id)
             for other in (self.status_operations, self.creation_operations):
                 if other is not None:
                     if other.get(operation_id) is not None or any(
@@ -86,6 +88,8 @@ class FilesystemThreadDeletion:
             return
         if operation.status is OperationStatus.FAILED:
             raise OperationConflict("failed deletion requires manual review")
+        from core.operations.thread_update import require_no_thread_update
+        require_no_thread_update(self.operations.root.parent / 'thread-update-v1', operation.target_id)
         for other in (self.status_operations, self.creation_operations):
             if other is not None and any(
                 pending.target_id == operation.target_id for pending in other.list_incomplete()

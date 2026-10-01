@@ -63,7 +63,7 @@ class ProjectDossiers:
         thread_path = self.storage._path(thread_id)
         dependencies['thread:' + thread_id] = sha256(thread_path.read_bytes()).hexdigest() if thread else None
         # Do not publish an APPLYING snapshot as a settled project recap.
-        for family in ('thread-create-v1', 'thread-status-v1', 'thread-delete-v1'):
+        for family in ('thread-create-v1', 'thread-status-v1', 'thread-delete-v1', 'thread-update-v1'):
             root = self.backend.history_root / 'operations' / family
             if has_symlink_component(root):
                 raise DossierConflict('Thread source journal contains a symlink')

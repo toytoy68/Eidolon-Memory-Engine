@@ -58,3 +58,11 @@ peuvent écrire directement : ne pas les présenter comme des services métier.
 La commande preflight écrit puis retire un fichier de sonde dans la racine.
 La recette VM et les évaluations écrivent dans leurs espaces de travail ; elles
 ne sont pas des écrivains de production à activer sur les données vivantes.
+
+## Commandes projet coordonnées — lot du soir
+
+`ThreadService.for_backend` assemble création/statut/suppression/modification.
+`FilesystemThreadUpdates` et le CLI `update-thread` écrivent la famille
+thread-update-v1 ; les mutations de liens et actions ne passent pas par une
+modification directe de CONCERNS dans ThreadStorage.update. Les primitives
+bas niveau restent distinctes. Voir [THREAD-UPDATES.md](THREAD-UPDATES.md).

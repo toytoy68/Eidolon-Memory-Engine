@@ -1,6 +1,6 @@
 # Memory Engine — TODO active
 
-Mise à jour : **2026-10-01**, audit initial `a779c9d`, T-048 livré ensuite, branche
+Mise à jour : **2026-10-01**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
 `refactor/architecture-v1`. **Estimation globale gelée : 45 %. Grille : 52,75
 points, inchangée.** Aucun avancement chiffré pour cet audit documentaire.
 
@@ -23,25 +23,26 @@ anciennes sous-tâches ne sont pas renumérotées.
   artificiel pour une édition documentaire.
 
 Pas de travail sur Eidolon Core, Hermes, Qdrant ni de nouvelles validations
-ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la séance autorisée jusqu'à 16 h
-traite maintenant les lots prioritaires. Revue Claude demandée E-005 à E-007 ;
+ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la séance du soir autorisée par toytoy
+poursuit les lots prioritaires avec preuves et documentation par étape. Revue Claude demandée E-005 à E-007 ;
 revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
 ## Dernière vérification
 
-Suite complète après T-048 : **775 réussis, 5 échecs d'environnement, 35,46 s**,
-pytest 9.1.1/Python 3.12.14, aucun désélectionné. Les cinq tests utilisant
-Manager échouent à la création d'une socket interdite, avant le scénario
-métier ; ils restent non validés. Deux autres tests concurrents Information
-passent. Aucune VM, donnée réelle ou coupure électrique testée.
+Suite complète après les lots du soir : **806 réussis, 5 échecs d’environnement,
+50,13 s**, pytest 9.1.1/Python 3.12.14, aucun désélectionné. Les cinq tests Manager
+échouent à la création d’une socket interdite avant scénario métier. Les nouveaux
+essais concurrents sans Manager passent. 31 cas ajoutés : 12 migration et 19
+projet, dont deux arrêts de processus et trois courses. Aucune VM, donnée réelle
+ou coupure électrique testée.
 
 ## Ordre prioritaire
 
 | Ordre | Tâches | Résultat attendu |
 | --- | --- | --- |
-| 1 — Avant exploitation | T-048, T-021/T-033 | Reprise et inventaire complets ; migration des invariants, constats A-01/A-02/A-03 |
-| 2 — Parcours métier | T-031/T-041 puis T-043 | Assemblage canonique, commandes Thread manquantes, exécution de plans avec révisions et reprise |
+| 1 — Avant exploitation | T-048, T-021/T-033 | Reprise/inventaire et refus des sources mixtes livrés ; import opérationnel et recette VM restent ouverts |
+| 2 — Parcours métier | T-031/T-041 puis T-043 | Commandes Thread et assemblage livrés ; façade complète et exécution des plans avec révisions/reprise |
 | 3 — Projet utilisable | T-044 puis T-045 | Ajouter une Information au même projet, dossier actualisé ou explicitement périmé, catalogue reconstructible |
 | Avant ingestion intensive | T-049 | Réduire les scans sans perdre réservations/conflits/reprise ; lot distinct |
 | 4 — Disponibilité | T-046, décisions T-050 | Haute/intermédiaire/basse, réexamens et échéances durables |
@@ -106,16 +107,22 @@ statut et suppression journalisés. T-039 corrige le delete implicite canonique.
 Preuves : tests Information/Thread et interruptions, commits `4f36f70`,
 `0460f68`, `b967bf4`.
 
-Restant : assemblage commun injectant toutes les familles ; commandes
-journalisées pour objectifs/métadonnées/actions et ajout/retrait CONCERNS sur
-un Thread existant. Le stockage direct refuse les modifications de CONCERNS,
-mais aucun service ne les réalise encore. Recenser/migrer les appelants métier,
-garder l'import explicite et isoler les anciens écrivains (T-023).
+Ajout livré au lot du soir : famille THREAD_UPDATE et assemblage canonique
+`ThreadService.for_backend`. Commandes LINK/UNLINK, ADD_ACTION/ACTION_STATUS et
+DETAILS (titre/objectif/contexte), journalisées avec Event, révision attendue,
+snapshots et rejeu sans résurrection. Réservations de liens, gardes des autres
+familles, dossiers et contrôle de démarrage raccordés. Contrat et API/CLI :
+[THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
 
-Tests : seconde Information du même projet, concurrence lien/suppression,
-modification d'action, révision obsolète, interruption et rejeu. Les étapes
-Information/Thread/dossier doivent être reprenables sans transaction globale
-supposée. Claude E-007.
+Preuves : 19 nouveaux cas, dont quatre interruptions par exception, deux arrêts
+de processus, trois courses multiprocessus sans Manager. Trois suppressions
+expérimentales de garanties donnent chacune un échec comportemental ; code
+restauré après ces preuves. Groupe Thread/Events/reprise : 69 réussis.
+
+Restant : façade commune Information → Thread → dossier, exécution T-043,
+recensement/migration des appelants métier et isolation des écrivains historiques
+(T-023). L’assemblage Thread ne remplace pas une transaction globale ni le
+contrôle de démarrage. Les primitives de stockage restent distinctes.
 
 ### T-043 — Politique puis exécution des plans — PARTIEL
 

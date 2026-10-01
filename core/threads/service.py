@@ -14,11 +14,41 @@ class ThreadService:
     """Coordinate Thread persistence and domain queries."""
 
     def __init__(self, storage: ThreadStorage, operations=None, creation=None,
-                 deletion=None) -> None:
+                 deletion=None, updates=None) -> None:
         self.storage = storage
         self.operations = operations
         self.creation = creation
         self.deletion = deletion
+        self.updates = updates
+
+    @classmethod
+    def for_backend(cls, backend):
+        """Canonical construction; callers no longer choose individual journals."""
+        from core.events.filesystem import FilesystemEventRepository
+        from core.operations.filesystem import FilesystemOperationRepository
+        from core.operations.thread_create import FilesystemLinkedThreadCreation
+        from core.operations.thread_delete import FilesystemThreadDeletion
+        from core.operations.thread_status import FilesystemThreadOperations
+        from core.operations.thread_update import FilesystemThreadUpdates
+        storage = ThreadStorage(backend.persistent_root)
+        history = backend.history_root
+        journals = {family: FilesystemOperationRepository(history / 'operations' / family)
+                    for family in ('thread-create-v1', 'thread-status-v1', 'thread-delete-v1')}
+        creation = FilesystemLinkedThreadCreation(
+            backend, storage, FilesystemEventRepository(history / 'events/thread-create-v1'),
+            journals['thread-create-v1'], deletion_operations=journals['thread-delete-v1'])
+        changes = FilesystemThreadOperations(
+            storage, FilesystemEventRepository(history / 'events/thread-status-v1'),
+            journals['thread-status-v1'], journals['thread-create-v1'], journals['thread-delete-v1'])
+        deletion = FilesystemThreadDeletion(storage, journals['thread-delete-v1'],
+                                            status_operations=journals['thread-status-v1'],
+                                            creation_operations=journals['thread-create-v1'])
+        return cls(storage, changes, creation, deletion, FilesystemThreadUpdates(backend))
+
+    def update_thread(self, thread_id, command, **identity):
+        if self.updates is None:
+            raise RuntimeError('Thread updates require an operation coordinator')
+        return self.updates.execute(thread_id, command, **identity)
 
     def get(self, thread_id: str) -> Thread | None:
         """Load a Thread from persistent storage."""
@@ -90,6 +120,8 @@ class ThreadService:
         creations = self.creation.recover()
         status_changes = self.operations.recover()
         result = {"creations": creations, "status_changes": status_changes}
+        if self.updates is not None:
+            result["thread-updates"] = self.updates.recover()
         if self.deletion is not None:
             result["deletions"] = self.deletion.recover()
         return result

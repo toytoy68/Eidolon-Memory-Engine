@@ -44,8 +44,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification du code `25544c7` le 01/10/2026 : **775 tests réussis,
-5 échecs d’environnement en 37,17 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après les lots migration/projet du 01/10/2026 :
+**806 tests réussis, 5 échecs d’environnement en 50,13 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -72,8 +72,9 @@ n’est encore installé sur la VM.
 - Définir l’import opérationnel des sources mixtes. Le convertisseur refuse
   désormais leurs reçus/journaux avant toute écriture dans la destination ;
   il ne les archive plus silencieusement en perdant leurs contraintes actives.
-- Compléter les commandes de liens/actions Thread et exécuter les plans par
-  les services coordonnés.
+- Exécuter les plans par les services coordonnés. Les commandes de liens,
+  actions et détails Thread sont maintenant livrées avec reprise ; voir
+  [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
 - Raccorder l’actualisation des dossiers et le rappel au contexte et à la validité.
 - Construire le catalogue et les déclencheurs durables ; réduire les scans de
   journaux avant ingestion intensive.

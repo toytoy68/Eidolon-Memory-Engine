@@ -53,6 +53,8 @@ class FilesystemThreadOperations:
         if not isinstance(new_status, ThreadStatus):
             raise ValueError("new_status must be a ThreadStatus")
         with exclusive_write(self.storage.threads_root):
+            from core.operations.thread_update import require_no_thread_update
+            require_no_thread_update(self.operations.root.parent / 'thread-update-v1', thread_id)
             if self.deletion_operations is not None and any(
                 pending.target_id == thread_id
                 for pending in self.deletion_operations.list_incomplete()
@@ -143,6 +145,8 @@ class FilesystemThreadOperations:
             return after
         if operation.status == OperationStatus.FAILED:
             raise OperationConflict("failed operation requires manual resolution")
+        from core.operations.thread_update import require_no_thread_update
+        require_no_thread_update(self.operations.root.parent / 'thread-update-v1', operation.target_id)
         expected_event = self._event(operation, before, after)
         # Lock event and operation writers as well as Thread writers. The fixed
         # order is Thread -> Operation -> Event; repository calls are reentrant.

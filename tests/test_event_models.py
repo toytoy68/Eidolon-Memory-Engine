@@ -176,7 +176,7 @@ def test_status_changed_is_reserved_for_threads():
         )
 
 
-def test_non_status_event_is_reserved_for_information():
+def test_information_only_event_remains_reserved_for_information():
     import pytest
 
     with pytest.raises(ValueError, match="Events d Information"):
@@ -184,7 +184,7 @@ def test_non_status_event_is_reserved_for_information():
             event_id="event-test-009",
             thread_id="thread-test-009",
             revision=1,
-            event_type=EventType.UPDATED,
+            event_type=EventType.ARCHIVED,
         )
 
 

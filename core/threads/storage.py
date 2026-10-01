@@ -434,6 +434,14 @@ class ThreadStorage:
             content,
         )
 
+    def _update_coordinated(self, before: Thread, after: Thread) -> None:
+        """Internal publication under Persistent → Thread coordinator locks."""
+        if (before.thread_id != after.thread_id or after.revision != before.revision + 1
+                or self.get(before.thread_id) != before):
+            raise ThreadRevisionConflict("Thread diverged before coordinated publication")
+        self._check_concerns(after)
+        self._atomic_write(self._path(after.thread_id), self._serialize_checked(after))
+
     def _delete_committed(self, thread_id: str) -> None:
         """Unlink only after a deletion operation reached APPLYING under the lock."""
         path = self._path(thread_id)

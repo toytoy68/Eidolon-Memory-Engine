@@ -16,6 +16,8 @@ SOURCES = (
     ("information", "memory/persistent", "*.md"),
     ("threads", "memory/persistent/threads", "*.md"),
     ("events", "memory/history/events", "*.md"),
+    ("thread_update_events", "memory/history/events/thread-update-v1", "*.md"),
+    ("thread_update_operations", "memory/history/operations/thread-update-v1", "*.json"),
     ("thread_status_events", "memory/history/events/thread-status-v1", "*.md"),
     ("thread_create_events", "memory/history/events/thread-create-v1", "*.md"),
     ("information_write_events", "memory/history/events/information-write-v1", "*.md"),
@@ -62,7 +64,7 @@ def classify(path: Path, category: str) -> str:
                 return "pending_delete" if "information_id" in data else "unknown"
             if category == "information_write_receipts":
                 return "core_information_receipt_v1" if data.get("format_version") == 1 else "unknown"
-            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE", "THREAD_DELETE", "INFORMATION_CREATE", "INFORMATION_UPDATE"}:
+            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_UPDATE", "THREAD_CREATE", "THREAD_DELETE", "INFORMATION_CREATE", "INFORMATION_UPDATE"}:
                 return "core_operation"
             if "operation_id" in data and "result" in data:
                 return "legacy_operation"

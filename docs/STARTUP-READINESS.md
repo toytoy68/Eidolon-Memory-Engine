@@ -83,3 +83,12 @@ effets partiels et réservations avant toute décision, conserver sa trace.
 Aucun état ABANDONED ni commande de déblocage aveugle n'est ajouté. Ce contrôle
 ne remplace pas les audits métier de relations/lifecycle ni l'assemblage futur
 de tous les écrivains via une façade unique.
+
+## Extension du lot projet du soir
+
+La famille `thread-update-v1` (THREAD_UPDATE) est maintenant inventoriée et
+contrôlée. `recover-all` ajoute le groupe `thread-updates`, repris entre les
+statuts et les suppressions Thread. Une mutation non terminée bloque les
+mutations concurrentes du même Thread et réserve les liens de ses snapshots.
+La relecture finale reste la seule autorité pour le code de sortie. Voir
+[THREAD-UPDATES.md](THREAD-UPDATES.md) pour les preuves et limites.

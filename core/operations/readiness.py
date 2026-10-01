@@ -17,6 +17,7 @@ THREAD_FAMILIES = {
     "thread-create-v1": OperationType.THREAD_CREATE,
     "thread-status-v1": OperationType.THREAD_STATUS_CHANGE,
     "thread-delete-v1": OperationType.THREAD_DELETE,
+    "thread-update-v1": OperationType.THREAD_UPDATE,
 }
 
 
@@ -90,11 +91,12 @@ def recover_all(engine_root: Path) -> dict:
     from core.operations.thread_create import FilesystemLinkedThreadCreation
     from core.operations.thread_delete import FilesystemThreadDeletion
     from core.operations.thread_status import FilesystemThreadOperations
+    from core.operations.thread_update import FilesystemThreadUpdates
     from core.threads.storage import ThreadStorage
 
     root = Path(engine_root)
     report = {"creations": {}, "status_changes": {}, "deletions": {},
-              "information-writes": {}, "information-deletions": {}, "passes": 0}
+              "information-writes": {}, "information-deletions": {}, "thread-updates": {}, "passes": 0}
     state = check_readiness(root)
     report["information-writes"] = {
         path.split("/", 1)[1]: {"status": "COMMITTED"}
@@ -118,13 +120,14 @@ def recover_all(engine_root: Path) -> dict:
         storage, journals["thread-delete-v1"], status_operations=journals["thread-status-v1"],
         creation_operations=journals["thread-create-v1"])
     writes = FilesystemInformationWrites(backend)
+    updates = FilesystemThreadUpdates(backend)
 
     # On a stopped tree each successful pass removes at least one issue. This
     # bound also prevents looping if a noncooperating writer changes the tree.
     for _ in range(len(state["issues"]) + 1):
         previous = state
         for name, action in (("creations", creation.recover), ("status_changes", changes.recover),
-                             ("deletions", deletion.recover), ("information-writes", writes.recover)):
+                             ("thread-updates", updates.recover), ("deletions", deletion.recover), ("information-writes", writes.recover)):
             report[name].update(action())
         report["information-deletions"] = recover_deletions(root)
         report["passes"] += 1

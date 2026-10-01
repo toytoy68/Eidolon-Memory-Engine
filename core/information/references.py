@@ -112,6 +112,28 @@ def ensure_no_pending_thread_creations(history_root: Path, information_id: str) 
             raise InformationDeletionBlocked("pending Thread creation references Information")
 
 
+def ensure_no_pending_thread_updates(history_root: Path, information_id: str) -> None:
+    """Prepared project mutations reserve links in both persisted snapshots."""
+    from core.operations.thread_update import read_operations
+    from core.operations.models import ThreadUpdatePlan
+    from core.operations.thread_status import plan_hash
+    from core.operations.errors import OperationRepositoryError
+    try:
+        for record in read_operations(history_root / 'operations/thread-update-v1'):
+            if (record.operation_type is not OperationType.THREAD_UPDATE
+                    or type(record.plan) is not ThreadUpdatePlan
+                    or plan_hash(record) != record.execution_plan_hash):
+                raise InformationDeletionBlocked('invalid Thread update journal')
+            if record.status is OperationStatus.COMMITTED:
+                continue
+            for text in (record.plan.before_state, record.plan.after_state):
+                snapshot = ThreadStorage._deserialize(text)
+                if information_id in ThreadStorage._concerns(snapshot):
+                    raise InformationDeletionBlocked('pending Thread update references Information')
+    except (OSError, ValueError, TypeError, ThreadStorageError, OperationRepositoryError) as exc:
+        raise InformationDeletionBlocked('unreadable Thread update journal') from exc
+
+
 def ensure_information_write_safety(history_root: Path, information_id: str,
                                     *, require_compacted: bool = False) -> None:
     """Called under Persistent: pending snapshots reserve targets and links.

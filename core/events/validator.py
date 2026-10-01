@@ -86,6 +86,13 @@ def validate_event(event: Event) -> list[str]:
                 "STATUS_CHANGED nécessite status dans state_transition.after"
             )
 
+    elif event.event_type is EventType.UPDATED and has_thread:
+        if event.revision < 2:
+            errors.append("UPDATED Thread nécessite revision >= 2")
+        if any(not state.get('snapshot_sha256') for state in
+               (event.state_transition.before, event.state_transition.after)):
+            errors.append("UPDATED Thread nécessite les empreintes des snapshots")
+
     elif event.event_type is EventType.CREATED and has_thread:
         if event.revision != 1:
             errors.append("CREATED Thread nécessite revision 1")

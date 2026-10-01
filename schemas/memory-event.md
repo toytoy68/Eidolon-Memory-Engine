@@ -59,7 +59,9 @@ Valeurs prévues :
 
 Pour les Threads :
 
+- CREATED (création liée, révision 1)
 - STATUS_CHANGED
+- UPDATED (commandes projet, révision >= 2)
 
 Une suppression définitive doit rester soumise aux règles
 de validation et de conservation.
@@ -80,7 +82,12 @@ Les valeurs doivent correspondre aux états réellement observés.
 Pour une Information, `before` et `after` décrivent les états
 épistémique et opérationnel.
 
-Pour un Thread, `before` et `after` décrivent le statut du Thread.
+Pour un Thread STATUS_CHANGED, `before` et `after` décrivent le statut.
+Pour UPDATED, ils contiennent `revision` et `snapshot_sha256` ; `after` contient
+également le type de `command`. Les snapshots complets restent dans Operation,
+pas dans Event. Le format sérialisé reste 0.2, mais les anciens lecteurs qui
+interdisaient UPDATED pour un Thread ne peuvent pas lire ces nouveaux Events.
+Mettre à niveau les lecteurs avant d’activer ces commandes.
 
 Exemple Thread :
 

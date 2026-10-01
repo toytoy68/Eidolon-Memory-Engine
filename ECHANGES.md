@@ -6,35 +6,33 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État constaté le 2026-10-01, sur `refactor/architecture-v1` au commit
-`a779c9d` (base de code du nouvel audit ; documents consolidés ensuite). Toujours vérifier la branche et le commit actuels avant de travailler.
+État après les lots du 01/10 au soir, branche `refactor/architecture-v1`.
+Base de séance `25544c7`, README actualisé `8913d49`, refus préalable de
+migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
 
-- But : mémoire autonome, contextuelle et traçable ; fichiers canoniques,
-  dossiers Markdown vivants, trois niveaux de disponibilité. Voir
-  [l’architecture cible consolidée](docs/ARCHITECTURE-CIBLE.md).
-- T-040 : contrat fonctionnel v0.1 et mapping textuel Information/Memory livrés.
-  T-043 exécute maintenant leur partie planification ; les déclencheurs durables
-  et leur activation restent T-046.
-- T-039 : suppression Thread implicite raccordée aux trois journaux canoniques,
-  corrigée localement. T-031 reste partiel : des écritures directes subsistent.
-- T-041/T-042 : service Information et compaction v1 livrés en local ;
-  [contrat implémenté](docs/INFORMATION-WRITES.md). Les appels métier directs
-  et les essais VM restent à traiter. T-043 et T-044 sont partiels : planificateur
-  pur et projection projet explicite, sans exécution/invalidation automatique.
-- D7/D8/D9 validées par toytoy : annuler PENDING_DELETE avant nouvelle
-  modification métier ; conserver l'empreinte dans le reçu v1 sans garantie
-  de confidentialité ; conserver l'identité après CANCELLED.
-- Dernière suite réellement exécutée : **754 réussis, 5 échecs d’environnement**,
-  aucun désélectionné, 31,46 s, pytest 9.1.1, code `a779c9d`. Les cinq Manager
-  échouent avant scénario métier (sockets interdites), non validés. Ce résultat
-  vient de Codex, pas de Claude ni d'une VM. Voir [l'audit](docs/AUDIT-2026-10-01.md).
-- Claude rapporte un clone en lecture seule de `0c89ce7` ; toytoy confirme
-  que l’écriture au dépôt reste indisponible. Réponses et patch transmis par
-  fichiers. Aucun accès ni résultat VM disponible.
-- Estimation globale gelée à 45 %, grille à 52,75 points (+2 pour les écritures
-  effectivement implémentées et testées, voir le bilan du 01/10). Pas de hausse pour
-  une discussion ou un accord entre assistants. Pas de travail sur Eidolon
-  Core, Hermes, Qdrant ni de nouvelle série de micro-durcissements.
+- But inchangé : mémoire autonome, contextuelle et traçable ; fichiers
+  canoniques, dossiers Markdown vivants, trois niveaux de disponibilité.
+- T-048 livré en local : contrôle read-only et reprise globale avec relecture
+  finale. Aucun service VM installé ; résolution humaine FAILED encore ouverte.
+- T-021 ferme A-03 par refus avant toute écriture de destination pour les
+  sources mixtes opérationnelles. L’import des réservations/reçus reste ouvert.
+- T-031 ajoute les commandes LINK/UNLINK, ADD_ACTION/ACTION_STATUS, DETAILS et
+  ThreadService.for_backend ; journal/reprise, réservations et gardes raccordés.
+  Lire docs/THREAD-UPDATES.md. Les appels bas niveau restent distincts.
+- T-041/T-042 livrés en local ; T-043 produit des plans mais ne les exécute pas.
+  T-044 reconstruit explicitement les dossiers ; actualisation automatique,
+  catalogue T-045, disponibilité T-046 et rappel contextualisé T-047 à terminer.
+- Dernière suite : **806 réussis, 5 échecs de sockets Manager avant scénario,
+  50,13 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 31 nouveaux cas
+  dans cette séance ; aucun essai VM ni coupure de stockage.
+- Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
+  reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
+- D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
+  Pas de travail sur Eidolon Core, Hermes ou Qdrant.
+
+Prochaine livraison : façade reprenable exécutant un plan qualifié vers un
+projet existant et son dossier, puis rappel avec contexte. Optimisation des
+journaux T-049 avant ingestion intensive ; recette VM distincte.
 
 ## Sujets à relire lors d'une prochaine session disponible
 
@@ -538,3 +536,21 @@ de destination, rapport explicite, anciens journaux legacy reconnus conservés.
 12 nouveaux tests échouent sur la base puis passent ; groupe migration : 47
 réussis. Contrat dans docs/MIGRATION.md, suite dans la TODO. Aucun test VM et
 aucune politique de réservation nouvelle. Estimations inchangées.
+
+### T-031 — Commandes de projet livrées en local
+
+Famille THREAD_UPDATE, commandes liens/actions/détails et assemblage canonique
+ThreadService.for_backend. Reprise, contrôle global, dépendances de suppression
+Information/Thread, projections et guard legacy raccordés. UPDATED peut désormais
+cibler un Thread ; le contrat précise la compatibilité des lecteurs.
+
+19 nouveaux cas, dont 2 arrêts de processus et 3 courses sans Manager ; groupe
+Thread/Events/reprise : 69 réussis. Trois régressions comportementales vérifiées
+par retrait temporaire d’une garantie, puis code restauré. Façade globale et
+exécution du RoutingPlan encore ouvertes ; VM non exécutée. Contrat complet :
+docs/THREAD-UPDATES.md. Estimations inchangées.
+
+Validation finale du lot du soir : **806 réussis, 5 échecs sockets Manager,
+50,13 s**, aucun désélectionné. Les 31 nouveaux cas passent. Le seul attendu
+historique modifié concerne UPDATED désormais autorisé pour un Thread ; le
+contrat est étendu, et les Events réservés aux Informations restent testés.
