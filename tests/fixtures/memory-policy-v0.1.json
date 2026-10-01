@@ -1,77 +1,271 @@
 {
   "contract_version": "memory-policy/0.1",
-  "status": "acceptance_examples_not_yet_executed_against_a_router",
+  "status": "planner_examples_executed_T043_lifecycle_execution_pending_T046",
   "profile": "reference_without_implicit_tracking_or_deletion",
   "cases": [
     {
       "id": "admin-technical-hypothesis",
-      "given": {"author_role": "ADMIN", "type": "HYPOTHESIS", "epistemic_status": "UNVERIFIED", "project_id": "cooling", "nature": "TECHNICAL", "content": "Cette pompe devrait suffire."},
-      "expected": {"persistence": "STORE", "dossier": "CREATE_OR_LINK", "epistemic_status": "UNVERIFIED", "needs_evidence_for_confirmation": true}
+      "given": {
+        "author_role": "ADMIN",
+        "type": "HYPOTHESIS",
+        "epistemic_status": "UNVERIFIED",
+        "project_id": "cooling",
+        "nature": "TECHNICAL",
+        "content": "Cette pompe devrait suffire."
+      },
+      "expected": {
+        "persistence": "STORE",
+        "dossier": "CREATE_OR_LINK",
+        "epistemic_status": "UNVERIFIED",
+        "needs_evidence_for_confirmation": true
+      }
     },
     {
       "id": "admin-philosophical-exploration",
-      "given": {"author_role": "ADMIN", "type": "QUESTION", "nature": "REFLECTION", "explicit_memory_request": false, "active_project": false, "content": "Qu'est-ce qui rend une machine consciente ?"},
-      "expected": {"persistence": "NONE", "availability": "HIGH", "dossier": "NONE", "must_not_create_confirmed_fact": true}
+      "given": {
+        "author_role": "ADMIN",
+        "type": "QUESTION",
+        "nature": "REFLECTION",
+        "explicit_memory_request": false,
+        "active_project": false,
+        "content": "Qu'est-ce qui rend une machine consciente ?"
+      },
+      "expected": {
+        "persistence": "NONE",
+        "availability": "HIGH",
+        "dossier": "NONE",
+        "must_not_create_confirmed_fact": true
+      }
     },
     {
       "id": "explicit-reflection-to-revisit",
-      "given": {"author_role": "ADMIN", "type": "INTERPRETATION", "nature": "REFLECTION", "explicit_memory_request": true, "topic_id": "consciousness", "epistemic_status": "UNVERIFIED"},
-      "expected": {"persistence": "STORE", "availability": "INTERMEDIATE", "dossier": "CREATE_OR_LINK", "epistemic_status": "UNVERIFIED"}
+      "given": {
+        "author_role": "ADMIN",
+        "type": "INTERPRETATION",
+        "nature": "REFLECTION",
+        "explicit_memory_request": true,
+        "topic_id": "consciousness",
+        "epistemic_status": "UNVERIFIED"
+      },
+      "expected": {
+        "persistence": "STORE",
+        "availability": "INTERMEDIATE",
+        "dossier": "CREATE_OR_LINK",
+        "epistemic_status": "UNVERIFIED"
+      }
     },
     {
       "id": "robot-corridor-layout",
-      "given": {"source": "robot-camera", "type": "OBSERVATION", "nature": "SPATIAL_LAYOUT", "place_id": "house-corridor", "epistemic_status": "UNVERIFIED", "content": "Deux chambres, un bureau, une salle de bain et un WC.", "navigation_active": true},
-      "expected": {"persistence": "STORE", "availability": "HIGH", "dossier": "CREATE_OR_LINK", "horizon": "LONG_TERM", "epistemic_status": "UNVERIFIED"}
+      "given": {
+        "source": "robot-camera",
+        "type": "OBSERVATION",
+        "nature": "SPATIAL_LAYOUT",
+        "place_id": "house-corridor",
+        "epistemic_status": "UNVERIFIED",
+        "content": "Deux chambres, un bureau, une salle de bain et un WC.",
+        "navigation_active": true
+      },
+      "expected": {
+        "persistence": "STORE",
+        "availability": "HIGH",
+        "dossier": "CREATE_OR_LINK",
+        "horizon": "LONG_TERM",
+        "epistemic_status": "UNVERIFIED"
+      }
     },
     {
       "id": "robot-passing-cat",
-      "given": {"source": "robot-camera", "type": "OBSERVATION", "nature": "MOBILE_PRESENCE", "content": "Un chat vient de passer.", "tracking_task": false, "significant_event": false},
-      "expected": {"persistence": "NONE", "availability": "HIGH", "dossier": "NONE", "must_not_infer_current_position_later": true}
+      "given": {
+        "source": "robot-camera",
+        "type": "OBSERVATION",
+        "nature": "MOBILE_PRESENCE",
+        "content": "Un chat vient de passer.",
+        "tracking_task": false,
+        "significant_event": false
+      },
+      "expected": {
+        "persistence": "NONE",
+        "availability": "HIGH",
+        "dossier": "NONE",
+        "must_not_infer_current_position_later": true
+      }
     },
     {
       "id": "cat-observation-for-tracking-task",
-      "given": {"source": "robot-camera", "type": "OBSERVATION", "nature": "MOBILE_PRESENCE", "tracking_task": true, "project_id": "find-cat", "observed_at": "2026-09-30T16:00:00Z"},
-      "expected": {"persistence": "STORE", "availability": "HIGH", "dossier": "LINK", "must_keep_observation_time": true}
+      "given": {
+        "source": "robot-camera",
+        "type": "OBSERVATION",
+        "nature": "MOBILE_PRESENCE",
+        "tracking_task": true,
+        "project_id": "find-cat",
+        "observed_at": "2026-09-30T16:00:00Z"
+      },
+      "expected": {
+        "persistence": "STORE",
+        "availability": "HIGH",
+        "dossier": "LINK",
+        "must_keep_observation_time": true
+      }
     },
     {
       "id": "fork-bypassed",
-      "given": {"source": "robot", "items": [{"type": "OBSERVATION", "nature": "OBSTACLE", "place_id": "corridor-floor", "object": "fork"}, {"type": "EVENT", "nature": "ACTION_REPORT", "action": "BYPASS", "object": "fork"}], "removal_observed": false},
-      "expected": {"obstacle_persistence": "STORE", "availability": "HIGH", "after_task_availability": "INTERMEDIATE", "recheck_before_reuse": true, "must_not_mark_obstacle_removed": true}
+      "given": {
+        "source": "robot",
+        "items": [
+          {
+            "type": "OBSERVATION",
+            "nature": "OBSTACLE",
+            "place_id": "corridor-floor",
+            "object": "fork"
+          },
+          {
+            "type": "EVENT",
+            "nature": "ACTION_REPORT",
+            "action": "BYPASS",
+            "object": "fork"
+          }
+        ],
+        "removal_observed": false
+      },
+      "expected": {
+        "obstacle_persistence": "STORE",
+        "availability": "HIGH",
+        "after_task_availability": "INTERMEDIATE",
+        "recheck_before_reuse": true,
+        "must_not_mark_obstacle_removed": true
+      }
     },
     {
       "id": "fork-removal-observed",
-      "given": {"known_obstacle_id": "obstacle-fork", "expected_revision": 1, "removal_observed": true, "observation_source": "human-confirmation"},
-      "expected": {"persistence": "UPDATE", "current_obstacle": false, "delete_history": false, "keep_evidence_reference": true}
+      "given": {
+        "known_obstacle_id": "obstacle-fork",
+        "expected_revision": 1,
+        "removal_observed": true,
+        "observation_source": "human-confirmation"
+      },
+      "expected": {
+        "persistence": "UPDATE",
+        "current_obstacle": false,
+        "delete_history": false,
+        "keep_evidence_reference": true
+      }
     },
     {
       "id": "conditional-gpu-recommendations",
-      "given": {"claims": [{"id": "efficiency", "power_w": 200, "epistemic_status": "CONFIRMED", "conditions": {"goal": "efficiency"}}, {"id": "performance", "power_w": 300, "epistemic_status": "CONFIRMED", "conditions": {"goal": "performance"}}], "query_context": {"goal": "efficiency"}},
-      "expected": {"matching_ids": ["efficiency"], "out_of_scope_ids": ["performance"], "automatically_refuted_ids": []}
+      "given": {
+        "claims": [
+          {
+            "id": "efficiency",
+            "power_w": 200,
+            "epistemic_status": "CONFIRMED",
+            "conditions": {
+              "goal": "efficiency"
+            }
+          },
+          {
+            "id": "performance",
+            "power_w": 300,
+            "epistemic_status": "CONFIRMED",
+            "conditions": {
+              "goal": "performance"
+            }
+          }
+        ],
+        "query_context": {
+          "goal": "efficiency"
+        }
+      },
+      "expected": {
+        "matching_ids": [
+          "efficiency"
+        ],
+        "out_of_scope_ids": [
+          "performance"
+        ],
+        "automatically_refuted_ids": []
+      }
     },
     {
       "id": "missing-context-is-not-universal",
-      "given": {"conditions": {"goal": "efficiency"}, "query_context": {}},
-      "expected": {"applicability": "UNKNOWN", "must_not_choose_unconditional_answer": true}
+      "given": {
+        "conditions": {
+          "goal": "efficiency"
+        },
+        "query_context": {}
+      },
+      "expected": {
+        "applicability": "UNKNOWN",
+        "must_not_choose_unconditional_answer": true
+      }
     },
     {
       "id": "same-context-unresolved-conflict",
-      "given": {"subject_id": "room-count", "place_id": "same-floor", "same_observation_period": true, "claims": [4, 5], "resolution_evidence": null},
-      "expected": {"applicability": "UNRESOLVED", "retain_both_sources": true, "automatic_winner": null}
+      "given": {
+        "subject_id": "room-count",
+        "place_id": "same-floor",
+        "same_observation_period": true,
+        "claims": [
+          4,
+          5
+        ],
+        "resolution_evidence": null
+      },
+      "expected": {
+        "applicability": "UNRESOLVED",
+        "retain_both_sources": true,
+        "automatic_winner": null
+      }
     },
     {
       "id": "scheduled-project-restart",
-      "given": {"type": "DECISION", "nature": "PROJECT_INTENT", "project_id": "robot-arm", "resume_at": "2026-10-03T08:00:00+02:00", "restart_after_due_date": true},
-      "expected": {"persistence": "STORE", "availability": "INTERMEDIATE", "dossier": "CREATE_OR_LINK", "durable_trigger": true, "activation_count_after_replay": 1}
+      "given": {
+        "type": "DECISION",
+        "nature": "PROJECT_INTENT",
+        "project_id": "robot-arm",
+        "resume_at": "2026-10-03T08:00:00+02:00",
+        "restart_after_due_date": true
+      },
+      "expected": {
+        "persistence": "STORE",
+        "availability": "INTERMEDIATE",
+        "dossier": "CREATE_OR_LINK",
+        "durable_trigger": true,
+        "activation_count_after_replay": 1
+      }
     },
     {
       "id": "expired-but-historically-true",
-      "given": {"stored_observation": true, "epistemic_status": "CONFIRMED", "valid_until": "2026-09-30T15:00:00Z", "query_at": "2026-09-30T16:00:00Z"},
-      "expected": {"applicability": "EXPIRED", "epistemic_status": "CONFIRMED", "automatic_delete": false}
+      "given": {
+        "stored_observation": true,
+        "epistemic_status": "CONFIRMED",
+        "valid_until": "2026-09-30T15:00:00Z",
+        "query_at": "2026-09-30T16:00:00Z"
+      },
+      "expected": {
+        "applicability": "EXPIRED",
+        "epistemic_status": "CONFIRMED",
+        "automatic_delete": false
+      }
     },
     {
       "id": "ambiguous-project-association",
-      "given": {"type": "DECISION", "nature": "PROJECT_INTENT", "candidate_projects": ["robot-arm-left", "robot-arm-right"], "selected_project": null},
-      "expected": {"dossier": "REVIEW", "automatic_merge": false}
+      "given": {
+        "type": "DECISION",
+        "nature": "PROJECT_INTENT",
+        "candidate_projects": [
+          "robot-arm-left",
+          "robot-arm-right"
+        ],
+        "selected_project": null
+      },
+      "expected": {
+        "dossier": "REVIEW",
+        "automatic_merge": false
+      }
     }
+  ],
+  "execution_limits": [
+    "Plans only: no dossier files, cache activation or persistence executed by the router.",
+    "scheduled-project-restart: durable_trigger and activation_count_after_replay remain untested until T-046."
   ]
 }

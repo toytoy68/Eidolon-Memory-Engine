@@ -1,8 +1,9 @@
 # Contrat fonctionnel mémoire 0.1
 
-Statut : spécification pour implémentation progressive. Aucun router core
-n'applique encore ce contrat. Seule la correspondance Information/Memory est
-exécutable dans `core/information/mapping.py`.
+Statut au 01/10 : planificateur pur v0.1 exécutable dans
+`core/routing/policy.py`, sur qualification déclarée. Mapping dans
+`core/information/mapping.py`. Dossiers, activation et ordonnanceur restent
+à implémenter (T-044 à T-046) ; les plans ne sont pas exécutés automatiquement.
 
 ## 1. Frontières et vocabulaire
 
@@ -55,7 +56,7 @@ donnent MATCH. Les intervalles numériques, synonymes et inférences de contexte
 restent hors du comparateur initial. L'absence de scope ne signifie jamais
 qu'une information est universelle.
 
-## 3. Plan attendu du futur router
+## 3. Plan du router de référence
 
 Le plan, versionné `memory-policy/0.1`, conserve identités et révisions sources,
 la version des règles et des raisons explicites. Il décide séparément :
@@ -103,7 +104,7 @@ preuve de disparition sont des paramètres de profil à définir avant activatio
 L'effacement exige une autorisation explicite et un plan couvrant références,
 dossiers, catalogue, index, journaux et politique des sauvegardes. Les opérations
 inachevées gardent leurs snapshots jusqu'à résolution. Après succès, un reçu
-compact peut remplacer le snapshot selon le futur contrat T-042 ; aucun
+compact peut remplacer le snapshot selon le contrat T-042 livré dans `information-write-receipt-v1.md` ; aucun
 effacement technique ne doit supprimer les garanties de rejeu ou ressusciter
 une donnée supprimée. L'exécution de cette politique n'est pas livrée ici.
 
@@ -131,7 +132,7 @@ fonction construit un nouvel objet et ne possède pas ses extensions. Les
 objets sont copiés en profondeur ; les IDs doivent désigner la même identité.
 Ces fonctions ne remplacent ni le service coordonné ni le contrat du backend.
 
-Une nouvelle création métier devra allouer révision 1 dans le futur service.
+Le service `FilesystemInformationWrites` alloue révision 1 à la création métier.
 Un import utilise son chemin distinct : la projection conserve la révision
 historique, comme le convertisseur actuel. Aucun Event CREATED historique
 n'est ajouté et aucune mémoire partiellement étiquetée n'est complétée par
@@ -140,9 +141,11 @@ défaut ; ces cas restent à décider dans le rapport de migration.
 ## 7. Scénarios de référence et limites
 
 `tests/fixtures/memory-policy-v0.1.json` contient les attendus métier de T-043
-et T-046, pas des tests déjà exécutés du router. Sa forme compacte décrit les
-préconditions et les obligations de chaque cas ; ce n'est pas une nouvelle API
-d'ingestion. Le futur banc les convertira en requêtes et vérifiera les sorties.
+et T-046. `tests/test_memory_policy.py` convertit les exemples en objets Memory
+et contexte de routage et vérifie la partie planification des 14 scénarios.
+Le scénario programmé ne vérifie ni la durabilité du déclencheur ni le nombre
+d'activations après rejeu : ces obligations restent T-046. La forme compacte
+reste un jeu de préconditions, pas une nouvelle API d'ingestion.
 
 Les tests `tests/test_information_mapping.py` vérifient séparément le mapping,
 une édition réellement persistée avec extensions et le retour identique des
