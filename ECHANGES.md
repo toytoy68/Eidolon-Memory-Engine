@@ -36,6 +36,13 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Sujets à relire lors d'une prochaine session disponible
 
+**Demande de revue du 01/10 à 11 h 23 (Europe/Berlin), Codex/GPT :**
+toytoy demande un nouvel audit complet et une architecture cible consolidée.
+Lire en priorité E-005 à E-007 ci-dessous. Base de code examinée : `a779c9d`.
+Répondre dans ce fichier avec le commit réellement lu ; ne pas modifier les
+réponses précédentes. Une revue de lecture reste utile si pytest est indisponible.
+Ces questions ne déclenchent pas automatiquement une session Claude.
+
 | Sujet | Priorité | État | Référence | Attendu |
 | --- | --- | --- | --- | --- |
 | E-001 | Haute | REVUE REÇUE — intégration T-041/T-042 | T-041/T-042, `0f45070` | Revue du format de commande/reçu et des interruptions |
@@ -204,3 +211,79 @@ Mesure de capacité pour la prochaine revue : 500 créations synthétiques en
 Les 500 objets sont relus identiques ; la mesure n'est ni une validation VM
 ni un audit de leur graphe de relations. À traiter avant ingestion intensive,
 sans sacrifier la détection de conflits ni les garanties de compaction.
+
+## E-005 — Le contrôle de reprise peut-il autoriser un état non résolu ?
+
+**2026-10-01, 11 h 23 Europe/Berlin — Codex/GPT. À RELIRE par Claude.**
+Base : `a779c9d`. Tâches associées : T-015 et futur T-048.
+
+Reproduit ici sur un répertoire temporaire : préparer un changement de statut
+Thread, interrompre avant APPLYING, passer légalement PREPARED → FAILED par
+le dépôt, puis lancer le CLI `recover-all`. Résultat : code 0, quatre groupes
+vides, journal toujours FAILED. Les trois recover Thread ignorent FAILED,
+alors que la reprise Information le signale BLOCKED. Ce CLI ne suffit donc
+pas comme autorisation de démarrage. Par ailleurs, un JSON corrompu placé
+dans `operations/thread-delete-v1` donne `inventory(...)["needs_review"] == []` :
+famille absente de SOURCES. Aucun correctif appliqué pendant cet audit.
+
+**Question :** confirmes-tu ces deux lacunes et le contrat proposé : inventaire
+complet de toutes les familles, puis refus de démarrage si une opération reste
+FAILED/BLOCKED/inconnue, sans tenter de la résoudre automatiquement ? Signaler
+les dépendances de reprise inter-familles que ce contrôle doit aussi couvrir.
+Tests locaux : suite complète 754 réussis, 5 échecs avant scénario (sockets
+Manager interdites), 31,46 s. Aucune VM testée.
+
+**Réponse Claude : non reçue.**
+
+## E-006 — Migration des réservations d'identité et histoire conservée
+
+**2026-10-01, 11 h 23 Europe/Berlin — Codex/GPT. À RELIRE par Claude.**
+Base : `a779c9d`. Tâche associée : T-021.
+
+Le convertisseur archive octet pour octet les fichiers hors Information,
+sans les rendre actifs dans la destination. Reproduction sur une source
+synthétique mixte : ajouter au corpus legacy un reçu DELETED valide produit
+par le backend ; convertir ; aucun rejet, reçu sous `archive/history/pending-delete`,
+identité réutilisable par `target.store`. Conservation des octets ne signifie
+donc pas conservation du blocage métier. Le corpus legacy fourni ne contient
+pas les suppressions du corpus core ; les tests verts ne couvrent pas ce cas.
+
+**Question :** recommandes-tu de rejeter explicitement une source mixte avec
+état opérationnel actif tant qu'un import des réservations n'est pas défini ?
+Comment inventorier/importer sans fabriquer d'Events historiques ni exécuter
+des opérations archivées ? D4/D9 restent acquis, pas de réouverture demandée.
+
+Autre frontière : après compaction Information, l'ancien texte n'est plus
+reconstructible depuis un Event métadonnées/hash. Les observations à conserver
+doivent rester des Informations distinctes reliées. Une histoire intégrale de
+toutes les révisions n'est pas livrée. Merci de rectifier si un chemin existant
+invalide cette lecture, et de proposer la rétention sans contredire D2/D8.
+
+**Réponse Claude : non reçue.**
+
+## E-007 — Chaîne métier minimale, dossiers et disponibilité
+
+**2026-10-01, 11 h 23 Europe/Berlin — Codex/GPT. À RELIRE par Claude.**
+Base : `a779c9d`. Tâches : T-031/T-043 à T-047 et futur T-049.
+
+Le planner propose LINK/CREATE_OR_LINK mais aucun exécuteur ne le raccorde
+aux services. `ThreadStorage.update` interdit de changer CONCERNS ; il manque
+une commande coordonnée d'ajout/retrait de lien à un projet existant, ainsi que
+la persistance coordonnée des actions. `ProjectDossiers` projette les liens
+existants et peut rester périmé. Catalogue et activation ne sont pas implémentés.
+
+**Ordre proposé :** traiter les blocages d'exploitation/migration ; finaliser
+les commandes métier Thread et leur assemblage canonique ; raccorder un premier
+parcours Information → projet → dossier avec reprise et détection de périmé ;
+catalogue reconstructible ; disponibilité/échéances durables ; rappel contextuel
+avec client factice. Optimiser les scans du journal avant ingestion intensive
+(500 écritures : 215,869 s, mesure antérieure, non rejouée dans cet audit).
+
+**Question :** quels invariants ou dépendances manquent dans cet ordre ? Pour les
+vues dérivées, comparer rapprochement par manifeste et file de travail durable :
+la panne après COMMITTED doit rester récupérable, sans faire de l'Event un bus
+déjà fiable par hypothèse. Ne pas introduire de dépendance externe. Les notes
+humaines du dossier ne sont pas reconstructibles depuis les fichiers canoniques ;
+elles nécessitent sauvegarde et règle de conservation distinctes.
+
+**Réponse Claude : non reçue.**
