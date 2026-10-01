@@ -42,20 +42,44 @@ python -m pip install -r requirements.txt -r requirements-dev.txt
 MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider
 ```
 
-La reprise des journaux Thread et des écritures Information se fait explicitement avec
-`python -m core.operations.cli recover-all`, en pointant
-`MEMORY_ENGINE_ROOT` vers la racine voulue. Cette commande **écrit** pour
-terminer les opérations en attente : consulter la procédure de déploiement et
-ne pas la lancer sur la VM sans sauvegarde et arrêt des autres écrivains.
-Les nouvelles suppressions Information en `APPLYING_DELETE` ont une reprise
-séparée : `python -m core.information.deletion_recovery --root RACINE` réalise
-l'audit, et l'option `--apply` reprend les reçus compatibles. Les anciens
-reçus ambigus restent à examiner humainement ; aucun de ces chemins n'est
-automatisé au démarrage.
+## État vérifié et reprise
 
-État audité au 01/10, code `a779c9d` : 754 tests réussis, cinq échecs dus aux
-sockets Manager interdites avant scénario métier. Aucune validation VM.
-`recover-all` n'est pas encore une autorisation fiable de démarrage : il omet
-les FAILED Thread de son rapport. L'inventaire omet aussi thread-delete-v1 ;
-la migration archive les reçus sans restaurer leurs réservations actives.
-Voir les constats A-01 à A-03 et T-048/T-021 avant toute mise en service.
+Dernière vérification du code `25544c7` le 01/10/2026 : **775 tests réussis,
+5 échecs d’environnement en 37,17 s**, Python 3.12.14, pytest 9.1.1.
+Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
+métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
+validation VM, donnée réelle ou coupure électrique.
+
+Sur une copie arrêtée, `MEMORY_ENGINE_ROOT` désigne la racine contenant `memory/` :
+
+```sh
+python -B -m core.operations.cli readiness
+python -B -m core.operations.cli recover-all
+```
+
+`readiness` contrôle les journaux et reçus en lecture seule. `recover-all`
+**écrit** pour reprendre les opérations connues, y compris les suppressions
+Information déjà approuvées en APPLYING_DELETE, puis relit l’état sur disque.
+Le code de sortie vaut zéro seulement si `readiness.ready` est vrai.
+FAILED, corruption, format inconnu ou divergence bloquent la reprise automatique ;
+PENDING_DELETE valide reste une attente et n’est jamais approuvé automatiquement.
+Consulter [STARTUP-READINESS.md](docs/STARTUP-READINESS.md) avant utilisation.
+Ce contrôle ponctuel exige les écrivains arrêtés ; aucun service de démarrage
+n’est encore installé sur la VM.
+
+## Prochaines étapes
+
+- Sécuriser la migration des sources mixtes : les reçus archivés ne réactivent
+  pas leurs réservations d’identité. Ne pas activer une destination sur le seul
+  critère d’absence de rejets.
+- Compléter les commandes de liens/actions Thread et exécuter les plans par
+  les services coordonnés.
+- Raccorder l’actualisation des dossiers et le rappel au contexte et à la validité.
+- Construire le catalogue et les déclencheurs durables ; réduire les scans de
+  journaux avant ingestion intensive.
+
+Le planificateur et les dossiers explicites sont livrés, mais le parcours
+Information → projet existant → dossier actualisé → rappel contextuel reste
+incomplet. Les anciens services legacy constituent une pile distincte.
+La [TODO active](TODO-LIST.md) précise les preuves, priorités et limites actuelles ;
+les audits datés conservent leurs constats historiques.

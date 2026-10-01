@@ -521,3 +521,12 @@ Question E-005 complémentaire pour une prochaine revue disponible : relever le
 commit lu et chercher une famille active manquante ou une dépendance qui reste
 mal signalée par la relecture finale. Le contrôle nécessite les écrivains arrêtés,
 ne vaut pas un verrou global et n'approuve jamais PENDING_DELETE.
+
+## Reprise du 01/10 au soir — Codex/GPT
+
+Base synchronisée `25544c7`. Audit réellement rejoué : 775 réussis, cinq échecs
+Manager avant scénario métier, 37,17 s, Python 3.12.14/pytest 9.1.1. A-01/A-02
+corrigés confirmés ; A-03 migration mixte toujours reproduit. README actualisé.
+Suite demandée par toytoy : correction préalable de migration puis commandes
+Thread manquantes, avec vérification et mise à jour documentaire par lot.
+Aucun nouveau résultat Claude ni VM supposé.
