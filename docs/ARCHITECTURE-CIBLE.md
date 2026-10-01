@@ -132,10 +132,12 @@ sans rejouer aveuglément la création.
 
 Après démarrage, une barrière d'exploitation doit inventorier toutes les
 familles, reprendre ce qui est récupérable puis refuser les nouvelles écritures
-tant que subsiste un état bloquant. Le `recover-all` actuel ne suffit pas (A-01).
-Son ordre actuel Thread création/statut/suppression puis Information n'est pas
-une preuve de résolution de toutes les dépendances inter-familles. Tester ces
-dépendances et les échecs avant d'installer un démarrage automatique.
+tant que subsiste un état bloquant. T-048 livre ce contrôle explicite en local :
+`readiness` en lecture seule et `recover-all` avec relecture finale, reprise des
+suppressions Information approuvées et répétition bornée en cas de progrès.
+Les états inconnus/corrompus/FAILED arrêtent la reprise automatique.
+Ce contrôle ponctuel ne remplace pas l'arrêt des écrivains ni les essais des
+dépendances réelles avant d'installer un démarrage automatique sur la VM.
 
 ## Dossiers Markdown et catalogue
 

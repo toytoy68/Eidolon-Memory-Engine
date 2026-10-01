@@ -1,6 +1,6 @@
 # Memory Engine — TODO active
 
-Mise à jour : **2026-10-01**, code audité `a779c9d`, branche
+Mise à jour : **2026-10-01**, audit initial `a779c9d`, T-048 livré ensuite, branche
 `refactor/architecture-v1`. **Estimation globale gelée : 45 %. Grille : 52,75
 points, inchangée.** Aucun avancement chiffré pour cet audit documentaire.
 
@@ -23,14 +23,14 @@ anciennes sous-tâches ne sont pas renumérotées.
   artificiel pour une édition documentaire.
 
 Pas de travail sur Eidolon Core, Hermes, Qdrant ni de nouvelles validations
-ou micro-durcissements T-031a…bc. Les défauts de l'audit sont enregistrés,
-**pas corrigés pendant cette séance**. Revue Claude demandée E-005 à E-007 ;
+ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la séance autorisée jusqu'à 16 h
+traite maintenant les lots prioritaires. Revue Claude demandée E-005 à E-007 ;
 revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
 ## Dernière vérification
 
-Suite complète : **754 réussis, 5 échecs d'environnement, 31,46 s**,
+Suite complète après T-048 : **775 réussis, 5 échecs d'environnement, 35,46 s**,
 pytest 9.1.1/Python 3.12.14, aucun désélectionné. Les cinq tests utilisant
 Manager échouent à la création d'une socket interdite, avant le scénario
 métier ; ils restent non validés. Deux autres tests concurrents Information
@@ -54,28 +54,27 @@ VM du commit candidat.
 
 ## Lots à réaliser
 
-### T-048 — Reprise et inventaire complets — À FAIRE
+### T-048 — Reprise et inventaire complets — FAIT EN LOCAL / NON TESTÉ VM
 
-A-01 : les recover Thread ignorent FAILED ; le CLI peut retourner 0 avec un
-journal FAILED persistant. A-02 : thread-delete-v1 manque à l'inventaire.
+A-01/A-02 corrigés : les trois recover Thread signalent FAILED ; famille
+thread-delete-v1 inventoriée. Scan des fichiers et sous-familles inconnus sans
+traverser les ancêtres symboliques, distinction verrous techniques/archives.
 
-Rapporter FAILED comme nécessitant intervention, sans le résoudre/supprimer
-implicitement. Inventorier toutes les familles et distinguer archives et
-états actifs. Vérifier les états persistants après reprise, avec les dépendances
-inter-familles ; ne pas se limiter aux résultats renvoyés par recover-all.
+`core.operations.readiness` fournit un contrôle en lecture seule et la reprise
+globale avec relecture finale sur disque. PREPARED/APPLYING et compaction sont
+reprenables ; FAILED/inconnu/corrompu exigent une revue. PENDING_DELETE valide
+reste en attente ; APPLYING_DELETE est repris. Le CLI et la recette VM utilisent
+le contrôle. Les anciens appels par famille ne deviennent pas une barrière globale.
 
-Preuves attendues : transition valide PREPARED → FAILED → rapport/code non nul ;
-journal Thread delete corrompu → KO ; état sain → succès ; reprises et
-interdiction de démarrage sur état bloquant. Tests rouges sur le code audité.
-Claude E-005 confirmé. Patch proposé testé en isolation : FAILED et famille
-Thread delete corrigés dans le candidat, pas sur la branche. Compléter le scan
-des inconnus (fichiers et sous-familles imbriquées) sans traverser d'ancêtre
-symbolique ; reconnaître les fichiers techniques et archives légitimes.
-PENDING_DELETE valide n'est pas un échec ; APPLYING_DELETE reste à reprendre.
-BLOCKED est un résultat de contrôle, pas un état persisté d'Operation.
-Résolution humaine de FAILED : examiner effets partiels, réservations et rejeu,
-tracer la décision sans simple déblocage ni rollback implicite. Tests des trois
-familles et du CLI attendus. Aucun contrôle global livré, aucune VM validée.
+Preuves : 21 nouveaux cas dans `tests/test_startup_readiness.py`, notamment
+CLI non nul, suppression Information interrompue, faux succès de coordinateur,
+ancêtres symboliques et recette KO. Retrait des corrections : 3 + 6 + 1 + 1
+échecs comportementaux. Voir [contrat et limites](docs/STARTUP-READINESS.md).
+
+Restant exploitation : installation du contrôle dans les services réels,
+dépendances sur corpus VM, commande de résolution humaine de FAILED avec examen
+des effets partiels/réservations/rejeu. Aucun abandon automatique livré. Une
+lecture ponctuelle ne protège pas contre le redémarrage ultérieur d'un écrivain legacy.
 
 ### T-021 / T-033 — Migration opérationnelle — PARTIEL / NON TESTÉ VM
 
@@ -226,7 +225,8 @@ considéré comme approuvé par la seule revue.
 
 Outil : `python -B -m tools.vm_acceptance --source COPIE_ARRETEE --workdir DOSSIER_VIDE`.
 Il enchaîne inventaire, restauration, cinq cas concurrents et quatre audits.
-A-02 limite sa couverture Thread ; inventaire des écrivains heuristique.
+Le contrôle de démarrage T-048 complète ces audits ; inventaire des écrivains
+heuristique et exécution VM toujours manquante.
 
 ## Acquis et chantiers transversaux
 
@@ -234,7 +234,7 @@ A-02 limite sa couverture Thread ; inventaire des écrivains heuristique.
 | --- | --- |
 | T-001 à T-004, T-030/T-038 | FAIT EN LOCAL : fondations/lecteurs/validateurs, preuves historiques conservées ; pas de nouvelle série de durcissement |
 | T-005 | Résultat historique ; état actuel en tête de cette TODO |
-| T-020 | PARTIEL : inventaire livré, omission Thread delete sous T-048 |
+| T-020 | FAIT EN LOCAL : inventaire complété par T-048 ; VM non testée |
 | T-023 | PARTIEL : frontières/gardes historiques ; migration effective avec T-031 |
 | T-024 | PARTIEL : IndexPort/référence testés, synchronisation T-045 ; Qdrant DIFFÉRÉ |
 | T-025/T-034 | DIFFÉRÉ pour intégrations externes ; interface interne/client factice T-043/T-047 |

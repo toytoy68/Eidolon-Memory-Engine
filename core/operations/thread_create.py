@@ -141,9 +141,7 @@ class FilesystemLinkedThreadCreation:
             try:
                 with exclusive_write(self.backend.persistent_root), exclusive_write(self.storage.threads_root):
                     operation = self.operations.get(path.stem)
-                    if operation is None or operation.status in {
-                        OperationStatus.COMMITTED, OperationStatus.FAILED,
-                    }:
+                    if operation is None or operation.status is OperationStatus.COMMITTED:
                         continue
                     self._resume(operation)
                 results[path.stem] = {"status": "COMMITTED"}

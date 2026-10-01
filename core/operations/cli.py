@@ -5,7 +5,6 @@ import json
 
 from core.config import ENGINE_ROOT, PERSISTENT_ROOT, HISTORY_ROOT, OPERATIONS_ROOT, EVENTS_ROOT
 from core.preflight import check_environment
-from core.information.writes import FilesystemInformationWrites
 from core.backend.filesystem import FilesystemBackend
 from core.events.filesystem import FilesystemEventRepository
 from core.operations.filesystem import FilesystemOperationRepository
@@ -16,6 +15,7 @@ from core.threads.models import Thread, ThreadStatus
 from core.threads.storage import ThreadStorage
 from core.threads.service import ThreadService
 from core.threads.serialization import thread_to_dict
+from core.operations.readiness import check_readiness, recover_all
 
 
 def main():
@@ -39,15 +39,24 @@ def main():
     commands.add_parser("recover-creations")
     commands.add_parser("recover-deletions")
     commands.add_parser("recover-all")
+    commands.add_parser("readiness", help="Read-only startup gate on a stopped tree")
     deletion_command = commands.add_parser("delete-thread")
     deletion_command.add_argument("thread_id")
     deletion_command.add_argument("--previous-revision", type=int, required=True)
     deletion_command.add_argument("--operation-id", required=True)
     args = parser.parse_args()
+    if args.command == "readiness":
+        result = check_readiness(ENGINE_ROOT)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return int(not result["ready"])
     check_environment(ENGINE_ROOT)
+    if args.command == "recover-all":
+        result = recover_all(ENGINE_ROOT)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return int(not result["readiness"]["ready"])
     storage = ThreadStorage(PERSISTENT_ROOT)
     deletion = None
-    if args.command in {"delete-thread", "recover-deletions", "recover-all"}:
+    if args.command in {"delete-thread", "recover-deletions"}:
         deletion = FilesystemThreadDeletion.for_history(storage, HISTORY_ROOT)
         if args.command == "delete-thread":
             deletion.delete(args.thread_id, previous_revision=args.previous_revision,
@@ -58,7 +67,7 @@ def main():
             result = deletion.recover()
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return int(any(record["status"] == "BLOCKED" for record in result.values()))
-    if args.command in {"recover-creations", "recover-all", "create-linked"}:
+    if args.command in {"recover-creations", "create-linked"}:
         creation = FilesystemLinkedThreadCreation(
             FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT), storage,
             FilesystemEventRepository(EVENTS_ROOT / "thread-create-v1"),
@@ -84,19 +93,11 @@ def main():
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-status-v1"),
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-create-v1"),
         FilesystemOperationRepository(OPERATIONS_ROOT / "thread-delete-v1"),
-    ), creation=creation if args.command == "recover-all" else None,
-       deletion=deletion)
+    ), deletion=deletion)
     if args.command == "recover":
         result = service.recover()
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(any(record["status"] == "BLOCKED" for record in result.values()))
-    if args.command == "recover-all":
-        result = service.recover_all()
-        result["information-writes"] = FilesystemInformationWrites(
-            FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT)).recover()
-        print(json.dumps(result, ensure_ascii=False, indent=2))
-        return int(any(record["status"] == "BLOCKED"
-                   for group in result.values() for record in group.values()))
     event_id = args.event_id or "event-" + hashlib.sha256(args.operation_id.encode()).hexdigest()
     result = service.change_status(
         args.thread_id, ThreadStatus(args.status), previous_revision=args.previous_revision,

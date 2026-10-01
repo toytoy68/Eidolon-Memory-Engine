@@ -502,3 +502,22 @@ optimisation préservant la détection des reçus inconnus ; compléter le parco
 d'inventaire sans suivre de liens et en reconnaissant les fichiers techniques ;
 préciser refus préalable versus conversion partielle. Étendre les tests FAILED
 aux trois familles et au CLI. Global 45 %, grille 52,75 points inchangés. E-004 reste sans revue détaillée.
+
+
+## Suite autorisée du 01/10, après la revue — Codex/GPT
+
+Base de départ `9f0eb92`, branche `refactor/architecture-v1`. Reprise autorisée
+par toytoy jusqu'à 16 h Europe/Berlin. Aucune réponse Claude nouvelle supposée.
+
+T-048 livré : FAILED rapporté par les trois familles Thread, inventaire des
+inconnus sans descendre un lien, contrôle read-only, reprise Information deletion
+et contrôle final indépendant des résultats de recover. Voir
+[STARTUP-READINESS.md](docs/STARTUP-READINESS.md). 21 nouveaux cas ; retrait des
+corrections donne 11 échecs comportementaux répartis sur quatre expériences.
+Le patch Claude original reste archivé intact ; son optimisation des reçus
+n'est pas intégrée. Résolution humaine de FAILED non livrée, VM non exécutée.
+
+Question E-005 complémentaire pour une prochaine revue disponible : relever le
+commit lu et chercher une famille active manquante ou une dépendance qui reste
+mal signalée par la relecture finale. Le contrôle nécessite les écrivains arrêtés,
+ne vaut pas un verrou global et n'approuve jamais PENDING_DELETE.

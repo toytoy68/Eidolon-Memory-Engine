@@ -438,10 +438,13 @@ def test_recover_all_cli_resumes_pending_creation(tmp_path, monkeypatch):
         env={**os.environ, "MEMORY_ENGINE_ROOT": str(tmp_path), "PYTHONDONTWRITEBYTECODE": "1"},
         capture_output=True, text=True, check=True,
     )
-    assert json.loads(result.stdout) == {
+    report = json.loads(result.stdout)
+    assert {key: report[key] for key in ("creations", "status_changes", "deletions", "information-writes")} == {
         "creations": {"create-1": {"status": "COMMITTED"}}, "status_changes": {},
         "deletions": {}, "information-writes": {},
     }
+    assert report["readiness"]["ready"]
+    assert report["information-deletions"] == {"recovered": [], "blocked": []}
     _, restarted = open_creation(tmp_path)
     assert restarted.storage.get("thread-1") is not None
     assert restarted.events.get("created-1") is not None

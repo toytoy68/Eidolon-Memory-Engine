@@ -2,12 +2,12 @@
 
 ## Scope
 
-Updated 2026-10-01, audited code `a779c9d`. Read
-[AUDIT-2026-10-01.md](AUDIT-2026-10-01.md) before rollout. Known blockers:
-Thread FAILED operations are omitted by `recover-all`; the format inventory
-omits `thread-delete-v1`; migration archives deletion receipts without restoring
-their active identity reservations. T-048/T-021 are pending. A zero exit code
-from the current recovery CLI is not permission to restart writers.
+Updated 2026-10-01 after T-048. Read
+[AUDIT-2026-10-01.md](AUDIT-2026-10-01.md) and
+[STARTUP-READINESS.md](STARTUP-READINESS.md) before rollout. The read-only gate
+now covers all registered journals, unknown history paths and Information
+deletion recovery. It is tested locally, not on the VM and not installed in a
+service. Migration identity reservations remain blocked by T-021.
 
 The new repositories coordinate linked Thread creation and status changes with
 isolated journals and explicit recovery; see THREAD_RECOVERY.md. New core
@@ -52,8 +52,7 @@ updating production.
    run regression fixtures on live memory.
    On a stopped copy, `python -B -m tools.vm_acceptance --source COPIE --workdir
    DOSSIER_VIDE` reports the writer candidates, formats, hash-verified restore,
-   five concurrency tests and four separate read-only audit results (including
-   Information write journals). Review
+   five concurrency tests, four read-only audits and the startup-readiness check. Review
    the full JSON report and every candidate before treating an OK as evidence.
 6. On the isolated copy, inspect pending Operation records and test
    `python -m core.operations.cli recover-all` after keeping a restorable copy.
@@ -69,20 +68,18 @@ updating production.
    status/logs and perform a read-only application smoke test. Do not enable
    client writes until the gate and smoke test pass.
 
-## Proposed startup recovery gate (not installed)
+## Startup recovery gate (CLI delivered, service integration not installed)
 
-Before enabling any core writer after a restart, stop all writers and preserve
-the current data state. The CLI `recover-all` processes Thread linked creations,
-status changes, deletions, then Information writes. This ordering is implemented,
-not a proof that every cross-family dependency is resolved. It also omits
-FAILED Thread records. Inspect all persistent operation states independently
-and keep writers stopped until T-048 provides a complete tested gate.
-Audit deletion receipts next, then review
-whether to run deletion recovery with `--apply` on the stopped data. If either
-recovery reports a blocked record, or a FAILED/unreadable/unresolved record
-remains, keep writers stopped and investigate. This
-ordering needs validation with the actual Debian services, storage paths and
-representative data; it is not a systemd unit or an automatic deletion policy.
+With writers stopped, keep a restorable copy and set MEMORY_ENGINE_ROOT to the
+copy. `python -B -m core.operations.cli readiness` only reads the data and exits
+nonzero for unresolved work. `python -B -m core.operations.cli recover-all`
+explicitly resumes supported work and rechecks persistent state. It now includes
+APPLYING_DELETE Information requests; PENDING_DELETE is never approved by recovery.
+FAILED, unknown or corrupt journals block automatic recovery for human review.
+No automatic abandonment or rollback is provided. See STARTUP-READINESS.md for
+report fields, retry bounds and limits. A successful point-in-time check does not
+protect against restarting an old writer afterward. The actual services and
+storage must still pass the VM rehearsal before rollout.
 
 ## Rollback
 

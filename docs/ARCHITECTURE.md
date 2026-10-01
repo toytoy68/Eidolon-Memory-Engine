@@ -133,9 +133,9 @@ elle prépare un snapshot et un journal dans `thread-create-v1`, puis écrit le
 Thread et son Event `CREATED`. Après interruption, exécuter
 `python -m core.operations.cli recover-all` : la commande reprend les créations,
 puis les changements de statut et les suppressions Thread, enfin les écritures
-Information. La commande renvoie un code non nul pour un BLOCKED rapporté, mais les
-FAILED Thread sont ignorés : ce n'est pas un contrôle complet d'autorisation
-de démarrage (A-01/T-048). Les commandes `recover-creations` et `recover` restent disponibles pour
+Information et leurs suppressions APPLYING_DELETE. Le contrôle T-048 relit les
+journaux après reprise ; FAILED, inconnus et états non résolus donnent un code
+non nul. Voir [le contrôle de démarrage](STARTUP-READINESS.md). Les commandes `recover-creations` et `recover` restent disponibles pour
 chaque famille. Un Thread ou Event divergent bloque la
 reprise sans écrasement. La création directe via `ThreadInformationLinkService`
 reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
@@ -146,8 +146,8 @@ suppression avant même que le fichier Thread existe. Un journal illisible
 bloque également la suppression pour revue.
 `ThreadService.recover_all` fournit l'ordre des trois familles Thread aux appelants
 Python lorsque les coordinateurs lui sont injectés ; l'ajout des écritures
-Information est fait par le CLI, pas par ce service Thread. La reprise des suppressions
-Information reste distincte et explicitement contrôlée.
+Information et des suppressions approuvées est fait par `core.operations.readiness`,
+pas par ce service Thread. Le CLI global utilise ce coordinateur.
 L'écriture directe de `ThreadStorage.create` prend maintenant les verrous
 `persistent/` puis `threads/` et vérifie que chaque cible `CONCERNS` est une
 Information core lisible au même identifiant. `ThreadStorage.update` refuse
@@ -279,8 +279,8 @@ Résultats, versions, preuves négatives et limites VM : [séance du 01/10](SESS
 
 ## Écarts opérationnels vérifiés lors de l'audit du 01/10
 
-- Le CLI recover-all ignore FAILED Thread ; l'inventaire omet thread-delete-v1.
-  Ces deux défauts précèdent le contrôle automatique de démarrage.
+- A-01/A-02 corrigés localement par T-048 : FAILED rapporté, inventaire des
+  familles et inconnus, relecture finale ; intégration au démarrage VM non testée.
 - La migration conserve les reçus en archive mais ne réactive pas leurs
   réservations d'identité ; les sources mixtes nécessitent un import/rejet
   explicite avant activation de la destination.

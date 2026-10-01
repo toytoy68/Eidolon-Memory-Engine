@@ -22,6 +22,7 @@ from core.information.write_audit import audit_information_writes
 from core.information.lifecycle_audit import audit_lifecycle
 from core.information.relation_audit import audit_relations
 from core.migration.inventory import inventory
+from core.operations.readiness import check_readiness
 from core.persistence import has_symlink_component
 from tools.writer_inventory import discover_writers
 
@@ -192,6 +193,8 @@ def run(source: Path, workdir: Path, *, at: str) -> dict:
          lambda result: [f"{len(result['issues'])} deletion issues"] if result["issues"] else [])
     step("audit_information_writes", lambda: audit_information_writes(restored),
          lambda result: [f"{len(result['issues'])} Information journal issues"] if result["issues"] else [])
+    step("startup_readiness", lambda: check_readiness(restored),
+         lambda result: [f"{len(result['issues'])} unresolved startup issues"] if not result["ready"] else [])
     if report["steps"][2]["status"] == "OK":
         verified = report["steps"][2]["details"]["source_sha256"]
         current = sha256(json.dumps(hashes(source), sort_keys=True).encode()).hexdigest()

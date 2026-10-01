@@ -25,6 +25,7 @@ SOURCES = (
     ("operations", "memory/history/operations", "*.json"),
     ("thread_status_operations", "memory/history/operations/thread-status-v1", "*.json"),
     ("thread_create_operations", "memory/history/operations/thread-create-v1", "*.json"),
+    ("thread_delete_operations", "memory/history/operations/thread-delete-v1", "*.json"),
     ("pending_delete", "memory/history/pending-delete", "*.json"),
 )
 
@@ -61,7 +62,7 @@ def classify(path: Path, category: str) -> str:
                 return "pending_delete" if "information_id" in data else "unknown"
             if category == "information_write_receipts":
                 return "core_information_receipt_v1" if data.get("format_version") == 1 else "unknown"
-            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE", "INFORMATION_CREATE", "INFORMATION_UPDATE"}:
+            if data.get("operation_type") in {"THREAD_STATUS_CHANGE", "THREAD_CREATE", "THREAD_DELETE", "INFORMATION_CREATE", "INFORMATION_UPDATE"}:
                 return "core_operation"
             if "operation_id" in data and "result" in data:
                 return "legacy_operation"
@@ -84,6 +85,51 @@ def classify(path: Path, category: str) -> str:
     if category.endswith("events") and header.startswith("event_id:"):
         return "legacy_event_plain"
     return "unknown"
+
+
+def unknown_history_entries(root: Path) -> list[dict]:
+    """Report unregistered history paths, never descending through a symlink.
+
+    A registered family owns only its direct files, not arbitrary subfolders.
+    Archives live outside memory/history and are not active journals.
+    """
+    history = root / "memory/history"
+    if symlink_ancestor(root, history) or invalid_directory_ancestor(root, history):
+        return []  # Reported by the category scan; do not inspect descendants.
+    patterns = {Path(relative): pattern for _, relative, pattern in SOURCES
+                if relative.startswith("memory/history/")}
+    directories = {Path("memory/history")}
+    for directory in patterns:
+        directories.add(directory)
+        directories.update(parent for parent in directory.parents
+                           if parent != Path(".") and parent != Path("memory"))
+    issues = []
+
+    def walk(directory):
+        if not directory.exists():
+            return
+        for path in sorted(directory.iterdir()):
+            relative = path.relative_to(root)
+            parent_pattern = patterns.get(relative.parent)
+            registered_file = parent_pattern is not None and path.match(parent_pattern)
+            if path.is_symlink():
+                # Registered paths are reported by the category scanner.
+                if relative not in directories and not registered_file:
+                    issues.append({"path": relative.as_posix(), "reason": "symlink_skipped"})
+            elif path.is_dir():
+                if relative in directories:
+                    walk(path)
+                else:
+                    issues.append({"path": relative.as_posix(), "reason": "unknown_history_directory"})
+            elif relative in directories:
+                continue  # invalid_directory is reported by the category scan.
+            elif path.name == ".write.lock" and relative.parent in patterns and path.is_file():
+                continue  # Cooperative lock inode, not a journal record.
+            elif not registered_file:
+                issues.append({"path": relative.as_posix(), "reason": "unknown_history_file"})
+
+    walk(history)
+    return issues
 
 
 def inventory(engine_root: Path) -> dict:
@@ -121,6 +167,7 @@ def inventory(engine_root: Path) -> dict:
                         "path": path.relative_to(root).as_posix(), "reason": kind,
                     })
         result["categories"][category] = dict(sorted(counts.items()))
+    result["needs_review"].extend(unknown_history_entries(root))
     from core.information.write_audit import audit_information_writes
     result["information_writes"] = audit_information_writes(root)
     for issue in result["information_writes"]["issues"]:

@@ -27,6 +27,7 @@ def test_acceptance_uses_only_explicit_workdir_and_detects_source_change(tmp_pat
     monkeypatch.setattr(vm_acceptance, "audit_lifecycle", lambda *a, **kw: {
         "count": 0, "retention": {}, "applicability": {}, "epistemic_by_applicability": {}})
     monkeypatch.setattr(vm_acceptance, "audit_deletions", lambda *a, **kw: {"issues": []})
+    monkeypatch.setattr(vm_acceptance, "check_readiness", lambda root: {"ready": True, "issues": []})
     monkeypatch.setattr(vm_acceptance, "active_writers", lambda root: [])
     monkeypatch.setattr(vm_acceptance, "discover_writers", lambda: {
         "running": [], "configured": [], "unreadable": [], "coverage": "heuristic_manual_service_review_required"})
@@ -35,7 +36,7 @@ def test_acceptance_uses_only_explicit_workdir_and_detects_source_change(tmp_pat
 
     assert len(calls) == 1
     assert len(report["versions"]["engine_commit"]) == 40
-    assert [step["status"] for step in report["steps"]] == ["OK"] * 8
+    assert [step["status"] for step in report["steps"]] == ["OK"] * 9
     assert (workdir / "vm-acceptance-report.json").is_file()
     assert json.loads((workdir / "vm-acceptance-report.json").read_text()) == report
     assert (source / "memory/persistent/info.md").read_bytes() == b"original"
