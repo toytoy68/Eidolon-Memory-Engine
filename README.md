@@ -27,6 +27,8 @@ développement et n'est pas encore validée sur la VM.
   [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
 - [Première interface d'assemblage de contexte](docs/RETRIEVAL.md)
 - [Manifeste de source pour un index dérivé](docs/INDEXING.md)
+- [Catalogue reconstructible](docs/INFORMATION-CATALOGUE.md) : découverte par
+  métadonnées, filtres projet/disponibilité et refus d'une projection périmée.
 - [Mesures synthétiques et procédure de répétition](docs/PERFORMANCE.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
@@ -44,8 +46,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après le rapprochement des dossiers du 01/10/2026 :
-**859 tests réussis, 5 échecs d’environnement en 50,08 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après le catalogue reconstructible du 01/10/2026 :
+**875 tests réussis, 5 échecs d’environnement en 51,28 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -80,8 +82,8 @@ n’est encore installé sur la VM.
   hors du parcours qualifié. Le rappel
   applique maintenant contexte/validité/statuts et expose sources et incertitudes ;
   voir [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
-- Construire le catalogue et les déclencheurs durables ; réduire les scans de
-  journaux avant ingestion intensive.
+- Réduire les scans de journaux avant ingestion intensive ; le catalogue est
+  livré à la demande. Déclencheurs durables et rattrapage automatique restent ouverts.
 
 Le premier parcours Information → projet existant → dossier actualisé → rappel
 contextualisé est livré pour les entrées explicitement qualifiées. Les autres

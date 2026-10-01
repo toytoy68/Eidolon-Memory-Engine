@@ -163,7 +163,9 @@ canoniques. Le catalogue n'est pas à lui seul une politique de disponibilité.
 Orientation issue de la revue Claude : rapprochement par manifeste comme
 mécanisme de réparation des dérivés. T-044 le livre maintenant à la demande pour
 les dossiers projet (`reconcile --apply`), avec reprise par relance et traitement
-des vues orphelines. Catalogue T-045 et programmation régulière restent à livrer.
+des vues orphelines. T-045 livre le catalogue reconstructible de métadonnées,
+avec contrôle de fraîcheur et recherche filtrée. La programmation régulière
+et l'accélération des lectures restent à livrer.
 Garder les IDs/révisions et hashes (les accès directs peuvent modifier les
 fichiers sans révision). Le suivi durable reste requis pour les intentions et
 échéances ; il n'est pas une dépendance obligatoire de chaque projection. Une simple notification volatile

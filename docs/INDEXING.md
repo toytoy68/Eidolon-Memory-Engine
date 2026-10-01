@@ -1,5 +1,9 @@
 # Index dérivé — manifeste de source
 
+Le [catalogue persistant de métadonnées T-045](INFORMATION-CATALOGUE.md) complète
+ce port : fiches reconstructibles, projets/disponibilité, contrôle de fraîcheur
+et rattrapage explicite. Il ne copie pas les corps et n'implémente pas Qdrant.
+
 Le port `IndexPort` expose `upsert`, `delete`, `query`, `rebuild` et `status`.
 `InMemoryIndex` fournit une implémentation de référence sans service externe :
 il classe lexicalement et se reconstruit intégralement à partir des fichiers.

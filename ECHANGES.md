@@ -22,18 +22,18 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
 - T-041/T-042 livrés en local ; T-043 exécute désormais STORE/UPDATE vers un
   projet existant avec intention durable, lien et dossier actualisé. Les autres
   branches restent ouvertes. T-044 répare désormais les dossiers hors parcours
-  par rapprochement explicite reprenable. Catalogue T-045 et disponibilité T-046
-  restent à terminer. T-047 livre un premier rappel
+  par rapprochement explicite reprenable. Catalogue T-045 livré avec reconstruction et contrôle de fraîcheur ;
+  disponibilité T-046 encore ouverte. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **859 réussis, 5 échecs de sockets Manager avant scénario,
-  50,08 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 53 nouveaux cas
+- Dernière suite : **875 réussis, 5 échecs de sockets Manager avant scénario,
+  51,28 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 69 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
   reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
-Prochaine livraison : catalogue reconstructible ;
+Prochaine livraison : réduction du coût des scans de journaux ;
 extension des plans à poursuivre. Optimisation des
 journaux T-049 avant ingestion intensive ; recette VM distincte.
 
@@ -51,6 +51,16 @@ interruptions par exception, un arrêt réel de processus (code 74), deux
 réparateurs concurrents sans Manager. Retrait du rafraîchissement, des notes ou
 de la barrière readiness : 1 + 1 + 1 assertions rouges ; code restauré.
 Contrat, commandes et limites : [PROJECT-DOSSIERS.md](docs/PROJECT-DOSSIERS.md).
+
+### Lot T-045 — catalogue reconstructible, base `990475d`
+
+Fiches de métadonnées sans corps, pointeurs, projets CONCERNS et disponibilité
+déclarée. `status` sans écriture, `rebuild` atomique, `query` avec contrôle complet
+de fraîcheur et exclusion de PENDING_DELETE. Destruction/reconstruction identique,
+correction/suppression et relance après arrêt testées. 16 nouveaux cas ; groupe
+ciblé 28 réussis, trois preuves négatives. Suite complète 875 réussis et les mêmes
+cinq échecs de sockets, 51,28 s. Pas de VM, de Qdrant ni d'accélération de recherche
+revendiquée. Contrat : [INFORMATION-CATALOGUE.md](docs/INFORMATION-CATALOGUE.md).
 
 ## Sujets à relire lors d'une prochaine session disponible
 

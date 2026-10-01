@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après le rapprochement T-044 : **859 réussis,
-5 échecs d’environnement, 50,08 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après le catalogue T-045 : **875 réussis,
+5 échecs d’environnement, 51,28 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 53 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 69 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -170,13 +170,21 @@ projets. Le manifeste est recalculé, pas un index incrémental. Définir la cl�
 sur les vues gérées par le moteur, distincte du DELETED canonique actuel et des
 copies hors de son contrôle. Aucun effacement automatique de notes humaines.
 
-### T-045 — Catalogue léger — À FAIRE
+### T-045 — Catalogue léger — FAIT EN LOCAL / NON TESTÉ VM
 
-IDs/révisions, mots-clés, nature, contexte, statuts, échéances et pointeurs,
-y compris vers mémoire basse. Reconstruction depuis les fichiers, fraîcheur,
-suppression et rattrapage ; aucun connecteur externe. Tests : détruire/reconstruire
-le catalogue, retrouver les mêmes données actives, correction/suppression
-sans anciens extraits. IndexPort seul ne remplit pas ce contrat.
+Fiches ID/révision/hash, mots-clés, nature, contexte, statuts, échéances,
+disponibilité déclarée et pointeurs, sans corps d'Information. Membres de projet
+résolus par CONCERNS. Reconstruction atomique, contrôle de fraîcheur complet,
+reprise par relance et filtres de découverte. PENDING_DELETE exclu de query ;
+suppression et correction rattrapées par rebuild, ancien catalogue refusé.
+Contrat : [INFORMATION-CATALOGUE.md](docs/INFORMATION-CATALOGUE.md).
+
+16 nouveaux cas, groupe ciblé 28 réussis, dont arrêt réel de processus.
+Trois retraits de garanties donnent chacun un échec comportemental. Destruction/
+reconstruction identique et disparition des anciens mots-clés vérifiées.
+Restant : rattrapage automatique T-046, mesure sur corpus réel et accélération
+des lectures ; cette version scanne le canonique pour prouver la fraîcheur.
+Aucun connecteur externe ni activation autonome des disponibilités.
 
 ### T-049 — Coût des journaux — À FAIRE
 
@@ -284,7 +292,7 @@ heuristique et exécution VM toujours manquante.
 
 Le premier parcours qualifié vers un projet existant et son rappel est désormais
 livré en local ; le rapprochement global des dossiers hors parcours est maintenant
-disponible à la demande. Prochaine priorité : catalogue reconstructible et optimisation
+disponible à la demande, comme le catalogue reconstructible T-045. Prochaine priorité : optimisation
 des scans T-049 avant ingestion intensive. Extension des plans et disponibilité
 T-046 ensuite. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.

@@ -14,6 +14,7 @@ leurs racines de données et leurs formats à cette carte.
 | `core.operations.cli` : `create-linked`, `change-status`, `delete-thread` | Thread, `history/operations/thread-{create,status,delete}-v1/`, `history/events/thread-{create,status}-v1/` | Coordinateurs sous verrous ; `recover-all` reprend création, statut, suppression Thread puis Information ; FAILED Thread omis, T-048 requis. |
 | `core.information.cli` / `FilesystemInformationWrites` | Information, operations/events information-write-v1, operation-receipts information-write-v1 | Persistent → Operation → Event ; create/update/recover/compact explicites |
 | `core.dossiers.cli rebuild/reconcile --apply` / `ProjectDossiers` / `DossierReconciler` | memory/dossiers ou sortie dédiée, notes humaines incluses | Persistent → Thread → Dossier ; réparation explicite reprenable, sans ordonnanceur |
+| `core.indexing.catalogue_cli rebuild` / `InformationCatalogue` | memory/catalogue/information-v1.json, dérivé intégral | Persistent → Thread → Catalogue ; remplacement atomique et reprise par relance |
 | `core.migration.converter` | Destination explicite : Information core, `archive/`, `migration-report.json` | Ne modifie pas la source ; copier et vérifier hors de la racine active. |
 
 Les CLI historiques classifier, router, executor et semantic-validator sont
