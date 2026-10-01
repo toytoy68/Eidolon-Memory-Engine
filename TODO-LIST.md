@@ -30,12 +30,13 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après les lots du soir : **806 réussis, 5 échecs d’environnement,
-50,13 s**, pytest 9.1.1/Python 3.12.14, aucun désélectionné. Les cinq tests Manager
-échouent à la création d’une socket interdite avant scénario métier. Les nouveaux
-essais concurrents sans Manager passent. 31 cas ajoutés : 12 migration et 19
-projet, dont deux arrêts de processus et trois courses. Aucune VM, donnée réelle
-ou coupure électrique testée.
+Suite complète après T-043 (premier parcours) : **827 réussis, 5 échecs
+d’environnement, 41,54 s**, pytest 9.1.1/Python 3.12.14, aucun désélectionné.
+Les cinq tests Manager échouent à la création d’une socket interdite avant
+scénario métier. Les 21 nouveaux cas du parcours passent, dont quatre arrêts
+de processus et deux courses sans Manager. Aucune VM, donnée réelle ou coupure
+électrique testée. Trois garanties retirées temporairement donnent chacune
+un échec comportemental (réservation, projection, reçu sans corps), puis code restauré.
 
 ## Ordre prioritaire
 
@@ -119,24 +120,29 @@ de processus, trois courses multiprocessus sans Manager. Trois suppressions
 expérimentales de garanties donnent chacune un échec comportemental ; code
 restauré après ces preuves. Groupe Thread/Events/reprise : 69 réussis.
 
-Restant : façade commune Information → Thread → dossier, exécution T-043,
+Façade du premier parcours T-043 livrée ; restant : autres parcours,
 recensement/migration des appelants métier et isolation des écrivains historiques
 (T-023). L’assemblage Thread ne remplace pas une transaction globale ni le
 contrôle de démarrage. Les primitives de stockage restent distinctes.
 
-### T-043 — Politique puis exécution des plans — PARTIEL
+### T-043 — Politique et exécution des plans — PARTIEL, PREMIER PARCOURS LIVRÉ
 
-Fait : plan déterministe expliqué sur qualifications explicites, portée/validité,
-conflit déclaré ; 20 tests, `8cefac1`. Les 14 scénarios sont couverts côté plan,
-pas pour tous leurs effets.
+Fait : plan déterministe expliqué sur qualifications explicites, 20 tests du
+planner. Nouvelle tranche : preview sans écriture, exécution STORE/UPDATE vers
+un projet existant, LINK si nécessaire, reconstruction du dossier et reçu final.
+Versions de règles, snapshots et révisions revalidés ; intention durable et
+sous-commandes rejouables. Inventaire/reprise globale et réservations raccordés.
+Contrat : [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md).
 
-Restant : raccordement aux services T-031/T-041, contrôle de révision à
-l'exécution, version des règles et revue des ambiguïtés. Premier parcours
-explicitement qualifié ; extraction de texte brut différée. Un trigger proposé
-n'est pas une échéance durable. Tests : simulation sans écriture, plan périmé,
-exécution répétée sans double Information/projet. Conserver une identité stable
-d'intention et l'empreinte du plan : deux intentions distinctes de même contenu
-ne sont pas nécessairement des doublons.
+Preuves : 21 nouveaux cas dont quatre arrêts de processus, deux scénarios
+concurrents et deux interruptions dans les enfants. Groupe parcours/reprise :
+42 réussis. Plans ambigus, projet absent, échéances et retrait d’obstacle refusés
+avant mutation. Aucun statut de vérité modifié par rôle ou pertinence.
+
+Restant : création explicite de nouveaux projets par ce parcours, branches
+NONE/REVIEW/lieu/thème, intentions programmées T-046, autres politiques et
+qualification automatique. Disponibilité signalée différée dans le résultat.
+Pas de client externe ou de VM validé.
 
 ### T-044 — Dossiers vivants — PARTIEL
 
@@ -144,7 +150,10 @@ Fait : projection explicite depuis Thread/CONCERNS, récapitulatif, sources,
 actions/décisions, mots-clés, notes préservées et état de fraîcheur ; 8 tests,
 `7616455`.
 
-Restant : actualisation après mutation/lien/suppression, suivi des dépendances,
+Fait en plus via T-043 : actualisation après STORE/UPDATE et rattachement du
+nouveau parcours, avec reprise après l’écriture canonique.
+
+Restant : actualisation après les autres mutations/liens/suppressions, suivi des dépendances,
 reprise entre COMMITTED et projection ; écarter/signaler les vues périmées à
 la lecture automatique. Sauvegarder les notes humaines non reconstructibles,
 définir édition concurrente/ingestion explicite. Lieux/thèmes après projets.

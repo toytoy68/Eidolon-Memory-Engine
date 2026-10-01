@@ -38,6 +38,8 @@ def read_operations(root):
 
 
 def require_no_thread_update(journal_root, thread_id):
+    from core.routing.execution_journal import require_available
+    require_available(Path(journal_root).parent.parent, thread_id=thread_id)
     for record in read_operations(journal_root):
         if record.target_id == thread_id and record.status is not OperationStatus.COMMITTED:
             raise OperationConflict('recover Thread update before another mutation')
@@ -113,6 +115,8 @@ class FilesystemThreadUpdates:
         self.events = FilesystemEventRepository(backend.history_root / 'events/thread-update-v1')
 
     def _other_pending(self, thread_id, operation_id):
+        from core.routing.execution_journal import require_available
+        require_available(self.backend.history_root, thread_id=thread_id)
         for family in OTHER_FAMILIES:
             for record in read_operations(self.operations.root.parent / family):
                 if record.operation_id == operation_id or (

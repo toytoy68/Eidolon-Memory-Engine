@@ -92,3 +92,8 @@ statuts et les suppressions Thread. Une mutation non terminée bloque les
 mutations concurrentes du même Thread et réserve les liens de ses snapshots.
 La relecture finale reste la seule autorité pour le code de sortie. Voir
 [THREAD-UPDATES.md](THREAD-UPDATES.md) pour les preuves et limites.
+
+La famille `routing-execution-v1` ajoute le groupe `routing-executions` à
+recover-all. Les intentions APPLYING sont reprises avant les enfants, sous
+leur réservation ; les reçus COMMITTED n’exécutent rien. Formats inconnus ou
+corrompus bloquent. Les journaux enfants conservent leurs contrôles propres.

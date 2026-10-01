@@ -58,6 +58,12 @@ class ProjectDossiers:
         return path
 
     def _source(self, thread_id):
+        from core.routing.execution_journal import require_available
+        from core.operations.errors import OperationConflict
+        try:
+            require_available(self.backend.history_root, thread_id=thread_id)
+        except OperationConflict as exc:
+            raise DossierConflict('pending routing execution requires recovery') from exc
         thread = self.storage.get(thread_id)
         dependencies = {}
         thread_path = self.storage._path(thread_id)

@@ -145,6 +145,8 @@ class FilesystemInformationWrites:
                 if entry.fingerprint != digest:
                     raise OperationConflict('operation_id reused with a different command')
                 return entry.result if entry.receipt is not None else self._resume(entry.operation)
+            from core.routing.execution_journal import require_available
+            require_available(self.backend.history_root, information_id=after.information_id)
             self._check_deletion(kind, after.information_id)
             self._pending(after.information_id)
             current = self.backend.get(after.information_id)
@@ -180,6 +182,8 @@ class FilesystemInformationWrites:
             return operation_result(op)
         if op.status is OperationStatus.FAILED:
             raise OperationConflict('failed operation requires manual resolution')
+        from core.routing.execution_journal import require_available
+        require_available(self.backend.history_root, information_id=op.target_id)
         self._check_deletion(op.operation_type, op.target_id)
         self._pending(op.target_id, excluding=op.operation_id)
         current = self.backend.get(op.target_id)

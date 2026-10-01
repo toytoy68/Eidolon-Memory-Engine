@@ -44,8 +44,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après les lots migration/projet du 01/10/2026 :
-**806 tests réussis, 5 échecs d’environnement en 50,13 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après le parcours de projet reprenable du 01/10/2026 :
+**827 tests réussis, 5 échecs d’environnement en 41,54 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -72,15 +72,16 @@ n’est encore installé sur la VM.
 - Définir l’import opérationnel des sources mixtes. Le convertisseur refuse
   désormais leurs reçus/journaux avant toute écriture dans la destination ;
   il ne les archive plus silencieusement en perdant leurs contraintes actives.
-- Exécuter les plans par les services coordonnés. Les commandes de liens,
-  actions et détails Thread sont maintenant livrées avec reprise ; voir
-  [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
+- Étendre l’exécution des plans : le parcours qualifié STORE/UPDATE vers un
+  projet existant et son dossier est livré avec reprise et rejeu ; voir
+  [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md). Les commandes Thread
+  restent décrites dans [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
 - Raccorder l’actualisation des dossiers et le rappel au contexte et à la validité.
 - Construire le catalogue et les déclencheurs durables ; réduire les scans de
   journaux avant ingestion intensive.
 
-Le planificateur et les dossiers explicites sont livrés, mais le parcours
-Information → projet existant → dossier actualisé → rappel contextuel reste
-incomplet. Les anciens services legacy constituent une pile distincte.
+Le parcours Information → projet existant → dossier actualisé est livré
+pour les entrées explicitement qualifiées ; son rappel contextualisé reste
+à raccorder. Les autres mutations ne rafraîchissent pas encore toutes les vues. Les anciens services legacy constituent une pile distincte.
 La [TODO active](TODO-LIST.md) précise les preuves, priorités et limites actuelles ;
 les audits datés conservent leurs constats historiques.

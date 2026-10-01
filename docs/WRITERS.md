@@ -66,3 +66,8 @@ ne sont pas des écrivains de production à activer sur les données vivantes.
 thread-update-v1 ; les mutations de liens et actions ne passent pas par une
 modification directe de CONCERNS dans ThreadStorage.update. Les primitives
 bas niveau restent distinctes. Voir [THREAD-UPDATES.md](THREAD-UPDATES.md).
+
+`core.routing.execution_cli execute` et RoutingExecutor ajoutent le parcours
+journalisé routing-execution-v1. Le CLI preview est en lecture seule. Le parcours
+utilise les services canoniques et actualise memory/dossiers ; aucun ordonnanceur
+n’est installé. Voir ROUTING-EXECUTION.md.

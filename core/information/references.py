@@ -141,6 +141,12 @@ def ensure_information_write_safety(history_root: Path, information_id: str,
     Approval also requires committed snapshots of the deleted identity to be
     compacted first. Unreadable plans fail closed, with no silent purge.
     """
+    from core.routing.execution_journal import require_available
+    from core.operations.errors import OperationConflict
+    try:
+        require_available(history_root, information_id=information_id)
+    except OperationConflict as exc:
+        raise InformationDeletionBlocked('pending routing execution reserves Information') from exc
     from core.backend.filesystem import FilesystemBackend
     from core.information.write_journal import InformationWriteJournal
     from core.operations.errors import OperationRepositoryError

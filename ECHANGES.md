@@ -19,19 +19,20 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
 - T-031 ajoute les commandes LINK/UNLINK, ADD_ACTION/ACTION_STATUS, DETAILS et
   ThreadService.for_backend ; journal/reprise, réservations et gardes raccordés.
   Lire docs/THREAD-UPDATES.md. Les appels bas niveau restent distincts.
-- T-041/T-042 livrés en local ; T-043 produit des plans mais ne les exécute pas.
-  T-044 reconstruit explicitement les dossiers ; actualisation automatique,
+- T-041/T-042 livrés en local ; T-043 exécute désormais STORE/UPDATE vers un
+  projet existant avec intention durable, lien et dossier actualisé. Les autres
+  branches restent ouvertes. T-044 : actualisation hors de ce parcours,
   catalogue T-045, disponibilité T-046 et rappel contextualisé T-047 à terminer.
-- Dernière suite : **806 réussis, 5 échecs de sockets Manager avant scénario,
-  50,13 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 31 nouveaux cas
+- Dernière suite : **827 réussis, 5 échecs de sockets Manager avant scénario,
+  41,54 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 31 nouveaux cas
   dans cette séance ; aucun essai VM ni coupure de stockage.
 - Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
   reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
-Prochaine livraison : façade reprenable exécutant un plan qualifié vers un
-projet existant et son dossier, puis rappel avec contexte. Optimisation des
+Prochaine livraison : rappel contextualisé de ce parcours ; extension des
+plans et actualisation des dérivés hors parcours à poursuivre. Optimisation des
 journaux T-049 avant ingestion intensive ; recette VM distincte.
 
 ## Sujets à relire lors d'une prochaine session disponible
@@ -554,3 +555,18 @@ Validation finale du lot du soir : **806 réussis, 5 échecs sockets Manager,
 50,13 s**, aucun désélectionné. Les 31 nouveaux cas passent. Le seul attendu
 historique modifié concerne UPDATED désormais autorisé pour un Thread ; le
 contrat est étendu, et les Events réservés aux Informations restent testés.
+
+### T-043 — Première exécution du plan, séance poursuivie
+
+Base publiée `9063313`. STORE/UPDATE qualifié → projet existant → dossier livré,
+avec preview sans écriture, journal d’intention, snapshots/revalidation, IDs
+enfants stables et reçu compact sans corps. Reprise globale, réservations,
+suppressions, inventaire et garde legacy raccordés. Nouveau CLI explicite.
+Contrat : docs/ROUTING-EXECUTION.md. Disponibilité différée ; échéances et
+branches non prises en charge refusées avant mutation. Pas de VM.
+
+21 nouveaux tests ; groupe ciblé 42 réussis ; suite complète **827 réussis,
+5 échecs de sockets Manager en 41,54 s**, aucun désélectionné. Trois preuves
+négatives comportementales (réservation, projection, reçu compact), code remis
+après chaque expérience. Quatre arrêts de processus et deux courses sans Manager.
+Autorisation de toytoy de publier à la fin de chaque tâche ; estimations gelées.

@@ -72,3 +72,10 @@ leur partie planification, source inchangée, conditions manquantes, contexte
 contradictoire, preuve/révision de retrait, CLI en lecture seule. Retirer la règle
 UNKNOWN fait échouer le scénario de contexte manquant. Les obligations de
 persistance et d'activation du scénario programmé ne sont pas comptées validées.
+
+## Exécuteur ajouté au lot du 01/10 au soir
+
+Le planner reste pur. RoutingExecutor exécute désormais le sous-ensemble
+STORE/UPDATE → projet existant → dossier, avec revalidation, intention durable,
+reprise et reçu compact. Les autres branches sont refusées ou explicitement
+différées ; voir [ROUTING-EXECUTION.md](ROUTING-EXECUTION.md).
