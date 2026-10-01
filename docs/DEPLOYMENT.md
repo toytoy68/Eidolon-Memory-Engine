@@ -2,6 +2,13 @@
 
 ## Scope
 
+Updated 2026-10-01, audited code `a779c9d`. Read
+[AUDIT-2026-10-01.md](AUDIT-2026-10-01.md) before rollout. Known blockers:
+Thread FAILED operations are omitted by `recover-all`; the format inventory
+omits `thread-delete-v1`; migration archives deletion receipts without restoring
+their active identity reservations. T-048/T-021 are pending. A zero exit code
+from the current recovery CLI is not permission to restart writers.
+
 The new repositories coordinate linked Thread creation and status changes with
 isolated journals and explicit recovery; see THREAD_RECOVERY.md. New core
 Information deletion requests have an explicit `APPLYING_DELETE` journal and
@@ -45,7 +52,8 @@ updating production.
    run regression fixtures on live memory.
    On a stopped copy, `python -B -m tools.vm_acceptance --source COPIE --workdir
    DOSSIER_VIDE` reports the writer candidates, formats, hash-verified restore,
-   five concurrency tests and three separate read-only audit results. Review
+   five concurrency tests and four separate read-only audit results (including
+   Information write journals). Review
    the full JSON report and every candidate before treating an OK as evidence.
 6. On the isolated copy, inspect pending Operation records and test
    `python -m core.operations.cli recover-all` after keeping a restorable copy.
@@ -64,11 +72,15 @@ updating production.
 ## Proposed startup recovery gate (not installed)
 
 Before enabling any core writer after a restart, stop all writers and preserve
-the current data state. Run Thread `recover-all` first: it resumes linked
-creations before status changes, so a new Thread reference is visible before
-deciding an Information deletion. Audit deletion receipts next, then review
+the current data state. The CLI `recover-all` processes Thread linked creations,
+status changes, deletions, then Information writes. This ordering is implemented,
+not a proof that every cross-family dependency is resolved. It also omits
+FAILED Thread records. Inspect all persistent operation states independently
+and keep writers stopped until T-048 provides a complete tested gate.
+Audit deletion receipts next, then review
 whether to run deletion recovery with `--apply` on the stopped data. If either
-recovery reports a blocked record, keep writers stopped and investigate. This
+recovery reports a blocked record, or a FAILED/unreadable/unresolved record
+remains, keep writers stopped and investigate. This
 ordering needs validation with the actual Debian services, storage paths and
 representative data; it is not a systemd unit or an automatic deletion policy.
 
@@ -91,3 +103,6 @@ before deciding to restore data. The Git tag alone rolls back code, not data.
   Thread creation and each persisted Information deletion boundary separately.
 - Integration tests using representative user datasets.
 - Debian validation and application smoke tests on the actual host.
+
+Human notes in project dossiers must be backed up, including custom output paths
+outside the engine root. These notes cannot be reconstructed from canonical objects.

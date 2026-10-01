@@ -8,6 +8,14 @@ porte sur le dépôt ; les données et services de la VM restent à examiner.
 
 ## Conversion sur une copie et contrôle après écriture
 
+**Limite reproduite le 01/10 (A-03/T-021)** : une source mixte legacy/core
+contenant un reçu DELETED peut être convertie sans rejet ; son reçu reste en
+archive et ne réserve plus l'identité dans la destination. Les journaux,
+Threads et reçus archivés ne sont pas importés comme états actifs. Il faut
+un rejet explicite ou un import de ces invariants avant d'activer une telle
+destination. Un rapport sans rejet et des hashes égaux ne prouvent pas la
+continuité métier. Voir [l'audit](AUDIT-2026-10-01.md).
+
 Après l'inventaire, le précontrôle et la simulation décrits plus bas, utiliser
 deux dossiers **distincts** sur une copie arrêtée. La destination doit être
 neuve ou contenir uniquement un rejeu identique :
@@ -51,7 +59,10 @@ ou un lien symbolique ; sinon 0. **Une signature reconnue ne prouve pas qu'un
 document entier est valide.** Le scanner ne suit pas les liens symboliques
 rencontrés dans les catégories inventoriées ; examiner aussi la structure de la
 copie avant de l'utiliser. Les fichiers portant d'autres extensions et les
-sous-dossiers non listés ne sont pas inventoriés.
+sous-dossiers non listés ne sont pas inventoriés. L'omission connue de
+`memory/history/operations/thread-delete-v1` reste à corriger sous T-048.
+Un JSON corrompu dans cette famille n'apparaît actuellement pas dans
+`needs_review` ; compléter manuellement l'inventaire de la copie.
 
 Pour un premier contrôle structurel des Informations historiques persistantes :
 

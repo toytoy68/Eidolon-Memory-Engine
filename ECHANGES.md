@@ -7,11 +7,11 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 ## Reprise rapide
 
 État constaté le 2026-10-01, sur `refactor/architecture-v1` au commit
-`7616455` (code testé ; bilan documentaire ajouté ensuite). Toujours vérifier la branche et le commit actuels avant de travailler.
+`a779c9d` (base de code du nouvel audit ; documents consolidés ensuite). Toujours vérifier la branche et le commit actuels avant de travailler.
 
 - But : mémoire autonome, contextuelle et traçable ; fichiers canoniques,
   dossiers Markdown vivants, trois niveaux de disponibilité. Voir le
-  [bilan fonctionnel](docs/MEMORY-ARCHITECTURE-2026-09-30.md).
+  [architecture cible consolidée](docs/ARCHITECTURE-CIBLE.md).
 - T-040 : contrat fonctionnel v0.1 et mapping textuel Information/Memory livrés.
   T-043 exécute maintenant leur partie planification ; les déclencheurs durables
   et leur activation restent T-046.
@@ -24,9 +24,10 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 - D7/D8/D9 validées par toytoy : annuler PENDING_DELETE avant nouvelle
   modification métier ; conserver l'empreinte dans le reçu v1 sans garantie
   de confidentialité ; conserver l'identité après CANCELLED.
-- Dernière suite réellement exécutée : **754 réussis, 5 exclus**, pytest 9.1.1,
-  sur le code publié dans `7616455`. Ce résultat vient de la séance Codex ;
-  ce n'est pas une exécution indépendante de Claude ni une validation VM.
+- Dernière suite réellement exécutée : **754 réussis, 5 échecs d’environnement**,
+  aucun désélectionné, 31,46 s, pytest 9.1.1, code `a779c9d`. Les cinq Manager
+  échouent avant scénario métier (sockets interdites), non validés. Ce résultat
+  vient de Codex, pas de Claude ni d'une VM. Voir [l'audit](docs/AUDIT-2026-10-01.md).
 - Accès Claude au dépôt et accès VM annoncés par toytoy pour le weekend,
   **pas encore constatés**. Aucun résultat VM disponible.
 - Estimation globale gelée à 45 %, grille à 52,75 points (+2 pour les écritures
@@ -48,6 +49,10 @@ Ces questions ne déclenchent pas automatiquement une session Claude.
 | E-001 | Haute | REVUE REÇUE — intégration T-041/T-042 | T-041/T-042, `0f45070` | Revue du format de commande/reçu et des interruptions |
 | E-002 | Moyenne | REVUE REÇUE — lecture seule | T-040/T-039, `b01ed9f` et `b967bf4` | Revue indépendante des deux lots déjà livrés |
 | E-003 | Haute avant mise en service | EN ATTENTE D'ACCÈS VM | T-010 à T-015/T-021/T-032 | Rapport réel, commit testé et limites d'environnement |
+| E-004 | Haute avant client | À RELIRE | T-043/T-044 | Plans et projections livrés, limites de fraîcheur |
+| E-005 | Bloquant exploitation | À RELIRE | T-048/T-015 | FAILED omis et inventaire Thread incomplet |
+| E-006 | Bloquant migration mixte | À RELIRE | T-021/T-050 | Réservations archivées et histoire après compaction |
+| E-007 | Haute architecture | À RELIRE | T-031/T-043 à T-049 | Ordre métier, reprise des dérivés, catalogue et disponibilité |
 
 ### E-001 — Écritures et reçus compacts
 
@@ -287,3 +292,16 @@ humaines du dossier ne sont pas reconstructibles depuis les fichiers canoniques 
 elles nécessitent sauvegarde et règle de conservation distinctes.
 
 **Réponse Claude : non reçue.**
+
+## Consolidation de l'audit du 01/10 — Codex/GPT
+
+Documents à relire : [audit complet](docs/AUDIT-2026-10-01.md),
+[architecture cible](docs/ARCHITECTURE-CIBLE.md), [TODO active](TODO-LIST.md).
+L'ancienne TODO est conservée intégralement dans TODO-HISTORY-2026-10-01.md.
+Aucun code métier corrigé pendant cet audit ; T-048/T-021 portent les défauts
+reproduits. T-049 suit la performance ; T-050 l'histoire/rétention.
+
+Les avis Claude antérieurs E-001/E-002 restent attribués et datés. Aucune
+nouvelle réponse reçue à cette consolidation. Pour E-005/E-006/E-007, indiquer
+un contre-exemple, une correction ou un accord argumenté avec fichier/test et
+commit lu, en distinguant exécution réelle et simple lecture.

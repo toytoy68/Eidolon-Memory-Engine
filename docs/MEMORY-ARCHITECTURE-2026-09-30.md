@@ -1,5 +1,10 @@
 # Memory Engine — besoins, architecture et ordre des travaux
 
+> Document historique avec compléments de séance. Pour l'état courant, lire
+> [l'audit du 01/10](AUDIT-2026-10-01.md), l'[architecture cible consolidée](ARCHITECTURE-CIBLE.md)
+> et la [TODO active](../TODO-LIST.md). Les constats datés ci-dessous restent
+> conservés comme historique et ne constituent pas l'inventaire actuel.
+
 Date : 2026-09-30. Base de code examinée : `e0c21a9`, branche
 `refactor/architecture-v1`. Ce document incorpore la clarification avec
 toytoy et les propositions de Claude transmises dans la conversation.

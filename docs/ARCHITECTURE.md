@@ -1,14 +1,14 @@
 # Frontières actuelles du Memory Engine
 
-La [clarification fonctionnelle du 30/09](MEMORY-ARCHITECTURE-2026-09-30.md)
-décrit la cible contextuelle, les dossiers Markdown, les trois niveaux de
-disponibilité et l'ordre des futurs travaux. La
-[conception Information](DESIGN-INFORMATION-WRITES.md) intègre les propositions
-de la revue croisée. Ces documents ne décrivent pas des fonctions livrées ;
-le présent fichier reste l'inventaire des chemins actuels.
+L’[architecture cible consolidée](ARCHITECTURE-CIBLE.md) décrit les besoins
+contextuels, les dossiers Markdown, les trois niveaux de disponibilité et leurs
+contrats. La [conception Information](DESIGN-INFORMATION-WRITES.md) intègre les propositions
+de la revue croisée. Ces documents distinguent les fonctions livrées de la cible ;
+le présent fichier décrit les chemins actuels, confrontés à
+l’[audit du 01/10](AUDIT-2026-10-01.md).
 
-État du dépôt au 2026-09-30. Les décisions ci-dessous concernent le code
-présent ; leur adoption sur la VM 110 reste soumise à sauvegarde, inventaire et
+État au 2026-10-01, base de code `a779c9d`. Les décisions concernent le code
+présent ; leur adoption sur la VM réelle reste soumise à sauvegarde, inventaire et
 tests. La source de vérité est le stockage en fichiers sous `memory/`, pas un
 index Qdrant. La forme future des API et de la migration reste ouverte.
 
@@ -55,6 +55,9 @@ tableau ci-dessous précise les frontières de coordination dans le code.
 
 | Composant | Lecture | Écriture actuelle | Règle de coexistence |
 | --- | --- | --- | --- |
+| `core/information/FilesystemInformationWrites` | Memory complet, journaux/reçus et suppression | create/update journalisés, Event déterministe, reprise/compaction v1 | Chemin métier Information ; Persistent → Operation → Event ; primitives directes encore accessibles |
+| `core/routing/policy` | Memory et RoutingContext explicites | Aucune : plan expliqué | Qualification automatique, exécution et détection de contradictions non livrées |
+| `core/dossiers/ProjectDossiers` | Thread, Informations CONCERNS et journaux | Vue Markdown explicite, notes humaines préservées | Reconstruction manuelle ; pas d’actualisation/purge automatique, notes non reconstructibles |
 | `core/backend/FilesystemBackend` | `persistent/*.md`, `history/pending-delete/*.json`, Threads et journaux `thread-create-v1` lors d'une suppression | Informations et demandes sous verrou ; suppression après contrôle des liens Thread et Information ainsi que des créations liées inachevées | Primitive de stockage/import ; préférer le service Information coordonné pour les mutations métier. Partager la même racine d'historique et ne pas lancer le controller historique sur ces fichiers. |
 | `core/threads/ThreadStorage` | `persistent/threads/*.md` | Création/mise à jour sous verrou et suppression via `thread-delete-v1` | Création et mise à jour directes restent hors journal ; `delete` implicite consulte désormais les trois journaux canoniques via le même assemblage que le CLI (T-039 corrigé en local). |
 | `core/threads/ThreadInformationLinkService` | Information ciblée | Crée un Thread avec relation `CONCERNS` | Vérifie l'existence sous le verrou partagé de `persistent/` au moment de la création ; ne garantit pas que la cible restera présente après une suppression ultérieure. |
@@ -129,8 +132,10 @@ via `ThreadService.create_linked` ou le CLI
 elle prépare un snapshot et un journal dans `thread-create-v1`, puis écrit le
 Thread et son Event `CREATED`. Après interruption, exécuter
 `python -m core.operations.cli recover-all` : la commande reprend les créations,
-puis les changements de statut et les suppressions Thread, et renvoie un code non nul si un journal reste
-bloqué. Les commandes `recover-creations` et `recover` restent disponibles pour
+puis les changements de statut et les suppressions Thread, enfin les écritures
+Information. La commande renvoie un code non nul pour un BLOCKED rapporté, mais les
+FAILED Thread sont ignorés : ce n'est pas un contrôle complet d'autorisation
+de démarrage (A-01/T-048). Les commandes `recover-creations` et `recover` restent disponibles pour
 chaque famille. Un Thread ou Event divergent bloque la
 reprise sans écrasement. La création directe via `ThreadInformationLinkService`
 reste disponible mais n'écrit ni journal ni Event ; les autres chemins de
@@ -139,8 +144,9 @@ L'approbation d'une suppression Information lit aussi les journaux de création
 liée non terminés sous le verrou Persistent : une cible réservée bloque la
 suppression avant même que le fichier Thread existe. Un journal illisible
 bloque également la suppression pour revue.
-`ThreadService.recover_all` fournit le même ordre de reprise aux appelants
-Python lorsque les coordinateurs lui sont injectés. La reprise des suppressions
+`ThreadService.recover_all` fournit l'ordre des trois familles Thread aux appelants
+Python lorsque les coordinateurs lui sont injectés ; l'ajout des écritures
+Information est fait par le CLI, pas par ce service Thread. La reprise des suppressions
 Information reste distincte et explicitement contrôlée.
 L'écriture directe de `ThreadStorage.create` prend maintenant les verrous
 `persistent/` puis `threads/` et vérifie que chaque cible `CONCERNS` est une
@@ -166,7 +172,7 @@ python -m core.operations.cli create-linked thread-1 info-1 \
 Rejouer la même commande exige les mêmes champs et la même date ; un identifiant
 d'opération réutilisé avec un autre contenu est refusé.
 
-## Avant la coexistence sur VM 110
+## Avant la mise en service sur la VM
 
 1. Identifier les services et tâches planifiées qui écrivent actuellement ;
    arrêter leurs écritures le temps de la sauvegarde et de la validation.
@@ -182,7 +188,7 @@ Le service Information coordonné et ses Events sont livrés en local le 01/10 ;
 la migration de tous les appelants, la correspondance métier de la conversion
 et la cohérence globale des lectures multi-fichiers restent à valider ou concevoir. Le convertisseur local et son vérificateur
 ne sont pas validés sur la VM.
-Seul le nouveau chemin de création journalisée produit un Event `CREATED` ;
+Les créations journalisées Thread et Information produisent un Event `CREATED` ;
 les lecteurs d'un répertoire Event n'agrègent pas les sous-répertoires.
 La suppression du backend prend les verrous `persistent/` puis `threads/`
 pendant la vérification et l'approbation. Une demande de suppression peut rester
@@ -270,3 +276,20 @@ copie arrêtée pour une décision de migration ou de suppression.
   et à la purge ; aucune promesse d'effacement global n'est faite.
 
 Résultats, versions, preuves négatives et limites VM : [séance du 01/10](SESSION-2026-10-01.md).
+
+## Écarts opérationnels vérifiés lors de l'audit du 01/10
+
+- Le CLI recover-all ignore FAILED Thread ; l'inventaire omet thread-delete-v1.
+  Ces deux défauts précèdent le contrôle automatique de démarrage.
+- La migration conserve les reçus en archive mais ne réactive pas leurs
+  réservations d'identité ; les sources mixtes nécessitent un import/rejet
+  explicite avant activation de la destination.
+- Aucune commande coordonnée ne modifie encore actions ou cibles CONCERNS
+  d'un projet existant. ThreadManager agit en mémoire ; le stockage direct
+  ne constitue pas ce service métier.
+- Le planner n'est raccordé ni à un exécuteur de plans ni au ContextAssembler.
+  Dossiers, catalogue et index n'ont pas de mécanisme commun de fraîcheur.
+- Après compaction Information, la trace subsiste mais les anciens textes ne
+  sont pas reconstructibles depuis les seuls Events/reçus.
+
+Preuves et reproductions : [audit actualisé](AUDIT-2026-10-01.md).

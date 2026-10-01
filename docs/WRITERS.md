@@ -1,7 +1,7 @@
 # Écrivains connus et contrôle avant recette VM
 
-Carte établie à partir du code de `refactor/architecture-v1` le 30 septembre
-2026. Les noms des unités et les commandes réellement installées sur la VM
+Carte actualisée depuis le code `a779c9d` de `refactor/architecture-v1` le
+1er octobre 2026. Les noms des unités et les commandes réellement installées sur la VM
 ne figurent pas dans ce dépôt. Les découvrir **sur la VM**, puis comparer
 leurs racines de données et leurs formats à cette carte.
 
@@ -9,9 +9,11 @@ leurs racines de données et leurs formats à cette carte.
 | --- | --- | --- |
 | `services/memory-controller/memory_controller.py` : `ingest`, `update`, `review`, `execute` | `memory/working/*.md`, `memory/persistent/*.md`, anciens `history/{events,reviews}/*.md`, `history/operations/*.json` | Verrous sur Working/Persistent et publication par fichier ; séquence Event/Review/Information sans journal core. Garde contre des données core détectées dans Persistent. |
 | `services/memory-relations/memory_relation_engine.py` : `add` | `memory/working/*.md`, anciens Events et Reviews | Source limitée à Working, verrou et remplacement du fichier ; pas de transaction commune avec Event/Review. |
-| `core/backend/FilesystemBackend` | `memory/persistent/*.md`, `history/pending-delete/*.json` | Verrous de fichiers ; approbation Information avec reçu `APPLYING_DELETE` et contrôle des liens. Aucun Event d'écriture Information coordonné. |
+| `core/backend/FilesystemBackend` | `memory/persistent/*.md`, `history/pending-delete/*.json` | Verrous de fichiers ; approbation Information avec reçu `APPLYING_DELETE` et contrôle des liens. Ces appels directs ne produisent pas les Events du service Information. |
 | `core/threads/ThreadStorage` appelé directement | `memory/persistent/threads/*.md`, `history/operations/thread-delete-v1/*.json` pour `delete` | Création/mise à jour sans Event ni Operation ; suppression journalisée avec consultation des trois familles canoniques via `for_history` (T-039 corrigé en local). Journaux personnalisés : injecter leur coordinateur complet. |
-| `core.operations.cli` : `create-linked`, `change-status`, `delete-thread` | Thread, `history/operations/thread-{create,status,delete}-v1/`, `history/events/thread-{create,status}-v1/` | Coordinateurs sous verrous ; `recover-all` reprend création, statut, suppression Thread dans cet ordre. |
+| `core.operations.cli` : `create-linked`, `change-status`, `delete-thread` | Thread, `history/operations/thread-{create,status,delete}-v1/`, `history/events/thread-{create,status}-v1/` | Coordinateurs sous verrous ; `recover-all` reprend création, statut, suppression Thread puis Information ; FAILED Thread omis, T-048 requis. |
+| `core.information.cli` / `FilesystemInformationWrites` | Information, operations/events information-write-v1, operation-receipts information-write-v1 | Persistent → Operation → Event ; create/update/recover/compact explicites |
+| `core.dossiers.cli rebuild` / `ProjectDossiers` | memory/dossiers ou sortie dédiée, notes humaines incluses | Persistent → Thread → Dossier ; projection explicite, sans invalidation automatique |
 | `core.migration.converter` | Destination explicite : Information core, `archive/`, `migration-report.json` | Ne modifie pas la source ; copier et vérifier hors de la racine active. |
 
 Les CLI historiques classifier, router, executor et semantic-validator sont
@@ -49,3 +51,10 @@ et leurs Events dans les familles `information-write-v1`. Reprise explicite
 également raccordée à `core.operations.cli recover-all`. Voir
 [INFORMATION-WRITES.md](INFORMATION-WRITES.md). Les appels directs au backend
 restent destinés au stockage/import et ne fournissent pas ces garanties.
+
+Le planner `core.routing.policy` ne produit que des plans en mémoire ; il
+n'exécute pas d'écriture. Les API Python bas niveau et les générateurs/tests
+peuvent écrire directement : ne pas les présenter comme des services métier.
+La commande preflight écrit puis retire un fichier de sonde dans la racine.
+La recette VM et les évaluations écrivent dans leurs espaces de travail ; elles
+ne sont pas des écrivains de production à activer sur les données vivantes.

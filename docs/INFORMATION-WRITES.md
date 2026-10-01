@@ -118,3 +118,10 @@ physique. Dossiers de sauvegarde, archives et snapshots du système de fichiers
 peuvent conserver des copies anciennes ; la commande ne les purge pas.
 Les reçus sont conservés sans expiration dans cette v1. Aucun ordonnanceur de
 compaction, rétention automatique ou effacement des empreintes n'est ajouté.
+
+## Histoire après compaction
+
+La compaction retire les snapshots avant/après. Le reçu et l'Event permettent
+la traçabilité/reprise, pas la reconstruction intégrale des anciens textes.
+Conserver les observations historiques nécessaires comme Informations distinctes
+reliées ; une archive de révisions demanderait une politique séparée (T-050).
