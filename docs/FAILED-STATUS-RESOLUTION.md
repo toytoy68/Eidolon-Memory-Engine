@@ -161,8 +161,8 @@ Ne pas enlever `manual_resolutions` pour rendre ces fichiers lisibles par une
 ancienne version. Il faut conserver un lecteur compatible avec la nouvelle
 trace lors d'un déploiement ou d'une restauration.
 
-Il ne s'agit pas d'une résolution générale de FAILED : écritures Information,
-parents de routage et conflits réels
+Les écritures Information ont maintenant un [parcours dédié](FAILED-INFORMATION-RESOLUTION.md).
+Parents de routage et conflits réels
 restent hors de ce parcours. Aucun état ABANDONED ajouté. L'autorisation humaine
 ne signifie pas que le moteur a identifié la cause initiale de l'échec ; cette
 analyse motive la décision fournie par l'opérateur. Aucune commande n'est lancée

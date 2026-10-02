@@ -35,9 +35,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 ## Dernière vérification
 
 Suite complète directe sur VM du **03/10/2026** après extension T-048 aux
-suppressions Thread FAILED : **1277 réussis en 30,37 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `20a283a` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-WqCdZc`, corpus synthétique isolé, journal conservé.
+écritures Information FAILED : **1335 réussis en 32,13 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `dcbdf1c` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-rmKyis`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -190,8 +190,18 @@ refusées ; Information disparue non recréée. 30 tests rouges avant puis verts
 réels et deux reprises concurrentes, preuves négatives revalidation/trace.
 Corpus synthétique uniquement, aucune résolution sur journaux réels.
 
+Extension Information du 03/10, base `dcbdf1c` vérifiée sur GitHub : reprise
+humaine CREATE/UPDATE avec RETRY_INFORMATION_WRITE_V1 ; audit strict conservé par
+compaction et comparaison journal/reçu avant retrait. Rejeu après suppression
+sans recréation, anciens reçus sans trace inchangés ; anciens binaires refusent
+les objets enrichis. 58 nouveaux tests, 295 ciblés verts en 7,29 s ; six arrêts
+réels, concurrence et compaction interrompue. Trois preuves négatives (revalidation,
+trace atomique, conservation à compaction), un échec chacune. Suite VM 1335 verts
+en 32,13 s sur données synthétiques uniquement. Contrat :
+[FAILED-INFORMATION-RESOLUTION.md](docs/FAILED-INFORMATION-RESOLUTION.md).
+
 Restant exploitation : installation du contrôle dans les services réels,
-dépendances sur corpus réel VM, autres familles FAILED (écritures Information), intentions parentes, divergences et abandon
+dépendances sur corpus réel VM, intentions parentes FAILED, divergences et abandon
 explicite éventuel avec traitement des effets/réservations. Aucun abandon automatique livré. Une
 lecture ponctuelle ne protège pas contre le redémarrage ultérieur d'un écrivain legacy.
 

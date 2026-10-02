@@ -69,10 +69,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1277 réussis en
-30,37 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `20a283a` plus le lot T-048 de reprise humaine des suppressions Thread FAILED ;
-30 nouveaux cas, 190 ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1335 réussis en
+32,13 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `dcbdf1c` plus le lot T-048 de reprise humaine des écritures Information FAILED ;
+58 nouveaux cas, 295 ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,
@@ -106,8 +106,11 @@ Détails et limites dans [ECHANGES.md](ECHANGES.md).
 
 La résolution FAILED couvre les créations liées, suppressions, statuts et éditions Thread (liens, actions,
 titre/objectif/contexte) : aperçu,
-auteur/motif explicites, trace et autorisation atomiques avant reprise. Les autres
-familles restent bloquées. Les anciens binaires refusent les journaux enrichis
+auteur/motif explicites, trace et autorisation atomiques avant reprise.
+Les écritures Information ont un
+[parcours dédié](docs/FAILED-INFORMATION-RESOLUTION.md), avec trace conservée
+dans les reçus compacts ; parents de routage et conflits restent bloqués.
+Les anciens binaires refusent les journaux et reçus enrichis
 avec cette trace ; détails dans [le contrat](docs/FAILED-STATUS-RESOLUTION.md).
 
 Sur une copie arrêtée, `MEMORY_ENGINE_ROOT` désigne la racine contenant `memory/` :

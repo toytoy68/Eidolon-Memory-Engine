@@ -3,6 +3,7 @@
 The reader never creates directories or lock files. Live callers hold the
 Persistent/Operation locks; offline audits operate on a stopped data copy.
 """
+from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 from pathlib import Path
@@ -11,7 +12,7 @@ from types import MappingProxyType
 
 from core.operations.errors import OperationConflict
 from core.operations.filesystem import FilesystemOperationRepository
-from core.operations.models import OperationRecord, OperationStatus
+from core.operations.models import OperationRecord, OperationStatus, OperationType
 from core.persistence import has_symlink_component
 from core.storage_format import decode_json_value
 
@@ -30,12 +31,15 @@ def event_hash(event):
 
 def receipt_for(operation, event, compacted_at):
     from core.information.writes import operation_result
-    return dict(format_version=1, status='COMMITTED', operation_id=operation.operation_id,
+    receipt = dict(format_version=1, status='COMMITTED', operation_id=operation.operation_id,
                 operation_type=operation.operation_type.value, target_id=operation.target_id,
                 previous_revision=operation.previous_revision, revision=operation.revision,
                 event_id=operation.plan.event_id, command_fingerprint=operation.plan.command_fingerprint,
                 plan_hash=operation.execution_plan_hash, event_sha256=event_hash(event),
                 result=operation_result(operation), compacted_at=compacted_at)
+    if operation.manual_resolutions:
+        receipt['manual_resolutions'] = deepcopy(operation.manual_resolutions)
+    return receipt
 
 
 @dataclass(frozen=True)
@@ -113,7 +117,7 @@ class InformationWriteJournal:
             return None
         try:
             data = decode_json_value(path.read_text(encoding='utf-8'))
-            if (not isinstance(data, dict) or set(data) != RECEIPT_FIELDS
+            if (not isinstance(data, dict) or set(data) not in (RECEIPT_FIELDS, RECEIPT_FIELDS | {'manual_resolutions'})
                     or type(data['format_version']) is not int or data['format_version'] != 1
                     or data['status'] != 'COMMITTED' or data['operation_id'] != operation_id
                     or data['operation_type'] not in {'INFORMATION_CREATE', 'INFORMATION_UPDATE'}):
@@ -133,6 +137,9 @@ class InformationWriteJournal:
             if data['result'] != dict(information_id=data['target_id'], previous_revision=previous,
                                       revision=revision, event_id=data['event_id']):
                 raise ValueError('compact receipt result mismatch')
+            FilesystemOperationRepository._validate_manual_resolutions(
+                OperationType(data['operation_type']), OperationStatus.COMMITTED,
+                data.get('manual_resolutions', []))
             return data
         except (OSError, UnicodeError, ValueError, TypeError, KeyError) as exc:
             raise OperationConflict('invalid compact receipt') from exc
