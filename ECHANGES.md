@@ -6,8 +6,8 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-T-048 du 03/10 : reprise humaine des créations Thread FAILED livrée ;
-1247 tests réussis directement sur VM en 29,82 s, corpus synthétique isolé.
+T-048 du 03/10 : reprise humaine des quatre familles Thread FAILED livrée ;
+1277 tests réussis directement sur VM en 30,37 s, corpus synthétique isolé.
 Détails et limites dans la dernière entrée.
 
 Recette directe Codex du 03/10 sur `9780473` : neuf étapes OK dans
@@ -1298,3 +1298,32 @@ mémoire active, aucune résolution humaine exécutée sur des journaux réels,
 aucune coupure électrique. Suppression Thread FAILED, écritures Information,
 intentions parentes, conflits/abandon et import opérationnel général restent
 ouverts. Aucun service installé ; estimations 45 % / 52,75 points inchangées.
+
+
+## T-048 — Reprise humaine des suppressions Thread FAILED, 3 octobre 2026
+
+Base `20a283a`, confirmé sur GitHub avant ce lot. THREAD_DELETE peut maintenant
+être revu par `preview --family thread-delete-v1` puis repris avec la décision
+humaine explicite. Le snapshot, les IDs et les révisions sont conservés ; trace
+RETRY_THREAD_DELETE_V1 et APPLYING atomiques, reprise normale et rejeu terminal.
+Thread BEFORE/ABSENT, `delete_thread`, Event NOT_APPLICABLE : aucun Event ajouté.
+La validation du snapshot est partagée avec le coordinateur. Remplacement
+divergent, revue périmée, réservation Thread, collision d'operation_id dans une
+autre famille même COMMITTED et autre état non résolu bloquent l'autorisation.
+Un rejeu terminal refuse aussi une identité réutilisée. Une Information disparue
+après retrait du Thread ne bloque pas la clôture ; aucune Information recréée
+ni suppression Information approuvée implicitement. Les parents de routage et
+les familles autres que Thread restent hors de ce parcours.
+
+**30 nouveaux cas**, tous rouges avant implémentation ; **190 ciblés réussis en
+4,41 s** après. Trois arrêts réels code 74, deux décisions concurrentes sans
+Manager, indépendance de plusieurs FAILED, deuxième échec, suppression du lien
+puis de l'Information, CLI et audit strict couverts. Deux substitutions en mémoire
+(revue figée / trace retirée à APPLYING) produisent chacune un échec ; aucune
+substitution conservée. Suite complète isolée hors sandbox sur VM :
+**1277 passed in 30.37s**, aucun échec, saut ou désélection,
+Python `.venv` 3.13.5/pytest 9.1.1. Journal `/tmp/em-suite-WqCdZc/pytest.log`.
+Preuve sur base `20a283a` plus ce lot avant commit. Données synthétiques uniquement,
+aucun journal réel résolu, aucun service installé ni coupure électrique.
+Écritures Information FAILED, parents, abandon/conflits et import général ouverts.
+Estimations 45 % / 52,75 points inchangées.

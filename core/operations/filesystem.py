@@ -221,6 +221,7 @@ class FilesystemOperationRepository(OperationRepository):
             OperationType.THREAD_STATUS_CHANGE: 'RETRY_THREAD_STATUS_V1',
             OperationType.THREAD_UPDATE: 'RETRY_THREAD_UPDATE_V1',
             OperationType.THREAD_CREATE: 'RETRY_THREAD_CREATE_V1',
+            OperationType.THREAD_DELETE: 'RETRY_THREAD_DELETE_V1',
         }
         history = operation.manual_resolutions
         if not isinstance(history, list) or (history and (

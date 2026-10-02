@@ -35,9 +35,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 ## Dernière vérification
 
 Suite complète directe sur VM du **03/10/2026** après extension T-048 aux
-créations Thread FAILED : **1247 réussis en 29,82 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `06c9570` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-hfIokV`, corpus synthétique isolé, journal conservé.
+suppressions Thread FAILED : **1277 réussis en 30,37 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `20a283a` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-WqCdZc`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -182,9 +182,16 @@ provoque un échec chacun dans des processus de preuve distincts.
 Suite complète VM : 1247 réussis en 29,82 s. Corpus synthétique uniquement,
 aucune résolution sur données réelles ni coupure électrique.
 
+Extension suivante du 03/10, base `20a283a` vérifiée sur GitHub : THREAD_DELETE
+supporté par revue `--family thread-delete-v1` et trace RETRY_THREAD_DELETE_V1.
+Thread BEFORE/ABSENT, retrait exact sans Event, divergence et identité réutilisée
+refusées ; Information disparue non recréée. 30 tests rouges avant puis verts,
+190 ciblés réussis en 4,41 s ; suite VM 1277 réussis en 30,37 s. Trois arrêts
+réels et deux reprises concurrentes, preuves négatives revalidation/trace.
+Corpus synthétique uniquement, aucune résolution sur journaux réels.
+
 Restant exploitation : installation du contrôle dans les services réels,
-dépendances sur corpus réel VM, autres familles FAILED (suppression
-Thread, écritures Information), intentions parentes, divergences et abandon
+dépendances sur corpus réel VM, autres familles FAILED (écritures Information), intentions parentes, divergences et abandon
 explicite éventuel avec traitement des effets/réservations. Aucun abandon automatique livré. Une
 lecture ponctuelle ne protège pas contre le redémarrage ultérieur d'un écrivain legacy.
 

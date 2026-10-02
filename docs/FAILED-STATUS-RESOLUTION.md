@@ -1,8 +1,9 @@
-# Résolution humaine FAILED — créations, statuts et éditions Thread
+# Résolution humaine FAILED — opérations Thread
 
 Ce parcours traite THREAD_STATUS_CHANGE dans `thread-status-v1`,
 THREAD_UPDATE dans `thread-update-v1` et THREAD_CREATE dans
-`thread-create-v1`, sous `memory/history/operations/`. Une personne peut autoriser la
+`thread-create-v1`, ainsi que THREAD_DELETE dans `thread-delete-v1`,
+sous `memory/history/operations/`. Une personne peut autoriser la
 reprise du **plan original**, après examen des effets présents. Il n'existe ni
 abandon, ni remplacement des snapshots, ni annulation implicite des effets.
 Les autres familles FAILED restent bloquantes et demandent un parcours dédié.
@@ -41,13 +42,23 @@ réserve déjà le lien, puis le Thread créé conserve cette protection.
 Les parents de routage non terminés et les autres familles FAILED restent
 bloquants : cette extension ne résout pas leurs enfants indépendamment du parent.
 
+Pour une suppression, utiliser `--family thread-delete-v1`. La revue donne
+Thread BEFORE/ABSENT, `delete_thread` et Event NOT_APPLICABLE : ce parcours
+ne crée aucun Event ni répertoire Events. Le Thread présent doit être exactement
+le snapshot original ; un remplacement divergent est refusé, même au rejeu
+COMMITTED. Le snapshot et l'Event éventuel des autres familles ne sont pas
+modifiés. Les collisions d'operation_id avec les autres familles, même COMMITTED,
+sont refusées. Les Informations référencées dans le snapshot ne sont pas recréées
+ni exigées pour finir la suppression ; retirer ce Thread peut libérer une
+référence, mais n'approuve aucune suppression Information.
+
 Sans `--family`, le CLI conserve la famille de statut. La revue d'édition ajoute
 la commande originale complète (`command`) pour l'examen humain.
 
 `preview` est sans écriture, même sans arbre valide. Le shell peut écrire le
 rapport au chemin explicitement choisi ; garder cette revue hors des journaux
 canoniques. L'aperçu donne opération/cible, révisions, empreinte du plan et des
-octets FAILED, état du Thread BEFORE/AFTER (ABSENT/AFTER pour création) et de
+octets FAILED, état du Thread BEFORE/AFTER (ABSENT/AFTER pour création, BEFORE/ABSENT pour suppression) et de
 l'Event ABSENT/MATCH, effets encore nécessaires et décisions humaines antérieures. Les snapshots complets
 restent consultables dans le journal source. L'aperçu ne vaut pas autorisation.
 
@@ -101,8 +112,8 @@ Il n'y a aucune réécriture forcée des sources pour les faire correspondre.
 Une seule publication atomique du journal réalise ces deux changements :
 
 1. Ajouter une entrée à `manual_resolutions` avec `resolution_id`, action
-   RETRY_THREAD_STATUS_V1, RETRY_THREAD_UPDATE_V1 ou RETRY_THREAD_CREATE_V1
-   selon la famille,
+   RETRY_THREAD_STATUS_V1, RETRY_THREAD_UPDATE_V1, RETRY_THREAD_CREATE_V1
+   ou RETRY_THREAD_DELETE_V1 selon la famille,
    auteur, motif, date, SHA-256 du journal FAILED et
    SHA-256 de la revue approuvée.
 2. Passer ce même journal de FAILED à APPLYING, sans changer le plan,
@@ -130,7 +141,7 @@ continue de bloquer ce résidu pour examen, sans nettoyage aveugle.
 ## Format, compatibilité et limites
 
 `manual_resolutions` est un champ optionnel strict du journal Operation, permis
-ici pour THREAD_STATUS_CHANGE, THREAD_UPDATE et THREAD_CREATE, avec action correspondant
+ici pour les quatre types Thread, avec action correspondant
 strictement au type d’opération. Il est omis si vide : les journaux
 anciens ne sont pas migrés à la lecture ni enrichis artificiellement.
 Le calcul de hash du **plan** exclut cette trace, comme il exclut le statut ;
@@ -150,8 +161,8 @@ Ne pas enlever `manual_resolutions` pour rendre ces fichiers lisibles par une
 ancienne version. Il faut conserver un lecteur compatible avec la nouvelle
 trace lors d'un déploiement ou d'une restauration.
 
-Il ne s'agit pas d'une résolution générale de FAILED : suppression
-de Thread, écritures Information, parents de routage et conflits réels
+Il ne s'agit pas d'une résolution générale de FAILED : écritures Information,
+parents de routage et conflits réels
 restent hors de ce parcours. Aucun état ABANDONED ajouté. L'autorisation humaine
 ne signifie pas que le moteur a identifié la cause initiale de l'échec ; cette
 analyse motive la décision fournie par l'opérateur. Aucune commande n'est lancée
@@ -237,3 +248,32 @@ mémoire active, aucune résolution humaine exécutée sur des journaux réels,
 aucune coupure électrique. Suppression Thread FAILED, écritures Information,
 intentions parentes, conflits/abandon et import opérationnel général restent
 ouverts. Aucun service installé ; estimations 45 % / 52,75 points inchangées.
+
+
+## T-048 — Reprise humaine des suppressions Thread FAILED, 3 octobre 2026
+
+Base `20a283a`, confirmé sur GitHub avant ce lot. THREAD_DELETE peut maintenant
+être revu par `preview --family thread-delete-v1` puis repris avec la décision
+humaine explicite. Le snapshot, les IDs et les révisions sont conservés ; trace
+RETRY_THREAD_DELETE_V1 et APPLYING atomiques, reprise normale et rejeu terminal.
+Thread BEFORE/ABSENT, `delete_thread`, Event NOT_APPLICABLE : aucun Event ajouté.
+La validation du snapshot est partagée avec le coordinateur. Remplacement
+divergent, revue périmée, réservation Thread, collision d'operation_id dans une
+autre famille même COMMITTED et autre état non résolu bloquent l'autorisation.
+Un rejeu terminal refuse aussi une identité réutilisée. Une Information disparue
+après retrait du Thread ne bloque pas la clôture ; aucune Information recréée
+ni suppression Information approuvée implicitement. Les parents de routage et
+les familles autres que Thread restent hors de ce parcours.
+
+**30 nouveaux cas**, tous rouges avant implémentation ; **190 ciblés réussis en
+4,41 s** après. Trois arrêts réels code 74, deux décisions concurrentes sans
+Manager, indépendance de plusieurs FAILED, deuxième échec, suppression du lien
+puis de l'Information, CLI et audit strict couverts. Deux substitutions en mémoire
+(revue figée / trace retirée à APPLYING) produisent chacune un échec ; aucune
+substitution conservée. Suite complète isolée hors sandbox sur VM :
+**1277 passed in 30.37s**, aucun échec, saut ou désélection,
+Python `.venv` 3.13.5/pytest 9.1.1. Journal `/tmp/em-suite-WqCdZc/pytest.log`.
+Preuve sur base `20a283a` plus ce lot avant commit. Données synthétiques uniquement,
+aucun journal réel résolu, aucun service installé ni coupure électrique.
+Écritures Information FAILED, parents, abandon/conflits et import général ouverts.
+Estimations 45 % / 52,75 points inchangées.

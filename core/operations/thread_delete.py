@@ -69,7 +69,7 @@ class FilesystemThreadDeletion:
             self.operations.create(operation)
             self._resume(operation)
 
-    def _resume(self, operation: OperationRecord) -> None:
+    def _validated_states(self, operation: OperationRecord):
         if (operation.operation_type is not OperationType.THREAD_DELETE
                 or not isinstance(operation.plan, ThreadDeletePlan)
                 or plan_hash(operation) != operation.execution_plan_hash):
@@ -79,6 +79,10 @@ class FilesystemThreadDeletion:
                 or before.revision != operation.previous_revision
                 or operation.revision != before.revision + 1):
             raise OperationConflict("Thread deletion snapshot identity mismatch")
+        return before, None
+
+    def _resume(self, operation: OperationRecord) -> None:
+        before, _ = self._validated_states(operation)
         current = self.storage.get(operation.target_id)
         if current is not None and current != before:
             raise OperationConflict("Thread diverged from deletion snapshot")

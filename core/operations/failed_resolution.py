@@ -1,4 +1,4 @@
-"""Human-authorized retry of FAILED Thread creation, status and update operations, never abandonment.
+"""Human-authorized retry of FAILED Thread creation, deletion, status and update operations, never abandonment.
 
 One atomic journal write records the review and moves FAILED to APPLYING.
 Ordinary recovery then finishes the unchanged command with existing guards.
@@ -21,6 +21,7 @@ from core.operations.filesystem import FilesystemOperationRepository
 from core.operations.models import OperationStatus
 from core.operations.readiness import check_readiness
 from core.operations.thread_create import FilesystemLinkedThreadCreation
+from core.operations.thread_delete import FilesystemThreadDeletion
 from core.threads.link_service import ThreadInformationLinkService, MissingLinkedInformation
 from core.operations.thread_status import FilesystemThreadOperations
 from core.operations.thread_update import FilesystemThreadUpdates, read_operations
@@ -32,8 +33,10 @@ from core.threads.storage import ThreadStorage, ThreadStorageError
 FAMILY = 'thread-status-v1'
 UPDATE_FAMILY = 'thread-update-v1'
 CREATE_FAMILY = 'thread-create-v1'
+DELETE_FAMILY = 'thread-delete-v1'
 ACTIONS = {FAMILY: 'RETRY_THREAD_STATUS_V1', UPDATE_FAMILY: 'RETRY_THREAD_UPDATE_V1',
-           CREATE_FAMILY: 'RETRY_THREAD_CREATE_V1'}
+           CREATE_FAMILY: 'RETRY_THREAD_CREATE_V1',
+           DELETE_FAMILY: 'RETRY_THREAD_DELETE_V1'}
 READ_ERRORS = (OSError, ValueError, TypeError, OperationRepositoryError,
                EventRepositoryError, ThreadStorageError, ThreadError, BackendError)
 
@@ -54,6 +57,15 @@ def _readers(root, family):
             raise OperationConflict('unsafe resolution tree')
     storage = ThreadStorage.__new__(ThreadStorage)
     storage.persistent_root, storage.threads_root = persistent, persistent / 'threads'
+    if family == DELETE_FAMILY:
+        operations = FilesystemOperationRepository.__new__(FilesystemOperationRepository)
+        operations.root = history / 'operations' / family
+        engine = FilesystemThreadDeletion(storage, operations)
+        for attr, name in (('status_operations', FAMILY), ('creation_operations', CREATE_FAMILY)):
+            repository = FilesystemOperationRepository.__new__(FilesystemOperationRepository)
+            repository.root = history / 'operations' / name
+            setattr(engine, attr, repository)
+        return engine
     events = FilesystemEventRepository.__new__(FilesystemEventRepository)
     events.events_root = history / 'events' / family
     operations = FilesystemOperationRepository.__new__(FilesystemOperationRepository)
@@ -93,7 +105,12 @@ def _scope(root, engine, operation, selected_family):
         for other in read_operations(engine.operations.root.parent / family):
             if (family == selected_family and other.operation_id == operation.operation_id):
                 continue
-            if family == selected_family and getattr(other.plan, 'event_id', None) == operation.plan.event_id:
+            if (selected_family == DELETE_FAMILY and family != selected_family
+                    and other.operation_id == operation.operation_id):
+                raise OperationConflict('another family reserves this operation identity')
+            event_id = getattr(operation.plan, 'event_id', None)
+            if (event_id is not None and family == selected_family
+                    and getattr(other.plan, 'event_id', None) == event_id):
                 raise OperationConflict('another operation reserves this Event identity')
             if (selected_family == CREATE_FAMILY and family == CREATE_FAMILY
                     and other.target_id == operation.target_id):
@@ -115,26 +132,32 @@ def review_failed_thread(root, operation_id, *, family=FAMILY):
         raise OperationConflict('Thread diverged from both snapshots')
     if family == UPDATE_FAMILY:
         engine._check_links(before, after)
-    else:
+    elif family != DELETE_FAMILY:
         engine.storage._check_concerns(after)
         if family == CREATE_FAMILY and engine.backend.get(operation.plan.information_id) is None:
             raise MissingLinkedInformation(operation.plan.information_id)
-    event = engine._event(operation, before, after)
-    saved = engine.events.get(event.event_id)
-    if saved is not None and saved != event:
-        raise OperationConflict('Event diverged from the planned effect')
-    if saved is not None and current != after:
-        raise OperationConflict('Event exists without the planned Thread state')
+    saved = None
+    if family != DELETE_FAMILY:
+        event = engine._event(operation, before, after)
+        saved = engine.events.get(event.event_id)
+        if saved is not None and saved != event:
+            raise OperationConflict('Event diverged from the planned effect')
+        if saved is not None and current != after:
+            raise OperationConflict('Event exists without the planned Thread state')
     operation_path = engine.operations._path(operation_id)
     report = {'format_version': 1, 'family': family, 'operation_id': operation_id,
             'target_id': operation.target_id, 'plan_sha256': operation.execution_plan_hash,
             'failed_record_sha256': sha256(operation_path.read_bytes()).hexdigest(),
             'previous_revision': operation.previous_revision, 'revision': operation.revision,
-            'thread_state': ('ABSENT' if family == CREATE_FAMILY else 'BEFORE') if current == before else 'AFTER',
-            'event_state': 'ABSENT' if saved is None else 'MATCH',
-            'write_thread': current == before, 'write_event': saved is None,
+            'thread_state': ('ABSENT' if family == CREATE_FAMILY else 'BEFORE') if current == before
+                else ('ABSENT' if family == DELETE_FAMILY else 'AFTER'),
+            'event_state': 'NOT_APPLICABLE' if family == DELETE_FAMILY else ('ABSENT' if saved is None else 'MATCH'),
+            'write_thread': family != DELETE_FAMILY and current == before,
+            'write_event': family != DELETE_FAMILY and saved is None,
             'previous_resolutions': deepcopy(operation.manual_resolutions),
             'action': ACTIONS[family]}
+    if family == DELETE_FAMILY:
+        report['delete_thread'] = current is not None
     if family == CREATE_FAMILY:
         report['information_id'] = operation.plan.information_id
     if family == UPDATE_FAMILY:
@@ -183,8 +206,9 @@ def retry_failed_thread(root, review, *, resolution_id, actor, reason, timestamp
         locks.enter_context(exclusive_write(engine.operations.root))
         # FAILED journals produced by the coordinator already have this directory;
         # a restored valid journal may need it initialized after review.
-        engine.events.events_root.mkdir(parents=True, exist_ok=True)
-        locks.enter_context(exclusive_write(engine.events.events_root))
+        if family != DELETE_FAMILY:
+            engine.events.events_root.mkdir(parents=True, exist_ok=True)
+            locks.enter_context(exclusive_write(engine.events.events_root))
         operation = engine.operations.get(operation_id)
         if operation is None:
             raise OperationConflict('operation disappeared before authorization')
@@ -212,7 +236,8 @@ def retry_failed_thread(root, review, *, resolution_id, actor, reason, timestamp
         result = engine._resume(operation)
         _checkpoint('after_commit')
         return {'status': 'COMMITTED', 'resolution_id': resolution_id, 'operation_id': operation_id,
-                'thread_id': result.thread_id, 'revision': result.revision}
+                'thread_id': operation.target_id if family == DELETE_FAMILY else result.thread_id,
+                'revision': operation.revision if family == DELETE_FAMILY else result.revision}
 
 
 def review_failed_status(root, operation_id):

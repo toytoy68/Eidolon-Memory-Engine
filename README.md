@@ -35,7 +35,7 @@ réelles et le déploiement restent à valider.
 - [Import des reçus DELETED](docs/DELETED-RECEIPT-IMPORT.md) : réservation des
   identités supprimées conservée, aperçu sans écriture et reprise par relance.
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
-- [Résolution humaine des statuts et éditions Thread FAILED](docs/FAILED-STATUS-RESOLUTION.md) :
+- [Résolution humaine des opérations Thread FAILED](docs/FAILED-STATUS-RESOLUTION.md) :
   aperçu, décision tracée et reprise du plan original, refus des divergences.
 - [Reprise des opérations Thread](docs/THREAD_RECOVERY.md) et
   [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
@@ -69,10 +69,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1247 réussis en
-29,82 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `06c9570` plus le lot T-048 de reprise humaine des créations Thread FAILED ;
-32 nouveaux cas, 160 ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1277 réussis en
+30,37 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `20a283a` plus le lot T-048 de reprise humaine des suppressions Thread FAILED ;
+30 nouveaux cas, 190 ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,
@@ -104,7 +104,7 @@ Suivi livré : raisons des plans REVIEW corrigées et blocage de `resolve()`
 sur Thread corrompu vérifié par API/CLI (122 tests ciblés, quatre nouveaux cas).
 Détails et limites dans [ECHANGES.md](ECHANGES.md).
 
-La résolution FAILED couvre les créations liées, statuts et éditions Thread (liens, actions,
+La résolution FAILED couvre les créations liées, suppressions, statuts et éditions Thread (liens, actions,
 titre/objectif/contexte) : aperçu,
 auteur/motif explicites, trace et autorisation atomiques avant reprise. Les autres
 familles restent bloquées. Les anciens binaires refusent les journaux enrichis
