@@ -269,3 +269,12 @@ ni les Informations, ni les autres journaux/reçus, ni les Events/Threads/index.
 PENDING_DELETE, APPLYING_DELETE et CANCELLED restent refusés. Le convertisseur
 legacy conserve intégralement son refus préalable des sources mixtes ; l'import
 opérationnel général et la validation VM ne sont pas livrés.
+
+## Import terminal des reçus compactés Information — 03/10
+
+Le chemin `core.migration.write_receipts` importe explicitement les reçus de rejeu
+et leurs Events exacts entre arbres core arrêtés au même état canonique, sans
+transférer les corps ni réexécuter les commandes. Audits FAILED conservés,
+conflits vérifiés avant publication, Event puis reçu, reprise par relance.
+[Contrat, commandes, interruption et limites](WRITE-RECEIPT-IMPORT.md).
+Le convertisseur legacy reste fermé aux sources opérationnelles mixtes.

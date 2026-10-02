@@ -32,6 +32,9 @@ réelles et le déploiement restent à valider.
 - [Bilan transversal du 02/10](docs/AUDIT-2026-10-02.md) et [TODO active](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
+- [Import des reçus de rejeu Information](docs/WRITE-RECEIPT-IMPORT.md) :
+  reçus compactés et Events exacts, audit humain conservé ; mêmes états canoniques,
+  reprise par comparaison sans copie des corps ni fusion de contenus.
 - [Import des reçus DELETED](docs/DELETED-RECEIPT-IMPORT.md) : réservation des
   identités supprimées conservée, aperçu sans écriture et reprise par relance.
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
@@ -69,10 +72,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1335 réussis en
-32,13 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `dcbdf1c` plus le lot T-048 de reprise humaine des écritures Information FAILED ;
-58 nouveaux cas, 295 ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1369 réussis en
+33,70 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `5394e06` plus le lot T-021/T-033 d'import des reçus compactés Information ;
+34 nouveaux cas, 173 ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,

@@ -34,10 +34,10 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après extension T-048 aux
-écritures Information FAILED : **1335 réussis en 32,13 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `dcbdf1c` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-rmKyis`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après import T-021/T-033 des
+reçus compactés Information : **1369 réussis en 33,70 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `5394e06` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-pzRYrA`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -205,7 +205,7 @@ dépendances sur corpus réel VM, intentions parentes FAILED, divergences et aba
 explicite éventuel avec traitement des effets/réservations. Aucun abandon automatique livré. Une
 lecture ponctuelle ne protège pas contre le redémarrage ultérieur d'un écrivain legacy.
 
-### T-021 / T-033 — Migration opérationnelle — PARTIEL / NON TESTÉ VM
+### T-021 / T-033 — Migration opérationnelle — PARTIEL / SUITE VM SUR SYNTHÉTIQUE
 
 Fait : simulation, conversion séparée idempotente, rejets, archives exactes
 Events/Reviews/Working/opérations, vérification indépendante ; 500 Informations
@@ -231,8 +231,19 @@ final. 29 nouveaux cas dont deux arrêts réels et deux importeurs concurrents ;
 laissé avant renommage bloque la relance pour revue humaine, sans purge implicite. Contrat :
 [DELETED-RECEIPT-IMPORT.md](docs/DELETED-RECEIPT-IMPORT.md).
 
+Ajout du 03/10, base `5394e06` vérifiée sur GitHub : import dédié des reçus
+compactés Information et Events exacts, audits humains conservés. Canonique actuel
+identique par octets et révision suffisante, ou DELETED identique si absent ;
+refus avant publication de tous les conflits puis revalidation sous verrous.
+Event avant reçu, reprise d'un préfixe ; garder la destination arrêtée jusqu'au
+succès final, une readiness vraie ne prouve pas que l'import est fini.
+34 nouveaux tests, 173 ciblés verts en 5,56 s ; trois arrêts réels, concurrence,
+preuve rouge de révision et deux substitutions négatives. Suite VM 1369 réussis
+en 33,70 s, corpus synthétique uniquement. Contrat :
+[WRITE-RECEIPT-IMPORT.md](docs/WRITE-RECEIPT-IMPORT.md).
+
 Restant : import opérationnel général conservant notamment CANCELLED,
-reçus de rejeu, Threads/actions et révisions ; aucune activation implicite des
+Threads/actions et révisions, journaux non compactés ; aucune activation implicite des
 journaux archivés. Le refus préalable ferme le défaut, mais ne livre pas cet
 import. Migration réelle et revue des pertes de sens toujours non testées.
 

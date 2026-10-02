@@ -7,8 +7,8 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 ## Reprise rapide
 
 T-048 du 03/10 : reprises humaines Thread et Information FAILED livrées ;
-1335 tests réussis directement sur VM en 32,13 s, corpus synthétique isolé.
-Détails et limites dans la dernière entrée.
+1369 tests réussis directement sur VM en 33,70 s, corpus synthétique isolé.
+Import de reçus compactés Information livré ensuite ; détails dans la dernière entrée.
 
 Recette directe Codex du 03/10 sur `9780473` : neuf étapes OK dans
 `/tmp/em-yZKsKq`, cinq scénarios concurrents réussis, arbre mémoire vide.
@@ -1364,3 +1364,40 @@ avant commit. Sources actives/sauvegardes intactes ; données synthétiques uniq
 aucune reprise humaine de journaux réels, service ou coupure électrique validés.
 Parents de routage, divergences/abandon et import opérationnel général ouverts.
 Estimations 45 % / 52,75 points inchangées.
+
+
+## T-021/T-033 — Import des reçus compactés Information, 3 octobre 2026
+
+Base `5394e06`, vérifiée sur GitHub avant ce lot. Nouveau chemin explicite
+`core.migration.write_receipts` : aperçu sans écriture et import des reçus
+terminaux INFORMATION_CREATE/UPDATE avec leurs Events exacts, sans canonique,
+Threads, index ni réexécution. Les deux arbres doivent être prêts et arrêtés ;
+les journaux Information source doivent tous être compactés. Même canonique
+actuel par octets et révision >= reçu, ou même réservation DELETED si absent.
+L'import contrôle identité/révision/type/CAUSEDBY de l'Event, réservations et
+conflits exacts avant publication, puis sous verrous Persistent/Operation/Event.
+Il conserve les audits humains, et le rejeu ne remplace pas une révision plus
+récente ni ne recrée une Information supprimée. Le convertisseur legacy conserve
+son refus des sources mixtes ; aucune fusion générale introduite.
+
+Event publié avant reçu ; arrêt entre les deux → Event orphelin, relance depuis
+la même source arrêtée. Préfixe possible, aucune transaction globale ni rollback.
+Résidu temporaire inconnu → refus readiness/reprise pour examen humain. Source
+jamais écrite. Destination à garder arrêtée jusqu'au succès final, même si le
+contrôle readiness peut être vrai sur un préfixe sans reçu manquant identifié.
+Contrat : [WRITE-RECEIPT-IMPORT.md](docs/WRITE-RECEIPT-IMPORT.md).
+
+34 nouveaux tests : 23 échecs/5 réussites sur le squelette initial refusant
+l'import, puis six cas supplémentaires (Event cohérent par digest mais métier
+incorrect, révision canonique trop ancienne, arrêt avant renommage). Le cas de
+révision canonique échoue avant ajout de sa garde, puis passe. Groupe ciblé :
+**173 réussis en 5,56 s**. Trois arrêts réels code 74, deux importeurs concurrents,
+revalidation sous verrous, aperçu sans écriture, audit FAILED conservé, conflits
+sans préfixe, suppression/rejeu et fichiers exacts. Retirer publication ou garde
+canonique en mémoire produit un échec chacun ; aucune substitution conservée.
+Suite complète VM isolée hors sandbox : **1369 passed in 33.70s**, aucun échec,
+saut ou désélection, Python `.venv` 3.13.5/pytest 9.1.1 ; journal
+`/tmp/em-suite-pzRYrA/pytest.log`. Preuve sur base `5394e06` plus ce lot avant commit.
+Corpus synthétique uniquement, aucun import dans la mémoire active, aucun corpus
+réel ni coupure électrique. CANCELLED, Threads/actions/révisions et import
+général restent ouverts ; estimations 45 % / 52,75 points inchangées.
