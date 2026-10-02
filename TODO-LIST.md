@@ -44,6 +44,13 @@ les services ni une coupure électrique. Les limites VM des lots ci-dessous
 restent applicables à cette recette opérationnelle ; leurs chiffres datés
 conservent la preuve disponible au moment de chaque livraison.
 
+Incident VM à 22 h 36 : `tools.writer_inventory` levait PermissionError sur
+`/var/spool/cron/crontabs`. Correctif livré : capture de l'erreur de parcours
+cron, chemin dans `unreadable`, conservation des autres résultats et couverture
+heuristique explicite. Trois nouveaux tests rouges avant correction, puis
+12 ciblés verts en 0,81 s (inventaire + recette). Suite VM de 1212 cas ci-dessus
+antérieure au correctif ; relance réelle de l'inventaire encore attendue.
+
 Mesure historique dans Work :
 
 Suite complète après extension aux éditions Thread FAILED, base publiée `121764a` :

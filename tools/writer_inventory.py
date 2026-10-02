@@ -56,10 +56,15 @@ def discover_writers(*, proc_root: Path = Path("/proc"),
             locations.extend(path for path in directory.rglob("*")
                              if path.suffix in {".service", ".timer", ".socket"})
     for entry in cron_paths:
-        if entry.is_dir():
-            locations.extend(path for path in entry.iterdir() if path.is_file())
-        elif entry.is_file():
-            locations.append(entry)
+        try:
+            if entry.is_dir():
+                locations.extend(path for path in entry.iterdir() if path.is_file())
+            elif entry.is_file():
+                locations.append(entry)
+        except OSError:
+            # Cron spools can be visible but not searchable by this account.
+            # Keep the partial inventory and make its missing coverage explicit.
+            unreadable.append(str(entry))
     for path in sorted(set(locations)):
         try:
             content = path.read_text(encoding="utf-8", errors="replace")

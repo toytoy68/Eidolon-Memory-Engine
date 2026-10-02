@@ -75,6 +75,11 @@ aucun échec ni test désélectionné. Les cinq tests de concurrence bloqués pa
 les sockets de Work passent également. Données de test temporaires isolées.
 [Preuve rapportée et périmètre](docs/VM-TESTS-2026-10-02.md).
 
+Correctif après ce passage VM : l'inventaire des écrivains signale maintenant
+un dossier cron inaccessible dans `unreadable` et poursuit les autres sources.
+Trois tests de régression ajoutés ; 12 tests inventaire/recette réussis localement.
+Ce correctif reste à confirmer par relance de l'inventaire sur la VM.
+
 Résultat antérieur dans Work : 1207 réussis, cinq blocages de sockets Manager
 avant scénario, 75,62 s sous Python 3.12.14. La recette sauvegarde/restauration,
 les audits sur copie des données réelles, les services et la coupure électrique

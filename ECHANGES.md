@@ -1166,3 +1166,20 @@ Pas de nouvelle exécution nécessaire pour ce lot exclusivement documentaire.
 Restent l'inventaire des écrivains et racines, la sauvegarde/restauration,
 les audits sur copie réelle, la reprise opérationnelle et l'intégration services.
 Aucune coupure électrique testée ; estimations gelées inchangées.
+
+## Inventaire VM : dossier cron protégé — 2026-10-02, 22 h 36
+
+Retour toytoy sur `ac4d739` : racine effective `/opt/eidolon-memory-engine`.
+L'inventaire échouait dans Path.iterdir sur `/var/spool/cron/crontabs`, alors
+que les erreurs de lecture des fichiers étaient déjà rapportées. La frontière
+de parcours cron capture désormais OSError (dont PermissionError), ajoute la
+source dans `unreadable`, conserve les résultats disponibles et poursuit les
+sources suivantes. Aucun changement de droits, élévation automatique ou écriture
+sur les sources. Un inventaire partiel reste à examiner humainement.
+
+Trois régressions ajoutées : PermissionError, OSError et sortie CLI JSON.
+Avant : trois échecs, deux réussites. Après : 12 réussites en 0,81 s pour
+les tests inventaire et vm_acceptance. Pas de suite complète supplémentaire
+pour ce correctif ciblé ; les 1212 réussites VM restent attachées à `ac4d739`.
+Relance sur la VM attendue avant de poursuivre sauvegarde et audits sur copie.
+README/TODO actualisés ; aucun feu vert pour des écrivains réels à ce stade.
