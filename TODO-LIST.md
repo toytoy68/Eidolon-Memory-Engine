@@ -34,10 +34,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après import T-021/T-033
-CANCELLED explicite : **1387 réussis en 34,18 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `55e81ba` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-XVdGSu`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après transfert core complet T-021/T-033 : **1429 réussis en 36,38 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `46998ce` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-o6rMam`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -250,10 +249,18 @@ réactivation de suppression, CREATE et ancienne approbation refusés.
 deux preuves négatives. Suite VM finale 1387 réussis en 34,18 s après correction
 d'une fixture, corpus synthétique uniquement. Contrat DELETED actualisé.
 
-Restant : import opérationnel général des Threads/actions et révisions,
-journaux non compactés et parents ; aucune activation implicite des
-journaux archivés. Le refus préalable ferme le défaut, mais ne livre pas cet
-import. Migration réelle et revue des pertes de sens toujours non testées.
+Ajout transfert core complet du 03/10, base `46998ce` vérifiée sur GitHub :
+copie byte-exact de `memory/` vers destination neuve, hors verrous techniques.
+Threads/actions/révisions, journaux complets/parents, échéances, suppressions et
+notes conservés sans exécution. Préparation vérifiée reprenable, publication
+atomique sans remplacement. 42 nouveaux cas, quatre arrêts réels, concurrence,
+refus source mixte/divergente, deux substitutions négatives. Suite VM 1429 réussis
+en 36,38 s. Contrat : [CORE-COPY.md](docs/CORE-COPY.md).
+
+Restant : migration entre formats et fusion opérationnelle générale vers un
+arbre existant ; aucune activation implicite des journaux archivés. Les notes
+hors `memory/` exigent une sauvegarde séparée. Migration réelle, adoption par les
+services et revue des pertes de sens toujours non testées.
 
 ### T-031 / T-041 — Services métier canoniques — PARTIEL / NON TESTÉ VM
 

@@ -1432,3 +1432,33 @@ Preuve sur base `55e81ba` plus ce lot avant commit. Données synthétiques uniqu
 aucun import dans la mémoire active ni coupure électrique ; import des
 Threads/actions/révisions, journaux complets et parents encore ouvert.
 Estimations 45 % / 52,75 points inchangées.
+
+## T-021/T-033 — Transfert core complet, 3 octobre 2026
+
+Base `46998ce` vérifiée sur GitHub avant démarrage. Copie explicite de `memory/`
+vers racine neuve, aucun code/configuration hors arbre ni verrou copié. Octets
+Informations/Threads/actions/révisions, Events, journaux, audits humains/reçus,
+parents, échéances, suppressions et notes préservés sans exécuter de commande.
+Aperçu sans écriture ; source readiness/liens/formats contrôlés. Refus global
+source mixte/incomplète/invalide, symlinks/FIFO, destinations préexistantes.
+Préparation par plan/manifeste SHA256 durable, reprise du préfixe exact ; source
+ou préparation divergente bloque. Renommage Linux NOREPLACE puis fsync parent,
+refus même d’un dossier vide apparu pendant publication. Rejeu exact UNCHANGED.
+
+42 nouveaux cas. Premier essai du squelette : fixture utilisant une API Thread
+inexistante corrigée ; puis **21 rouges / 17 verts** sur le squelette refusant.
+Après implémentation, deux erreurs de capture InvalidMemory corrigées ; ajout de
+quatre cas (course publication, altération staging, deux formats legacy).
+**42 ciblés réussis en 2,43 s**, quatre vrais os._exit(74), deux copies concurrentes,
+rejeu de parents format 3, audit compact après suppression et notes CRLF.
+Substitutions en mémoire publication absente / renommage remplaçant → un échec
+chacune, code du dépôt inchangé. Suite complète VM hors sandbox :
+**1429 passed in 36.38s**, aucun échec, saut ou désélection ; Python `.venv`
+3.13.5/pytest 9.1.1. Journal `/tmp/em-suite-o6rMam/pytest.log` ; base `46998ce`
+plus ce lot avant commit. Estimations 45 % / 52,75 points inchangées.
+
+Corpus synthétique isolé uniquement ; aucun transfert de la mémoire active,
+aucune activation de services ni coupure électrique. Écrivains à arrêter jusqu’au
+succès final ; notes externes à sauvegarder séparément, permissions non conservées.
+Fusion opérationnelle dans un arbre existant et conversion entre formats restent
+ouvertes. Contrat : docs/CORE-COPY.md.

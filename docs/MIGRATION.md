@@ -285,3 +285,11 @@ L'import DELETED reste strict par défaut. `--include-cancelled` transfère auss
 les décisions CANCELLED sur un canonique présent identique en source/destination,
 sans réactiver ni approuver une suppression. Les états actifs restent refusés.
 [Contrat et limites](DELETED-RECEIPT-IMPORT.md).
+
+## Transfert core complet vers une destination neuve — 03/10
+
+`core.migration.core_copy` conserve l’arbre `memory/` exact hors verrous techniques,
+y compris Threads/actions, journaux et parents, sans conversion ni exécution.
+Préparation reprenable, publication atomique sans remplacement, contrôles de
+formats/readiness/liens et manifeste final. [Contrat et limites](CORE-COPY.md).
+Ce chemin n’autorise aucune fusion avec un arbre existant ni source legacy mixte.

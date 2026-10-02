@@ -38,6 +38,8 @@ réelles et le déploiement restent à valider.
 - [Import des reçus de suppression](docs/DELETED-RECEIPT-IMPORT.md) : DELETED
   conserve les identités supprimées ; CANCELLED explicite exige le même canonique.
   Aperçu sans écriture et reprise par relance.
+- [Transfert d’un arbre core complet](docs/CORE-COPY.md) : destination neuve,
+  octets et traces conservés, préparation reprenable, aucune commande exécutée.
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
 - [Résolution humaine des opérations Thread FAILED](docs/FAILED-STATUS-RESOLUTION.md) :
   aperçu, décision tracée et reprise du plan original, refus des divergences.
@@ -73,10 +75,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1387 réussis en
-34,18 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `55e81ba` plus le lot T-021/T-033 d'import explicite CANCELLED ;
-18 nouveaux cas, 144 ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1429 réussis en
+36,38 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `46998ce` plus le transfert core complet vers une destination neuve ;
+42 nouveaux cas ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,
