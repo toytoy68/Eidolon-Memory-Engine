@@ -110,6 +110,11 @@ class FilesystemInformationWrites:
         return self._execute(OperationType.INFORMATION_UPDATE, memory, previous_revision,
                              operation_id, event_id, actor, timestamp)
 
+    def execute_batch(self, commands):
+        """Execute 1–100 explicit JSON commands; retain inputs for stable replay."""
+        from core.information.batch import execute_batch
+        return execute_batch(self, commands)
+
     def _deletion_status(self, target_id):
         path = self.backend.pending_delete_root / f'{target_id}.json'
         if path.exists() or path.is_symlink():
@@ -126,7 +131,7 @@ class FilesystemInformationWrites:
     def _pending(self, target_id, *, excluding=None):
         self.journal.reservations().require_available(target_id, excluding)
 
-    def _execute(self, kind, memory, previous, opid, event_id, actor, timestamp):
+    def _execute(self, kind, memory, previous, opid, event_id, actor, timestamp, *, reservations=None):
         self.backend._validate_memory_shape(memory)
         self.backend._path(memory.information_id)
         self.operations._path(opid)
@@ -139,11 +144,12 @@ class FilesystemInformationWrites:
             if entry is not None:
                 if entry.fingerprint != digest:
                     raise OperationConflict('operation_id reused with a different command')
-                return entry.result if entry.receipt is not None else self._resume(entry.operation)
+                return entry.result if entry.receipt is not None else self._resume(entry.operation, reservations)
             from core.routing.execution_journal import require_available
             require_available(self.backend.history_root, information_id=after.information_id)
             self._check_deletion(kind, after.information_id)
-            reservations = self.journal.reservations()
+            if reservations is None:
+                reservations = self.journal.reservations()
             reservations.require_available(after.information_id)
             current = self.backend.get(after.information_id)
             if kind is OperationType.INFORMATION_CREATE:

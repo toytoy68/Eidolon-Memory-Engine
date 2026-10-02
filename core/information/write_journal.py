@@ -58,7 +58,8 @@ class JournalEntry:
 class JournalReservations:
     """Validated, content-free view valid only within the caller's writer lock.
 
-    Not cached on a writer, persisted, or reused across commands. All receipt
+    Not cached on a writer or persisted. The bounded batch coordinator may copy
+    it into a private ledger while retaining the writer locks. All receipt
     formats and operation/receipt pairs were checked before constructing it.
     """
     pending_by_target: MappingProxyType

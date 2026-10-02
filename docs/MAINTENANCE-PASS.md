@@ -102,3 +102,13 @@ suppression et retrait d’une ancienne projection après suppression approuvée
 Quatre interruptions par exception, deux arrêts réels de processus code 74 et
 deux travailleurs concurrents sans Manager. Les preuves négatives et le résultat
 global sont consignés dans ECHANGES.md. Aucune VM ni coupure physique testée.
+
+## Échéances regroupées — 02/10
+
+Le dispatcher partage désormais le scan strict des réservations Information
+par tranches de 100 échéances au plus. Les intentions et journaux enfants
+restent individuels et reprenables. `limit` conserve son sens ; les verrous
+Persistent/Thread extérieurs restent détenus pendant la passe entière.
+Aucun audit global, contrôle de révision ou contrôle final n’est supprimé.
+Voir [INFORMATION-BATCHES.md](INFORMATION-BATCHES.md) et les mesures comparées
+dans [MAINTENANCE-COST.md](MAINTENANCE-COST.md).

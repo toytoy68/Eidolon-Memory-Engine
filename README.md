@@ -14,6 +14,8 @@ développement et n'est pas encore validée sur la VM.
   et [conception des écritures Information](docs/DESIGN-INFORMATION-WRITES.md)
 - [Dossiers Markdown de projet](docs/PROJECT-DOSSIERS.md) : reconstruction explicite,
   rapprochement global reprenable, sources/révisions et notes humaines conservées.
+- [Lots Information bornés](docs/INFORMATION-BATCHES.md) : 1 à 100 CREATE/UPDATE,
+  scan partagé, arrêt au conflit et reprise par rejeu des commandes stables.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
@@ -36,7 +38,9 @@ développement et n'est pas encore validée sur la VM.
   dossiers et catalogue enchaînés, reprise par relance et vérification finale.
 - [Coût mesuré de l’entretien](docs/MAINTENANCE-COST.md) : 300 Informations,
   à 300 Informations/25 projets, passe inactive 8,17 → 0,53 s,
-  25 échéances 18,84 → 4,06 s sur corpus synthétique local.
+  25 échéances 18,84 → 4,06 s, puis 4,16 → 1,77 s avec les lots
+  sur une nouvelle comparaison locale. 50 créations sur 300 entrées :
+  5,19 → 0,32 s en lot ; [protocole et limites](docs/INFORMATION-BATCHES.md).
 - [Mesures synthétiques et procédure de répétition](docs/PERFORMANCE.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
@@ -54,8 +58,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après optimisation des passes du 02/10/2026 :
-**962 tests réussis, 5 échecs d’environnement en 44,98 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après lots bornés du 02/10/2026 :
+**983 tests réussis, 5 échecs d’environnement en 46,18 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -91,7 +95,9 @@ n’est encore installé sur la VM.
   applique maintenant contexte/validité/statuts et expose sources et incertitudes ;
   voir [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
 - Poursuivre T-049 avant ingestion intensive : les nouvelles écritures font
-  un scan au lieu de trois, mais le coût reste linéaire par commande.
+  un scan par commande individuelle ou par lot de 100 commandes au plus.
+  Le dispatcher des échéances partage ce scan ; l’ingestion croissante à
+  taille de lot fixe conserve un coût quadratique réduit.
   L’entretien évite maintenant les étapes inactives et partage les audits
   entre lecteurs sous verrous, avec relecture finale indépendante.
   [Mesures reproductibles](docs/JOURNAL-SCAN-COST.md) : 300 créations en 20,42 s

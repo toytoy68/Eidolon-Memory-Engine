@@ -1,0 +1,255 @@
+{
+  "source_commit": "72f40338135a5b672e5966d21a35d016582b07ee",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "repeats": 3,
+  "scope": "local synthetic warmed filesystem; no VM, cold-cache or load guarantee",
+  "instrumentation": "successful Path.open reads, not physical disk I/O; phase clock includes instrumentation",
+  "setup": "canonical Information writer history; fixture Threads via direct storage, outside timing",
+  "workloads": [
+    {
+      "records": 300,
+      "projects": 25,
+      "due_count": 25,
+      "history": "live",
+      "setup_seconds": 23.337937,
+      "inspect_missing": {
+        "seconds": 2.953381,
+        "reads": {
+          "history_json_opens": 9475,
+          "canonical_markdown_opens": 2600
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 2.953326,
+            "reads": {
+              "history_json_opens": 9475,
+              "canonical_markdown_opens": 2600
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 1.564567,
+        "reads": {
+          "history_json_opens": 4000,
+          "canonical_markdown_opens": 9425,
+          "derived_read_opens": 52
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.64238,
+            "reads": {
+              "history_json_opens": 2000,
+              "canonical_markdown_opens": 2600
+            }
+          },
+          "triggers": {
+            "seconds": 0.230056,
+            "reads": {
+              "history_json_opens": 675,
+              "canonical_markdown_opens": 325
+            }
+          },
+          "dossiers": {
+            "seconds": 0.345318,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 3900,
+              "derived_read_opens": 25
+            }
+          },
+          "catalogue": {
+            "seconds": 0.039929,
+            "reads": {
+              "canonical_markdown_opens": 650,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 0.306827,
+            "reads": {
+              "history_json_opens": 675,
+              "canonical_markdown_opens": 1950,
+              "derived_read_opens": 26
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 0.545224,
+        "min_seconds": 0.521929,
+        "max_seconds": 0.579955,
+        "samples": [
+          {
+            "seconds": 0.521929,
+            "reads": {
+              "history_json_opens": 1350,
+              "canonical_markdown_opens": 2275,
+              "derived_read_opens": 26
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.521871,
+                "reads": {
+                  "history_json_opens": 1350,
+                  "canonical_markdown_opens": 2275,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.545224,
+            "reads": {
+              "history_json_opens": 1350,
+              "canonical_markdown_opens": 2275,
+              "derived_read_opens": 26
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.545188,
+                "reads": {
+                  "history_json_opens": 1350,
+                  "canonical_markdown_opens": 2275,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.579955,
+            "reads": {
+              "history_json_opens": 1350,
+              "canonical_markdown_opens": 2275,
+              "derived_read_opens": 26
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.579918,
+                "reads": {
+                  "history_json_opens": 1350,
+                  "canonical_markdown_opens": 2275,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 1.770139,
+        "reads": {
+          "history_json_opens": 3775,
+          "canonical_markdown_opens": 6600,
+          "derived_read_opens": 103
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.46252,
+            "reads": {
+              "history_json_opens": 1325,
+              "canonical_markdown_opens": 650
+            }
+          },
+          "triggers": {
+            "seconds": 0.518806,
+            "reads": {
+              "history_json_opens": 1025,
+              "canonical_markdown_opens": 425
+            }
+          },
+          "dossiers": {
+            "seconds": 0.406862,
+            "reads": {
+              "history_json_opens": 700,
+              "canonical_markdown_opens": 2925,
+              "derived_read_opens": 75
+            }
+          },
+          "catalogue": {
+            "seconds": 0.037957,
+            "reads": {
+              "canonical_markdown_opens": 650,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 0.343954,
+            "reads": {
+              "history_json_opens": 725,
+              "canonical_markdown_opens": 1950,
+              "derived_read_opens": 26
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 0.63344,
+        "min_seconds": 0.429176,
+        "max_seconds": 0.670801,
+        "samples": [
+          {
+            "seconds": 0.429176,
+            "reads": {
+              "history_json_opens": 1450,
+              "canonical_markdown_opens": 2275,
+              "derived_read_opens": 26
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.42914,
+                "reads": {
+                  "history_json_opens": 1450,
+                  "canonical_markdown_opens": 2275,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.670801,
+            "reads": {
+              "history_json_opens": 1450,
+              "canonical_markdown_opens": 2275,
+              "derived_read_opens": 26
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.670758,
+                "reads": {
+                  "history_json_opens": 1450,
+                  "canonical_markdown_opens": 2275,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.63344,
+            "reads": {
+              "history_json_opens": 1450,
+              "canonical_markdown_opens": 2275,
+              "derived_read_opens": 26
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.633403,
+                "reads": {
+                  "history_json_opens": 1450,
+                  "canonical_markdown_opens": 2275,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 300,
+      "final_ready": true,
+      "final_derived_current": true
+    }
+  ],
+  "label": "bounded-batch-after",
+  "runtime_core_sha256": "c5fb09d836b172b82cb84654f419aac3c35cd3f9ebd6d8f8dcfd3cf6a6f83b14"
+}

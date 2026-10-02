@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après optimisation des passes, base `5296cc8` : **962 réussis,
-5 échecs d’environnement, 44,98 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après lots bornés, base `72f4033` : **983 réussis,
+5 échecs d’environnement, 46,18 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 156 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 177 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -221,9 +221,20 @@ et charge à 25 projets/25 échéances dans le contrat ci-dessus : 8,168 → 0,5
 sans effet, 18,843 → 4,064 s avec effets. À 300/5, JSON d’historique
 7 890 → 1 230 sans effet et 13 180 → 4 605 pour cinq échéances.
 
-Restant : suppression du scan linéaire par commande canonique, annuaire reconstructible
+Troisième tranche : lots de 1 à 100 CREATE/UPDATE, CLI `batch` et dispatcher
+raccordé. Un scan strict sous verrous, réservations actualisées, arrêt au premier
+conflit, journaux individuels et rejeu de la liste entière. 21 nouveaux cas,
+102 ciblés verts ; preuves négatives 2 + 1 + 1, interruptions et concurrence.
+À 300 snapshots, 50 créations : 5,187 → 0,321 s ; 50 updates : 5,340 → 0,333 s,
+50 scans → 1 et 16 325 ouvertures JSON → 400. Nouvelle comparaison entretien :
+25 échéances 4,156 → 1,770 s ; inactif autour de 0,5 s. Contrat et rapports :
+[INFORMATION-BATCHES.md](docs/INFORMATION-BATCHES.md). Pas de transaction globale,
+de file durable pour la fin du lot ni de libération du verrou extérieur
+d'entretien entre tranches.
+
+Restant : suppression du scan linéaire par lot canonique, annuaire reconstructible
 et preuve de divergence/reprise, autres familles, scans des dérivés, corpus et
-objectifs VM. L'ingestion totale demeure quadratique. Pas d'autorisation
+objectifs VM. L'ingestion totale demeure quadratique à taille de lot fixe (O(N²/B)). Pas d'autorisation
 d'ingestion intensive déduite de la réduction locale.
 
 Contexte de la mesure antérieure et de la proposition Claude :

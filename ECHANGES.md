@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après optimisation demandée le 02/10, base publiée `5296cc8`,
+État après lots bornés demandés le 02/10, base publiée `72f4033`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -27,8 +27,8 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **962 réussis, 5 échecs de sockets Manager avant scénario,
-  44,98 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 156 nouveaux cas
+- Dernière suite : **983 réussis, 5 échecs de sockets Manager avant scénario,
+  46,18 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 177 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Retour Claude v2 sur `9f0eb92` relu le 02/10 : corrections déjà présentes,
   différences de libellés identifiées et filtre migration moins complet ; patch non appliqué.
@@ -40,7 +40,9 @@ Trois lots du matin poussés : `5b5e2db`, `ca977f1`, `43a1214`. Disponibilité,
 Après le bilan, toytoy a demandé l’optimisation des passes. Sortie rapide
 inactive et partage d’audits stricts sous verrous maintenant livrés, avec
 mesures avant/après et vérification finale fraîche. T-049 reste ouvert pour
-les scans par écriture et l’annuaire ; aucun service ou ordonnanceur lancé.
+le scan par lot et l’annuaire ; aucun service ou ordonnanceur lancé.
+Les lots bornés et leur raccordement aux échéances sont maintenant livrés ;
+voir la tranche ci-dessous et INFORMATION-BATCHES.md.
 
 ### Lot T-044 — rapprochement des dossiers, base `7517cc6`
 
@@ -724,3 +726,28 @@ du contrôle readiness et des avertissements : 1 + 1 + 3 échecs comportementaux
 code restauré. Suite complète **842 réussis, 5 échecs sockets Manager en 55,32 s**,
 aucun désélectionné. Aucun nouveau score qualité/latence sur corpus réel.
 README/TODO actualisés, publication autorisée par toytoy en fin de tâche.
+
+## Lots bornés — T-049, base `72f4033`
+
+Suite à l'accord de toytoy : API `execute_batch`, CLI `batch --input`, 1 à 100
+CREATE/UPDATE stables ; scan strict des réservations une fois sous verrous,
+actualisé après chaque effet. Premier conflit arrête le lot en conservant le
+préfixe. Les journaux individuels assurent le rejeu après interruption ; aucun
+journal parent ni queue durable ne conserve la fin non commencée. Dispatcher
+raccordé par tranches de 100, sans libérer son verrou Persistent extérieur.
+
+21 nouveaux cas ; groupe ciblé 102 réussis, 12,21 s. Arrêts de processus après
+Event/COMMITTED, concurrence sans Manager, receipts/corruption/réservations,
+PENDING_DELETE et rejeu après suppression. Retrait du partage/libération/
+réservation : 2 + 1 + 1 assertions rouges, code restauré.
+
+Mesures : à 300 snapshots, 50 CREATE 5,187 → 0,321 s ; 50 UPDATE
+5,340 → 0,333 s. 50 scans → 1, JSON 16 325 → 400. Sur le même benchmark
+entretien à 300 Informations/25 projets/25 échéances, nouvelle référence
+4,156 → 1,770 s, JSON 11 275 → 3 775 ; inactif ~0,5 s inchangé.
+Rapports et limites dans INFORMATION-BATCHES.md et MAINTENANCE-COST.md.
+Ingestion toujours O(N²/B) à B fixe ; pas de migration de base, index permanent,
+ordonnanceur, promesse de charge intensive ou validation VM. Pourcentages gelés.
+
+Suite complète finale du lot : **983 réussis, cinq échecs Manager à la création
+de socket, 46,18 s**, aucun désélectionné. Aucun nouveau blocage métier observé.

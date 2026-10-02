@@ -126,7 +126,7 @@ class LifecycleTriggers:
             metadata['recheck_required'] = True
         return replace(memory, metadata=metadata)
 
-    def _run(self, record, *, at=None, query_scope=None):
+    def _run(self, record, *, at=None, query_scope=None, _writes=None):
         command = record['command']
         target = command['target_id']
         opid, event_id = self.child_ids(record['trigger_id'])
@@ -136,7 +136,7 @@ class LifecycleTriggers:
         if record['status'] == 'APPLYING' and child is not None:
             if child.fingerprint != record['run']['fingerprint']:
                 raise OperationConflict('lifecycle child command diverged')
-            result = FilesystemInformationWrites(self.backend).resume(opid)
+            result = (_writes or FilesystemInformationWrites(self.backend)).resume(opid)
             self._checkpoint('after_effect')
             return self._finish(record, 'COMPLETED', record['run']['effect'],
                                 record['run']['at'], command['actor'], result)
@@ -177,7 +177,7 @@ class LifecycleTriggers:
                                memory.revision, event_id, command['actor'], record['run']['at'])
         if expected != record['run']['fingerprint']:
             raise OperationConflict('lifecycle execution fingerprint changed')
-        result = FilesystemInformationWrites(self.backend).update(
+        result = (_writes or FilesystemInformationWrites(self.backend)).update(
             after, previous_revision=memory.revision, operation_id=opid, event_id=event_id,
             actor=command['actor'], timestamp=record['run']['at'])
         self._checkpoint('after_effect')
@@ -197,7 +197,14 @@ class LifecycleTriggers:
             eligible = [r for r in records if r['status'] == 'APPLYING' or
                         (r['status'] == 'SCHEDULED' and timestamp(r['command']['due_at']) <= instant)]
             eligible.sort(key=lambda r: (timestamp(r['command']['due_at']), r['trigger_id']))
-            return {r['trigger_id']: self._run(r, at=at, query_scope=scope) for r in eligible[:limit]}
+            from core.information.batch import MAX_BATCH_SIZE, _locked_writes
+            selected = eligible[:limit]
+            results = {}
+            for offset in range(0, len(selected), MAX_BATCH_SIZE):
+                with _locked_writes(self.backend) as writes:
+                    for record in selected[offset:offset + MAX_BATCH_SIZE]:
+                        results[record['trigger_id']] = self._run(record, at=at, query_scope=scope, _writes=writes)
+            return results
 
     def recover(self):
         results = {}

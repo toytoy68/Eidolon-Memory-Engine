@@ -330,3 +330,14 @@ La vérification finale utilise une nouvelle phase et relit le disque. Les
 scans par écriture et l’annuaire reconstructible restent ouverts. Suite :
 962 réussis, cinq sockets bloquées, 44,98 s. Mesures avant/après et charge
 à 25 projets dans MAINTENANCE-COST.md ; pas de résultat VM.
+
+## Lots bornés après optimisation — 02/10
+
+Les écritures Information acceptent maintenant 1 à 100 commandes CREATE/UPDATE
+sous un scan strict des réservations, actualisées après chaque succès.
+Le dispatcher des échéances utilise cette même portée interne. Les journaux
+restent individuels ; conflit/interruption se reprennent par rejeu stable.
+À 300 snapshots, 50 créations 5,187 → 0,321 s ; passe de 25 échéances
+4,156 → 1,770 s sur nouvelle comparaison. Contrat : INFORMATION-BATCHES.md.
+Le terme quadratique d'ingestion à taille fixe, l'annuaire et la recette VM
+restent ouverts ; aucune hausse des estimations globales.

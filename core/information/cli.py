@@ -22,13 +22,23 @@ def main(argv=None):
         sub.add_argument('--timestamp', required=True, help='Stable command timestamp, reused on retry')
         if name == 'update':
             sub.add_argument('--previous-revision', type=int, required=True)
+    batch = commands.add_parser('batch')
+    batch.add_argument('--input', type=Path, required=True, help='JSON array of 1–100 stable CREATE/UPDATE commands')
     commands.add_parser('recover')
     compact = commands.add_parser('compact')
     compact.add_argument('operation_id')
     args = parser.parse_args(argv)
     check_environment(ENGINE_ROOT)
     writer = FilesystemInformationWrites(FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT))
-    if args.command == 'compact':
+    if args.command == 'batch':
+        from core.information.batch import ERRORS
+        from core.storage_format import decode_json_value
+        try:
+            result = writer.execute_batch(decode_json_value(args.input.read_text(encoding='utf-8')))
+        except ERRORS as exc:
+            result = dict(status='BLOCKED', error=dict(type=type(exc).__name__, reason=str(exc)))
+        status = int(result['status'] == 'BLOCKED')
+    elif args.command == 'compact':
         result = writer.compact(args.operation_id)
         status = 0
     elif args.command == 'recover':

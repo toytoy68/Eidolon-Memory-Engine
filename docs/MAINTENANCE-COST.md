@@ -48,7 +48,8 @@ Les corpus sont supprimés ; seuls les rapports JSON sont conservés.
 
 [Rapport brut](benchmarks/maintenance-before-2026-10-02.json), produit avant la
 nouvelle demande d’audit. `before` nomme une référence avant optimisation ;
-aucun rapport `after` ni gain livré n’existe. Les six corpus ont passé leurs
+aucun rapport `after` n’existait à cette étape ; les optimisations livrées
+ensuite sont mesurées ci-dessous. Les six corpus ont passé leurs
 contrôles sémantiques. La comparaison n’isole pas l’effet du cache ou de la
 charge de l’hôte : elle indique un coût local, pas une causalité précise ni une
 prévision VM.
@@ -165,3 +166,33 @@ Suite utile : mesurer les projets et les corpus réels séparément ; concevoir
 un annuaire reconstructible et un protocole de détection de divergence avant
 de remplacer les scans. Ces optimisations n’autorisent ni ingestion intensive ni
 installation automatique d’un entretien récurrent.
+
+## Lots bornés pour les échéances — base `72f4033`
+
+Nouvelle comparaison avec le même script et les arguments 300 Informations,
+25 projets, 25 échéances, trois répétitions inactives et historique live.
+La base est conservée dans un worktree séparé ; la variante optimisée ajoute
+[les lots Information](INFORMATION-BATCHES.md). Les deux rapports identifient
+leur variante et le SHA-256 core avec la convention indiquée plus haut.
+
+| Passe ou étape | Avant lots | Après lots |
+| --- | ---: | ---: |
+| Inactive (médiane de 3) | 0,509 s | 0,545 s |
+| 25 échéances, passe entière (1 mesure) | 4,156 s | 1,770 s |
+| Dispatcher seul dans cette passe | 3,134 s | 0,519 s |
+| JSON d'historique ouverts, passe entière | 11 275 | 3 775 |
+| Markdown canoniques ouverts, passe entière | 6 600 | 6 600 |
+
+Les effets canoniques et leur contrôle final sont conservés. Chaque échéance
+possède toujours son journal durable ; les réservations Information sont lues
+une fois par tranche de 100 au plus et actualisées après chaque effet.
+Aucun gain n'est attendu sur la passe inactive déjà optimisée. Le verrou
+Persistent extérieur reste détenu pendant tout `run_due` et MaintenancePass ;
+la tranche borne la réutilisation des réservations, pas la durée du verrou.
+
+Rapports : [avant](benchmarks/maintenance-batches-before-2026-10-02.json),
+[après](benchmarks/maintenance-batches-after-2026-10-02.json). Les contrôles
+finaux confirment les 300 objets attendus, readiness prête et dérivés courants.
+Des tests ciblés ont tourné au début de la préparation de la référence ; aucun
+test lourd pendant la variante optimisée. Filesystem réchauffé, hôte non
+contrôlé, un seul passage avec effets : aucune garantie de latence VM.

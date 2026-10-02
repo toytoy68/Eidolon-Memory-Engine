@@ -1,6 +1,11 @@
 # Coût des scans de journaux — T-049, réduction locale
 
-## Changement livré
+## Changement initial livré
+
+Les chiffres ci-dessous documentent le premier lot. Depuis le 02/10,
+[les lots bornés](INFORMATION-BATCHES.md) partagent aussi ce scan entre 1 à 100
+commandes sous verrous et dans le dispatcher des échéances. Les commandes
+individuelles conservent le fonctionnement décrit ici.
 
 Une nouvelle écriture métier Information faisait trois parcours complets de
 son journal : écriture en attente sur la cible, réservation d'Event, puis
