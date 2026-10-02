@@ -23,10 +23,11 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
   projet existant avec intention durable, lien et dossier actualisé. Les autres
   branches restent ouvertes. T-044 répare désormais les dossiers hors parcours
   par rapprochement explicite reprenable. Catalogue T-045 livré avec reconstruction et contrôle de fraîcheur ;
-  première tranche T-046 et raccordement au routage livrés en local. T-047 livre un premier rappel
+  T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
+  explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **927 réussis, 5 échecs de sockets Manager avant scénario,
-  42,46 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 121 nouveaux cas
+- Dernière suite : **947 réussis, 5 échecs de sockets Manager avant scénario,
+  47,98 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 141 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Retour Claude v2 sur `9f0eb92` relu le 02/10 : corrections déjà présentes,
   différences de libellés identifiées et filtre migration moins complet ; patch non appliqué.
@@ -110,6 +111,22 @@ mêmes cinq sockets bloquées, 42,46 s. Cinq frontières d’exception et deux a
 réels de processus. Retirer disponibilité, enregistrement ou garde parent produit
 1 + 1 + 1 assertions comportementales rouges ; code restauré. Pas de VM ni
 ordonnanceur. Contrat mis à jour : ROUTING-EXECUTION.md.
+
+### Passe d’entretien T-044/T-045/T-046 — base `ca977f1`
+
+Inspection sans écriture, puis commande explicite de reprise → échéances →
+dossiers → catalogue → vérification sur disque. Aucun journal parent ajouté :
+reprise par journaux enfants et états de fraîcheur. PARTIAL rend visible le
+backlog d’échéances ; `limit` ne borne ni reprise globale ni scans de dérivés.
+Blocage d’une vue après effet canonique signalé sans masquer cet effet acquis.
+Notes humaines, attente de suppression et politique de vérité préservées.
+
+20 nouveaux cas, 72 ciblés réussis ; suite complète 947 réussis, mêmes cinq
+échecs sockets Manager avant scénario, 47,98 s. Quatre interruptions entre
+étapes, deux arrêts réels code 74 et deux travailleurs concurrents sans Manager.
+Retirer rapprochement, catalogue ou relecture finale donne 1 + 1 + 1 assertions
+rouges ; code restauré. Aucun essai VM ni récurrence installée. API/CLI,
+rapports et limites : [MAINTENANCE-PASS.md](docs/MAINTENANCE-PASS.md).
 
 ## Sujets à relire lors d'une prochaine session disponible
 

@@ -16,6 +16,7 @@ leurs racines de données et leurs formats à cette carte.
 | `core.dossiers.cli rebuild/reconcile --apply` / `ProjectDossiers` / `DossierReconciler` | memory/dossiers ou sortie dédiée, notes humaines incluses | Persistent → Thread → Dossier ; réparation explicite reprenable, sans ordonnanceur |
 | `core.indexing.catalogue_cli rebuild` / `InformationCatalogue` | memory/catalogue/information-v1.json, dérivé intégral | Persistent → Thread → Catalogue ; remplacement atomique et reprise par relance |
 | `core.lifecycle.cli` / `LifecycleTriggers`, `AvailabilityService` | history/operations/lifecycle-trigger-v1 ; Information et journal/Event enfant | Persistent → Déclencheur → Operations Information → Events ; temps explicite, aucun daemon |
+| `core.maintenance.cli run` / `MaintenancePass` | Journaux canoniques repris, effets d’échéances, memory/dossiers et catalogue | Persistent → Thread puis verrous des services enfants ; passe explicite, aucune récurrence installée |
 | `core.migration.converter` | Destination explicite : Information core, `archive/`, `migration-report.json` | Ne modifie pas la source ; copier et vérifier hors de la racine active. |
 
 Les CLI historiques classifier, router, executor et semantic-validator sont

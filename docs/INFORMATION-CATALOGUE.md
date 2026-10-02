@@ -82,3 +82,11 @@ comportemental ; code restauré. Pas de validation VM ni coupure électrique.
 
 Depuis T-046, les fiches exposent aussi `recheck_required` ; tout changement
 de disponibilité/revue invalide la projection et demande rebuild explicite.
+
+## Passe d’entretien explicite du 02/10
+
+`core.maintenance.cli run` assemble reprise globale, échéances arrivées,
+rapprochement des dossiers et reconstruction du catalogue, avec relecture finale.
+Relancer après interruption termine les dérivés sans rejouer les effets acquis.
+`inspect` reste en lecture seule. Aucun ordonnanceur ni fenêtre horaire installé ;
+voir [MAINTENANCE-PASS.md](MAINTENANCE-PASS.md) pour les limites et commandes.

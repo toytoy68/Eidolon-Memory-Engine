@@ -137,3 +137,11 @@ restauré. Aucun résultat VM, corpus réel ou coupure électrique.
 Suite complète du lot : **859 réussis, 5 échecs de sockets Manager**, 50,08 s,
 Python 3.12.14/pytest 9.1.1, aucun désélectionné. Les cinq scénarios bloqués
 avant leur logique métier restent à valider sur la VM.
+
+## Passe d’entretien explicite du 02/10
+
+`core.maintenance.cli run` assemble reprise globale, échéances arrivées,
+rapprochement des dossiers et reconstruction du catalogue, avec relecture finale.
+Relancer après interruption termine les dérivés sans rejouer les effets acquis.
+`inspect` reste en lecture seule. Aucun ordonnanceur ni fenêtre horaire installé ;
+voir [MAINTENANCE-PASS.md](MAINTENANCE-PASS.md) pour les limites et commandes.

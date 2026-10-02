@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après raccordement routage/cycle de vie : **927 réussis,
-5 échecs d’environnement, 42,46 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après la passe d’entretien explicite : **947 réussis,
+5 échecs d’environnement, 47,98 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 121 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 141 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -168,7 +168,9 @@ conservés. Readiness et frontières endommagées bloquent avant publication.
 groupe ciblé 69 réussis. Retraits de garanties : 1 + 1 + 1 assertions rouges,
 code restauré. Contrat : [PROJECT-DOSSIERS.md](docs/PROJECT-DOSSIERS.md).
 
-Restant : déclenchement automatique du rapprochement, coût des scans/verrous
+Raccordement du 02/10 : la passe d’entretien explicite répare les vues après
+reprise et échéances, puis contrôle leur état final. Voir MAINTENANCE-PASS.md.
+Restant : déclenchement système récurrent, coût des scans/verrous
 T-049, édition concurrente/ingestion explicite des notes non reconstructibles.
 Le rappel écarte le texte des vues et signale leur fraîcheur. Lieux/thèmes après
 projets. Le manifeste est recalculé, pas un index incrémental. Définir la clôture de purge
@@ -187,7 +189,8 @@ Contrat : [INFORMATION-CATALOGUE.md](docs/INFORMATION-CATALOGUE.md).
 16 nouveaux cas, groupe ciblé 28 réussis, dont arrêt réel de processus.
 Trois retraits de garanties donnent chacun un échec comportemental. Destruction/
 reconstruction identique et disparition des anciens mots-clés vérifiées.
-Restant : rattrapage automatique T-046, mesure sur corpus réel et accélération
+Rattrapage raccordé à la passe d’entretien explicite T-046.
+Restant : récurrence système, mesure sur corpus réel et accélération
 des lectures ; cette version scanne le canonique pour prouver la fraîcheur.
 Aucun connecteur externe ni activation autonome des disponibilités.
 
@@ -240,15 +243,19 @@ optionnel au rappel. Contrat : [LIFECYCLE-TRIGGERS.md](docs/LIFECYCLE-TRIGGERS.m
 sans Manager, preuves négatives 1 + 2 + 2 assertions rouges ; code restauré.
 
 Raccordement au parcours qualifié livré en format 2 : voir T-043.
-Restant : récurrence/charge/fenêtre horaire, réparation
-automatique des dérivés et consommateurs externes. Aucun ordonnanceur système
-ni job de maintenance installé.
+Passe d’entretien explicite livrée : reprise globale → échéances → dossiers
+→ catalogue → relecture finale. Inspection sans écriture, résultat PARTIAL si
+backlog, reprise par relance et notes conservées. 20 nouveaux cas, groupe ciblé
+72 réussis, deux arrêts réels et concurrence sans Manager ; trois preuves
+négatives. Contrat : [MAINTENANCE-PASS.md](docs/MAINTENANCE-PASS.md).
+Restant : récurrence/charge/fenêtre horaire, dérivés incrémentaux et consommateurs
+externes. Aucun ordonnanceur système ni job récurrent installé.
 
 Tests à horloge contrôlée : échéance dépassée pendant l'arrêt, révision changée,
 annulation, rejeu, chat non présenté comme position actuelle, obstacle contourné
 à revérifier. Consolidation autonome après contrat ; contenu identique ne
 signifie pas même sens.
-Entretien récurrent retenu comme besoin, pas implémenté : fenêtre matinale,
+Entretien récurrent retenu comme besoin, pas installé : fenêtre matinale,
 report si occupé, lots reprenables et rattrapage après arrêt. Le profil léger
 quotidien / approfondi hebdomadaire proposé dans la discussion reste à fixer,
 ainsi que l'heure exacte (souhait 3–4 h, fenêtre documentaire 4–8 h), les critères
@@ -330,5 +337,6 @@ livré en local ; le rapprochement global des dossiers hors parcours est mainten
 disponible à la demande, comme le catalogue reconstructible T-045. T-049 réduit
 les scans par commande ; un annuaire reconstructible et la mesure VM restent
 nécessaires avant ingestion intensive. Disponibilité et échéances raccordées
-au routage ; entretien des dérivés et autres branches des plans à poursuivre. La mise en service exige toujours import/migration décidée,
+au routage ; entretien explicite assemblé. Récurrence, coût des scans et
+autres branches des plans à poursuivre. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.

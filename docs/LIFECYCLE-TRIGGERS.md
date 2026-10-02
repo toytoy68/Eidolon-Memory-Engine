@@ -137,3 +137,11 @@ est dérivée de l’intention, pas du texte. Tant que le parent reste APPLYING,
 le dispatcher refuse de commencer son effet. Reprise et annulation intercalée
 conservent cette identité sans recréer l’échéance. Les formats 1 restent inchangés.
 Voir [ROUTING-EXECUTION.md](ROUTING-EXECUTION.md).
+
+## Passe d’entretien explicite du 02/10
+
+`core.maintenance.cli run` assemble reprise globale, échéances arrivées,
+rapprochement des dossiers et reconstruction du catalogue, avec relecture finale.
+Relancer après interruption termine les dérivés sans rejouer les effets acquis.
+`inspect` reste en lecture seule. Aucun ordonnanceur ni fenêtre horaire installé ;
+voir [MAINTENANCE-PASS.md](MAINTENANCE-PASS.md) pour les limites et commandes.

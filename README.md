@@ -32,6 +32,8 @@ développement et n'est pas encore validée sur la VM.
   métadonnées, filtres projet/disponibilité et refus d'une projection périmée.
 - [Disponibilité et échéances durables](docs/LIFECYCLE-TRIGGERS.md) : changements
   explicites HIGH/INTERMEDIATE/LOW, réexamens, annulation et reprise idempotente.
+- [Passe d’entretien explicite](docs/MAINTENANCE-PASS.md) : reprise, échéances,
+  dossiers et catalogue enchaînés, reprise par relance et vérification finale.
 - [Mesures synthétiques et procédure de répétition](docs/PERFORMANCE.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
@@ -49,8 +51,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après raccordement routage/cycle de vie du 02/10/2026 :
-**927 tests réussis, 5 échecs d’environnement en 42,46 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après la passe d’entretien explicite du 02/10/2026 :
+**947 tests réussis, 5 échecs d’environnement en 47,98 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -81,16 +83,16 @@ n’est encore installé sur la VM.
   projet existant et son dossier est livré avec reprise et rejeu ; voir
   [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md). Les commandes Thread
   restent décrites dans [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
-- Automatiser le rapprochement des dossiers, maintenant disponible à la demande
-  hors du parcours qualifié. Le rappel
+- Définir l’ordonnancement de l’entretien : une passe explicite enchaîne maintenant
+  reprise, échéances, dossiers et catalogue. Le rappel
   applique maintenant contexte/validité/statuts et expose sources et incertitudes ;
   voir [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
 - Poursuivre T-049 avant ingestion intensive : les nouvelles écritures font
   désormais un scan au lieu de trois, mais le coût reste linéaire par commande.
   [Mesures reproductibles](docs/JOURNAL-SCAN-COST.md) : 300 créations en 20,42 s
   contre 59,39 s sur le corpus synthétique local. Catalogue livré à la demande ;
-  déclencheurs durables explicites livrés. Ordonnancement système et réparation
-  automatique des dérivés restent ouverts.
+  déclencheurs durables et réparation des dérivés assemblés dans une passe
+  explicite. Ordonnancement système et traitement incrémental restent ouverts.
 
 Le premier parcours Information → projet existant → dossier actualisé → rappel
 contextualisé est livré pour les entrées explicitement qualifiées. Les autres
