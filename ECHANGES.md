@@ -6,6 +6,10 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
+Recette directe Codex du 03/10 sur `9780473` : neuf étapes OK dans
+`/tmp/em-yZKsKq`, cinq scénarios concurrents réussis, arbre mémoire vide.
+Preuves, contexte toytoy et limites dans la dernière entrée ci-dessous.
+
 État après passage de la suite sur la VM le 02/10, code testé `ac4d739`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
@@ -1183,3 +1187,61 @@ les tests inventaire et vm_acceptance. Pas de suite complète supplémentaire
 pour ce correctif ciblé ; les 1212 réussites VM restent attachées à `ac4d739`.
 Relance sur la VM attendue avant de poursuivre sauvegarde et audits sur copie.
 README/TODO actualisés ; aucun feu vert pour des écrivains réels à ce stade.
+
+## Recette VM reprise — 3 octobre 2026
+
+Exécution directe par Codex sur `Eidolon-Memory`, code
+`9780473e72cafd28ad2b27ca513f77f728139be5`, branche
+`refactor/architecture-v1`, Python de `.venv` 3.13.5, pytest 9.1.1.
+Le rapport précédent `recette-At3T0R/vm-acceptance-report.json` était KO
+uniquement sur les cinq scénarios Manager : le journal confirme
+`OSError: AF_UNIX path too long` avant les scénarios.
+
+Source restaurée retrouvée et présente :
+`/home/toytoy/eidolon-backups/backup-20261002-225227-mtsJkO/restauration-i2mwDP/eidolon-memory-engine`.
+Nouvelle exécution depuis le dépôt actif, sur cette source en lecture seule :
+
+```sh
+eidolon_workdir=$(mktemp -d /tmp/em-XXXXXX)
+/opt/eidolon-memory-engine/.venv/bin/python -B -m tools.vm_acceptance \
+  --source /home/toytoy/eidolon-backups/backup-20261002-225227-mtsJkO/restauration-i2mwDP/eidolon-memory-engine \
+  --workdir "$eidolon_workdir"
+```
+
+Première tentative courte `/tmp/em-sGQgQ2` : KO concurrence,
+`PermissionError: [Errno 1] Operation not permitted` à la création des sockets,
+dû au sandbox. Relance autorisée hors sandbox dans `/tmp/em-yZKsKq` :
+**code de sortie 0, statut OK, neuf étapes OK**, sans changement des tests.
+Journal : **5 passed, 40 deselected in 0.82s**. Les 40 désélections sont celles
+du filtre ciblé de la recette ; aucune suite complète relancée dans ce lot.
+
+- Sauvegarde/restauration internes par copie : **2448 fichiers vérifiés**.
+  Empreinte agrégée source :
+  `05b0f84a50f8fd1e05dec039b21cd4490f960b0da3fbd162b140b388c7e3c246`,
+  identique au précédent rapport ; contrôle final de source inchangée réussi.
+- Inventaire : aucune catégorie mémoire peuplée, aucun format à revoir.
+- Audits relations/cycle de vie : **0 Information** ; suppressions : **0 reçu** ;
+  écritures Information : aucun journal. Aucun problème trouvé.
+- Contrôle ponctuel de démarrage : **ready=true**, aucun problème ni opération.
+- Écrivains observés : aucun descripteur ouvert en écriture sur la source,
+  `configured=[]`, `running=[]`. La recette sans sudo conserve
+  `/var/spool/cron/crontabs` dans `unreadable` : inventaire heuristique partiel.
+
+Preuves archivées (copie des rapports et logs vérifiée par SHA256) dans
+`/home/toytoy/eidolon-backups/backup-20261002-225227-mtsJkO/recette-20261003-em-yZKsKq` : `successful/` et `sandbox-blocked/`, chacun contenant
+`vm-acceptance-report.json` et `concurrency.log`, plus `SHA256.json`.
+Les rapports conservent les chemins `/tmp` d'exécution originaux.
+L'ancien rapport, la sauvegarde originale et les données du dépôt actif
+n'ont pas été modifiés par la recette.
+
+Contexte confirmé par toytoy, distinct des observations directes ci-dessus :
+les cinq tests `tests/test_writer_inventory.py` passent sur la VM ; inventaire
+avec sudo `configured=[]`, `running=[]`, `unreadable=[]`, aucun service Eidolon
+actif ; sauvegarde SHA256 et restauration tar conformes dans
+`/home/toytoy/eidolon-backups/backup-20261002-225227-mtsJkO`.
+
+**Limites :** recette sur arbre mémoire vide, aucune validation sur corpus
+réel, aucune reprise de journaux réels ni intégration/démarrage des services,
+aucune coupure électrique ou panne physique de stockage. Le succès des
+scénarios concurrents synthétiques et des copies ne vaut pas mise en production.
+La suite complète de 1212 tests reste attachée à `ac4d739`.

@@ -1,6 +1,6 @@
 # Memory Engine — TODO active
 
-Mise à jour : **2026-10-02**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
+Mise à jour : **2026-10-03**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
 `refactor/architecture-v1`. **Estimation globale gelée : 45 %. Grille : 52,75
 points, inchangée.** Aucun avancement chiffré pour cet audit documentaire.
 
@@ -34,6 +34,17 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
+Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
+**5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
+2448 fichiers vérifiés par SHA256, source restaurée inchangée, `ready=true`.
+Relance hors sandbox dans `/tmp/em-yZKsKq` après refus de sockets dans le sandbox ;
+l'ancien chemin long produisait `AF_UNIX path too long`. Inventaire mémoire et
+journaux vides : audits réussis sans corpus réel. Rapports/logs des deux nouvelles
+tentatives archivés dans le sous-dossier `recette-20261003-em-yZKsKq` de la
+sauvegarde. Voir [preuves et limites](docs/VM-TESTS-2026-10-02.md).
+Sauvegarde SHA256/restauration tar et absence de services Eidolon actifs
+confirmées par toytoy ; aucune intégration services ou coupure électrique validée.
+
 VM `Eidolon-Memory`, retour terminal de toytoy du 02/10/2026 à 22 h 27 :
 **1212 réussis en 28,89 s**, commit `ac4d739`, Python 3.13.5/pytest 9.1.1,
 aucun échec ni désélection. Les cinq scénarios de concurrence Manager passent.
@@ -49,7 +60,9 @@ Incident VM à 22 h 36 : `tools.writer_inventory` levait PermissionError sur
 cron, chemin dans `unreadable`, conservation des autres résultats et couverture
 heuristique explicite. Trois nouveaux tests rouges avant correction, puis
 12 ciblés verts en 0,81 s (inventaire + recette). Suite VM de 1212 cas ci-dessus
-antérieure au correctif ; relance réelle de l'inventaire encore attendue.
+antérieure au correctif ; cinq tests inventaire et inventaire sudo vide
+confirmés par toytoy le 03/10. La recette sans sudo signale encore le cron
+inaccessible, sans interrompre les autres contrôles.
 
 Mesure historique dans Work :
 
@@ -428,7 +441,7 @@ archives optionnelles ; les statuts LONG_TERM/PERMANENT ne suffisent pas à
 activer la conservation de toutes les versions. Aucun choix métier nouveau
 considéré comme approuvé par la seule revue.
 
-## Recette VM — NON TESTÉE
+## Recette VM — RÉUSSIE SUR ARBRE VIDE / CORPUS RÉEL NON VALIDÉ
 
 | Tâche | Preuve exigée |
 | --- | --- |
@@ -443,7 +456,7 @@ considéré comme approuvé par la seule revue.
 Outil : `python -B -m tools.vm_acceptance --source COPIE_ARRETEE --workdir DOSSIER_VIDE`.
 Il enchaîne inventaire, restauration, cinq cas concurrents et quatre audits.
 Le contrôle de démarrage T-048 complète ces audits ; inventaire des écrivains
-heuristique et exécution VM toujours manquante.
+heuristique ; recette VM réussie sur arbre vide le 03/10, corpus réel toujours manquant.
 
 ## Acquis et chantiers transversaux
 

@@ -75,14 +75,18 @@ aucun échec ni test désélectionné. Les cinq tests de concurrence bloqués pa
 les sockets de Work passent également. Données de test temporaires isolées.
 [Preuve rapportée et périmètre](docs/VM-TESTS-2026-10-02.md).
 
-Correctif après ce passage VM : l'inventaire des écrivains signale maintenant
-un dossier cron inaccessible dans `unreadable` et poursuit les autres sources.
-Trois tests de régression ajoutés ; 12 tests inventaire/recette réussis localement.
-Ce correctif reste à confirmer par relance de l'inventaire sur la VM.
+Correctif inventaire cron `9780473` : cinq tests inventaire réussis et
+inventaire sudo vide confirmés par toytoy. Recette exécutée directement par
+Codex le 03/10 depuis `.venv`, dans `/tmp/em-yZKsKq` hors sandbox : **neuf étapes
+OK**, **5 tests concurrents réussis en 0,82 s** (40 désélectionnés par le filtre).
+2448 fichiers sauvegardés/restaurés vérifiés par SHA256, source inchangée,
+audits sans problème et `ready=true`. **Mémoire vide : aucune validation sur
+corpus réel ni coupure électrique.** Inventaire sans sudo partiel (cron
+inaccessible), contrôle sudo rapporté séparément. Rapports/logs archivés ;
+[détails et limites](docs/VM-TESTS-2026-10-02.md).
 
 Résultat antérieur dans Work : 1207 réussis, cinq blocages de sockets Manager
-avant scénario, 75,62 s sous Python 3.12.14. La recette sauvegarde/restauration,
-les audits sur copie des données réelles, les services et la coupure électrique
+avant scénario, 75,62 s sous Python 3.12.14. Les audits sur copie des données réelles, les services et la coupure électrique
 restent à vérifier ; ce résultat n'autorise pas à lui seul la mise en production.
 
 Revue E-004 intégrée : REVIEW ne peut plus être contourné par UPDATE, les
