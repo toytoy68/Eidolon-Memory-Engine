@@ -321,6 +321,33 @@ l'absorption des impacts et l'adaptation passive/active à la forme des objets.
 Objectif : pouvoir manipuler des objets domestiques avec une force suffisante mais
 sans comportement de type étau ni dommage en cas de contact imprévu.
 
+### Présence physique et interaction sociale
+
+Ne pas considérer une morphologie humanoïde complexe comme nécessaire pour donner
+une présence convaincante à Eidolon. Une base roulante simple peut déjà devenir
+très expressive si elle combine correctement mouvement, regard, sons, posture et
+réactions au contexte.
+
+Pistes à étudier pour Wall-E :
+
+- **interaction tactile** : zones capacitives ou capteurs simples sur la tête et
+  le châssis ; distinguer caresse, tapotement, contact prolongé ou commande
+  volontaire et les traduire en événements contrôlés ;
+- **attention/orientation** : détecter l'interlocuteur actif et orienter d'abord
+  la tête/caméra, puis le châssis seulement si nécessaire ;
+- **tracking** : maintenir une personne ou un objet pertinent dans le champ de
+  vision sans déplacement inutile ;
+- **langage corporel expressif** : utiliser yeux/affichage, inclinaison de tête,
+  orientation du corps, bras et sons courts pour exprimer attention, attente,
+  interrogation, acquittement ou refus sans imposer une réponse vocale ;
+- **priorité à l'utilité** : concentrer la complexité mécanique sur perception,
+  manipulation sûre et interaction plutôt que sur une locomotion humanoïde
+  spectaculaire.
+
+Ces interactions doivent rester des signaux d'interface et de comportement :
+elles ne doivent pas contourner le Policy/Safety Engine ni déclencher directement
+des actions physiques sensibles sans validation appropriée.
+
 ## Statut du document
 
 Ce fichier est un **registre d'idées et de concepts**, pas une promesse de
