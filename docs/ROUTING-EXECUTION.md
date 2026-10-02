@@ -144,3 +144,11 @@ existant, avec son premier lien CONCERNS en révision 1. Disponibilité,
 limites : [ROUTING-NEW-PROJECT.md](ROUTING-NEW-PROJECT.md).
 Le routage prend désormais aussi le verrou du journal Information pendant
 son contrôle préalable de réservations pour l'index facultatif.
+
+## Entrée client NONE/REVIEW — 03/10
+
+`assess(memory, context)` / CLI `assess` traite les résultats sans mutation :
+NO_ACTION, REVIEW_REQUIRED, PREVIEW_REQUIRED ou CAPABILITY_REQUIRED. Le client
+résout explicitement les points de revue et le projet, puis utilise le parcours
+journalisé existant. Aucun résultat d’assessment ne vaut plan exécutable ou
+readiness moteur. [Contrat et limites](ROUTING-OUTCOMES.md).

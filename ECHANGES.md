@@ -1462,3 +1462,32 @@ aucune activation de services ni coupure électrique. Écrivains à arrêter jus
 succès final ; notes externes à sauvegarder séparément, permissions non conservées.
 Fusion opérationnelle dans un arbre existant et conversion entre formats restent
 ouvertes. Contrat : docs/CORE-COPY.md.
+
+## T-043 — Résultats client NONE/REVIEW, 3 octobre 2026
+
+Base `e17bec3` confirmée sur GitHub avant démarrage. `RoutingExecutor.assess` et
+CLI `assess` fournissent routing-outcome/1 en lecture seule : NO_ACTION,
+REVIEW_REQUIRED, PREVIEW_REQUIRED, CAPABILITY_REQUIRED. Plan original conservé,
+valeurs détachées, raisons explicites ; aucun corps ni écriture. Une association
+demandée avec NONE, une ambiguïté, qualification absente/date invalide/conflit
+ou retrait observé demandent une revue. L’absence d’un dossier explicite
+n’affirme jamais que le projet est nouveau. Un résultat n’est ni un plan
+exécutable, ni une validation de readiness, ni une résolution humaine.
+
+28 nouveaux cas, **25 rouges sur le squelette**. Première implémentation :
+24 verts/un échec d’assertion utilisant needs_review sur le bundle plutôt que
+ses éléments, corrigé ; trois tests supplémentaires NONE préserve mémoire,
+résultat non exécutable et projet déjà existant sans dossier déclaré.
+**106 ciblés réussis en 2,76 s**. Substitutions en mémoire supprimant REVIEW /
+supposant nouveau projet → six échecs / un échec ; dépôt non altéré.
+Suite VM isolée complète hors sandbox : **1457 passed in 36.29s**, aucun échec,
+saut ni désélection ; Python `.venv` 3.13.5/pytest 9.1.1. Journal
+`/tmp/em-suite-u79j7C/pytest.log`, base `e17bec3` plus lot avant commit.
+
+Client factice correction explicite de qualification → assessment → aperçu et
+exécution journalisée → rappel canonique avec incertitude. Aucun client externe,
+file de revue durable, qualification automatique ou décision sans humain.
+Arbres absents/bloqués inchangés par assessment. Corpus synthétique isolé ;
+services actifs et sauvegarde originale intacts, ni corpus réel ni coupure
+électrique validés. Estimations 45 % / 52,75 points inchangées.
+Contrat docs/ROUTING-OUTCOMES.md.

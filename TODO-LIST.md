@@ -34,9 +34,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après transfert core complet T-021/T-033 : **1429 réussis en 36,38 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `46998ce` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-o6rMam`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après résultats client NONE/REVIEW T-043 : **1457 réussis en 36,29 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `e17bec3` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-u79j7C`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -316,7 +316,15 @@ journal ajouté au contrôle des réservations du routage pour compatibilité av
 l'index facultatif, y compris en format 2. Contrat :
 [ROUTING-NEW-PROJECT.md](docs/ROUTING-NEW-PROJECT.md).
 
-Restant : branches NONE/REVIEW/lieu/thème, autres politiques et qualification automatique.
+Ajout du 03/10, base `e17bec3` vérifiée sur GitHub : résultats client NONE/REVIEW
+par `assess`, sans écritures. Aucune action, revue requise ou prochaine étape
+explicite ; pas de readiness affirmée, pas de création supposée du projet.
+28 nouveaux cas, 25 rouges sur squelette, 106 ciblés verts ; client factice
+jusqu’au rappel, preuve NONE != DELETE, deux substitutions négatives.
+Suite VM 1457 réussis en 36,29 s. [Contrat](docs/ROUTING-OUTCOMES.md).
+
+Restant : résolution/file de revue durable, rattachement sans nouvelle écriture,
+lieu/thème, autres politiques et qualification automatique.
 Disponibilité encore différée pour les seuls anciens plans format 1.
 Pas de client externe ou de VM validé.
 

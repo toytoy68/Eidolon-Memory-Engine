@@ -23,6 +23,8 @@ réelles et le déploiement restent à valider.
   scan partagé, arrêt au conflit et reprise par rejeu des commandes stables.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
+- [Résultats client NONE/REVIEW](docs/ROUTING-OUTCOMES.md) :
+  évaluation sans écriture, revue explicite et prochaine étape avant exécution.
 - [Nouveau projet par routage](docs/ROUTING-NEW-PROJECT.md) : aperçu explicite,
   création journalisée, dossier et échéance ; format 3 compatible avec 1/2.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
@@ -75,10 +77,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1429 réussis en
-36,38 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `46998ce` plus le transfert core complet vers une destination neuve ;
-42 nouveaux cas ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1457 réussis en
+36,29 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `e17bec3` plus les résultats client NONE/REVIEW ;
+28 nouveaux cas, 106 ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,
@@ -143,7 +145,8 @@ n’est encore installé sur la VM.
   il ne les archive plus silencieusement en perdant leurs contraintes actives.
 - Étendre l’exécution des plans : le parcours qualifié STORE/UPDATE vers un
   projet existant ou explicitement nouveau et son dossier est livré avec reprise
-  et rejeu ; les branches NONE/REVIEW et lieu/thème restent ouvertes. Voir
+  et rejeu ; NONE/REVIEW sont maintenant consommables sans mutation ; lieu/thème
+  et résolution durable des revues restent ouverts. Voir
   [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md). Les commandes Thread
   restent décrites dans [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
 - Définir l’ordonnancement de l’entretien : une passe explicite enchaîne maintenant

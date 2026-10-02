@@ -50,6 +50,11 @@ class RoutingExecutor:
         self.journal = ExecutionJournal(backend.history_root)
         self.dossiers = ProjectDossiers(backend, self.storage, backend.persistent_root.parent / 'dossiers')
 
+    def assess(self, memory, context):
+        """Handle NONE/REVIEW and explain the next explicit step without writes."""
+        from core.routing.outcomes import assess
+        return assess(memory, context)
+
     def recall(self, query, **options):
         """Read canonical contextual memory; no implicit projection rebuild."""
         from core.retrieval.contextual import ContextualRecall

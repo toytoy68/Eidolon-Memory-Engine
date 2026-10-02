@@ -103,3 +103,10 @@ conservent leur résultat. Un ancien plan affecté par ces corrections est refus
 à la revalidation : refaire l'aperçu après correction des entrées. Si une
 intention affectée est déjà APPLYING, elle reste bloquée pour examen humain ;
 ne pas la réécrire ni forcer sa reprise automatiquement.
+
+## Résultats consommables par un client — 03/10
+
+La façade `assess` conserve le plan pur et fournit une prochaine étape explicite,
+y compris NONE/REVIEW. Aucune écriture ou résolution humaine implicite. La voie
+STORE/UPDATE vers projet exige toujours un aperçu revalidé avant exécution.
+[Résultats client et limites](ROUTING-OUTCOMES.md).

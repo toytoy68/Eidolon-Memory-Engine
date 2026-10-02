@@ -19,6 +19,9 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)
     sub = parser.add_subparsers(dest='action', required=True)
+    assess = sub.add_parser('assess', help='Read-only NONE/REVIEW outcome and next explicit step')
+    assess.add_argument('--memory', type=Path, required=True)
+    assess.add_argument('--context', type=Path, required=True)
     preview = sub.add_parser('preview')
     preview.add_argument('--memory', type=Path, required=True)
     preview.add_argument('--context', type=Path, required=True)
@@ -46,7 +49,11 @@ def main(argv=None):
         backend.history_root = args.root / 'memory/history'
         backend.pending_delete_root = backend.history_root / 'pending-delete'
         executor = RoutingExecutor(backend)
-        if args.action == 'preview':
+        if args.action == 'assess':
+            memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
+            context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
+            result = executor.assess(memory, context)
+        elif args.action == 'preview':
             memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
             context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
             if args.new_project is not None:
