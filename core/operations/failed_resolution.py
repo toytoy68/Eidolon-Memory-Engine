@@ -1,4 +1,4 @@
-"""Human-authorized retry of FAILED Thread status and update operations, never abandonment.
+"""Human-authorized retry of FAILED Thread creation, status and update operations, never abandonment.
 
 One atomic journal write records the review and moves FAILED to APPLYING.
 Ordinary recovery then finishes the unchanged command with existing guards.
@@ -20,6 +20,8 @@ from core.operations.errors import OperationConflict, OperationRepositoryError
 from core.operations.filesystem import FilesystemOperationRepository
 from core.operations.models import OperationStatus
 from core.operations.readiness import check_readiness
+from core.operations.thread_create import FilesystemLinkedThreadCreation
+from core.threads.link_service import ThreadInformationLinkService, MissingLinkedInformation
 from core.operations.thread_status import FilesystemThreadOperations
 from core.operations.thread_update import FilesystemThreadUpdates, read_operations
 from core.persistence import exclusive_write, has_symlink_component
@@ -29,7 +31,9 @@ from core.threads.storage import ThreadStorage, ThreadStorageError
 
 FAMILY = 'thread-status-v1'
 UPDATE_FAMILY = 'thread-update-v1'
-ACTIONS = {FAMILY: 'RETRY_THREAD_STATUS_V1', UPDATE_FAMILY: 'RETRY_THREAD_UPDATE_V1'}
+CREATE_FAMILY = 'thread-create-v1'
+ACTIONS = {FAMILY: 'RETRY_THREAD_STATUS_V1', UPDATE_FAMILY: 'RETRY_THREAD_UPDATE_V1',
+           CREATE_FAMILY: 'RETRY_THREAD_CREATE_V1'}
 READ_ERRORS = (OSError, ValueError, TypeError, OperationRepositoryError,
                EventRepositoryError, ThreadStorageError, ThreadError, BackendError)
 
@@ -59,6 +63,13 @@ def _readers(root, family):
     backend = FilesystemBackend.__new__(FilesystemBackend)
     backend.persistent_root, backend.history_root = persistent, history
     backend.pending_delete_root = history / 'pending-delete'
+    if family == CREATE_FAMILY:
+        engine = FilesystemLinkedThreadCreation.__new__(FilesystemLinkedThreadCreation)
+        engine.backend, engine.storage = backend, storage
+        engine.events, engine.operations = events, operations
+        engine.links = ThreadInformationLinkService(backend, storage)
+        engine.deletion_operations = None
+        return engine
     engine = FilesystemThreadUpdates.__new__(FilesystemThreadUpdates)
     engine.backend, engine.storage = backend, storage
     engine.events, engine.operations = events, operations
@@ -84,6 +95,9 @@ def _scope(root, engine, operation, selected_family):
                 continue
             if family == selected_family and getattr(other.plan, 'event_id', None) == operation.plan.event_id:
                 raise OperationConflict('another operation reserves this Event identity')
+            if (selected_family == CREATE_FAMILY and family == CREATE_FAMILY
+                    and other.target_id == operation.target_id):
+                raise OperationConflict('another creation reserves this Thread identity')
             if other.target_id == operation.target_id and other.status is not OperationStatus.COMMITTED:
                 raise OperationConflict('another operation reserves this Thread')
 
@@ -103,6 +117,8 @@ def review_failed_thread(root, operation_id, *, family=FAMILY):
         engine._check_links(before, after)
     else:
         engine.storage._check_concerns(after)
+        if family == CREATE_FAMILY and engine.backend.get(operation.plan.information_id) is None:
+            raise MissingLinkedInformation(operation.plan.information_id)
     event = engine._event(operation, before, after)
     saved = engine.events.get(event.event_id)
     if saved is not None and saved != event:
@@ -114,11 +130,13 @@ def review_failed_thread(root, operation_id, *, family=FAMILY):
             'target_id': operation.target_id, 'plan_sha256': operation.execution_plan_hash,
             'failed_record_sha256': sha256(operation_path.read_bytes()).hexdigest(),
             'previous_revision': operation.previous_revision, 'revision': operation.revision,
-            'thread_state': 'BEFORE' if current == before else 'AFTER',
+            'thread_state': ('ABSENT' if family == CREATE_FAMILY else 'BEFORE') if current == before else 'AFTER',
             'event_state': 'ABSENT' if saved is None else 'MATCH',
             'write_thread': current == before, 'write_event': saved is None,
             'previous_resolutions': deepcopy(operation.manual_resolutions),
             'action': ACTIONS[family]}
+    if family == CREATE_FAMILY:
+        report['information_id'] = operation.plan.information_id
     if family == UPDATE_FAMILY:
         report['command'] = decode_json_value(operation.plan.command)
     return report

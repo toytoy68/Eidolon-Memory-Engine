@@ -34,6 +34,11 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
+Suite complète directe sur VM du **03/10/2026** après extension T-048 aux
+créations Thread FAILED : **1247 réussis en 29,82 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `06c9570` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-hfIokV`, corpus synthétique isolé, journal conservé.
+
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
 2448 fichiers vérifiés par SHA256, source restaurée inchangée, `ready=true`.
@@ -129,7 +134,7 @@ VM du commit candidat.
 
 ## Lots à réaliser
 
-### T-048 — Reprise et inventaire complets — FAIT EN LOCAL / NON TESTÉ VM
+### T-048 — Reprise et inventaire complets — SUITE VM VALIDÉE / EXPLOITATION PARTIELLE
 
 A-01/A-02 corrigés : les trois recover Thread signalent FAILED ; famille
 thread-delete-v1 inventoriée. Scan des fichiers et sous-familles inconnus sans
@@ -165,8 +170,20 @@ contrôlées avant autorisation ; réservations de suppression conservées.
 contrôle de lien, la fraîcheur de revue ou l'audit donne 1 + 1 + 1 échecs.
 Les états FAILED simultanés de familles différentes restent bloqués pour examen.
 
+Extension du 03/10 sur base `06c9570` : THREAD_CREATE supporté par la revue
+`--family thread-create-v1`, trace RETRY_THREAD_CREATE_V1 et reprise normale.
+Thread ABSENT/AFTER, Information liée visible, révisions 0 → 1 et Event original.
+Même contrôle de fraîcheur et publication atomique ; liens invalides, Event sans
+Thread, identités réservées et parents non terminés bloqués avant autorisation.
+32 nouveaux tests, 25 premiers rouges avant implémentation, puis 160 ciblés verts
+sur VM en 3,82 s. Trois arrêts de processus, deux reprises concurrentes,
+rejeu sans résurrection et nouvel échec couvert. Retirer revalidation/trace
+provoque un échec chacun dans des processus de preuve distincts.
+Suite complète VM : 1247 réussis en 29,82 s. Corpus synthétique uniquement,
+aucune résolution sur données réelles ni coupure électrique.
+
 Restant exploitation : installation du contrôle dans les services réels,
-dépendances sur corpus VM, autres familles FAILED (création/suppression
+dépendances sur corpus réel VM, autres familles FAILED (suppression
 Thread, écritures Information), intentions parentes, divergences et abandon
 explicite éventuel avec traitement des effets/réservations. Aucun abandon automatique livré. Une
 lecture ponctuelle ne protège pas contre le redémarrage ultérieur d'un écrivain legacy.

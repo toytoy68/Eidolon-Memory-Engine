@@ -83,7 +83,7 @@ class FilesystemLinkedThreadCreation:
             self.operations.create(operation)
             return self._resume(operation)
 
-    def _resume(self, operation: OperationRecord) -> Thread:
+    def _validated_states(self, operation: OperationRecord):
         if (operation.operation_type is not OperationType.THREAD_CREATE
                 or not isinstance(operation.plan, ThreadCreatePlan)
                 or plan_hash(operation) != operation.execution_plan_hash):
@@ -95,6 +95,23 @@ class FilesystemLinkedThreadCreation:
                 or operation.previous_revision != 0 or operation.revision != 1
                 or self.links.prepare(linked, plan.information_id) != linked):
             raise OperationConflict("invalid linked Thread snapshot")
+        return None, linked
+
+    @staticmethod
+    def _event(operation, before, linked):
+        return Event(
+            event_id=operation.plan.event_id, revision=1, event_type=EventType.CREATED,
+            thread_id=linked.thread_id,
+            state_transition=StateTransition(after={"status": linked.status.value}),
+            provenance=Provenance(source_type="SYSTEM_GENERATED", source="thread-create-service",
+                                  actor="eidolon", timestamp=linked.created_at),
+            relations=[EventRelation(RelationType.CONCERNS, operation.plan.information_id),
+                       EventRelation(RelationType.CAUSED_BY, operation.operation_id)],
+        )
+
+    def _resume(self, operation: OperationRecord) -> Thread:
+        _, linked = self._validated_states(operation)
+        plan = operation.plan
         if operation.status is OperationStatus.COMMITTED:
             return linked
         if operation.status is OperationStatus.FAILED:
@@ -103,15 +120,7 @@ class FilesystemLinkedThreadCreation:
         require_no_thread_update(self.operations.root.parent / 'thread-update-v1', operation.target_id)
         if self.backend.get(plan.information_id) is None:
             raise MissingLinkedInformation(plan.information_id)
-        event = Event(
-            event_id=plan.event_id, revision=1, event_type=EventType.CREATED,
-            thread_id=linked.thread_id,
-            state_transition=StateTransition(after={"status": linked.status.value}),
-            provenance=Provenance(source_type="SYSTEM_GENERATED", source="thread-create-service",
-                                  actor="eidolon", timestamp=linked.created_at),
-            relations=[EventRelation(RelationType.CONCERNS, plan.information_id),
-                       EventRelation(RelationType.CAUSED_BY, operation.operation_id)],
-        )
+        event = self._event(operation, None, linked)
         # Lock order: persistent -> Thread -> Operation -> Event.
         with exclusive_write(self.operations.root), exclusive_write(self.events.events_root):
             if self.operations.get(operation.operation_id) != operation:

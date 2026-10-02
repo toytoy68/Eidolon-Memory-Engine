@@ -1,7 +1,8 @@
-# Résolution humaine FAILED — statuts et éditions Thread
+# Résolution humaine FAILED — créations, statuts et éditions Thread
 
-Ce parcours traite THREAD_STATUS_CHANGE dans `thread-status-v1` et
-THREAD_UPDATE dans `thread-update-v1`, sous `memory/history/operations/`. Une personne peut autoriser la
+Ce parcours traite THREAD_STATUS_CHANGE dans `thread-status-v1`,
+THREAD_UPDATE dans `thread-update-v1` et THREAD_CREATE dans
+`thread-create-v1`, sous `memory/history/operations/`. Une personne peut autoriser la
 reprise du **plan original**, après examen des effets présents. Il n'existe ni
 abandon, ni remplacement des snapshots, ni annulation implicite des effets.
 Les autres familles FAILED restent bloquantes et demandent un parcours dédié.
@@ -29,14 +30,25 @@ python -B -m core.operations.failed_resolution --root /copie \
   preview identifiant-operation --family thread-update-v1 > /hors-copie/revue.json
 ```
 
+Pour une création liée, utiliser `--family thread-create-v1`. La revue donne
+`information_id`, Thread ABSENT/AFTER et révisions 0 → 1. Les seuls états admis
+sont : Thread absent/Event absent, Thread exact/Event absent, Thread exact/Event
+exact. Un Event présent sans Thread est bloqué, ainsi qu'un autre journal de
+création de la même identité, même COMMITTED. L'Information liée et tous les
+CONCERNS doivent être présents et lisibles ; une demande de suppression tardive
+reste en attente et n'est pas approuvée par la résolution. Le journal FAILED
+réserve déjà le lien, puis le Thread créé conserve cette protection.
+Les parents de routage non terminés et les autres familles FAILED restent
+bloquants : cette extension ne résout pas leurs enfants indépendamment du parent.
+
 Sans `--family`, le CLI conserve la famille de statut. La revue d'édition ajoute
 la commande originale complète (`command`) pour l'examen humain.
 
 `preview` est sans écriture, même sans arbre valide. Le shell peut écrire le
 rapport au chemin explicitement choisi ; garder cette revue hors des journaux
 canoniques. L'aperçu donne opération/cible, révisions, empreinte du plan et des
-octets FAILED, état du Thread BEFORE/AFTER et de l'Event ABSENT/MATCH, effets
-encore nécessaires et décisions humaines antérieures. Les snapshots complets
+octets FAILED, état du Thread BEFORE/AFTER (ABSENT/AFTER pour création) et de
+l'Event ABSENT/MATCH, effets encore nécessaires et décisions humaines antérieures. Les snapshots complets
 restent consultables dans le journal source. L'aperçu ne vaut pas autorisation.
 
 L'API générale expose `review_failed_thread(root, operation_id, *, family)` et
@@ -89,7 +101,8 @@ Il n'y a aucune réécriture forcée des sources pour les faire correspondre.
 Une seule publication atomique du journal réalise ces deux changements :
 
 1. Ajouter une entrée à `manual_resolutions` avec `resolution_id`, action
-   RETRY_THREAD_STATUS_V1 ou RETRY_THREAD_UPDATE_V1 selon la famille,
+   RETRY_THREAD_STATUS_V1, RETRY_THREAD_UPDATE_V1 ou RETRY_THREAD_CREATE_V1
+   selon la famille,
    auteur, motif, date, SHA-256 du journal FAILED et
    SHA-256 de la revue approuvée.
 2. Passer ce même journal de FAILED à APPLYING, sans changer le plan,
@@ -117,7 +130,7 @@ continue de bloquer ce résidu pour examen, sans nettoyage aveugle.
 ## Format, compatibilité et limites
 
 `manual_resolutions` est un champ optionnel strict du journal Operation, permis
-ici pour THREAD_STATUS_CHANGE et THREAD_UPDATE, avec action correspondant
+ici pour THREAD_STATUS_CHANGE, THREAD_UPDATE et THREAD_CREATE, avec action correspondant
 strictement au type d’opération. Il est omis si vide : les journaux
 anciens ne sont pas migrés à la lecture ni enrichis artificiellement.
 Le calcul de hash du **plan** exclut cette trace, comme il exclut le statut ;
@@ -137,12 +150,12 @@ Ne pas enlever `manual_resolutions` pour rendre ces fichiers lisibles par une
 ancienne version. Il faut conserver un lecteur compatible avec la nouvelle
 trace lors d'un déploiement ou d'une restauration.
 
-Il ne s'agit pas d'une résolution générale de FAILED : création/suppression
+Il ne s'agit pas d'une résolution générale de FAILED : suppression
 de Thread, écritures Information, parents de routage et conflits réels
 restent hors de ce parcours. Aucun état ABANDONED ajouté. L'autorisation humaine
 ne signifie pas que le moteur a identifié la cause initiale de l'échec ; cette
 analyse motive la décision fournie par l'opérateur. Aucune commande n'est lancée
-sur la VM par la livraison de cette fonctionnalité.
+sur les données actives par la livraison de cette fonctionnalité.
 
 ## Preuves
 
@@ -175,3 +188,52 @@ l'audit lors de la publication donne un échec. Aucune substitution conservée.
 Groupe ciblé : **107 réussis en 4,52 s**. Dernière suite complète :
 **1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, aucun désélectionné,
 Python 3.12.14/pytest 9.1.1. Aucun scénario VM compté comme validé.
+
+
+## T-048 — Reprise humaine des créations Thread FAILED, 3 octobre 2026
+
+Base `06c9570`, branche `refactor/architecture-v1`. La reprise humaine accepte
+maintenant THREAD_CREATE dans `thread-create-v1`, via l'API générale et le CLI
+`preview --family thread-create-v1`, puis `retry`. Le plan, les révisions 0 → 1,
+les identités Thread/Operation/Event et l'Information liée restent inchangés.
+La revue expose `information_id`, Thread ABSENT/AFTER et Event ABSENT/MATCH.
+L'autorisation RETRY_THREAD_CREATE_V1 et APPLYING sont publiés atomiquement dans
+le journal ; les lecteurs stricts, readiness et recover-all acceptent cette trace.
+Le dépôt générique continue d'interdire les sorties FAILED et la modification
+ou suppression de la trace. Les anciens journaux sans trace restent compatibles ;
+les binaires antérieurs ne connaissant pas cette action refusent la nouvelle trace.
+
+L'Event et la validation du snapshot sont partagés avec le coordinateur de
+création existant. Divergence, Event sans Thread, lien absent/corrompu, revue
+périmée, réservation du même Thread/Event et seconde création de la même identité
+(même COMMITTED) bloquent avant autorisation. Les autres familles non terminées,
+les parents de routage et les sources inconnues/corrompues restent bloquants.
+Les FAILED indépendants de création peuvent être traités un par un. Une demande
+PENDING_DELETE tardive reste en attente : ni approbation ni annulation implicite.
+Le rejeu COMMITTED ne recrée pas un Thread supprimé depuis ; un nouvel échec
+exige une nouvelle revue et une nouvelle décision, sans enlever les précédentes.
+
+Preuves directes sur la VM, Python `.venv` 3.13.5/pytest 9.1.1 :
+**32 nouveaux cas** dans `tests/test_failed_create_resolution.py`. Les 25 premiers
+échouent avant implémentation (famille non supportée), puis passent ; sept cas
+supplémentaires couvrent concurrence, métadonnées, nouvel échec et indépendance.
+Groupe ciblé création/statut/édition/readiness/suppression/intégration :
+**160 réussis en 3,82 s**. Trois arrêts réels code 74 aux frontières avant
+publication/après publication/après commit ; deux processus concurrents sans
+Manager terminent avec une seule autorisation et un seul Event.
+Deux substitutions uniquement en mémoire dans des processus distincts : figer
+l'aperçu au lieu de le revalider → un échec ; retirer la trace à APPLYING → un
+échec. Aucune substitution conservée dans le code.
+
+Suite complète isolée exécutée hors sandbox avec le Python de `.venv` :
+**1247 passed in 29.82s**, aucun échec, saut ou désélection. Racine
+`/tmp/em-suite-hfIokV`, journal `/tmp/em-suite-hfIokV/pytest.log` ;
+MEMORY_ENGINE_ROOT distinct, bytecode et cache pytest désactivés, basetemp isolé.
+Les cinq anciens scénarios Manager sont inclus. Cette preuve porte sur la base
+`06c9570` plus le lot de code et tests documenté ici, avant son commit.
+
+Limites : données synthétiques isolées uniquement, aucune modification de la
+mémoire active, aucune résolution humaine exécutée sur des journaux réels,
+aucune coupure électrique. Suppression Thread FAILED, écritures Information,
+intentions parentes, conflits/abandon et import opérationnel général restent
+ouverts. Aucun service installé ; estimations 45 % / 52,75 points inchangées.

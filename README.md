@@ -69,6 +69,12 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
+Dernière suite complète directe sur VM le **03/10/2026** : **1247 réussis en
+29,82 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `06c9570` plus le lot T-048 de reprise humaine des créations Thread FAILED ;
+32 nouveaux cas, 160 ciblés réussis. Données synthétiques isolées, aucun service
+installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
+
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,
 commit `ac4d739` : **1212 réussis en 28,89 s**, Python 3.13.5/pytest 9.1.1,
 aucun échec ni test désélectionné. Les cinq tests de concurrence bloqués par
@@ -98,7 +104,7 @@ Suivi livré : raisons des plans REVIEW corrigées et blocage de `resolve()`
 sur Thread corrompu vérifié par API/CLI (122 tests ciblés, quatre nouveaux cas).
 Détails et limites dans [ECHANGES.md](ECHANGES.md).
 
-La résolution FAILED couvre les statuts et éditions Thread (liens, actions,
+La résolution FAILED couvre les créations liées, statuts et éditions Thread (liens, actions,
 titre/objectif/contexte) : aperçu,
 auteur/motif explicites, trace et autorisation atomiques avant reprise. Les autres
 familles restent bloquées. Les anciens binaires refusent les journaux enrichis
