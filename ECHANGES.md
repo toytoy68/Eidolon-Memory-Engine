@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après corrections E-004 du 02/10, base publiée `a57d237`,
+État après validation de la revue E-004 du 02/10, code publié `3b2d7a0`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -33,7 +33,8 @@ Toujours vérifier HEAD et les changements locaux.
 - Relecture Claude reçue sur `f507b31` : patch v2 abandonné, correctifs déjà
   présents et filtre migration reconnu plus complet. Revue de lecture/sondes ;
   sans pytest chez Claude ni VM. Revue E-004 détaillée reçue ensuite : F1–F4
-  corrigés et vérifiés par Codex ; réponse et preuves en fin de fichier.
+  corrigés et vérifiés par Codex, puis confirmés par Claude sur `3b2d7a0`.
+  Relecture E-004 terminée ; réponse et limites en fin de fichier.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
@@ -192,7 +193,7 @@ Ces questions ne déclenchent pas automatiquement une session Claude.
 | E-001 | Haute | REVUE DE CONCEPTION ET D’IMPLÉMENTATION REÇUE | T-041/T-042, `0f45070` | Revue du format de commande/reçu et des interruptions |
 | E-002 | Moyenne | REVUE REÇUE — lecture seule | T-040/T-039, `b01ed9f` et `b967bf4` | Revue indépendante des deux lots déjà livrés |
 | E-003 | Haute avant mise en service | EN ATTENTE D'ACCÈS VM | T-010 à T-015/T-021/T-032 | Rapport réel, commit testé et limites d'environnement |
-| E-004 | Haute avant client | REVUE REÇUE — F1–F4 CORRIGÉS EN LOCAL | T-043/T-044 | Plans et projections livrés, limites de fraîcheur |
+| E-004 | Haute avant client | RELECTURE TERMINÉE — F1–F4 CONFIRMÉS SUR 3b2d7a0 | T-043/T-044 | Plans et projections livrés, limites de fraîcheur |
 | E-005 | Bloquant exploitation | RELECTURE REÇUE — PATCH V2 ABANDONNÉ | T-048/T-015 | FAILED omis et inventaire Thread incomplet |
 | E-006 | Bloquant migration mixte | REVUE REÇUE — IMPORT NON LIVRÉ | T-021/T-050 | Réservations archivées et histoire après compaction |
 | E-007 | Haute architecture | REVUE REÇUE — RÉSERVES CODEX CI-DESSOUS | T-031/T-043 à T-049 | Ordre métier, reprise des dérivés, catalogue et disponibilité |
@@ -994,3 +995,35 @@ de produire une projection depuis des sources invalides ; pas de nouveau mode
 REVIEW partiel. `status()` reste sans verrou, sur copie arrêtée pour cohérence.
 Revue des sorties CLI FAILED, import opérationnel et résolution humaine FAILED
 restent ouverts. Estimations 45 % / 52,75 points inchangées.
+
+## Validation finale E-004 — retour de Claude transmis par toytoy le 2026-10-02
+
+Relecture terminée sur `3b2d7a0`. Claude confirme par ses sondes les corrections
+F1–F4 : lieu obligatoire conservé en REVIEW, aucun faux titre/action par contenu
+multiligne, retrait incohérent refusé au plan et déclencheurs cohérents avec la
+persistance et la validité de l'échéance. Il confirme aussi 64 échecs des nouveaux
+tests avec l'ancien code de core, contre leur réussite avec les corrections.
+
+Limite déclarée : aucune nouvelle suite complète lancée par Claude. Son
+substitut de pytest produit 29 échecs sur les tests voisins, tous attribués à
+l'absence de `monkeypatch.context` et identiques sur `f507b31`. Cela ne constitue
+pas une exécution complète réussie. Les **1102 tests réussis et cinq blocages
+Manager** restent les résultats de la suite pytest de Codex sur le lot précédent.
+
+Détail cosmétique signalé : si une échéance invalide conduit à REVIEW, la raison
+`explicit_target_and_revision_for_update` peut rester présente. Comportement
+correct, nettoyage explicatif à prévoir ; aucune correction de code dans ce lot.
+
+Claude rappelle les sujets encore ouverts : comportement de `resolve()` sur
+Thread corrompu, résolution humaine de FAILED, import des reçus DELETED et VM.
+Réponse Codex : le choix conservateur de `resolve()` était déjà indiqué dans la
+réponse précédente ; il est maintenant explicité dans PROJECT-DOSSIERS.md.
+Une source illisible bloque l'ensemble de la résolution : ignorer ce Thread
+pourrait masquer un second rattachement et produire à tort un lien unique.
+REVIEW reste l'ambiguïté entre sources lisibles, sans résultat partiel sur source
+corrompue. Ce lot précise le contrat existant ; il n'ajoute ni comportement ni
+preuve de test dédiée à cette corruption. Une telle preuve reste à ajouter.
+
+FAILED, import opérationnel DELETED et recette VM restent ouverts dans la TODO.
+README et TODO actualisés ; aucune suite relancée pour cette édition documentaire.
+Les constats antérieurs et leurs limites sont conservés.

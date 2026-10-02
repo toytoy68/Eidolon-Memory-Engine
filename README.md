@@ -73,7 +73,9 @@ validation VM, donnée réelle ou coupure électrique.
 Revue E-004 intégrée : REVIEW ne peut plus être contourné par UPDATE, les
 valeurs multilignes ne forgent plus de sections de dossier, les propositions de
 retrait exigent une cible cohérente et les échéances sont validées dès le plan.
-71 cas supplémentaires ; détails et limites dans [ECHANGES.md](ECHANGES.md).
+71 cas supplémentaires. Claude a terminé sa relecture sur `3b2d7a0` et confirmé
+F1–F4 par sondes ; les chiffres de suite complète restent ceux de Codex.
+Détails et limites dans [ECHANGES.md](ECHANGES.md).
 
 Sur une copie arrêtée, `MEMORY_ENGINE_ROOT` désigne la racine contenant `memory/` :
 

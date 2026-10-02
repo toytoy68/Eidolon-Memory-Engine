@@ -27,7 +27,8 @@ ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la 
 poursuit les lots prioritaires avec preuves et documentation par étape. Revue Claude demandée E-005 à E-007 ;
 revue complète reçue par fichier, patch vérifié mais non intégré. Relecture
 Claude sur `f507b31` reçue le 02/10 : patch v2 abandonné, correctifs déjà présents ;
-E-004 reçue et F1–F4 corrigés/testés en local ; sorties CLI FAILED encore à relire. Périmètre de l’index dérivé et
+E-004 relue par Claude sur `3b2d7a0` : F1–F4 confirmés, relecture terminée ;
+sorties CLI FAILED encore à relire. Périmètre de l’index dérivé et
 archivage en conversion clarifiés dans MIGRATION.md. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
@@ -41,7 +42,7 @@ interdite avant scénario métier. 296 cas ajoutés depuis `9063313` (21 exécut
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
-## Revue E-004 — FAIT EN LOCAL / NON TESTÉ VM
+## Revue E-004 — CORRECTIONS CONFIRMÉES PAR CLAUDE / NON TESTÉ VM
 
 - F1 : une disposition sans lieu reste REVIEW malgré une cible UPDATE ; refus
   vérifié avant intention et écriture métier.
@@ -58,6 +59,17 @@ refus d'échéance désormais OperationConflict (plan REVIEW), au lieu de ValueE
 Les plans anciens affectés sont refusés à la revalidation ; une intention déjà
 APPLYING exige examen humain, sans réécriture forcée. Dossiers existants à
 rafraîchir explicitement s'ils deviennent STALE. Aucun changement des estimations.
+
+Retour final de Claude sur `3b2d7a0` : sondes et preuve rouge/vert confirmées.
+Pas de suite complète chez Claude ; ses 29 échecs de substitut pytest sont
+identiques sur la base précédente (absence de `monkeypatch.context`).
+
+Suivi restant après revue :
+- `resolve()` : maintien du blocage intégral sur Thread corrompu, contrat
+  explicité dans PROJECT-DOSSIERS.md ; test comportemental dédié encore à ajouter.
+- Nettoyage cosmétique de `reasons` quand une échéance invalide transforme
+  UPDATE en REVIEW, sans incidence sur la décision d'exécution.
+- Résolution humaine FAILED, import opérationnel DELETED et recette VM : ouverts.
 
 ## Ordre prioritaire
 

@@ -22,6 +22,13 @@ existant** ; elle ne crée pas de Thread ni de liaison. Utiliser auparavant le
 service de création liée pour un nouveau projet. Zéro liaison donne UNASSIGNED,
 plusieurs liaisons donnent REVIEW. `resolve --selected-thread …` exige une
 liaison existante et résout explicitement le choix ; il n'en invente aucune.
+Un Thread illisible ou corrompu bloque toute la résolution, même si d'autres
+Threads lisibles pointent vers l'Information : le fichier manquant à l'analyse
+pourrait contenir une autre liaison. `resolve()` propage l'erreur de lecture ;
+il ne renvoie ni LINK/UNASSIGNED ni une liste partielle en REVIEW. REVIEW décrit
+l'ambiguïté entre sources lisibles. Choix conservateur confirmé après E-004 ;
+le scan reste linéaire et sa corruption demande encore un test dédié.
+
 Les dossiers de lieu et de thème ne sont pas couverts par cette première vue.
 
 ## Texte humain et texte calculé
