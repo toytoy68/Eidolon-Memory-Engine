@@ -1,0 +1,901 @@
+{
+  "summary_version": 1,
+  "rows": [
+    {
+      "experiment": "information-batches",
+      "history_records": 100,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.0519,
+      "min_seconds": 0.050527,
+      "max_seconds": 0.052413,
+      "median_setup_seconds": 1.820705,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        125
+      ],
+      "journal_json_opens": [
+        150
+      ],
+      "canonical_verified": [
+        125
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 100,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.440626,
+      "min_seconds": 0.438686,
+      "max_seconds": 0.445451,
+      "median_setup_seconds": 1.810698,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        2825
+      ],
+      "journal_json_opens": [
+        2850
+      ],
+      "canonical_verified": [
+        125
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 100,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.05601,
+      "min_seconds": 0.054496,
+      "max_seconds": 0.056733,
+      "median_setup_seconds": 0.144936,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        125
+      ],
+      "journal_json_opens": [
+        150
+      ],
+      "canonical_verified": [
+        125
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 100,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.572413,
+      "min_seconds": 0.571252,
+      "max_seconds": 0.580976,
+      "median_setup_seconds": 0.154028,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        2825
+      ],
+      "journal_json_opens": [
+        2850
+      ],
+      "canonical_verified": [
+        125
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.078021,
+      "min_seconds": 0.076973,
+      "max_seconds": 0.078349,
+      "median_setup_seconds": 14.80743,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.119604,
+      "min_seconds": 1.079367,
+      "max_seconds": 1.121828,
+      "median_setup_seconds": 14.702859,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "update",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.081166,
+      "min_seconds": 0.079399,
+      "max_seconds": 0.081758,
+      "median_setup_seconds": 14.637871,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "update",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.118326,
+      "min_seconds": 1.091041,
+      "max_seconds": 1.148784,
+      "median_setup_seconds": 14.722178,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.094661,
+      "min_seconds": 0.092059,
+      "max_seconds": 0.095499,
+      "median_setup_seconds": 0.500825,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.496672,
+      "min_seconds": 1.491395,
+      "max_seconds": 1.521246,
+      "median_setup_seconds": 0.500401,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "update",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.09703,
+      "min_seconds": 0.096376,
+      "max_seconds": 0.099872,
+      "median_setup_seconds": 0.498933,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "information-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "update",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.50743,
+      "min_seconds": 1.494079,
+      "max_seconds": 1.531682,
+      "median_setup_seconds": 0.49721,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "information-batches-1.json",
+        "information-batches-2.json",
+        "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.077951,
+      "min_seconds": 0.076306,
+      "max_seconds": 0.079594,
+      "median_setup_seconds": 14.917929,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.046527,
+      "min_seconds": 0.045839,
+      "max_seconds": 0.046878,
+      "median_setup_seconds": 14.778828,
+      "median_index_build_seconds": 0.051705,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.111571,
+      "min_seconds": 1.090815,
+      "max_seconds": 1.124918,
+      "median_setup_seconds": 14.791735,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.275718,
+      "min_seconds": 0.270502,
+      "max_seconds": 0.277109,
+      "median_setup_seconds": 14.597004,
+      "median_index_build_seconds": 0.050917,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        49
+      ],
+      "journal_json_opens": [
+        7898
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "update",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.0805,
+      "min_seconds": 0.080278,
+      "max_seconds": 0.081564,
+      "median_setup_seconds": 14.71606,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "update",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.049104,
+      "min_seconds": 0.047927,
+      "max_seconds": 0.049145,
+      "median_setup_seconds": 14.926719,
+      "median_index_build_seconds": 0.051713,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "update",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.108849,
+      "min_seconds": 1.083764,
+      "max_seconds": 1.120416,
+      "median_setup_seconds": 14.640819,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "update",
+      "mode": "single",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.280757,
+      "min_seconds": 0.274877,
+      "max_seconds": 0.282986,
+      "median_setup_seconds": 14.745851,
+      "median_index_build_seconds": 0.051683,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        49
+      ],
+      "journal_json_opens": [
+        7898
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.093317,
+      "min_seconds": 0.093274,
+      "max_seconds": 0.093508,
+      "median_setup_seconds": 0.500072,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.045888,
+      "min_seconds": 0.045673,
+      "max_seconds": 0.046036,
+      "median_setup_seconds": 0.500565,
+      "median_index_build_seconds": 0.067736,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.517871,
+      "min_seconds": 1.508333,
+      "max_seconds": 1.538617,
+      "median_setup_seconds": 0.503643,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "single",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.275547,
+      "min_seconds": 0.272081,
+      "max_seconds": 0.27858,
+      "median_setup_seconds": 0.498474,
+      "median_index_build_seconds": 0.067017,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        49
+      ],
+      "journal_json_opens": [
+        7898
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "update",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.096668,
+      "min_seconds": 0.096569,
+      "max_seconds": 0.10085,
+      "median_setup_seconds": 0.4973,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "update",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.050789,
+      "min_seconds": 0.049466,
+      "max_seconds": 0.050984,
+      "median_setup_seconds": 0.499306,
+      "median_index_build_seconds": 0.068527,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "update",
+      "mode": "single",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 1.509807,
+      "min_seconds": 1.508923,
+      "max_seconds": 1.517094,
+      "median_setup_seconds": 0.500391,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        7825
+      ],
+      "journal_json_opens": [
+        7850
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    },
+    {
+      "experiment": "reservation-index",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "update",
+      "mode": "single",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.282713,
+      "min_seconds": 0.280138,
+      "max_seconds": 0.283297,
+      "median_setup_seconds": 0.498317,
+      "median_index_build_seconds": 0.067363,
+      "journal_scans": [
+        25
+      ],
+      "journal_reads": [
+        49
+      ],
+      "journal_json_opens": [
+        7898
+      ],
+      "canonical_verified": [
+        300
+      ],
+      "reports": [
+        "reservation-index-1.json",
+        "reservation-index-2.json",
+        "reservation-index-3.json"
+      ]
+    }
+  ]
+}

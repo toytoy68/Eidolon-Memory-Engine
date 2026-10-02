@@ -1,0 +1,4 @@
+{"records": 100, "history": "live", "idle_median": 0.091263, "due_seconds": 0.271284, "replay_median": 0.095855}
+{"records": 300, "history": "live", "idle_median": 0.251739, "due_seconds": 0.727358, "replay_median": 0.25734}
+{"records": 100, "history": "compact", "idle_median": 0.074446, "due_seconds": 0.223001, "replay_median": 0.079134}
+{"records": 300, "history": "compact", "idle_median": 0.203818, "due_seconds": 0.581334, "replay_median": 0.209132}

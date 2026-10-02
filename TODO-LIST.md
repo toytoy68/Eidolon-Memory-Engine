@@ -423,6 +423,15 @@ compaction, suppression et dispatcher couverts. Contrat :
 créations en lot 0,247 → 0,243 s (gain négligeable). Lecteur strict
 16 275 → 99, fichiers toujours lus ; index initial 0,08 à 0,15 s hors mesure.
 
+Ajout du 03/10, base `4a11c71` confirmée sur GitHub : mesures VM directes
+100/300 antécédents et 25 commandes, trois corpus indépendants par variante ;
+84 points d’écriture, quatre corpus d’entretien/cinq échéances/rejeu contrôlés.
+300 live/create : médianes 1,518 s individuelles, 0,093 s en lot, 0,046 s
+indexé hors construction. L’index conserve ses lectures ; préparation compacte
+≈15 s, entretien à vide 1230 JSON / 2135 Markdown à 300. `/tmp` est tmpfs :
+pas de latence disque réelle ni corpus réel. Aucun nouveau code métier/test ;
+suite 1457 du commit précédent applicable. [Preuves](docs/VM-PERFORMANCE-2026-10-03.md).
+
 Restant : suppression de l’énumération et des lectures linéaires par lot,
 protocole d’invalidation couvrant tous les écrivains, autres familles, dérivés, corpus et
 objectifs VM. L'ingestion totale demeure quadratique à taille de lot fixe (O(N²/B)). Pas d'autorisation

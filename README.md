@@ -49,6 +49,8 @@ réelles et le déploiement restent à valider.
   [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
 - [Première interface d'assemblage de contexte](docs/RETRIEVAL.md)
 - [Manifeste de source pour un index dérivé](docs/INDEXING.md)
+- [Mesures VM synthétiques](docs/VM-PERFORMANCE-2026-10-03.md) : écritures,
+  index et entretien sur tmpfs, trois répétitions ; coût disque non mesuré.
 - [Catalogue reconstructible](docs/INFORMATION-CATALOGUE.md) : découverte par
   métadonnées, filtres projet/disponibilité et refus d'une projection périmée.
 - [Disponibilité et échéances durables](docs/LIFECYCLE-TRIGGERS.md) : changements

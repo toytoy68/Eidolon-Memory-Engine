@@ -105,3 +105,13 @@ intentions de routage gardent leurs scans. Un annuaire incrémental reconstructi
 demandera son protocole de divergence/reconstruction, concurrence et reprise
 avant de remplacer ces relectures. Aucun objectif VM arbitraire ni autorisation
 d'ingestion intensive ne découle du benchmark.
+
+## Mesures directes sur VM du 03/10
+
+Le commit `4a11c71` a maintenant une comparaison directe sur Eidolon-Memory :
+84 mesures d’écriture, trois répétitions indépendantes, et quatre corpus
+entretenus avec cinq échéances/rejeu. [Rapport et données brutes](VM-PERFORMANCE-2026-10-03.md).
+300 antécédents/25 créations : médianes 1,518 s seules, 0,093 s en lot,
+0,046 s en lot indexé hors construction de l’index. Attention : `/tmp` est tmpfs ;
+ni latence disque physique, ni corpus réel, ni autorisation d’ingestion intensive.
+L’index conserve les lectures d’octets ; l’entretien à vide conserve ses scans.
