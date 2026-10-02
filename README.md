@@ -10,7 +10,7 @@ développement et n'est pas encore validée sur la VM.
 
 - [Échanges et reprise Codex/Claude](ECHANGES.md), avec le
   [mode de collaboration asynchrone](docs/COLLABORATION.md).
-- [Architecture cible complète, consolidée au 01/10](docs/ARCHITECTURE-CIBLE.md)
+- [Architecture cible, état actualisé au 02/10](docs/ARCHITECTURE-CIBLE.md)
   et [conception des écritures Information](docs/DESIGN-INFORMATION-WRITES.md)
 - [Dossiers Markdown de projet](docs/PROJECT-DOSSIERS.md) : reconstruction explicite,
   rapprochement global reprenable, sources/révisions et notes humaines conservées.
@@ -20,7 +20,7 @@ développement et n'est pas encore validée sur la VM.
   correspondance Information/Memory et [planificateur contextuel v0.1](docs/MEMORY-ROUTING.md)
   testés ; dossiers actualisés dans le parcours qualifié, disponibilité et
   échéance intégrées avec le format 2 explicite.
-- [Audit transversal du 01/10](docs/AUDIT-2026-10-01.md) et [TODO active](TODO-LIST.md)
+- [Bilan transversal du 02/10](docs/AUDIT-2026-10-02.md) et [TODO active](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
@@ -34,6 +34,8 @@ développement et n'est pas encore validée sur la VM.
   explicites HIGH/INTERMEDIATE/LOW, réexamens, annulation et reprise idempotente.
 - [Passe d’entretien explicite](docs/MAINTENANCE-PASS.md) : reprise, échéances,
   dossiers et catalogue enchaînés, reprise par relance et vérification finale.
+- [Coût mesuré de l’entretien](docs/MAINTENANCE-COST.md) : 300 Informations,
+  passe inactive 3,27 s ; optimisation de sortie rapide non livrée.
 - [Mesures synthétiques et procédure de répétition](docs/PERFORMANCE.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
@@ -51,8 +53,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après la passe d’entretien explicite du 02/10/2026 :
-**947 tests réussis, 5 échecs d’environnement en 47,98 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification lors du bilan du 02/10/2026, code métier `43a1214` :
+**947 tests réussis, 5 échecs d’environnement en 43,60 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.

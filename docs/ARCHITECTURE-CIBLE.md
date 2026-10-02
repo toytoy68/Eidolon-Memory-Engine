@@ -1,6 +1,8 @@
 # Architecture cible du Memory Engine
 
-Référence consolidée au 2026-10-01, code examiné `a779c9d`.
+Référence consolidée le 01/10, état de livraison actualisé le 02/10/2026 sur
+`43a1214`. Voir [le bilan actuel](AUDIT-2026-10-02.md) ; les sections datées
+plus bas conservent la progression historique.
 Ce document décrit **la cible**, avec son état d'implémentation explicite.
 [ARCHITECTURE.md](ARCHITECTURE.md) décrit les chemins actuels ;
 [l'audit](AUDIT-2026-10-01.md) et [la TODO](../TODO-LIST.md) portent les preuves
@@ -86,17 +88,18 @@ flowchart TD
 | --- | --- | --- |
 | Entrée | Identité de source, dates, provenance, contenu et éventuelles qualifications | Memory accepte ces données ; adaptateurs et contrat d'entrée métier à raccorder |
 | Qualification | Séparer les éléments d'un message et attribuer type/nature/contexte avec origine de la proposition | Annotations explicites uniquement ; extraction automatique optionnelle, non livrée |
-| Politique | Décider séparément stockage, dossier, disponibilité, applicabilité et réexamen | Plan pur T-043 livré ; pas d'exécution |
-| Application | Exécuter les commandes autorisées, refuser les plans périmés, produire des résultats rejouables | Services Information et certains services Thread ; façade et commandes Thread manquantes |
-| Canonique | Persister les objets et les états opérationnels ; isoler les formats historiques | Existant ; assemblage universel des écrivains et contrôle de reprise à terminer |
-| Dérivés | Construire des vues vérifiables, signaler le retard et permettre la reconstruction | Dossier projet explicite, index de référence ; catalogue et invalidation manquants |
-| Disponibilité | Activer/désactiver, préparer les reprises futures et réexamens | Propositions du planner ; aucun état d'activation/ordonnanceur durable |
-| Restitution | Sélection par contexte, statuts, temps, source et budget ; expliquer les inconnues | Recherche lexicale et assembleur borné ; pipeline contextuel à raccorder |
+| Politique | Décider séparément stockage, dossier, disponibilité, applicabilité et réexamen | Plan pur et exécution STORE/UPDATE livrés ; qualification explicite et branches partielles |
+| Application | Exécuter les commandes autorisées, refuser les plans périmés, produire des résultats rejouables | Services Information/Thread et RoutingExecutor vers projet existant ; nouveau projet et autres branches restent ouverts |
+| Canonique | Persister les objets et les états opérationnels ; isoler les formats historiques | Existant, reprise globale/readiness livrées ; écrivains historiques et service réel à raccorder |
+| Dérivés | Construire des vues vérifiables, signaler le retard et permettre la reconstruction | Dossiers, rapprochement et catalogue persistants livrés ; scans complets, aucune récurrence installée |
+| Disponibilité | Activer/désactiver, préparer les reprises futures et réexamens | Niveaux persistants, échéances durables et passe d’entretien explicite livrés ; ordonnanceur et politiques de session ouverts |
+| Restitution | Sélection par contexte, statuts, temps, source et budget ; expliquer les inconnues | Rappel contextualisé raccordé à la façade ; qualité sur corpus réel et clients à valider |
 
-Le nom de la future façade et ses signatures restent des choix d'implémentation.
-Son contrat doit couvrir planification sans écriture, exécution à révisions
-attendues, résultat/rejeu, recherche expliquée, état et reprise. Un appel Python
-local suffit au premier lot ; un serveur HTTP n'est pas une dépendance du noyau.
+RoutingExecutor fournit la première façade Python : preview sans écriture,
+exécution à révisions attendues, résultat/rejeu et rappel contextualisé. Les CLI
+readiness/recover-all et MaintenancePass complètent état, reprise et entretien.
+Les autres branches métier restent à assembler ; un serveur HTTP n’est pas une
+dépendance du noyau.
 
 ## Écritures, conflits et reprise
 
@@ -186,10 +189,11 @@ Ce sont des modes de disponibilité, pas trois copies systématiques ni les
 répertoires legacy working/persistent/history. Une disposition de maison
 conservée longtemps peut être activée en haute pendant la navigation.
 
-T-046 doit définir des états durables de déclencheur, dates avec fuseau,
-référence/révision, annulation et reprise après arrêt. La livraison d'un
-déclenchement peut être répétée ; l'effet moteur doit être idempotent avec un
-identifiant stable. Ne pas promettre « exactly once » pour une action externe.
+T-046 livre les états durables SCHEDULED/APPLYING et terminaux, les dates avec
+fuseau, référence/révision, annulation et reprise après arrêt. Le format 2 de
+routage enregistre disponibilité et échéance ; la passe d’entretien explicite
+traite les échéances puis répare les dérivés. L’effet moteur utilise un
+identifiant stable et les journaux canoniques. Ne pas promettre « exactly once » pour une action externe.
 Le moteur réactive/propose ; le client décide des actions effectives.
 
 Éviction du contexte, expiration d'applicabilité, archivage et suppression sont
@@ -232,8 +236,8 @@ Les budgets d'extraits n'incluent pas automatiquement le prompt final du client.
 | `memory/history/operation-receipts/information-write-v1` | Existant : reçus compacts |
 | `memory/history/pending-delete` | Existant : reçus de suppression Information |
 | `memory/dossiers` ou sortie dédiée | Existant : projection projet explicite et notes humaines |
-| Catalogue/index dérivé sur disque | Prévu : emplacement à fixer, reconstruction depuis le canonique |
-| État de disponibilité, échéances et travaux de projection | Prévu : contrats durables à définir ; ne pas les traiter comme caches jetables |
+| `memory/catalogue/information-v1.json` | Livré : catalogue reconstructible ; index externe différé |
+| Métadonnée availability ; `memory/history/operations/lifecycle-trigger-v1` | Livrés : niveaux et intentions durables ; projections réparées à partir de leur fraîcheur |
 | Archive d'import et sauvegardes | Destination séparée ; archivage actuel ne réactive pas les contraintes métier |
 
 Les données réelles et secrets restent hors Git. Sauvegarder le canonique,
@@ -253,10 +257,13 @@ restauration par hash, concurrence, audits et reprise conditionnent la mise en s
 - Contrat d'import des réservations, révisions et états de projets historiques.
 - Conservation de l'histoire sémantique versus anciennes révisions textuelles ;
   rétention des snapshots Thread, notes humaines, dérivés et sauvegardes (T-050).
-- Contrat des mutations de liens/actions Thread et de la progression multi-étapes.
-- Façon de suivre durablement la fraîcheur des dossiers/catalogue et les suppressions.
+- Extension de la façade aux nouveaux projets, autres plans et clients ; liens/actions
+  Thread et progression du premier parcours sont livrés.
+- Passage à des dérivés incrémentaux et clôture de purge ; fraîcheur par manifests
+  et réparation explicite dossiers/catalogue déjà livrées.
 - Forme des dossiers lieu/thème, critères de revue des qualifications et conflits.
-- Délais par nature, budgets, déclencheurs et protocole d'acquittement du client.
+- Délais par nature, budgets de session, récurrence et protocole d’acquittement du
+  client externe ; déclencheurs locaux et acquittements canoniques déjà livrés.
 
 Les choix techniques courants dans les décisions déjà approuvées ne demandent
 pas de nouvelle permission. Un choix métier nouveau est présenté avec ses
@@ -304,3 +311,12 @@ et lit le canonique en signalant les dossiers périmés. Les intentions en cours
 réservent leurs cibles jusqu’au reçu compact final. Contrats : ROUTING-EXECUTION.md
 et CONTEXTUAL-RECALL.md. Catalogue, nouvelles branches métier, maintenance et
 activation/échéances ne sont pas déduits de cette livraison.
+
+## État vérifié au 02/10 — `43a1214`
+
+Le raccordement disponibilité/échéances et MaintenancePass sont livrés en local,
+avec reprise et vérification des dérivés. Suite relancée : 947 réussis, cinq
+sockets Manager bloquées, 43,60 s. Le benchmark d’entretien mesure encore un
+coût significatif sans travail ; aucune sortie rapide n’est implémentée.
+Voir AUDIT-2026-10-02.md et MAINTENANCE-COST.md. Pas de recette VM ni de client
+réel validés ; estimations historiques gelées, pas de nouveau pourcentage.

@@ -4,7 +4,7 @@ Mise à jour : **2026-10-02**, audit initial `a779c9d`, T-048 puis refus migrati
 `refactor/architecture-v1`. **Estimation globale gelée : 45 %. Grille : 52,75
 points, inchangée.** Aucun avancement chiffré pour cet audit documentaire.
 
-Références : [audit](docs/AUDIT-2026-10-01.md),
+Références : [bilan actuel](docs/AUDIT-2026-10-02.md),
 [architecture cible](docs/ARCHITECTURE-CIBLE.md),
 [architecture actuelle](docs/ARCHITECTURE.md), [échanges Claude](ECHANGES.md).
 L'[historique intégral](TODO-HISTORY-2026-10-01.md) conserve les anciens IDs et
@@ -30,8 +30,8 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après la passe d’entretien explicite : **947 réussis,
-5 échecs d’environnement, 47,98 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète relancée lors du bilan du 02/10 sur `43a1214` : **947 réussis,
+5 échecs d’environnement, 43,60 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
 interdite avant scénario métier. 141 cas ajoutés depuis `9063313` (21 exécution,
 15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien). Arrêts de processus, courses sans Manager et preuves négatives
@@ -208,7 +208,14 @@ JSON 135 450 → 45 450 et 181 500 → 91 500. Audit et égalité canoniques val
 preuves négatives 2 + 1 + 1 échecs, code restauré.
 Contrat et rapports : [JOURNAL-SCAN-COST.md](docs/JOURNAL-SCAN-COST.md).
 
-Restant : suppression du scan linéaire par commande, annuaire reconstructible
+Mesure entretien sur `43a1214` : à 300 Informations/cinq projets, passe inactive
+3,270 s (snapshots) ou 2,454 s (reçus compactés), cinq échéances 5,543 s ou
+4,139 s. Toujours 7 890 ouvertures JSON en passe inactive. Rapport et protocole :
+[MAINTENANCE-COST.md](docs/MAINTENANCE-COST.md). Sortie rapide inactive en
+préparation seulement, mise de côté à la demande d’audit ; aucun gain livré.
+
+Restant : sortie rapide vérifiée pour entretien inactif, suppression du scan
+linéaire par commande, annuaire reconstructible
 et preuve de divergence/reprise, autres familles, scans des dérivés, corpus et
 objectifs VM. L'ingestion totale demeure quadratique. Pas d'autorisation
 d'ingestion intensive déduite de la réduction locale.
