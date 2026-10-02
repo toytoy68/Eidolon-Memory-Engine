@@ -223,3 +223,37 @@ contenu. Aucun reçu n’est importé ni aucune opération exécutée.
 
 Validation locale : 12 nouvelles régressions échouent avant le correctif,
 47 tests de migration passent après. Import opérationnel et VM restent ouverts.
+
+## Index dérivé de réservations — clarification après relecture du 02/10
+
+`memory/derived/information-reservations-v1.json` est un index facultatif et
+reconstructible, décrit dans [RESERVATION-INDEX.md](RESERVATION-INDEX.md).
+`memory/derived/` n'est pas une catégorie de `inventory` : un fichier inconnu ou
+incorrect placé uniquement à cet emplacement ne produit pas d'alerte de cet
+inventaire. Un inventaire sans alerte ne certifie donc pas l'état de cet index.
+Utiliser `core.information.cli index-status` pour son inspection spécifique.
+Les écritures qui utilisent l'index contrôlent sa structure/checksum et les
+octets des sources ; un index invalide est reconstruit, une source invalide bloque.
+
+Pour une conversion que les précontrôles autorisent :
+
+- Un fichier régulier sous `memory/derived/` est conservé octet pour octet sous
+  `destination/archive/derived/` et compté dans `archived_other`.
+- La vérification indépendante compare aussi cette archive à la source.
+- Le convertisseur ne le copie pas dans `destination/memory/derived/`, ne le
+  valide pas comme index et ne l'active ni ne le reconstruit automatiquement.
+- Les liens et chemins non archivables suivent les rejets généraux du
+  convertisseur ; cette archive n'est pas un import d'état opérationnel.
+
+La présence de journaux/reçus opérationnels, même terminaux, conserve la priorité :
+elle bloque la conversion avant toute écriture de destination, archive comprise.
+Le cache ne permet pas de contourner ce refus. Après une migration/import
+compatible, reconstruire un index neuf depuis les journaux **canoniques de la
+destination**, avec `index-rebuild` ; ne pas promouvoir l'archive en index actif.
+Un index reconstruit ne réimporte pas les journaux absents et ne restaure pas
+leurs réservations. L'import opérationnel reste un travail distinct non livré.
+
+Vérification de cette clarification sur fixture temporaire : Persistent vide,
+un fichier dérivé synthétique, inventaire sans alerte, une archive exacte,
+pas d'index actif en sortie, vérification indépendante OK et source inchangée.
+Pas de changement du convertisseur ni de validation VM dans ce lot documentaire.

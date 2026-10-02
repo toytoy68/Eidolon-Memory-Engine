@@ -25,7 +25,10 @@ anciennes sous-tâches ne sont pas renumérotées.
 Pas de travail sur Eidolon Core, Hermes, Qdrant ni de nouvelles validations
 ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la séance du matin autorisée par toytoy
 poursuit les lots prioritaires avec preuves et documentation par étape. Revue Claude demandée E-005 à E-007 ;
-revue complète reçue par fichier, patch vérifié mais non intégré. Voir
+revue complète reçue par fichier, patch vérifié mais non intégré. Relecture
+Claude sur `f507b31` reçue le 02/10 : patch v2 abandonné, correctifs déjà présents ;
+E-004 et sorties CLI FAILED restent à relire. Périmètre de l’index dérivé et
+archivage en conversion clarifiés dans MIGRATION.md. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
 ## Dernière vérification
