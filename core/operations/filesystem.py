@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime
 from dataclasses import asdict
 from pathlib import Path
 
@@ -90,7 +91,7 @@ class FilesystemOperationRepository(OperationRepository):
                 raise InvalidOperationRecord(operation_id)
             allowed = {
                 "operation_id", "operation_type", "target_id", "previous_revision",
-                "revision", "execution_plan_hash", "status", "plan",
+                "revision", "execution_plan_hash", "status", "plan", "manual_resolutions",
             }
             if data.keys() - allowed:
                 raise InvalidOperationRecord("unknown Operation fields")
@@ -121,6 +122,7 @@ class FilesystemOperationRepository(OperationRepository):
                 revision=data["revision"],
                 execution_plan_hash=data["execution_plan_hash"],
                 status=OperationStatus(data["status"]),
+                manual_resolutions=data.get("manual_resolutions", []),
                 plan=(
                     InformationCreatePlan(**data["plan"])
                     if data["operation_type"] == OperationType.INFORMATION_CREATE.value
@@ -170,6 +172,7 @@ class FilesystemOperationRepository(OperationRepository):
             and current.revision == operation.revision
             and current.execution_plan_hash == operation.execution_plan_hash
             and current.plan == operation.plan
+            and current.manual_resolutions == operation.manual_resolutions
         )
 
         if not immutable_fields_match:
@@ -214,6 +217,31 @@ class FilesystemOperationRepository(OperationRepository):
                 raise InvalidOperationRecord("invalid Thread status plan")
         else:
             raise InvalidOperationRecord("invalid Operation plan")
+        history = operation.manual_resolutions
+        if not isinstance(history, list) or (history and (
+                operation.operation_type is not OperationType.THREAD_STATUS_CHANGE
+                or operation.status is OperationStatus.PREPARED)):
+            raise InvalidOperationRecord("invalid manual resolution history")
+        identities = set()
+        for entry in history:
+            if (not isinstance(entry, dict) or set(entry) != {
+                    'resolution_id', 'action', 'actor', 'reason', 'timestamp',
+                    'failed_record_sha256', 'review_sha256'}
+                    or entry['action'] != 'RETRY_THREAD_STATUS_V1'
+                    or not valid_id(entry['resolution_id'])
+                    or entry['resolution_id'] in identities
+                    or any(not isinstance(entry[k], str) or not entry[k].strip()
+                           for k in ('actor', 'reason', 'timestamp'))
+                    or any(not isinstance(entry[k], str) or not re.fullmatch('[0-9a-f]{64}', entry[k])
+                           for k in ('failed_record_sha256', 'review_sha256'))):
+                raise InvalidOperationRecord("invalid manual resolution entry")
+            try:
+                instant = datetime.fromisoformat(entry['timestamp'].replace('Z', '+00:00'))
+                if instant.tzinfo is None or instant.utcoffset() is None:
+                    raise ValueError('explicit timezone required')
+            except ValueError as exc:
+                raise InvalidOperationRecord("invalid manual resolution timestamp") from exc
+            identities.add(entry['resolution_id'])
 
     def _write(self, operation: OperationRecord, path: Path) -> None:
         self._validate_record_fields(operation)
@@ -247,6 +275,8 @@ class FilesystemOperationRepository(OperationRepository):
             ),
         }
 
+        if operation.manual_resolutions:
+            data['manual_resolutions'] = operation.manual_resolutions
         try:
             content = json.dumps(data, ensure_ascii=False, indent=2, allow_nan=False)
         except (TypeError, ValueError) as exc:

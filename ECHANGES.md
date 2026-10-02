@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après import DELETED du 02/10, base publiée `8f9fb1b`,
+État après résolution des statuts FAILED du 02/10, base publiée `a2505c6`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -14,9 +14,11 @@ Toujours vérifier HEAD et les changements locaux.
 - But inchangé : mémoire autonome, contextuelle et traçable ; fichiers
   canoniques, dossiers Markdown vivants, trois niveaux de disponibilité.
 - T-048 livré en local : contrôle read-only et reprise globale avec relecture
-  finale. Aucun service VM installé ; résolution humaine FAILED encore ouverte.
+  finale. Aucun service VM installé ; résolution humaine livrée pour les seuls
+  changements de statut Thread FAILED, autres familles encore ouvertes.
 - T-021 ferme A-03 par refus avant toute écriture de destination pour les
-  sources mixtes opérationnelles. L’import des réservations/reçus reste ouvert.
+  sources mixtes opérationnelles. Import étroit DELETED livré ; autres reçus
+  et conservation générale du rejeu encore ouverts.
 - T-031 ajoute les commandes LINK/UNLINK, ADD_ACTION/ACTION_STATUS, DETAILS et
   ThreadService.for_backend ; journal/reprise, réservations et gardes raccordés.
   Lire docs/THREAD-UPDATES.md. Les appels bas niveau restent distincts.
@@ -27,11 +29,11 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **1134 réussis, 5 échecs de sockets Manager avant scénario,
-  73,20 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 329 nouveaux cas
-  après `9063313`, dont un vérifié après la suite dans le groupe ciblé (121 verts).
-  Aucun essai VM ni coupure de stockage. Import étroit DELETED livré ; autres
-  reçus/journaux et résolution humaine FAILED toujours ouverts.
+- Dernière suite : **1171 réussis, 5 échecs de sockets Manager avant scénario,
+  68,78 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 365 nouveaux cas
+  après `9063313`. Groupe ciblé : 89 verts, 2,96 s. Aucun essai VM ni coupure
+  de stockage. Import étroit DELETED et reprise humaine des statuts FAILED
+  livrés ; autres reçus/journaux et familles FAILED encore ouverts.
 - Relecture Claude reçue sur `f507b31` : patch v2 abandonné, correctifs déjà
   présents et filtre migration reconnu plus complet. Revue de lecture/sondes ;
   sans pytest chez Claude ni VM. Revue E-004 détaillée reçue ensuite : F1–F4
@@ -1074,3 +1076,44 @@ refus des sources mixtes. CANCELLED/PENDING/APPLYING, reçus de commandes,
 Events/Threads et index ne sont pas importés par ce chemin. L'import général
 avec conservation de toute l'histoire de rejeu reste ouvert, ainsi que FAILED
 et la recette VM. README/TODO/MIGRATION actualisés ; estimations gelées.
+
+## Première résolution humaine FAILED — Codex, 2026-10-02, base `a2505c6`
+
+Poursuite autorisée. Parcours complet mais limité à THREAD_STATUS_CHANGE dans
+thread-status-v1 : revue sans écriture, décision explicite auteur/motif/date,
+revalidation sous Persistent/Thread/Operation/Event, puis publication atomique
+de la trace et du passage FAILED → APPLYING. Le coordinateur reprend le plan
+inchangé ; pas d'abandon, remplacement de snapshot ni nouveau command/event ID.
+
+Les états admis sont avant sans Event, après sans Event, après avec Event exact.
+Toute divergence, Event sans résultat Thread, autre réservation Thread/Event,
+revue modifiée ou autre famille/pending/inconnue bloque. Plusieurs FAILED de
+statut indépendants peuvent être traités un par un. Une intention parente de
+routage reste hors de cette première résolution ; aucun contournement implicite.
+
+Le journal reçoit `manual_resolutions` seulement lors d'une autorisation. Champ
+optionnel strict : décision/action/auteur/motif/date et hashes du FAILED/de la
+revue, IDs uniques. Les anciennes formes sans champ et hashes de plan restent
+inchangés ; métadonnées exclues du hash du plan. Le dépôt générique conserve
+FAILED terminal et interdit d'altérer la trace ; la transition spécialisée ne
+s'applique qu'après relecture. Les anciens lecteurs refusent le nouveau champ.
+Identités déclarées et empreintes ne constituent pas une signature authentifiée.
+
+Après arrêt avant publication : FAILED sans trace. Après : APPLYING avec trace,
+reprenable par recover-all selon ses gardes habituelles ou la même décision.
+Rejeu après COMMITTED sans nouvel effet ni résurrection. Après un nouvel échec,
+un nouvel aperçu et une nouvelle décision sont nécessaires ; l'historique reste.
+Un résidu temporaire inconnu après panne reste bloquant pour revue humaine.
+
+36 nouveaux cas, **89 ciblés réussis en 2,96 s**. Deux arrêts réels code 74,
+concurrence sans Manager, trois états partiels, décisions répétées, corruption
+de trace, CLI, compatibilité et refus sans effet vérifiés. Mutations de preuve
+en mémoire : retirer la trace à APPLYING ou omettre la revalidation provoque
+respectivement 1 + 1 échecs d'assertion. Code publié sans ces substitutions.
+Suite complète : **1171 réussis, cinq échecs Manager avant scénario, 68,78 s**,
+aucun désélectionné. Aucun essai VM ni disque réel/coupure électrique.
+
+README/TODO et contrats de reprise actualisés ; nouveau contrat
+FAILED-STATUS-RESOLUTION.md. Restant : autres familles FAILED, conflits réels,
+abandon éventuel, installation/recette VM et import opérationnel général.
+Aucune revue Claude acquise sur ce lot ; estimations 45 % / 52,75 inchangées.

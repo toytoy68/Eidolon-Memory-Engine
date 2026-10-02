@@ -98,3 +98,12 @@ back up current state, recover or explicitly resolve these records first. Keep
 the new journals even if rolling back: older code does not understand their full
 recovery guarantees. Never restore an older data archive over later writes without
 preserving and reconciling those writes.
+
+## Reprise humaine de FAILED (02/10)
+
+Pour thread-status-v1 seulement, `core.operations.failed_resolution` fournit
+un aperçu sans écriture puis une décision humaine de reprise du plan inchangé.
+La trace d'autorisation et APPLYING sont publiés atomiquement ; la reprise
+ordinaire termine ensuite les effets manquants. Le dépôt générique conserve
+son refus des sorties FAILED. Voir [contrat et CLI](FAILED-STATUS-RESOLUTION.md).
+Les autres familles, abandons et divergences restent à résoudre séparément.

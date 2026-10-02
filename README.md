@@ -34,6 +34,8 @@ développement et n'est pas encore validée sur la VM.
 - [Import des reçus DELETED](docs/DELETED-RECEIPT-IMPORT.md) : réservation des
   identités supprimées conservée, aperçu sans écriture et reprise par relance.
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
+- [Résolution humaine des statuts Thread FAILED](docs/FAILED-STATUS-RESOLUTION.md) :
+  aperçu, décision tracée et reprise du plan original, refus des divergences.
 - [Reprise des opérations Thread](docs/THREAD_RECOVERY.md) et
   [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
 - [Première interface d'assemblage de contexte](docs/RETRIEVAL.md)
@@ -66,13 +68,12 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète après import des reçus DELETED du 02/10/2026 :
-**1134 tests réussis, 5 échecs d’environnement en 73,20 s**, Python 3.12.14, pytest 9.1.1.
+Dernière suite complète après résolution humaine des statuts FAILED du 02/10/2026 :
+**1171 tests réussis, 5 échecs d’environnement en 68,78 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
-validation VM, donnée réelle ou coupure électrique. Un cas supplémentaire sur
-un fichier temporaire laissé après arrêt a ensuite passé dans le groupe ciblé
-(121 réussis), sans changement du code.
+validation VM, donnée réelle ou coupure électrique. Le lot ajoute 36 cas de
+résolution humaine ; groupe ciblé : 89 réussis en 2,96 s.
 
 Revue E-004 intégrée : REVIEW ne peut plus être contourné par UPDATE, les
 valeurs multilignes ne forgent plus de sections de dossier, les propositions de
@@ -82,6 +83,11 @@ F1–F4 par sondes ; les chiffres de suite complète restent ceux de Codex.
 Suivi livré : raisons des plans REVIEW corrigées et blocage de `resolve()`
 sur Thread corrompu vérifié par API/CLI (122 tests ciblés, quatre nouveaux cas).
 Détails et limites dans [ECHANGES.md](ECHANGES.md).
+
+La résolution FAILED est limitée aux changements de statut Thread : aperçu,
+auteur/motif explicites, trace et autorisation atomiques avant reprise. Les autres
+familles restent bloquées. Les anciens binaires refusent les journaux enrichis
+avec cette trace ; détails dans [le contrat](docs/FAILED-STATUS-RESOLUTION.md).
 
 Sur une copie arrêtée, `MEMORY_ENGINE_ROOT` désigne la racine contenant `memory/` :
 

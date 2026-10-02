@@ -28,6 +28,7 @@ def plan_hash(operation: OperationRecord) -> str:
     payload = asdict(operation)
     payload.pop("status")
     payload.pop("execution_plan_hash")
+    payload.pop("manual_resolutions")  # Audit metadata does not change the frozen command.
     return hashlib.sha256(json.dumps(
         payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
     ).encode("utf-8")).hexdigest()

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 from core.threads.models import ThreadStatus
@@ -95,6 +95,7 @@ class OperationRecord:
     status: OperationStatus = OperationStatus.PREPARED
     plan: (ThreadStatusChangePlan | ThreadCreatePlan | ThreadDeletePlan | ThreadUpdatePlan
            | InformationCreatePlan | InformationUpdatePlan | None) = None
+    manual_resolutions: list[dict] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if (type(self.previous_revision) is not int or self.previous_revision < 0

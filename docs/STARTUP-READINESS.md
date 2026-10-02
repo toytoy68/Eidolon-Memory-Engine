@@ -116,3 +116,12 @@ canonique et détruite en sortie, même sur exception. Les rapports sont copiés
 La vérification finale de maintenance démarre une nouvelle phase et relit donc
 les journaux. L’appel autonome à readiness conserve son comportement de lecture
 ponctuelle sans cache. Voir MAINTENANCE-COST.md.
+
+## Première résolution humaine livrée le 02/10
+
+Le parcours [FAILED-STATUS-RESOLUTION.md](FAILED-STATUS-RESOLUTION.md) autorise
+explicitement la reprise d'un THREAD_STATUS_CHANGE FAILED cohérent. Il écrit
+la trace humaine et APPLYING atomiquement dans le journal existant. La reprise
+globale n'autorise jamais elle-même FAILED : elle ne reprend que l'APPLYING
+déjà approuvé. Une trace invalide, une divergence ou les autres familles FAILED
+restent bloquantes. Aucun abandon ni nettoyage automatique de conflit livré.

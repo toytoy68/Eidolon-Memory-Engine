@@ -34,13 +34,12 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète après import DELETED, base publiée `8f9fb1b` : **1134 réussis,
-5 échecs d’environnement, 73,20 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après résolution des statuts FAILED, base publiée `a2505c6` :
+**1171 réussis, 5 échecs d’environnement, 68,78 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 329 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets, 71 revue E-004, 4 suivi E-004, 29 import DELETED). Un dernier cas sur fichier
-temporaire a passé après la suite complète dans le groupe ciblé (121 réussis),
-sans changement de code. Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 365 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets, 71 revue E-004, 4 suivi E-004, 29 import DELETED, 36 résolution des statuts FAILED).
+Groupe ciblé du dernier lot : 89 réussis en 2,96 s. Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -71,8 +70,9 @@ Suivi restant après revue :
   explicité et deux tests API/CLI livrés (avec ou sans sélection explicite).
 - Nettoyage de `reasons` livré : une échéance invalide ne conserve plus la
   raison annonçant UPDATE ; décision d’exécution inchangée.
-- Résolution humaine FAILED et recette VM : ouverts. Import étroit DELETED
-  livré ci-dessous ; import opérationnel général encore ouvert.
+- Résolution humaine FAILED : reprise explicite des statuts Thread livrée
+  ci-dessous ; autres familles/abandons/conflits et recette VM encore ouverts.
+  Import étroit DELETED livré ; import opérationnel général encore ouvert.
 
 Suivi E-004 du 02/10 après-midi : 122 tests ciblés réussis en 2,63 s, quatre
 cas supplémentaires. Deux rouges avant correction des raisons ; ignorer
@@ -114,9 +114,21 @@ CLI non nul, suppression Information interrompue, faux succès de coordinateur,
 ancêtres symboliques et recette KO. Retrait des corrections : 3 + 6 + 1 + 1
 échecs comportementaux. Voir [contrat et limites](docs/STARTUP-READINESS.md).
 
+Ajout du 02/10 : `core.operations.failed_resolution` fournit un aperçu puis
+une décision humaine pour les seuls THREAD_STATUS_CHANGE FAILED cohérents.
+La trace auteur/motif/date/empreintes et APPLYING sont publiés ensemble dans
+le journal existant ; reprise normale du plan inchangé. Le dépôt générique
+continue d'interdire les sorties FAILED et l'altération de la trace.
+36 cas, deux arrêts réels, deux processus concurrents, revue périmée, historique
+strict, réservations Thread/Event, rejeu et seconde décision après nouvel échec.
+89 ciblés verts en 2,96 s ; retrait expérimental de l'audit/de la revalidation :
+1 + 1 échecs. Contrat : [FAILED-STATUS-RESOLUTION.md](docs/FAILED-STATUS-RESOLUTION.md).
+Les journaux enrichis sont refusés par les anciennes versions du lecteur.
+
 Restant exploitation : installation du contrôle dans les services réels,
-dépendances sur corpus VM, commande de résolution humaine de FAILED avec examen
-des effets partiels/réservations/rejeu. Aucun abandon automatique livré. Une
+dépendances sur corpus VM, autres familles FAILED (création/suppression/édition
+Thread, écritures Information), intentions parentes, divergences et abandon
+explicite éventuel avec traitement des effets/réservations. Aucun abandon automatique livré. Une
 lecture ponctuelle ne protège pas contre le redémarrage ultérieur d'un écrivain legacy.
 
 ### T-021 / T-033 — Migration opérationnelle — PARTIEL / NON TESTÉ VM
