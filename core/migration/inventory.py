@@ -12,6 +12,7 @@ from core.storage_format import decode_json_value
 
 
 SOURCES = (
+    ("lifecycle_triggers", "memory/history/operations/lifecycle-trigger-v1", "*.json"),
     ("routing_executions", "memory/history/operations/routing-execution-v1", "*.json"),
     ("working", "memory/working", "*.md"),
     ("information", "memory/persistent", "*.md"),
@@ -63,6 +64,8 @@ def classify(path: Path, category: str) -> str:
                 return "unknown"
             if category == "routing_executions":
                 return "routing_execution_v1" if type(data.get("format_version")) is int and data['format_version'] == 1 else "unknown"
+            if category == "lifecycle_triggers":
+                return "lifecycle_trigger_v1" if type(data.get("format_version")) is int and data['format_version'] == 1 else "unknown"
             if category == "pending_delete":
                 return "pending_delete" if "information_id" in data else "unknown"
             if category == "information_write_receipts":

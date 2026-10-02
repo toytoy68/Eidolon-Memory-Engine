@@ -1,6 +1,6 @@
 # Memory Engine — TODO active
 
-Mise à jour : **2026-10-01**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
+Mise à jour : **2026-10-02**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
 `refactor/architecture-v1`. **Estimation globale gelée : 45 %. Grille : 52,75
 points, inchangée.** Aucun avancement chiffré pour cet audit documentaire.
 
@@ -23,18 +23,18 @@ anciennes sous-tâches ne sont pas renumérotées.
   artificiel pour une édition documentaire.
 
 Pas de travail sur Eidolon Core, Hermes, Qdrant ni de nouvelles validations
-ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la séance du soir autorisée par toytoy
+ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la séance du matin autorisée par toytoy
 poursuit les lots prioritaires avec preuves et documentation par étape. Revue Claude demandée E-005 à E-007 ;
 revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
 ## Dernière vérification
 
-Suite complète après T-045 et la réduction T-049 : **883 réussis,
-5 échecs d’environnement, 51,84 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après la première tranche T-046 : **908 réussis,
+5 échecs d’environnement, 46,21 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 77 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 102 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -221,12 +221,22 @@ version 999 que la base bloque. Préserver cette garantie. Elle lit encore tous
 les reçus ; gain de constante possible, pas suppression du coût linéaire par
 commande. Mesure 120 create+compact rapportée par Claude, non reproduite ici.
 
-### T-046 / T-037 — Disponibilité et cycle de vie — À FAIRE, AUDITS EXISTANTS
+### T-046 / T-037 — Disponibilité et cycle de vie — PREMIÈRE TRANCHE LOCALE
 
-Activation haute/intermédiaire/basse, éviction et réexamen, indépendamment de
-rétention/applicabilité. Déclencheurs persistants, annulations, acquittements
-et reprise après redémarrage, effet moteur idempotent. Aucun ordonnanceur ni
-job de maintenance installé.
+Fait : niveaux explicites haute/intermédiaire/basse par écriture Information,
+réexamen et acquittement de revue sans changer vérité/rétention/validité.
+Déclencheurs REACTIVATE/RECHECK persistants, temps/contexte d'exécution explicites,
+annulation avant effet, acquittement durable, reprise globale et rejeu sans
+résurrection. SCHEDULED est une attente ; APPLYING est repris. Source modifiée
+→ STALE, mobile/obstacle/inconnu → revue, activation inapplicable → SKIPPED.
+Catalogue et rappel exposent disponibilité/besoin de revue ; filtre de niveau
+optionnel au rappel. Contrat : [LIFECYCLE-TRIGGERS.md](docs/LIFECYCLE-TRIGGERS.md).
+25 nouveaux cas ; groupe ciblé 77 réussis. Deux arrêts de processus, concurrence
+sans Manager, preuves négatives 1 + 2 + 2 assertions rouges ; code restauré.
+
+Restant : raccordement au routage, récurrence/charge/fenêtre horaire, réparation
+automatique des dérivés et consommateurs externes. Aucun ordonnanceur système
+ni job de maintenance installé.
 
 Tests à horloge contrôlée : échéance dépassée pendant l'arrêt, révision changée,
 annulation, rejeu, chat non présenté comme position actuelle, obstacle contourné

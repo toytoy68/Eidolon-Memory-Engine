@@ -29,6 +29,8 @@ développement et n'est pas encore validée sur la VM.
 - [Manifeste de source pour un index dérivé](docs/INDEXING.md)
 - [Catalogue reconstructible](docs/INFORMATION-CATALOGUE.md) : découverte par
   métadonnées, filtres projet/disponibilité et refus d'une projection périmée.
+- [Disponibilité et échéances durables](docs/LIFECYCLE-TRIGGERS.md) : changements
+  explicites HIGH/INTERMEDIATE/LOW, réexamens, annulation et reprise idempotente.
 - [Mesures synthétiques et procédure de répétition](docs/PERFORMANCE.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
@@ -46,8 +48,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après le catalogue et la réduction des scans du 01/10/2026 :
-**883 tests réussis, 5 échecs d’environnement en 51,84 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après disponibilité et échéances durables du 02/10/2026 :
+**908 tests réussis, 5 échecs d’environnement en 46,21 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -86,7 +88,8 @@ n’est encore installé sur la VM.
   désormais un scan au lieu de trois, mais le coût reste linéaire par commande.
   [Mesures reproductibles](docs/JOURNAL-SCAN-COST.md) : 300 créations en 20,42 s
   contre 59,39 s sur le corpus synthétique local. Catalogue livré à la demande ;
-  déclencheurs durables et rattrapage automatique restent ouverts.
+  déclencheurs durables explicites livrés. Ordonnancement système et réparation
+  automatique des dérivés restent ouverts.
 
 Le premier parcours Information → projet existant → dossier actualisé → rappel
 contextualisé est livré pour les entrées explicitement qualifiées. Les autres

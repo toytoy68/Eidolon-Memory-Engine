@@ -84,7 +84,8 @@ class InformationCatalogue:
                 keywords=metadata.get('keywords', []), context=metadata.get('context', {}),
                 epistemic_status=metadata.get('epistemic_status'),
                 operational_state=metadata.get('operational_state'), retention=metadata.get('retention'),
-                availability=metadata.get('availability'), temporal=memory.temporal,
+                availability=metadata.get('availability'), recheck_required=bool(metadata.get('recheck_required')),
+                temporal=memory.temporal,
                 project_ids=projects.get(memory.information_id, []), deletion_status=deletion_status,
             ))
         return dict(format_version=1, policy='catalogue-metadata/1',

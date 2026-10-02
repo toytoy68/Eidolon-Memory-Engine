@@ -100,3 +100,10 @@ réels. Aucun accès VM, client Hermes/Eidolon Core ou Qdrant livré dans ce lot
 
 Suite complète finale : 842 réussis, cinq échecs sockets Manager avant scénario,
 55,32 s ; groupe ciblé rappel/assembleur/parcours : 65 réussis. Aucune exclusion.
+
+## Disponibilité et réexamen — ajout T-046
+
+Le filtre optionnel `availability` accepte HIGH/INTERMEDIATE/LOW avant budget.
+Le résultat expose le niveau déclaré. Un `recheck_required` impose needs_review
+et une raison explicite, même pour CONFIRMED/MATCH. Ces champs ne remplacent
+ni contexte ni temporalité. Voir [LIFECYCLE-TRIGGERS.md](LIFECYCLE-TRIGGERS.md).

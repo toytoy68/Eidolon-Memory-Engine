@@ -23,10 +23,10 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
   projet existant avec intention durable, lien et dossier actualisé. Les autres
   branches restent ouvertes. T-044 répare désormais les dossiers hors parcours
   par rapprochement explicite reprenable. Catalogue T-045 livré avec reconstruction et contrôle de fraîcheur ;
-  disponibilité T-046 encore ouverte. T-047 livre un premier rappel
+  première tranche T-046 livrée en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **883 réussis, 5 échecs de sockets Manager avant scénario,
-  51,84 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 77 nouveaux cas
+- Dernière suite : **908 réussis, 5 échecs de sockets Manager avant scénario,
+  46,21 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 102 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
   reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
@@ -76,6 +76,27 @@ Benchmark 50/150/300 livré : à 300, création 59,39 → 20,42 s, création+com
 57,11 → 30,01 s. Contrats et rapports : [JOURNAL-SCAN-COST.md](docs/JOURNAL-SCAN-COST.md).
 Gain de constante, pas suppression du coût quadratique d'ingestion : ne pas
 assimiler cette livraison à une validation de charge intensive.
+
+## Séance du 02/10 au matin — T-046, base `00a161a`
+
+Autorisation toytoy : reprise d'une heure, push à chaque lot. Disponibilités
+explicites, échéances REACTIVATE/RECHECK, annulation et acquittement durable,
+reprise globale sans double effet livrés. Source modifiée → STALE ; présence
+mobile/obstacle → revue ; aucune promotion de vérité ni suppression temporelle.
+25 nouveaux cas, deux arrêts de processus et concurrence sans Manager ; 77 tests
+ciblés réussis, suite complète 908 réussis / cinq sockets bloquées, 46,21 s.
+Retraits de garanties : 1 + 2 + 2 assertions rouges ; code restauré. Aucun essai
+VM ni ordonnanceur installé. Contrat : [LIFECYCLE-TRIGGERS.md](docs/LIFECYCLE-TRIGGERS.md).
+Prochain lot de la séance : raccordement au parcours qualifié.
+
+Retour Claude v2 reçu et vérifié le 02/10, base annoncée `9f0eb92` : optimisation
+allégée retirée, corrections déjà présentes dans notre branche. Neuf tests
+originaux : sept réussis, deux attentes de libellés différentes ; après adaptation
+à notre contrat (BLOCKED/OperationConflict et blocked_before_writes), neuf
+réussis, plus 21 tests de readiness. Filtre de migration proposé limité aux
+anciennes familles : ne couvre pas thread-update-v1, routing-execution-v1 et
+famille inconnue, contrairement au filtre actuel (sonde reproduite). Patch v2
+non appliqué ; aucune nouvelle régression identifiée sur notre code à cette revue.
 
 ## Sujets à relire lors d'une prochaine session disponible
 

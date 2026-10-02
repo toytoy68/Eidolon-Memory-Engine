@@ -20,6 +20,7 @@ from core.threads.storage import ThreadStorage
 
 @dataclass(frozen=True)
 class RecallItem(ContextItem):
+    availability: str | None = None
     applicability: str = 'UNKNOWN'
     needs_review: bool = True
     selection_reasons: tuple[str, ...] = ()
@@ -58,9 +59,11 @@ class ContextualRecall:
 
     def recall(self, query, *, query_scope=None, at=None, mode='operational', project_id=None,
                max_items=5, max_chars=4000, max_item_chars=1000,
-               max_tokens=None, token_counter=None, include_structured_content=False):
+               max_tokens=None, token_counter=None, include_structured_content=False, availability=None):
         if mode not in {'operational', 'historical'}:
             raise ValueError('unknown recall mode')
+        if availability is not None and availability not in {'HIGH', 'INTERMEDIATE', 'LOW'}:
+            raise ValueError('unknown availability filter')
         if query_scope is not None and not isinstance(query_scope, dict):
             raise ValueError('query_scope must be an object')
         if at is not None:
@@ -90,6 +93,9 @@ class ContextualRecall:
                 dossier_status = dossier.status(project_id)['status']
 
             def accept(memory):
+                if availability is not None and memory.metadata.get('availability') != availability:
+                    excluded['OTHER_AVAILABILITY'] += 1
+                    return False
                 if project_ids is not None and memory.information_id not in project_ids:
                     excluded['OUTSIDE_PROJECT'] += 1
                     return False
@@ -117,10 +123,13 @@ class ContextualRecall:
                 reasons.append('epistemic_' + (epistemic.lower() if isinstance(epistemic, str) else 'unspecified'))
                 if pending:
                     reasons.append('pending_deletion')
+                if memory.metadata.get('recheck_required'):
+                    reasons.append('explicit_recheck_required')
                 if mode == 'historical':
                     reasons.append('historical_mode')
                 selected[memory.information_id] = (deepcopy(memory), applies,
-                    applies != 'MATCH' or epistemic != 'CONFIRMED' or bool(pending), tuple(reasons))
+                    applies != 'MATCH' or epistemic != 'CONFIRMED' or bool(pending)
+                    or bool(memory.metadata.get('recheck_required')), tuple(reasons))
                 return True
 
             bundle = ContextAssembler(self.backend).assemble(
@@ -130,7 +139,8 @@ class ContextualRecall:
             items = []
             for item in bundle.items:
                 memory, applies, review, reasons = selected[item.information_id]
-                items.append(RecallItem(**asdict(item), applicability=applies, needs_review=review,
+                items.append(RecallItem(**asdict(item), availability=memory.metadata.get('availability'),
+                                        applicability=applies, needs_review=review,
                                         selection_reasons=reasons, provenance=memory.provenance,
                                         context=deepcopy(memory.metadata.get('context', {})), temporal=memory.temporal,
                                         verification=memory.verification, relations=tuple(memory.relations)))

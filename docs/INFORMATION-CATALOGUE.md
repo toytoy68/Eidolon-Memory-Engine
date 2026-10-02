@@ -79,3 +79,6 @@ directe, corruption, readiness, deux interruptions par exception, arrêt réel
 de processus, CLI, symlink et disponibilité non inférée. Retirer la barrière
 de fraîcheur, le filtre PENDING_DELETE ou readiness donne 1 + 1 + 1 échec
 comportemental ; code restauré. Pas de validation VM ni coupure électrique.
+
+Depuis T-046, les fiches exposent aussi `recheck_required` ; tout changement
+de disponibilité/revue invalide la projection et demande rebuild explicite.

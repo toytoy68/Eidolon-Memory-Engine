@@ -73,6 +73,10 @@ def check_readiness(engine_root: Path) -> dict:
     executions = audit_executions(root)
     records.update(executions['records'])
     issues.extend(executions['issues'])
+    from core.lifecycle.journal import audit_triggers
+    triggers = audit_triggers(root)
+    records.update(triggers['records'])
+    issues.extend(triggers['issues'])
     deletions = audit_deletions(root)
     for item in deletions["issues"]:
         issues.append({"path": item["request"], "reason": item["reason"],
@@ -100,7 +104,7 @@ def recover_all(engine_root: Path) -> dict:
 
     root = Path(engine_root)
     report = {"creations": {}, "status_changes": {}, "deletions": {},
-              "information-writes": {}, "information-deletions": {}, "thread-updates": {}, "routing-executions": {}, "passes": 0}
+              "information-writes": {}, "information-deletions": {}, "thread-updates": {}, "routing-executions": {}, "lifecycle-triggers": {}, "passes": 0}
     state = check_readiness(root)
     report["information-writes"] = {
         path.split("/", 1)[1]: {"status": "COMMITTED"}
@@ -127,12 +131,14 @@ def recover_all(engine_root: Path) -> dict:
     updates = FilesystemThreadUpdates(backend)
     from core.routing.execution import RoutingExecutor
     executor = RoutingExecutor(backend)
+    from core.lifecycle.service import LifecycleTriggers
+    lifecycle = LifecycleTriggers(backend)
 
     # On a stopped tree each successful pass removes at least one issue. This
     # bound also prevents looping if a noncooperating writer changes the tree.
     for _ in range(len(state["issues"]) + 1):
         previous = state
-        for name, action in (("routing-executions", executor.recover), ("creations", creation.recover), ("status_changes", changes.recover),
+        for name, action in (("lifecycle-triggers", lifecycle.recover), ("routing-executions", executor.recover), ("creations", creation.recover), ("status_changes", changes.recover),
                              ("thread-updates", updates.recover), ("deletions", deletion.recover), ("information-writes", writes.recover)):
             report[name].update(action())
         report["information-deletions"] = recover_deletions(root)

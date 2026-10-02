@@ -34,6 +34,14 @@ legacy non versionnées exigent une migration, même si leur format est reconnu.
 | PENDING_DELETE valide | Attente d'approbation normale, aucune suppression déclenchée |
 | APPLYING_DELETE | Suppression déjà approuvée à reprendre |
 | CANCELLED ou DELETED cohérent | Aucun travail de suppression à exécuter |
+| lifecycle-trigger-v1 SCHEDULED | Attente normale, même après échéance |
+| lifecycle-trigger-v1 APPLYING | Effet enfant ou acquittement à reprendre |
+| Déclencheur COMPLETED/CANCELLED/STALE/SKIPPED valide | Aucun effet à rejouer |
+
+Depuis T-046 (02/10), `recover-all` ajoute `lifecycle-triggers` et reprend les
+intentions APPLYING avant les autres familles. Il ne traite pas les échéances
+SCHEDULED ; `core.lifecycle.cli run-due --at ...` est un appel distinct, avec
+heure/contexte explicites. Les journaux corrompus bloquent le contrôle final.
 
 `recover-all` refuse de lancer une reprise automatique si le contrôle initial
 trouve un problème non reprenable. Sinon il appelle création/statut/suppression
