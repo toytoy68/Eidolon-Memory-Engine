@@ -1,10 +1,11 @@
 """Explicit, resumable STORE/UPDATE → existing project → canonical dossier.
 
-Availability proposals remain deferred; schedules and ambiguous plans are refused.
+Version 2 explicitly includes availability and durable schedule registration.
 An intent owns its targets until the derived view is rebuilt and a compact result
 replaces the command. Child services remain responsible for their own journals.
 """
 from dataclasses import asdict, replace
+from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
 
@@ -66,16 +67,22 @@ class RoutingExecutor:
     def _project_text(self, project):
         return None if project is None else self.storage._serialize_checked(project)
 
-    def _validate_policy(self, memory, context, policy):
+    def _validate_policy(self, memory, context, policy, *, include_lifecycle=False):
         if decode_json_value(canonical(asdict(plan(memory, context)))) != policy:
             raise OperationConflict('policy changed or plan does not match its inputs')
         subject = policy['dossier_subject']
         if (policy['persistence'] not in {'STORE', 'UPDATE'}
                 or policy['dossier'] not in {'LINK', 'CREATE_OR_LINK'}
                 or not isinstance(subject, dict) or subject.get('kind') != 'project'
-                or policy['proposed_trigger'] is not None or context.removal_observed
+                or (policy['proposed_trigger'] is not None and not include_lifecycle) or context.removal_observed
                 or (policy['dossier_id'] is not None and policy['dossier_id'] != subject['id'])):
             raise OperationConflict('plan needs review or an unsupported execution capability')
+        if include_lifecycle and policy['proposed_trigger'] is not None:
+            from core.lifecycle.journal import timestamp
+            trigger = policy['proposed_trigger']
+            if trigger['kind'] != 'REACTIVATE':
+                raise OperationConflict('unsupported lifecycle proposal')
+            timestamp(trigger['at'])
         self.storage._path(subject['id'])
         target = context.update_target
         if policy['persistence'] == 'STORE' and memory.revision != 1:
@@ -86,10 +93,12 @@ class RoutingExecutor:
             raise OperationConflict('update target identity/revision mismatch')
         return subject['id']
 
-    def preview(self, memory, context, *, project_revision):
+    def preview(self, memory, context, *, project_revision, include_lifecycle=False):
+        if type(include_lifecycle) is not bool:
+            raise ValueError('include_lifecycle must be boolean')
         self.backend._serialize_checked(memory)
         policy = decode_json_value(canonical(asdict(plan(memory, context))))
-        project_id = self._validate_policy(memory, context, policy)
+        project_id = self._validate_policy(memory, context, policy, include_lifecycle=include_lifecycle)
         project = self.storage.get(project_id)
         if project is None or type(project_revision) is not int or project.revision != project_revision:
             raise OperationConflict('existing project with expected revision required')
@@ -100,21 +109,32 @@ class RoutingExecutor:
             raise OperationConflict('Information revision changed')
         # Frozen JSON values, not aliases to caller-owned mutable dictionaries.
         return decode_json_value(canonical({
-            'format_version': 1, 'memory': asdict(memory), 'context': asdict(context), 'policy': policy,
+            'format_version': 2 if include_lifecycle else 1, 'memory': asdict(memory), 'context': asdict(context), 'policy': policy,
             'project_before': self._project_text(project), 'information_before': self._information_text(current)}))
 
     def _inputs(self, prepared):
         if (not isinstance(prepared, dict) or set(prepared) != {
                 'format_version', 'memory', 'context', 'policy', 'project_before', 'information_before'}
-                or type(prepared['format_version']) is not int or prepared['format_version'] != 1):
+                or type(prepared['format_version']) is not int or prepared['format_version'] not in {1, 2}):
             raise OperationConflict('unknown execution plan format')
         memory = Memory(**prepared['memory'])
         self.backend._serialize_checked(memory)
-        project_id = self._validate_policy(memory, restore_context(prepared['context']), prepared['policy'])
+        project_id = self._validate_policy(memory, restore_context(prepared['context']), prepared['policy'],
+                                          include_lifecycle=prepared['format_version'] == 2)
         project = self.storage._deserialize(prepared['project_before'])
         if project.thread_id != project_id:
             raise OperationConflict('project snapshot identity mismatch')
         return memory, project
+
+    @staticmethod
+    def _lifecycle_memory(memory, prepared):
+        if prepared['format_version'] == 1:
+            return memory
+        metadata = deepcopy(memory.metadata)
+        metadata['availability'] = prepared['policy']['availability']
+        if prepared['policy']['recheck_before_reuse']:
+            metadata['recheck_required'] = True
+        return replace(memory, metadata=metadata)
 
     def _initial_checks(self, prepared, memory, project):
         require_available(self.backend.history_root, information_id=memory.information_id, thread_id=project.thread_id)
@@ -149,6 +169,12 @@ class RoutingExecutor:
                     return existing['result']
                 return self._resume(existing)
             memory, project = self._inputs(command['prepared'])
+            if prepared['format_version'] == 2:
+                from core.lifecycle.journal import timestamp as validate_timestamp
+                from core.operations.readiness import check_readiness
+                validate_timestamp(timestamp)
+                if not check_readiness(self.backend.persistent_root.parent.parent)['ready']:
+                    raise OperationConflict('recover or review before lifecycle routing')
             self._initial_checks(command['prepared'], memory, project)
             # Refuse known child conflicts before reserving the overall journey.
             writes = FilesystemInformationWrites(self.backend)
@@ -158,7 +184,7 @@ class RoutingExecutor:
             writes._pending(memory.information_id)
             threads = ThreadService.for_backend(self.backend)
             threads.updates._other_pending(project.thread_id, self.child_id(intent_id, 'project'))
-            record = {'format_version': 1, 'intent_id': intent_id, 'status': 'APPLYING',
+            record = {'format_version': prepared['format_version'], 'intent_id': intent_id, 'status': 'APPLYING',
                       'fingerprint': fingerprint, 'command': command}
             self.journal.save(record)
             return self._resume(record)
@@ -167,6 +193,7 @@ class RoutingExecutor:
         command = record['command']
         prepared = command['prepared']
         memory, before_project = self._inputs(prepared)
+        memory = self._lifecycle_memory(memory, prepared)
         intent = record['intent_id']
         with execution_owner(self.backend.history_root, intent):
             writes = FilesystemInformationWrites(self.backend)
@@ -208,6 +235,18 @@ class RoutingExecutor:
             result = {'information': {'id': memory.information_id, 'revision': after_memory.revision},
                       'project': {'id': before_project.thread_id, 'revision': after_project.revision},
                       'projection_digest': projection['source_digest'], 'deferred': ['availability']}
+            if prepared['format_version'] == 2:
+                from core.lifecycle.service import LifecycleTriggers
+                trigger = prepared['policy']['proposed_trigger']
+                trigger_id = self.child_id(intent, 'trigger') if trigger is not None else None
+                if trigger is not None:
+                    LifecycleTriggers(self.backend).schedule(
+                        memory.information_id, revision=after_memory.revision, kind=trigger['kind'],
+                        due_at=trigger['at'], trigger_id=trigger_id,
+                        actor=command['actor'], created_at=command['timestamp'])
+                self._checkpoint('after_trigger')
+                result.update(deferred=[], lifecycle={'availability': prepared['policy']['availability'],
+                                                      'trigger_id': trigger_id})
             # Atomic replacement drops the sensitive parent snapshots. Child
             # journals retain their own documented compaction/retention rules.
             receipt = {key: record[key] for key in ('format_version', 'intent_id', 'fingerprint')}

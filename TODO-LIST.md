@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après la première tranche T-046 : **908 réussis,
-5 échecs d’environnement, 46,21 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après raccordement routage/cycle de vie : **927 réussis,
+5 échecs d’environnement, 42,46 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 102 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 121 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -136,12 +136,17 @@ Contrat : [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md).
 
 Preuves : 21 nouveaux cas dont quatre arrêts de processus, deux scénarios
 concurrents et deux interruptions dans les enfants. Groupe parcours/reprise :
-42 réussis. Plans ambigus, projet absent, échéances et retrait d’obstacle refusés
-avant mutation. Aucun statut de vérité modifié par rôle ou pertinence.
+42 réussis sur la première tranche. Plans ambigus, projet absent et retrait
+d’obstacle refusés avant mutation. Aucun statut de vérité modifié par rôle ou pertinence.
+
+Extension du 02/10 : format 2 opt-in (`--with-lifecycle`), disponibilité intégrée
+à l’écriture initiale et échéance persistante enregistrée après dossier. Format 1
+inchangé. Reprise globale, annulation intercalée et garde parent avant effet ;
+19 nouveaux cas, deux arrêts réels de processus. Groupe ciblé 59 réussis.
 
 Restant : création explicite de nouveaux projets par ce parcours, branches
-NONE/REVIEW/lieu/thème, intentions programmées T-046, autres politiques et
-qualification automatique. Disponibilité signalée différée dans le résultat.
+NONE/REVIEW/lieu/thème, autres politiques et qualification automatique.
+Disponibilité encore différée pour les seuls anciens plans format 1.
 Pas de client externe ou de VM validé.
 
 ### T-044 — Dossiers vivants — PARTIEL
@@ -234,7 +239,8 @@ optionnel au rappel. Contrat : [LIFECYCLE-TRIGGERS.md](docs/LIFECYCLE-TRIGGERS.m
 25 nouveaux cas ; groupe ciblé 77 réussis. Deux arrêts de processus, concurrence
 sans Manager, preuves négatives 1 + 2 + 2 assertions rouges ; code restauré.
 
-Restant : raccordement au routage, récurrence/charge/fenêtre horaire, réparation
+Raccordement au parcours qualifié livré en format 2 : voir T-043.
+Restant : récurrence/charge/fenêtre horaire, réparation
 automatique des dérivés et consommateurs externes. Aucun ordonnanceur système
 ni job de maintenance installé.
 
@@ -323,6 +329,6 @@ Le premier parcours qualifié vers un projet existant et son rappel est désorma
 livré en local ; le rapprochement global des dossiers hors parcours est maintenant
 disponible à la demande, comme le catalogue reconstructible T-045. T-049 réduit
 les scans par commande ; un annuaire reconstructible et la mesure VM restent
-nécessaires avant ingestion intensive. Extension des plans et disponibilité
-T-046 ensuite. La mise en service exige toujours import/migration décidée,
+nécessaires avant ingestion intensive. Disponibilité et échéances raccordées
+au routage ; entretien des dérivés et autres branches des plans à poursuivre. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.

@@ -23,6 +23,7 @@ def main(argv=None):
     preview.add_argument('--memory', type=Path, required=True)
     preview.add_argument('--context', type=Path, required=True)
     preview.add_argument('--project-revision', type=int, required=True)
+    preview.add_argument('--with-lifecycle', action='store_true', help='Version 2: persist availability and register proposed deadline')
     execute = sub.add_parser('execute')
     execute.add_argument('--plan', type=Path, required=True)
     execute.add_argument('--intent-id', required=True)
@@ -49,7 +50,8 @@ def main(argv=None):
         if args.action == 'preview':
             memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
             context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
-            result = executor.preview(memory, context, project_revision=args.project_revision)
+            result = executor.preview(memory, context, project_revision=args.project_revision,
+                                      include_lifecycle=args.with_lifecycle)
         elif args.action == 'recall':
             result = asdict(executor.recall(args.query,
                             query_scope=decode_json_value(args.scope.read_text(encoding='utf-8')),

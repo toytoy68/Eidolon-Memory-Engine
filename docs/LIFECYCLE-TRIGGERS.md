@@ -127,3 +127,13 @@ VM. Scans/verrous à mesurer sur corpus réel. HIGH seul n'est pas un budget de 
 
 Suite complète du lot : **908 réussis, 5 échecs sockets Manager, 46,21 s**,
 Python 3.12.14/pytest 9.1.1, aucun désélectionné.
+
+## Raccordement au routage
+
+`RoutingExecutor.preview(..., include_lifecycle=True)` et le CLI
+`preview --with-lifecycle` livrent le format 2 : disponibilité dans la première
+écriture, puis échéance liée à la révision obtenue. L’identité du déclencheur
+est dérivée de l’intention, pas du texte. Tant que le parent reste APPLYING,
+le dispatcher refuse de commencer son effet. Reprise et annulation intercalée
+conservent cette identité sans recréer l’échéance. Les formats 1 restent inchangés.
+Voir [ROUTING-EXECUTION.md](ROUTING-EXECUTION.md).

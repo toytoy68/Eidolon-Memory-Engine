@@ -18,7 +18,8 @@ développement et n'est pas encore validée sur la VM.
   reprise et audit ; livré en local, essais VM encore requis.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
   correspondance Information/Memory et [planificateur contextuel v0.1](docs/MEMORY-ROUTING.md)
-  testés ; dossiers actualisés dans le parcours qualifié, déclencheurs encore à implémenter.
+  testés ; dossiers actualisés dans le parcours qualifié, disponibilité et
+  échéance intégrées avec le format 2 explicite.
 - [Audit transversal du 01/10](docs/AUDIT-2026-10-01.md) et [TODO active](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
@@ -48,8 +49,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après disponibilité et échéances durables du 02/10/2026 :
-**908 tests réussis, 5 échecs d’environnement en 46,21 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après raccordement routage/cycle de vie du 02/10/2026 :
+**927 tests réussis, 5 échecs d’environnement en 42,46 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -97,7 +98,8 @@ mutations peuvent laisser du retard, signalé au rappel qui utilise le canonique
 `python -B -m core.dossiers.cli --root RACINE reconcile` inspecte toutes les vues
 sans écriture ; ajouter `--apply` répare celles qui manquent ou sont périmées,
 y compris après suppression, en conservant les notes humaines. Une interruption
-se reprend par relance. Disponibilité autonome et échéances restent ouvertes.
+se reprend par relance. `preview --with-lifecycle` enregistre disponibilité et
+échéance dans le parcours ; l’exécution des échéances reste explicite.
 Les anciens services legacy constituent une pile distincte.
 La [TODO active](TODO-LIST.md) précise les preuves, priorités et limites actuelles ;
 les audits datés conservent leurs constats historiques.

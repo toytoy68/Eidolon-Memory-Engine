@@ -12,7 +12,7 @@ from core.lifecycle.journal import TriggerJournal, identity, timestamp
 from core.operations.errors import OperationConflict, OperationRepositoryError
 from core.operations.models import OperationType
 from core.persistence import exclusive_write
-from core.routing.execution_journal import digest
+from core.routing.execution_journal import digest, owned_execution, require_available
 from core.routing.policy import applicability
 
 
@@ -77,7 +77,11 @@ class LifecycleTriggers:
                     raise OperationConflict('trigger_id reused with different command')
                 return prior
             from core.operations.readiness import check_readiness
-            if not check_readiness(self.root)['ready']:
+            owner = owned_execution(self.backend.history_root)
+            owned_path = 'memory/history/operations/routing-execution-v1/' + owner + '.json' if owner else None
+            issues = check_readiness(self.root)['issues']
+            if any(not (issue['path'] == owned_path and issue['reason'] == 'APPLYING' and issue['resumable'])
+                   for issue in issues):
                 raise OperationConflict('recover or review before scheduling')
             memory = self.backend.get(target_id)
             if memory is None or memory.revision != revision:
@@ -138,6 +142,9 @@ class LifecycleTriggers:
                                 record['run']['at'], command['actor'], result)
         if child is not None:
             raise OperationConflict('unexpected lifecycle child operation')
+        # A registered deadline must not begin its effect while its parent
+        # route still owns the source, including after a process interruption.
+        require_available(self.backend.history_root, information_id=target)
         memory = self.backend.get(target)
         at = record['run']['at'] if record['run'] is not None else at
         if (memory is None or memory.revision != command['revision']

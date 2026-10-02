@@ -48,7 +48,7 @@ class ExecutionJournal:
             record = decode_json_value(path.read_text(encoding='utf-8'))
             common = {'format_version', 'intent_id', 'status', 'fingerprint'}
             if (not isinstance(record, dict) or type(record.get('format_version')) is not int
-                    or record['format_version'] != 1 or record.get('intent_id') != identity
+                    or record['format_version'] not in {1, 2} or record.get('intent_id') != identity
                     or not isinstance(record.get('fingerprint'), str)
                     or not re.fullmatch('[0-9a-f]{64}', record['fingerprint'])):
                 raise ValueError('invalid routing identity/version')
@@ -60,7 +60,8 @@ class ExecutionJournal:
                     raise ValueError('invalid routing command')
                 prepared = command['prepared']
                 if (set(prepared) != {'format_version', 'memory', 'context', 'policy', 'project_before', 'information_before'}
-                        or prepared['format_version'] != 1):
+                        or type(prepared['format_version']) is not int
+                        or prepared['format_version'] != record['format_version']):
                     raise ValueError('invalid routing plan')
                 # These references must be readable even if the semantic plan
                 # is blocked. Recovery performs full policy/snapshot validation.
@@ -69,7 +70,10 @@ class ExecutionJournal:
                 if set(record) != common | {'result'}:
                     raise ValueError('invalid routing receipt')
                 result = record['result']
-                if set(result) != {'information', 'project', 'projection_digest', 'deferred'}:
+                keys = {'information', 'project', 'projection_digest', 'deferred'}
+                if record['format_version'] == 2:
+                    keys.add('lifecycle')
+                if set(result) != keys:
                     raise ValueError('invalid routing result')
                 for key in ('information', 'project'):
                     target = result[key]
@@ -77,9 +81,17 @@ class ExecutionJournal:
                             or not re.fullmatch(r'[A-Za-z0-9._-]+', target['id'])
                             or type(target['revision']) is not int or target['revision'] < 1):
                         raise ValueError('invalid routing result target')
-                if (result['deferred'] != ['availability'] or not isinstance(result['projection_digest'], str)
+                if (result['deferred'] != (['availability'] if record['format_version'] == 1 else [])
+                        or not isinstance(result['projection_digest'], str)
                         or not re.fullmatch('[0-9a-f]{64}', result['projection_digest'])):
                     raise ValueError('invalid routing projection result')
+                if record['format_version'] == 2:
+                    lifecycle = result['lifecycle']
+                    expected_trigger = 'routing-' + sha256(identity.encode()).hexdigest() + '-trigger'
+                    if (set(lifecycle) != {'availability', 'trigger_id'}
+                            or lifecycle['availability'] not in {'HIGH', 'INTERMEDIATE', 'LOW'}
+                            or lifecycle['trigger_id'] not in {None, expected_trigger}):
+                        raise ValueError('invalid routing lifecycle result')
             else:
                 raise ValueError('unknown routing state')
             return record
@@ -97,6 +109,11 @@ def execution_owner(history_root, identity):
         yield
     finally:
         _active.reset(token)
+
+
+def owned_execution(history_root):
+    active = _active.get()
+    return active[1] if active and active[0] == str(Path(history_root).resolve()) else None
 
 
 def reserved_targets(record):

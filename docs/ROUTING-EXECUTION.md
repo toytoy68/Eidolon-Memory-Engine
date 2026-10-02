@@ -1,4 +1,4 @@
-# Exécution reprenable des plans — T-043, première tranche
+# Exécution reprenable des plans — T-043 / T-046
 
 Lot du 01/10/2026, après les commandes Thread. Le parcours livré est :
 Information qualifiée STORE/UPDATE → projet **existant** → dossier actualisé.
@@ -22,9 +22,19 @@ seul texte. Une révision devenue obsolète ou un état divergent est refusé.
 Cette tranche accepte STORE et UPDATE avec LINK/CREATE_OR_LINK vers un projet
 existant explicitement résolu. Si l’Information y est déjà liée, UPDATE ne
 réécrit pas le Thread. La création automatique de projet, les dossiers lieu/thème,
-les plans REVIEW/NONE, le retrait d’obstacle et les échéances proposées sont
-refusés **avant** la première mutation. La disponibilité HIGH/INTERMEDIATE/LOW
-reste une proposition : le résultat porte `deferred: ["availability"]`.
+les plans REVIEW/NONE et le retrait d’obstacle restent refusés **avant** la
+première mutation. Le format 1 reste inchangé : échéances refusées et
+disponibilité différée (`deferred: ["availability"]`).
+
+Depuis le 02/10, `preview(..., include_lifecycle=True)` produit explicitement un
+format 2. La disponibilité de la politique est intégrée à la première écriture
+Information, sans révision/Event supplémentaire. Le besoin de réexamen est
+conservé ou activé pour un obstacle ; aucune revue existante n’est acquittée
+implicitement. Une proposition REACTIVATE valide enregistre une échéance durable
+pour la révision obtenue, après actualisation du dossier. Les dates nécessitent
+un fuseau explicite. Le reçu porte `deferred: []` et
+`lifecycle: {availability, trigger_id}` ; un identifiant nul signifie sans échéance.
+Il décrit l’enregistrement initial, pas le statut actuel du déclencheur.
 
 ## Journal et interruption
 
@@ -44,7 +54,7 @@ commandes sous verrous Persistent → Thread → intention → journal enfant �
 Aucune transaction atomique multi-fichiers n’est revendiquée : une Information
 peut être écrite alors que le dossier n’est pas encore reconstruit.
 
-Après reconstruction, un reçu COMMITTED remplace atomiquement la commande et
+Après reconstruction et, en format 2, enregistrement de l’échéance, un reçu COMMITTED remplace atomiquement la commande et
 ses snapshots. Il conserve empreinte, identités/révisions et empreinte de la
 projection, sans le contenu de l’Information. Les journaux enfants gardent leurs
 propres règles de compaction/rétention (T-042/T-050). Une exception après
@@ -56,6 +66,16 @@ parcours avant les reprises isolées des enfants, puis contrôle à nouveau les
 fichiers. Les états inconnus ou corrompus bloquent. Un plan divergent reste
 APPLYING mais sa reprise rapporte BLOCKED ; aucun abandon automatique.
 Le guard legacy et la migration préalable prennent cette famille en compte.
+Les formats 1 et 2 cohabitent dans le même répertoire versionné ; les anciens
+plans et reçus ne sont ni réinterprétés ni réécrits.
+
+Une échéance enregistrée reste SCHEDULED même si elle est déjà dépassée.
+`run-due` refuse de commencer son effet tant que le parcours parent réserve la
+source ; la reprise termine d’abord le parcours, sans cycle de dépendance.
+L’enregistrement interne exempte seulement l’intention propriétaire de sa
+barrière readiness ; toute autre corruption ou opération incomplète bloque.
+Une annulation explicite après enregistrement et avant reçu reste annulée
+après reprise. Une correction ultérieure rend l’ancienne échéance STALE.
 
 ## CLI
 
@@ -69,6 +89,10 @@ python -B -m core.routing.execution_cli --root RACINE execute \
   --plan plan.json --intent-id intent-project-second \
   --actor human --timestamp 2026-10-01T18:30:00Z
 ```
+
+Ajouter `--with-lifecycle` à preview pour le format 2 ; execute consomme ensuite
+ce plan sans autre option. Le déclenchement reste un appel explicite à
+`core.lifecycle.cli run-due`, voir [LIFECYCLE-TRIGGERS.md](LIFECYCLE-TRIGGERS.md).
 
 Le mode preview ne crée aucun fichier/répertoire moteur. La redirection du shell
 crée uniquement le fichier de sortie explicitement demandé. Le mode execute
@@ -88,10 +112,21 @@ réels de processus à code 74 et deux scénarios concurrents sans Manager.
 Actualisation automatique limitée à ce parcours. Les autres commandes canoniques
 peuvent encore rendre une vue STALE ; `core.dossiers.cli reconcile --apply`
 répare maintenant ce retard à la demande (voir PROJECT-DOSSIERS.md).
-Aucun ordonnanceur, aucun catalogue, aucun modèle/extracteur et aucun client
-externe connecté. Le rappel contextualisé T-047 est livré (CONTEXTUAL-RECALL.md). Aucun
+Aucun ordonnanceur, aucun modèle/extracteur et aucun client externe connecté.
+Le catalogue reconstructible existe à la demande ; un effet de déclencheur rend
+les dérivés STALE jusqu’à leur reconstruction explicite. Le rappel contextualisé T-047 est livré (CONTEXTUAL-RECALL.md). Aucun
 résultat VM, coupure de stockage ou corpus réel n’est acquis.
 
 Suite complète locale : 827 réussis, cinq échecs sockets Manager avant scénario,
 41,54 s. Retirer temporairement la réservation, la reconstruction ou le reçu
 compact fait échouer pour chaque cas une assertion comportementale ; code restauré.
+
+## Extension cycle de vie du 02/10
+
+19 nouveaux cas : disponibilité dans la révision initiale, échéance/temps
+explicites, correction et invalidation de l’ancienne échéance, annulation pendant
+la reprise, garde parent avant effet, corruption étrangère bloquante et reçu
+sans résurrection. Cinq interruptions entre étapes et deux arrêts réels de
+processus code 74 ; CLI opt-in et anciens tests format 1 conservés. Groupe
+parcours/cycle de vie : 59 réussis. Les preuves négatives et le résultat global
+sont consignés dans ECHANGES.md. Aucun résultat VM acquis.

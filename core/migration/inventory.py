@@ -63,7 +63,8 @@ def classify(path: Path, category: str) -> str:
             if not isinstance(data, dict):
                 return "unknown"
             if category == "routing_executions":
-                return "routing_execution_v1" if type(data.get("format_version")) is int and data['format_version'] == 1 else "unknown"
+                version = data.get('format_version')
+                return f"routing_execution_v{version}" if type(version) is int and version in {1, 2} else "unknown"
             if category == "lifecycle_triggers":
                 return "lifecycle_trigger_v1" if type(data.get("format_version")) is int and data['format_version'] == 1 else "unknown"
             if category == "pending_delete":

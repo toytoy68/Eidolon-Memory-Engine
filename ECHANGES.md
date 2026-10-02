@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après les lots du 01/10 au soir, branche `refactor/architecture-v1`.
+État après les lots du 02/10 au matin, branche `refactor/architecture-v1`.
 Base de séance `25544c7`, README actualisé `8913d49`, refus préalable de
 migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
 
@@ -23,13 +23,13 @@ migration mixte `87ab03a`. Toujours vérifier HEAD et les changements locaux.
   projet existant avec intention durable, lien et dossier actualisé. Les autres
   branches restent ouvertes. T-044 répare désormais les dossiers hors parcours
   par rapprochement explicite reprenable. Catalogue T-045 livré avec reconstruction et contrôle de fraîcheur ;
-  première tranche T-046 livrée en local. T-047 livre un premier rappel
+  première tranche T-046 et raccordement au routage livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **908 réussis, 5 échecs de sockets Manager avant scénario,
-  46,21 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 102 nouveaux cas
+- Dernière suite : **927 réussis, 5 échecs de sockets Manager avant scénario,
+  42,46 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 121 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
-- Claude a fourni une revue et un patch sur `0c89ce7` ; pas de nouvelle réponse
-  reçue. Son patch original reste archivé, son optimisation n’est pas intégrée.
+- Retour Claude v2 sur `9f0eb92` relu le 02/10 : corrections déjà présentes,
+  différences de libellés identifiées et filtre migration moins complet ; patch non appliqué.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
@@ -87,7 +87,7 @@ mobile/obstacle → revue ; aucune promotion de vérité ni suppression temporel
 ciblés réussis, suite complète 908 réussis / cinq sockets bloquées, 46,21 s.
 Retraits de garanties : 1 + 2 + 2 assertions rouges ; code restauré. Aucun essai
 VM ni ordonnanceur installé. Contrat : [LIFECYCLE-TRIGGERS.md](docs/LIFECYCLE-TRIGGERS.md).
-Prochain lot de la séance : raccordement au parcours qualifié.
+Premier lot poussé : `5b5e2db`. Raccordement livré dans le lot suivant.
 
 Retour Claude v2 reçu et vérifié le 02/10, base annoncée `9f0eb92` : optimisation
 allégée retirée, corrections déjà présentes dans notre branche. Neuf tests
@@ -97,6 +97,19 @@ réussis, plus 21 tests de readiness. Filtre de migration proposé limité aux
 anciennes familles : ne couvre pas thread-update-v1, routing-execution-v1 et
 famille inconnue, contrairement au filtre actuel (sonde reproduite). Patch v2
 non appliqué ; aucune nouvelle régression identifiée sur notre code à cette revue.
+
+### Raccordement T-043/T-046 — base `5b5e2db`
+
+Format 2 opt-in pour disponibilité et échéance dans le parcours qualifié ;
+format 1 conservé. Le dispatcher attend la fin du parent, l’annulation intercalée
+reste annulée, une correction invalide l’ancienne échéance. Dates explicites,
+barrière globale avant parcours et exception limitée au seul propriétaire lors
+de l’enregistrement interne. Reçu compact sans corps et sans résurrection.
+19 nouveaux cas : groupe ciblé 59 réussis, suite complète 927 réussis et les
+mêmes cinq sockets bloquées, 42,46 s. Cinq frontières d’exception et deux arrêts
+réels de processus. Retirer disponibilité, enregistrement ou garde parent produit
+1 + 1 + 1 assertions comportementales rouges ; code restauré. Pas de VM ni
+ordonnanceur. Contrat mis à jour : ROUTING-EXECUTION.md.
 
 ## Sujets à relire lors d'une prochaine session disponible
 

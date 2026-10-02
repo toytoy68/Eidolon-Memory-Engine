@@ -70,6 +70,8 @@ modification directe de CONCERNS dans ThreadStorage.update. Les primitives
 bas niveau restent distinctes. Voir [THREAD-UPDATES.md](THREAD-UPDATES.md).
 
 `core.routing.execution_cli execute` et RoutingExecutor ajoutent le parcours
-journalisé routing-execution-v1. Le CLI preview est en lecture seule. Le parcours
+journalisé routing-execution-v1 (plans/reçus formats 1 et 2). Le format 2
+opt-in enregistre disponibilité et échéance via LifecycleTriggers. Le CLI preview
+est en lecture seule. Le parcours
 utilise les services canoniques et actualise memory/dossiers ; aucun ordonnanceur
 n’est installé. Voir ROUTING-EXECUTION.md.
