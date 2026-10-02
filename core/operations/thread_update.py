@@ -197,6 +197,17 @@ class FilesystemThreadUpdates:
             raise OperationConflict('Thread snapshots do not match command')
         return before, after
 
+    @staticmethod
+    def _event(operation, before, after):
+        plan = operation.plan
+        return Event(plan.event_id, after.revision, EventType.UPDATED, thread_id=after.thread_id,
+                      state_transition=StateTransition(
+                          before={'revision': before.revision, 'snapshot_sha256': sha256(plan.before_state.encode()).hexdigest()},
+                          after={'revision': after.revision, 'snapshot_sha256': sha256(plan.after_state.encode()).hexdigest(),
+                                 'command': decode_json_value(plan.command)['kind']}),
+                      provenance=Provenance('SYSTEM_GENERATED', 'thread-update-service', plan.actor, plan.timestamp),
+                      relations=[EventRelation(RelationType.CAUSED_BY, operation.operation_id)])
+
     def _resume(self, operation):
         before, after = self._validated_states(operation)
         if operation.status is OperationStatus.COMMITTED:
@@ -206,13 +217,7 @@ class FilesystemThreadUpdates:
         self._other_pending(operation.target_id, operation.operation_id)
         self._check_links(before, after)
         plan = operation.plan
-        event = Event(plan.event_id, after.revision, EventType.UPDATED, thread_id=after.thread_id,
-                      state_transition=StateTransition(
-                          before={'revision': before.revision, 'snapshot_sha256': sha256(plan.before_state.encode()).hexdigest()},
-                          after={'revision': after.revision, 'snapshot_sha256': sha256(plan.after_state.encode()).hexdigest(),
-                                 'command': decode_json_value(plan.command)['kind']}),
-                      provenance=Provenance('SYSTEM_GENERATED', 'thread-update-service', plan.actor, plan.timestamp),
-                      relations=[EventRelation(RelationType.CAUSED_BY, operation.operation_id)])
+        event = self._event(operation, before, after)
         with exclusive_write(self.operations.root), exclusive_write(self.events.events_root):
             if self.operations.get(operation.operation_id) != operation:
                 raise OperationConflict('operation changed while acquiring locks')

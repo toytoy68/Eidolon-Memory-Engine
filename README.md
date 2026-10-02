@@ -34,7 +34,7 @@ développement et n'est pas encore validée sur la VM.
 - [Import des reçus DELETED](docs/DELETED-RECEIPT-IMPORT.md) : réservation des
   identités supprimées conservée, aperçu sans écriture et reprise par relance.
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
-- [Résolution humaine des statuts Thread FAILED](docs/FAILED-STATUS-RESOLUTION.md) :
+- [Résolution humaine des statuts et éditions Thread FAILED](docs/FAILED-STATUS-RESOLUTION.md) :
   aperçu, décision tracée et reprise du plan original, refus des divergences.
 - [Reprise des opérations Thread](docs/THREAD_RECOVERY.md) et
   [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
@@ -68,12 +68,12 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète après résolution humaine des statuts FAILED du 02/10/2026 :
-**1171 tests réussis, 5 échecs d’environnement en 68,78 s**, Python 3.12.14, pytest 9.1.1.
+Dernière suite complète après extension aux éditions Thread FAILED du 02/10/2026 :
+**1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique. Le lot ajoute 36 cas de
-résolution humaine ; groupe ciblé : 89 réussis en 2,96 s.
+résolution des éditions ; groupe ciblé : 107 réussis en 4,52 s.
 
 Revue E-004 intégrée : REVIEW ne peut plus être contourné par UPDATE, les
 valeurs multilignes ne forgent plus de sections de dossier, les propositions de
@@ -84,7 +84,8 @@ Suivi livré : raisons des plans REVIEW corrigées et blocage de `resolve()`
 sur Thread corrompu vérifié par API/CLI (122 tests ciblés, quatre nouveaux cas).
 Détails et limites dans [ECHANGES.md](ECHANGES.md).
 
-La résolution FAILED est limitée aux changements de statut Thread : aperçu,
+La résolution FAILED couvre les statuts et éditions Thread (liens, actions,
+titre/objectif/contexte) : aperçu,
 auteur/motif explicites, trace et autorisation atomiques avant reprise. Les autres
 familles restent bloquées. Les anciens binaires refusent les journaux enrichis
 avec cette trace ; détails dans [le contrat](docs/FAILED-STATUS-RESOLUTION.md).

@@ -99,3 +99,12 @@ les mises à jour automatiques des dérivés, la recette VM et les coupures de
 stockage ne sont pas livrées par ce lot. Le résultat de recover_all de ThreadService
 reste un rapport de familles ; seul le contrôle global readiness vaut contrôle
 de démarrage ponctuel sur une racine arrêtée.
+
+## Reprise humaine des éditions FAILED (02/10)
+
+Le parcours [de résolution](FAILED-STATUS-RESOLUTION.md) accepte maintenant
+THREAD_UPDATE. Aperçu `preview OPID --family thread-update-v1`, puis décision
+explicite `retry` sur cette revue. Les contrôles de commande, liens, réservations
+et effets présents précèdent l'autorisation atomique. Les demandes de suppression
+tardives conservent le comportement décrit ci-dessus ; aucune approbation
+implicite. Les autres familles FAILED et les divergences restent bloquantes.

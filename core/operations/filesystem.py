@@ -217,9 +217,13 @@ class FilesystemOperationRepository(OperationRepository):
                 raise InvalidOperationRecord("invalid Thread status plan")
         else:
             raise InvalidOperationRecord("invalid Operation plan")
+        resolution_actions = {
+            OperationType.THREAD_STATUS_CHANGE: 'RETRY_THREAD_STATUS_V1',
+            OperationType.THREAD_UPDATE: 'RETRY_THREAD_UPDATE_V1',
+        }
         history = operation.manual_resolutions
         if not isinstance(history, list) or (history and (
-                operation.operation_type is not OperationType.THREAD_STATUS_CHANGE
+                operation.operation_type not in resolution_actions
                 or operation.status is OperationStatus.PREPARED)):
             raise InvalidOperationRecord("invalid manual resolution history")
         identities = set()
@@ -227,7 +231,7 @@ class FilesystemOperationRepository(OperationRepository):
             if (not isinstance(entry, dict) or set(entry) != {
                     'resolution_id', 'action', 'actor', 'reason', 'timestamp',
                     'failed_record_sha256', 'review_sha256'}
-                    or entry['action'] != 'RETRY_THREAD_STATUS_V1'
+                    or entry['action'] != resolution_actions.get(operation.operation_type)
                     or not valid_id(entry['resolution_id'])
                     or entry['resolution_id'] in identities
                     or any(not isinstance(entry[k], str) or not entry[k].strip()

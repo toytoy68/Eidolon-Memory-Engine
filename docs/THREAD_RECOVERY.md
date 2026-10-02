@@ -101,7 +101,7 @@ preserving and reconciling those writes.
 
 ## Reprise humaine de FAILED (02/10)
 
-Pour thread-status-v1 seulement, `core.operations.failed_resolution` fournit
+Pour thread-status-v1 et thread-update-v1, `core.operations.failed_resolution` fournit
 un aperçu sans écriture puis une décision humaine de reprise du plan inchangé.
 La trace d'autorisation et APPLYING sont publiés atomiquement ; la reprise
 ordinaire termine ensuite les effets manquants. Le dépôt générique conserve

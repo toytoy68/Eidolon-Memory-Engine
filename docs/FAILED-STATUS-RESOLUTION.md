@@ -1,7 +1,7 @@
-# Résolution humaine FAILED — reprise des statuts Thread
+# Résolution humaine FAILED — statuts et éditions Thread
 
-Ce premier parcours traite uniquement les opérations THREAD_STATUS_CHANGE de
-`memory/history/operations/thread-status-v1`. Une personne peut autoriser la
+Ce parcours traite THREAD_STATUS_CHANGE dans `thread-status-v1` et
+THREAD_UPDATE dans `thread-update-v1`, sous `memory/history/operations/`. Une personne peut autoriser la
 reprise du **plan original**, après examen des effets présents. Il n'existe ni
 abandon, ni remplacement des snapshots, ni annulation implicite des effets.
 Les autres familles FAILED restent bloquantes et demandent un parcours dédié.
@@ -21,6 +21,17 @@ python -B -m core.operations.failed_resolution --root /copie \
   --timestamp 2026-10-02T16:30:00+02:00
 ```
 
+Pour une édition (LINK/UNLINK, ADD_ACTION/ACTION_STATUS ou DETAILS), choisir
+explicitement la famille lors de l'aperçu ; `retry` lit ensuite celle de la revue :
+
+```sh
+python -B -m core.operations.failed_resolution --root /copie \
+  preview identifiant-operation --family thread-update-v1 > /hors-copie/revue.json
+```
+
+Sans `--family`, le CLI conserve la famille de statut. La revue d'édition ajoute
+la commande originale complète (`command`) pour l'examen humain.
+
 `preview` est sans écriture, même sans arbre valide. Le shell peut écrire le
 rapport au chemin explicitement choisi ; garder cette revue hors des journaux
 canoniques. L'aperçu donne opération/cible, révisions, empreinte du plan et des
@@ -28,8 +39,10 @@ octets FAILED, état du Thread BEFORE/AFTER et de l'Event ABSENT/MATCH, effets
 encore nécessaires et décisions humaines antérieures. Les snapshots complets
 restent consultables dans le journal source. L'aperçu ne vaut pas autorisation.
 
-L'API expose `review_failed_status(root, operation_id)` et
-`retry_failed_status(root, review, *, resolution_id, actor, reason, timestamp)`.
+L'API générale expose `review_failed_thread(root, operation_id, *, family)` et
+`retry_failed_thread(root, review, *, resolution_id, actor, reason, timestamp)`.
+Les fonctions `review_failed_status` / `retry_failed_status` restent compatibles
+avec leurs appels et revues antérieurs ; elles n'autorisent que les statuts.
 Une décision exige un identifiant, un auteur, un motif non vide et une date avec
 fuseau explicite. Le CLI retourne 1 avec BLOCKED au refus, 0 pour l'aperçu ou
 la réussite. Les exceptions API conservent la cause du blocage.
@@ -43,12 +56,26 @@ celui du plan. Un Event présent avec un Thread resté à l'état avant est refu
 Les relations CONCERNS du résultat doivent rester valides.
 
 Aucune autre opération non terminée ne peut réserver le même Thread ; aucun
-autre changement de statut ne peut réserver le même ID d'Event. Les FAILED
+autre opération de la famille ne peut réserver le même ID d'Event. Les FAILED
 indépendants de cette même famille peuvent être résolus un par un. Une autre
 famille FAILED, une opération PREPARED/APPLYING indépendante, une intention
-parente de routage ou une source inconnue/corrompue bloque cette première version.
+parente de routage ou une source inconnue/corrompue bloque ce parcours, y compris un FAILED de l’autre famille supportée.
 Terminer les opérations indépendantes par leurs procédures de reprise, ou
 examiner les dépendances ; ce parcours ne contourne pas une intention parente.
+
+Pour THREAD_UPDATE, les gardes du coordinateur sont aussi vérifiées **avant**
+l'autorisation : aucune collision d'operation_id avec création/statut/suppression,
+même COMMITTED ; informations du résultat présentes et lisibles ; réservations
+d'écriture/routage des nouveaux liens respectées. L'Event attendu est construit
+par la même fonction que la reprise ordinaire.
+
+Une demande PENDING_DELETE arrivée après la préparation du LINK peut attendre,
+comme lors d'une reprise ordinaire : le FAILED réserve déjà les cibles des deux
+snapshots et empêche l'approbation de la suppression. Après reprise du LINK,
+le lien canonique la bloque encore. Après UNLINK, la suppression peut être
+approuvée si toutes ses autres gardes passent. La résolution n'approuve ni
+n'annule cette demande. Les informations conservées dans le résultat sont
+relues ; le plan Thread ne fige pas leur contenu ou leur révision.
 
 L'aperçu est recalculé sous verrous Persistent → Thread → Operation → Event.
 Même une modification des seuls octets du journal rend la revue périmée.
@@ -62,7 +89,8 @@ Il n'y a aucune réécriture forcée des sources pour les faire correspondre.
 Une seule publication atomique du journal réalise ces deux changements :
 
 1. Ajouter une entrée à `manual_resolutions` avec `resolution_id`, action
-   RETRY_THREAD_STATUS_V1, auteur, motif, date, SHA-256 du journal FAILED et
+   RETRY_THREAD_STATUS_V1 ou RETRY_THREAD_UPDATE_V1 selon la famille,
+   auteur, motif, date, SHA-256 du journal FAILED et
    SHA-256 de la revue approuvée.
 2. Passer ce même journal de FAILED à APPLYING, sans changer le plan,
    l'operation_id, l'event_id, la cible ou les révisions.
@@ -89,7 +117,8 @@ continue de bloquer ce résidu pour examen, sans nettoyage aveugle.
 ## Format, compatibilité et limites
 
 `manual_resolutions` est un champ optionnel strict du journal Operation, permis
-ici uniquement pour THREAD_STATUS_CHANGE. Il est omis si vide : les journaux
+ici pour THREAD_STATUS_CHANGE et THREAD_UPDATE, avec action correspondant
+strictement au type d’opération. Il est omis si vide : les journaux
 anciens ne sont pas migrés à la lecture ni enrichis artificiellement.
 Le calcul de hash du **plan** exclut cette trace, comme il exclut le statut ;
 les empreintes des plans existants restent inchangées. Les métadonnées de revue
@@ -108,8 +137,8 @@ Ne pas enlever `manual_resolutions` pour rendre ces fichiers lisibles par une
 ancienne version. Il faut conserver un lecteur compatible avec la nouvelle
 trace lors d'un déploiement ou d'une restauration.
 
-Il ne s'agit pas d'une résolution générale de FAILED : création/suppression/
-édition de Thread, écritures Information, parents de routage et conflits réels
+Il ne s'agit pas d'une résolution générale de FAILED : création/suppression
+de Thread, écritures Information, parents de routage et conflits réels
 restent hors de ce parcours. Aucun état ABANDONED ajouté. L'autorisation humaine
 ne signifie pas que le moteur a identifié la cause initiale de l'échec ; cette
 analyse motive la décision fournie par l'opérateur. Aucune commande n'est lancée
@@ -129,6 +158,20 @@ Supprimer expérimentalement la trace lors de la publication APPLYING fait
 autre. Ces substitutions ne sont faites qu'en mémoire dans des processus de
 preuve distincts. Aucune validation VM, disque réel en panne ou coupure électrique.
 
-Groupe ciblé : **89 réussis en 2,96 s**. Suite complète : **1171 réussis, cinq
-échecs de sockets Manager avant scénario en 68,78 s**, aucun désélectionné,
+Premier lot statuts : 89 ciblés réussis en 2,96 s ; suite complète 1171 réussis,
+cinq échecs de sockets Manager avant scénario en 68,78 s.
+
+Extension éditions : 36 cas dans `tests/test_failed_update_resolution.py`, dont
+les cinq commandes dans les trois états partiels (15 cas), revues périmées,
+plan incohérent même rehashé, liens absents/corrompus, conflits Thread/Event/ID,
+Event sans résultat Thread, demande de suppression en attente, UNLINK puis
+suppression/rejeu sans résurrection, trois arrêts réels code 74, mauvais type
+d'audit et CLI sans création d'arbre à l'aperçu.
+
+Preuves négatives en processus séparés : omettre le contrôle des liens avant
+autorisation donne un échec (lien absent ; le cas corrompu reste bloqué par
+l'inventaire), omettre la revalidation de l'aperçu donne un échec, retirer
+l'audit lors de la publication donne un échec. Aucune substitution conservée.
+Groupe ciblé : **107 réussis en 4,52 s**. Dernière suite complète :
+**1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, aucun désélectionné,
 Python 3.12.14/pytest 9.1.1. Aucun scénario VM compté comme validé.

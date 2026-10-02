@@ -34,12 +34,12 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète après résolution des statuts FAILED, base publiée `a2505c6` :
-**1171 réussis, 5 échecs d’environnement, 68,78 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après extension aux éditions Thread FAILED, base publiée `121764a` :
+**1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 365 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets, 71 revue E-004, 4 suivi E-004, 29 import DELETED, 36 résolution des statuts FAILED).
-Groupe ciblé du dernier lot : 89 réussis en 2,96 s. Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 401 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets, 71 revue E-004, 4 suivi E-004, 29 import DELETED, 36 résolution des statuts FAILED, 36 résolution des éditions FAILED).
+Groupe ciblé du dernier lot : 107 réussis en 4,52 s. Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -70,7 +70,7 @@ Suivi restant après revue :
   explicité et deux tests API/CLI livrés (avec ou sans sélection explicite).
 - Nettoyage de `reasons` livré : une échéance invalide ne conserve plus la
   raison annonçant UPDATE ; décision d’exécution inchangée.
-- Résolution humaine FAILED : reprise explicite des statuts Thread livrée
+- Résolution humaine FAILED : reprise explicite des statuts et éditions Thread livrée
   ci-dessous ; autres familles/abandons/conflits et recette VM encore ouverts.
   Import étroit DELETED livré ; import opérationnel général encore ouvert.
 
@@ -125,8 +125,16 @@ strict, réservations Thread/Event, rejeu et seconde décision après nouvel éc
 1 + 1 échecs. Contrat : [FAILED-STATUS-RESOLUTION.md](docs/FAILED-STATUS-RESOLUTION.md).
 Les journaux enrichis sont refusés par les anciennes versions du lecteur.
 
+Extension du 02/10, base `121764a` : THREAD_UPDATE désormais supporté pour
+LINK/UNLINK, ADD_ACTION/ACTION_STATUS et DETAILS. Aperçu avec `--family thread-update-v1`, commande visible, audit RETRY_THREAD_UPDATE_V1 strict ;
+API et revues de statut conservées. Gardes des liens et collisions inter-familles
+contrôlées avant autorisation ; réservations de suppression conservées.
+36 nouveaux cas, 107 ciblés verts en 4,52 s, trois arrêts réels. Retirer le
+contrôle de lien, la fraîcheur de revue ou l'audit donne 1 + 1 + 1 échecs.
+Les états FAILED simultanés de familles différentes restent bloqués pour examen.
+
 Restant exploitation : installation du contrôle dans les services réels,
-dépendances sur corpus VM, autres familles FAILED (création/suppression/édition
+dépendances sur corpus VM, autres familles FAILED (création/suppression
 Thread, écritures Information), intentions parentes, divergences et abandon
 explicite éventuel avec traitement des effets/réservations. Aucun abandon automatique livré. Une
 lecture ponctuelle ne protège pas contre le redémarrage ultérieur d'un écrivain legacy.

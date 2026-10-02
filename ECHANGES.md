@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après résolution des statuts FAILED du 02/10, base publiée `a2505c6`,
+État après extension aux éditions Thread FAILED du 02/10, base publiée `121764a`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -14,8 +14,8 @@ Toujours vérifier HEAD et les changements locaux.
 - But inchangé : mémoire autonome, contextuelle et traçable ; fichiers
   canoniques, dossiers Markdown vivants, trois niveaux de disponibilité.
 - T-048 livré en local : contrôle read-only et reprise globale avec relecture
-  finale. Aucun service VM installé ; résolution humaine livrée pour les seuls
-  changements de statut Thread FAILED, autres familles encore ouvertes.
+  finale. Aucun service VM installé ; résolution humaine livrée pour les
+  changements de statut et éditions Thread FAILED, autres familles encore ouvertes.
 - T-021 ferme A-03 par refus avant toute écriture de destination pour les
   sources mixtes opérationnelles. Import étroit DELETED livré ; autres reçus
   et conservation générale du rejeu encore ouverts.
@@ -29,10 +29,9 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **1171 réussis, 5 échecs de sockets Manager avant scénario,
-  68,78 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 365 nouveaux cas
-  après `9063313`. Groupe ciblé : 89 verts, 2,96 s. Aucun essai VM ni coupure
-  de stockage. Import étroit DELETED et reprise humaine des statuts FAILED
+- Dernière suite : **1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 401 nouveaux cas
+  après `9063313`. Groupe ciblé : 107 verts, 4,52 s. Aucun essai VM ni coupure
+  de stockage. Import étroit DELETED et reprise humaine des statuts et éditions FAILED
   livrés ; autres reçus/journaux et familles FAILED encore ouverts.
 - Relecture Claude reçue sur `f507b31` : patch v2 abandonné, correctifs déjà
   présents et filtre migration reconnu plus complet. Revue de lecture/sondes ;
@@ -1117,3 +1116,34 @@ README/TODO et contrats de reprise actualisés ; nouveau contrat
 FAILED-STATUS-RESOLUTION.md. Restant : autres familles FAILED, conflits réels,
 abandon éventuel, installation/recette VM et import opérationnel général.
 Aucune revue Claude acquise sur ce lot ; estimations 45 % / 52,75 inchangées.
+
+## Résolution des éditions Thread FAILED — Codex, 2026-10-02, base `121764a`
+
+Poursuite autorisée. Le parcours partagé de résolution accepte THREAD_UPDATE :
+LINK/UNLINK, ADD_ACTION/ACTION_STATUS et DETAILS. Aperçu sans écriture avec
+`--family thread-update-v1`, commande originale visible ; `retry` déduit la
+famille de la revue. Anciennes API/revues de statut compatibles, aucune
+acceptation d'édition par l'API limitée aux statuts.
+
+Mêmes snapshots/identités/révisions/Events, même publication atomique de la
+trace et APPLYING. RETRY_THREAD_UPDATE_V1 est validé selon le type du journal.
+Gardes du coordinateur vérifiées avant autorisation : liens lisibles, réservations,
+collisions d'operation_id inter-familles même COMMITTED. Event construit par
+une fonction partagée avec la reprise normale. La suppression d'une cible de
+LINK reste bloquée avant/après reprise ; une demande tardive reste en attente.
+UNLINK peut ensuite libérer la référence, sans résurrection au rejeu terminal.
+
+36 nouveaux cas : quinze combinaisons commande/effets, divergences et fraîcheur,
+réservations, liens disparus/corrompus, types d'audit et CLI. Trois arrêts réels
+(code 74) aux frontières avant autorisation/après autorisation/après commit.
+**107 ciblés réussis en 4,52 s**. Preuves négatives en mémoire : retrait du
+contrôle de lien avant autorisation (un échec ; corruption encore refusée par
+l'inventaire), de la revalidation (un échec), de l'audit (un échec).
+Suite complète : **1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, aucun désélectionné.
+Aucun test VM, corpus réel ou coupure électrique ; aucune nouvelle revue Claude.
+
+README, TODO et contrats actualisés. Restant : création/suppression Thread
+FAILED, écritures Information, intentions parentes, conflits réels/abandon et
+recette VM. Les FAILED simultanés de familles différentes restent bloqués pour
+examen ; aucun contournement de dépendance. Import opérationnel général ouvert.
+Estimation globale toujours gelée à 45 % / 52,75 points.
