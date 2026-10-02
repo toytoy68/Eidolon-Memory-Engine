@@ -1,4 +1,4 @@
-"""Explicit import of DELETED identity reservations from a stopped core tree.
+"""Explicit import of DELETED reservations and opt-in CANCELLED history from a stopped core tree.
 
 Only receipts are copied. Each publication is durable; replay the same source
 on interruption. No global transaction, source mutation or implicit deletion.
@@ -42,10 +42,27 @@ def _safe_absence(root, identity):
     ensure_information_write_safety(root / 'memory/history', identity, require_compacted=True)
 
 
-def _prepare(source, destination):
+def _safe_cancellation(source, destination, identity, revision):
+    """Preserve current bytes; a cancellation does not authorize content transfer."""
+    raws = []
+    for root in (source, destination):
+        path = root / 'memory/persistent' / (identity + '.md')
+        if path.is_symlink() or not path.is_file():
+            raise ValueError('CANCELLED requires a canonical Information in both trees')
+        raw = path.read_bytes()
+        memory = FilesystemBackend._deserialize(raw.decode('utf-8'))
+        if memory.information_id != identity or memory.revision < revision:
+            raise ValueError('canonical Information does not cover cancelled request revision')
+        raws.append(raw)
+    if raws[0] != raws[1]:
+        raise ValueError('CANCELLED canonical Information bytes differ')
+
+
+def _prepare(source, destination, *, include_cancelled=False):
     source, destination = Path(source).absolute(), Path(destination).absolute()
     report = {'status': 'BLOCKED', 'source': str(source), 'destination': str(destination),
-              'receipts': [], 'issues': [], 'scope': 'deleted_receipts_only_stopped_source'}
+              'receipts': [], 'issues': [], 'scope': ('terminal_deletion_receipts_stopped_source'
+                  if include_cancelled else 'deleted_receipts_only_stopped_source')}
     payloads = []
     try:
         # Check links before resolve(), including aliases hiding an overlap.
@@ -76,10 +93,13 @@ def _prepare(source, destination):
                 record = FilesystemBackend._load_delete_request(path, path.stem)
                 if path.read_bytes() != raw:
                     raise ValueError('source receipt changed during inspection')
-                if record['status'] != 'DELETED':
-                    raise ValueError('only terminal DELETED receipts are supported')
-                _safe_absence(source, path.stem)
-                _safe_absence(destination, path.stem)
+                if record['status'] == 'DELETED':
+                    _safe_absence(source, path.stem)
+                    _safe_absence(destination, path.stem)
+                elif include_cancelled and record['status'] == 'CANCELLED':
+                    _safe_cancellation(source, destination, path.stem, record['revision'])
+                else:
+                    raise ValueError('only terminal DELETED receipts (and opt-in CANCELLED) are supported')
                 target = destination / 'memory/history/pending-delete' / path.name
                 if target.is_symlink() or (target.exists() and not target.is_file()):
                     raise ValueError('unsafe destination receipt')
@@ -90,6 +110,8 @@ def _prepare(source, destination):
                                           'operation_id': record['operation_id'],
                                           'sha256': sha256(raw).hexdigest(),
                                           'action': 'UNCHANGED' if present else 'IMPORT'})
+                if include_cancelled:
+                    report['receipts'][-1]['status'] = record['status']
                 payloads.append((target, raw, present))
             except READ_ERRORS as exc:
                 report['issues'].append({'side': 'receipt', 'file': path.name, 'reason': str(exc)})
@@ -100,9 +122,10 @@ def _prepare(source, destination):
     return report, payloads
 
 
-def inspect_deleted_receipts(source, destination):
+def inspect_deleted_receipts(source, destination, *, include_cancelled=False):
     """No mkdir, locks, report files or source changes. No plan is persisted."""
-    return _prepare(source, destination)[0]
+    return (_prepare(source, destination, include_cancelled=True) if include_cancelled
+            else _prepare(source, destination))[0]
 
 
 def _publish_receipt(path, raw):
@@ -111,14 +134,15 @@ def _publish_receipt(path, raw):
     _atomic_bytes(path, raw)
 
 
-def import_deleted_receipts(source, destination):
+def import_deleted_receipts(source, destination, *, include_cancelled=False):
     """Validate the entire batch, lock destination, revalidate, then publish.
 
     Source/legacy writers must be stopped. Existing destination core writers
     coordinate through Persistent and Thread locks; independent low-level journal
     writers are not covered. A failed publication may leave a committed prefix.
     """
-    report, _ = _prepare(source, destination)
+    prepare = (lambda src, dst: _prepare(src, dst, include_cancelled=True)) if include_cancelled else _prepare
+    report, _ = prepare(source, destination)
     if report['status'] != 'READY':
         return dict(report, imported=[])
     destination = Path(destination)
@@ -129,14 +153,14 @@ def import_deleted_receipts(source, destination):
         threads = persistent / 'threads'
         if threads.is_dir():
             locks.enter_context(exclusive_write(threads))
-        report, payloads = _prepare(source, destination)
+        report, payloads = prepare(source, destination)
         if report['status'] == 'BLOCKED':
             return dict(report, imported=[])
         for target, raw, present in payloads:
             if not present:
                 _publish_receipt(target, raw)
                 imported.append(target.stem)
-        final, _ = _prepare(source, destination)
+        final, _ = prepare(source, destination)
         if final['status'] != 'UNCHANGED':
             return dict(final, status='BLOCKED', imported=imported)
         return dict(final, status='IMPORTED' if imported else 'UNCHANGED', imported=imported)
@@ -147,10 +171,13 @@ def main(argv=None):
     parser.add_argument('--source', type=Path, required=True, help='Stopped core tree containing memory/')
     parser.add_argument('--destination', type=Path, required=True, help='Initialized destination core tree')
     parser.add_argument('--apply', action='store_true', help='Import validated terminal DELETED receipts')
+    parser.add_argument('--include-cancelled', action='store_true',
+                        help='Also import exact terminal CANCELLED receipts on matching canonical states')
     args = parser.parse_args(argv)
     try:
         action = import_deleted_receipts if args.apply else inspect_deleted_receipts
-        report = action(args.source, args.destination)
+        report = (action(args.source, args.destination, include_cancelled=True) if args.include_cancelled
+                  else action(args.source, args.destination))
     except READ_ERRORS as exc:
         report = {'status': 'BLOCKED', 'issues': [{'reason': str(exc)}],
                   'retry': 'Publication may have committed a prefix; rerun with the same stopped source.'}

@@ -278,3 +278,10 @@ transférer les corps ni réexécuter les commandes. Audits FAILED conservés,
 conflits vérifiés avant publication, Event puis reçu, reprise par relance.
 [Contrat, commandes, interruption et limites](WRITE-RECEIPT-IMPORT.md).
 Le convertisseur legacy reste fermé aux sources opérationnelles mixtes.
+
+## Annulations de suppression transférables explicitement — 03/10
+
+L'import DELETED reste strict par défaut. `--include-cancelled` transfère aussi
+les décisions CANCELLED sur un canonique présent identique en source/destination,
+sans réactiver ni approuver une suppression. Les états actifs restent refusés.
+[Contrat et limites](DELETED-RECEIPT-IMPORT.md).

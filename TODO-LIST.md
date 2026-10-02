@@ -34,10 +34,10 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après import T-021/T-033 des
-reçus compactés Information : **1369 réussis en 33,70 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `5394e06` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-pzRYrA`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après import T-021/T-033
+CANCELLED explicite : **1387 réussis en 34,18 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `55e81ba` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-XVdGSu`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -242,8 +242,16 @@ preuve rouge de révision et deux substitutions négatives. Suite VM 1369 réuss
 en 33,70 s, corpus synthétique uniquement. Contrat :
 [WRITE-RECEIPT-IMPORT.md](docs/WRITE-RECEIPT-IMPORT.md).
 
-Restant : import opérationnel général conservant notamment CANCELLED,
-Threads/actions et révisions, journaux non compactés ; aucune activation implicite des
+Ajout CANCELLED du 03/10, base `55e81ba` confirmée sur GitHub : option explicite
+`--include-cancelled`, DELETED seul par défaut conservé. Même canonique présent
+et révision >= demande, reçu exact, liens conservés ; UPDATE possible sans
+réactivation de suppression, CREATE et ancienne approbation refusés.
+18 nouveaux tests, 144 ciblés verts en 4,96 s ; arrêt réel et concurrence,
+deux preuves négatives. Suite VM finale 1387 réussis en 34,18 s après correction
+d'une fixture, corpus synthétique uniquement. Contrat DELETED actualisé.
+
+Restant : import opérationnel général des Threads/actions et révisions,
+journaux non compactés et parents ; aucune activation implicite des
 journaux archivés. Le refus préalable ferme le défaut, mais ne livre pas cet
 import. Migration réelle et revue des pertes de sens toujours non testées.
 

@@ -7,8 +7,9 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 ## Reprise rapide
 
 T-048 du 03/10 : reprises humaines Thread et Information FAILED livrées ;
-1369 tests réussis directement sur VM en 33,70 s, corpus synthétique isolé.
-Import de reçus compactés Information livré ensuite ; détails dans la dernière entrée.
+1387 tests réussis directement sur VM en 34,18 s, corpus synthétique isolé.
+Imports de reçus compactés Information et CANCELLED explicite livrés ensuite ;
+détails dans la dernière entrée.
 
 Recette directe Codex du 03/10 sur `9780473` : neuf étapes OK dans
 `/tmp/em-yZKsKq`, cinq scénarios concurrents réussis, arbre mémoire vide.
@@ -1401,3 +1402,33 @@ saut ou désélection, Python `.venv` 3.13.5/pytest 9.1.1 ; journal
 Corpus synthétique uniquement, aucun import dans la mémoire active, aucun corpus
 réel ni coupure électrique. CANCELLED, Threads/actions/révisions et import
 général restent ouverts ; estimations 45 % / 52,75 points inchangées.
+
+
+## T-021/T-033 — Import explicite CANCELLED, 3 octobre 2026
+
+Base `55e81ba`, vérifiée sur GitHub avant démarrage. `deleted_receipts` accepte
+maintenant l'option explicite `--include-cancelled` (API `include_cancelled=True`)
+pour transférer DELETED et CANCELLED terminaux. Par défaut, l'ancien comportement
+DELETED seul et la forme des rapports sont conservés. En mode élargi, chaque
+candidat indique son état. CANCELLED exige une Information canonique présente,
+exacte par octets dans les deux arbres et de révision >= demande ; les liens
+vivants restent intacts. Source/destination différentes ou receipt différent
+refusés globalement avant publication, puis contrôle sous verrous et final.
+Aucun contenu ni Event transféré, aucune suppression réactivée/approbation donnée.
+CREATE reste refusé sur CANCELLED, UPDATE explicite autorisé ; la demande annulée
+ne peut plus être approuvée. Ancien reçu conservé même après édition ultérieure ;
+une relance contre une ancienne source divergente est refusée sans le remplacer.
+
+18 nouveaux cas : 18 échecs initiaux (17 liés à l'option non livrée, un défaut
+fixture de répertoire inconnu corrigé). **144 ciblés réussis en 4,96 s** après.
+Préservation exacte, mode par défaut, lot DELETED/CANCELLED, liens, révision,
+conflits sans publication, arrêt réel code 74, deux importeurs concurrents et CLI.
+Substitutions en mémoire publication/garde canonique → un échec chacune.
+Premier passage complet : un échec de cette fixture, 1386 réussis en 34,13 s ;
+après correction, suite VM isolée hors sandbox : **1387 passed in 34.18s**, aucun
+échec, saut ou désélection, Python `.venv` 3.13.5/pytest 9.1.1. Journal final
+`/tmp/em-suite-XVdGSu/pytest.log` (premier : `/tmp/em-suite-U1A2zB/pytest.log`).
+Preuve sur base `55e81ba` plus ce lot avant commit. Données synthétiques uniquement,
+aucun import dans la mémoire active ni coupure électrique ; import des
+Threads/actions/révisions, journaux complets et parents encore ouvert.
+Estimations 45 % / 52,75 points inchangées.
