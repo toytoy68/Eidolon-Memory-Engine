@@ -34,11 +34,13 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète après corrections E-004, base `a57d237` : **1102 réussis,
-5 échecs d’environnement, 55,83 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après import DELETED, base publiée `8f9fb1b` : **1134 réussis,
+5 échecs d’environnement, 73,20 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 296 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets, 71 revue E-004). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 329 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets, 71 revue E-004, 4 suivi E-004, 29 import DELETED). Un dernier cas sur fichier
+temporaire a passé après la suite complète dans le groupe ciblé (121 réussis),
+sans changement de code. Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -69,7 +71,8 @@ Suivi restant après revue :
   explicité et deux tests API/CLI livrés (avec ou sans sélection explicite).
 - Nettoyage de `reasons` livré : une échéance invalide ne conserve plus la
   raison annonçant UPDATE ; décision d’exécution inchangée.
-- Résolution humaine FAILED, import opérationnel DELETED et recette VM : ouverts.
+- Résolution humaine FAILED et recette VM : ouverts. Import étroit DELETED
+  livré ci-dessous ; import opérationnel général encore ouvert.
 
 Suivi E-004 du 02/10 après-midi : 122 tests ciblés réussis en 2,63 s, quatre
 cas supplémentaires. Deux rouges avant correction des raisons ; ignorer
@@ -134,7 +137,15 @@ Preuves : 12 nouveaux cas rouges sur la base puis verts ; **47 tests de migratio
 réussis** avec conversion, simulation et vérification. La source demeure intacte.
 Les versions de reçus injectées sont des données synthétiques ; aucune VM.
 
-Restant : import opérationnel dédié conservant réservations DELETED/CANCELLED,
+Ajout du 02/10 après-midi : import dédié des seuls reçus DELETED, aperçu sans
+écriture, copie exacte des reçus actifs, gardes de références/snapshots/readiness,
+refus global des conflits avant publication, reprise par relance et contrôle
+final. 29 nouveaux cas dont deux arrêts réels et deux importeurs concurrents ;
+121 ciblés réussis en 4,03 s, preuves négatives 1 + 2 échecs. Un fichier temporaire inconnu
+laissé avant renommage bloque la relance pour revue humaine, sans purge implicite. Contrat :
+[DELETED-RECEIPT-IMPORT.md](docs/DELETED-RECEIPT-IMPORT.md).
+
+Restant : import opérationnel général conservant notamment CANCELLED,
 reçus de rejeu, Threads/actions et révisions ; aucune activation implicite des
 journaux archivés. Le refus préalable ferme le défaut, mais ne livre pas cet
 import. Migration réelle et revue des pertes de sens toujours non testées.

@@ -257,3 +257,15 @@ Vérification de cette clarification sur fixture temporaire : Persistent vide,
 un fichier dérivé synthétique, inventaire sans alerte, une archive exacte,
 pas d'index actif en sortie, vérification indépendante OK et source inchangée.
 Pas de changement du convertisseur ni de validation VM dans ce lot documentaire.
+
+## Import DELETED livré le 02/10 après-midi
+
+Un chemin dédié `core.migration.deleted_receipts` importe désormais les seuls
+reçus terminaux DELETED entre arbres core compatibles et distincts. Aperçu sans
+écriture, refus des conflits sur tout le lot, publication atomique par reçu et
+reprise par relance ; l'identité supprimée reste réservée en destination.
+Voir [le contrat et les commandes](DELETED-RECEIPT-IMPORT.md). Ce chemin ne copie
+ni les Informations, ni les autres journaux/reçus, ni les Events/Threads/index.
+PENDING_DELETE, APPLYING_DELETE et CANCELLED restent refusés. Le convertisseur
+legacy conserve intégralement son refus préalable des sources mixtes ; l'import
+opérationnel général et la validation VM ne sont pas livrés.

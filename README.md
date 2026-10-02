@@ -31,6 +31,8 @@ développement et n'est pas encore validée sur la VM.
 - [Bilan transversal du 02/10](docs/AUDIT-2026-10-02.md) et [TODO active](TODO-LIST.md)
 - [Architecture et frontières des écrivains](docs/ARCHITECTURE.md)
 - [Inventaire et précontrôle de migration](docs/MIGRATION.md)
+- [Import des reçus DELETED](docs/DELETED-RECEIPT-IMPORT.md) : réservation des
+  identités supprimées conservée, aperçu sans écriture et reprise par relance.
 - [Déploiement et sauvegarde](docs/DEPLOYMENT.md)
 - [Reprise des opérations Thread](docs/THREAD_RECOVERY.md) et
   [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
@@ -64,11 +66,13 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après corrections de la revue E-004 du 02/10/2026 :
-**1102 tests réussis, 5 échecs d’environnement en 55,83 s**, Python 3.12.14, pytest 9.1.1.
+Dernière suite complète après import des reçus DELETED du 02/10/2026 :
+**1134 tests réussis, 5 échecs d’environnement en 73,20 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
-validation VM, donnée réelle ou coupure électrique.
+validation VM, donnée réelle ou coupure électrique. Un cas supplémentaire sur
+un fichier temporaire laissé après arrêt a ensuite passé dans le groupe ciblé
+(121 réussis), sans changement du code.
 
 Revue E-004 intégrée : REVIEW ne peut plus être contourné par UPDATE, les
 valeurs multilignes ne forgent plus de sections de dossier, les propositions de

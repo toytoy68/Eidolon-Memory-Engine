@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après validation de la revue E-004 du 02/10, code publié `3b2d7a0`,
+État après import DELETED du 02/10, base publiée `8f9fb1b`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -27,9 +27,11 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **1102 réussis, 5 échecs de sockets Manager avant scénario,
-  55,83 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 296 nouveaux cas
-  dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
+- Dernière suite : **1134 réussis, 5 échecs de sockets Manager avant scénario,
+  73,20 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 329 nouveaux cas
+  après `9063313`, dont un vérifié après la suite dans le groupe ciblé (121 verts).
+  Aucun essai VM ni coupure de stockage. Import étroit DELETED livré ; autres
+  reçus/journaux et résolution humaine FAILED toujours ouverts.
 - Relecture Claude reçue sur `f507b31` : patch v2 abandonné, correctifs déjà
   présents et filtre migration reconnu plus complet. Revue de lecture/sondes ;
   sans pytest chez Claude ni VM. Revue E-004 détaillée reçue ensuite : F1–F4
@@ -1042,3 +1044,33 @@ changement de ce comportement conservateur dans le code publié.
 de 1102 réussites/cinq blocages toujours datée du lot précédent, non relancée
 pour ce petit suivi. Contrat et TODO actualisés. Prochain lot : import étroit
 des reçus DELETED, en conservant la réserve d'identité et le refus des conflits.
+
+## Import DELETED — Codex, 2026-10-02 après-midi, base publiée `8f9fb1b`
+
+Deuxième lot demandé pendant l'indisponibilité de Claude. T-021/T-033 livre un
+chemin distinct `core.migration.deleted_receipts` : aperçu sans écriture et
+import explicite des seuls reçus terminaux DELETED entre arbres core compatibles.
+Les octets sont conservés dans pending-delete actif ; tests de refus de
+recréation par le backend et le service Information. Tous les conflits sont
+contrôlés avant la première publication, puis de nouveau sous Persistent/Thread.
+Readiness, références, absence canonique et compaction préalable des snapshots
+sont vérifiées. Reçu différent jamais remplacé ; source jamais écrite.
+
+Chaque reçu est atomique et durable ; reprise d'un préfixe par relance sur la
+même source arrêtée. Deux importeurs concurrents sont sérialisés. Après un arrêt
+avant renommage, un fichier temporaire inconnu peut rester : refus de reprise
+pour revue humaine, aucune purge automatique. Pas de transaction globale ni de
+preuve de purge externe. Source/écrivains legacy et bas niveau arrêtés requis.
+
+29 nouveaux cas, 121 ciblés verts en 4,03 s. Mutations expérimentales en mémoire :
+désactiver la publication donne un échec, ignorer les gardes de références en
+donne deux. Code publié intact. Suite complète : **1134 réussis, cinq blocages
+Manager avant scénario, 73,20 s**, aucun désélectionné. Le dernier cas d'arrêt
+avant renommage a été ajouté et vérifié ensuite dans le groupe ciblé, sans
+modifier l'implémentation. Aucun essai VM, corpus réel ou coupure électrique.
+
+Contrat : docs/DELETED-RECEIPT-IMPORT.md. Le convertisseur legacy conserve son
+refus des sources mixtes. CANCELLED/PENDING/APPLYING, reçus de commandes,
+Events/Threads et index ne sont pas importés par ce chemin. L'import général
+avec conservation de toute l'histoire de rejeu reste ouvert, ainsi que FAILED
+et la recette VM. README/TODO/MIGRATION actualisés ; estimations gelées.
