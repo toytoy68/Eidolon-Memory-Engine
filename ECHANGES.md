@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après index demandé le 02/10, base publiée `c3637f7`,
+État après nouveau projet par routage du 02/10, base publiée `86e205e`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -21,14 +21,14 @@ Toujours vérifier HEAD et les changements locaux.
   ThreadService.for_backend ; journal/reprise, réservations et gardes raccordés.
   Lire docs/THREAD-UPDATES.md. Les appels bas niveau restent distincts.
 - T-041/T-042 livrés en local ; T-043 exécute désormais STORE/UPDATE vers un
-  projet existant avec intention durable, lien et dossier actualisé. Les autres
+  projet existant ou explicitement nouveau avec intention durable, lien et dossier actualisé. Les autres
   branches restent ouvertes. T-044 répare désormais les dossiers hors parcours
   par rapprochement explicite reprenable. Catalogue T-045 livré avec reconstruction et contrôle de fraîcheur ;
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **1007 réussis, 5 échecs de sockets Manager avant scénario,
-  50,71 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 201 nouveaux cas
+- Dernière suite : **1031 réussis, 5 échecs de sockets Manager avant scénario,
+  55,00 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 225 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Retour Claude v2 sur `9f0eb92` relu le 02/10 : corrections déjà présentes,
   différences de libellés identifiées et filtre migration moins complet ; patch non appliqué.
@@ -786,3 +786,32 @@ Appels au lecteur strict 16 275 → 99 ; noms/fichiers toujours lus (JSON
 16 corpus neufs, audits/objets vérifiés, aucun test lourd en parallèle.
 Rapport : docs/benchmarks/reservation-index-2026-10-02.json. Conserver les lots
 pour les imports ; index surtout utile aux petites écritures successives.
+
+## Nouveau projet explicite — T-043, base `86e205e`
+
+Poursuite autorisée après l'index. Le format 3 ajoute `project_create` et
+`project_before=null` : un modèle Thread explicite PROPOSED/révision 1, dates
+avec fuseau, sans actions/relations préexistantes. API `preview_new_project`,
+CLI `--new-project` exclusif de `--project-revision`. Preview sans écriture même
+sur racine absente ; execute initialise le stockage, écrit l'Information,
+crée son Thread lié via thread-create-v1, reconstruit le dossier et enregistre
+l'échéance éventuelle avant reçu compact. Formats 1/2 inchangés.
+
+L'intention réserve aussi le projet absent. La création doit être prouvée par
+son journal enfant ; un snapshot étranger ressemblant au résultat est refusé.
+Une identité déjà créée/supprimée est refusée avant l'Information. Rejeu après
+suppression sans résurrection. Verrou Operation ajouté au `_pending` du routage :
+l'index facultatif l'exigeait et l'ancien appel ne le prenait pas. Cas format 2
+et nouveau projet avec index verts.
+
+24 nouveaux cas ; 58 ciblés réussis, 5,69 s. Cinq interruptions entre étapes,
+deux dans la création enfant, trois arrêts réels (code 74), deux créateurs
+concurrents sans Manager, inventaire/readiness, CLI, reprise et compatibilité.
+Retrait historique/projection/verrou d'index : 1 + 1 + 1 tests rouges, code
+restauré. Suite complète : **1031 réussis, cinq échecs Manager de création de
+socket avant scénario, 55,00 s**, aucun désélectionné. Contrat :
+docs/ROUTING-NEW-PROJECT.md. Aucun benchmark, VM ou coupure physique acquis.
+
+Restant : NONE/REVIEW, lieux/thèmes, import opérationnel, récurrence et clients
+externes. Pas de génération automatique de projet, changement de vérité,
+transaction globale ni nouvelle politique de rétention. Estimations gelées.

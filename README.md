@@ -22,6 +22,8 @@ développement et n'est pas encore validée sur la VM.
   scan partagé, arrêt au conflit et reprise par rejeu des commandes stables.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
+- [Nouveau projet par routage](docs/ROUTING-NEW-PROJECT.md) : aperçu explicite,
+  création journalisée, dossier et échéance ; format 3 compatible avec 1/2.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
   correspondance Information/Memory et [planificateur contextuel v0.1](docs/MEMORY-ROUTING.md)
   testés ; dossiers actualisés dans le parcours qualifié, disponibilité et
@@ -62,8 +64,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après index des réservations du 02/10/2026 :
-**1007 tests réussis, 5 échecs d’environnement en 50,71 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après création de projet par routage du 02/10/2026 :
+**1031 tests réussis, 5 échecs d’environnement en 55,00 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -91,7 +93,8 @@ n’est encore installé sur la VM.
   désormais leurs reçus/journaux avant toute écriture dans la destination ;
   il ne les archive plus silencieusement en perdant leurs contraintes actives.
 - Étendre l’exécution des plans : le parcours qualifié STORE/UPDATE vers un
-  projet existant et son dossier est livré avec reprise et rejeu ; voir
+  projet existant ou explicitement nouveau et son dossier est livré avec reprise
+  et rejeu ; les branches NONE/REVIEW et lieu/thème restent ouvertes. Voir
   [ROUTING-EXECUTION.md](docs/ROUTING-EXECUTION.md). Les commandes Thread
   restent décrites dans [THREAD-UPDATES.md](docs/THREAD-UPDATES.md).
 - Définir l’ordonnancement de l’entretien : une passe explicite enchaîne maintenant

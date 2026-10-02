@@ -199,3 +199,11 @@ lot montrent un gain plus modeste et variable. Pour un unique lot, le coût
 initial de construction peut dépasser le gain : conserver les lots pour les
 imports et activer l'index surtout pour les écritures successives. Ces points
 uniques ne permettent pas d'affirmer une différence de quelques millisecondes.
+
+## Raccordement routage vérifié ensuite
+
+Le lot de création explicite de projet prend le verrou du journal Information
+pendant le contrôle préalable `_pending` du routage. Ce verrou est requis
+par l'index et manquait à cet appelant. Le parcours vers projet existant format 2
+et celui vers projet nouveau format 3 sont testés avec l'index activé ; les
+mesures ci-dessus ne sont pas des mesures de ces parcours complets.

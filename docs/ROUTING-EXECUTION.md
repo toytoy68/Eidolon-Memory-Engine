@@ -3,6 +3,9 @@
 Lot du 01/10/2026, après les commandes Thread. Le parcours livré est :
 Information qualifiée STORE/UPDATE → projet **existant** → dossier actualisé.
 Il conserve les règles et statuts du planner sans promotion de vérité.
+Depuis le 02/10, le [format 3](ROUTING-NEW-PROJECT.md) ajoute un projet
+explicitement nouveau ; les paragraphes format 1/2 ci-dessous décrivent le
+parcours existant conservé.
 
 ## Contrat
 
@@ -66,7 +69,7 @@ parcours avant les reprises isolées des enfants, puis contrôle à nouveau les
 fichiers. Les états inconnus ou corrompus bloquent. Un plan divergent reste
 APPLYING mais sa reprise rapporte BLOCKED ; aucun abandon automatique.
 Le guard legacy et la migration préalable prennent cette famille en compte.
-Les formats 1 et 2 cohabitent dans le même répertoire versionné ; les anciens
+Les formats 1, 2 et 3 cohabitent dans le même répertoire versionné ; les anciens
 plans et reçus ne sont ni réinterprétés ni réécrits.
 
 Une échéance enregistrée reste SCHEDULED même si elle est déjà dépassée.
@@ -130,3 +133,14 @@ sans résurrection. Cinq interruptions entre étapes et deux arrêts réels de
 processus code 74 ; CLI opt-in et anciens tests format 1 conservés. Groupe
 parcours/cycle de vie : 59 réussis. Les preuves négatives et le résultat global
 sont consignés dans ECHANGES.md. Aucun résultat VM acquis.
+
+## Extension nouveau projet — format 3
+
+`preview_new_project(memory, context, project=template)` et le CLI
+`preview --new-project project.json` créent un plan explicite, sans écrire.
+Le projet absent est réservé par l'intention et créé via le journal Thread
+existant, avec son premier lien CONCERNS en révision 1. Disponibilité,
+échéance, dossier et reçu compact sont inclus. Contrat, exemple JSON et
+limites : [ROUTING-NEW-PROJECT.md](ROUTING-NEW-PROJECT.md).
+Le routage prend désormais aussi le verrou du journal Information pendant
+son contrôle préalable de réservations pour l'index facultatif.

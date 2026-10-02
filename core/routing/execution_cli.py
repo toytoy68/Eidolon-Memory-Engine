@@ -22,7 +22,9 @@ def main(argv=None):
     preview = sub.add_parser('preview')
     preview.add_argument('--memory', type=Path, required=True)
     preview.add_argument('--context', type=Path, required=True)
-    preview.add_argument('--project-revision', type=int, required=True)
+    project = preview.add_mutually_exclusive_group(required=True)
+    project.add_argument('--project-revision', type=int)
+    project.add_argument('--new-project', type=Path, help='Explicit new Thread JSON template; version 3 includes lifecycle')
     preview.add_argument('--with-lifecycle', action='store_true', help='Version 2: persist availability and register proposed deadline')
     execute = sub.add_parser('execute')
     execute.add_argument('--plan', type=Path, required=True)
@@ -38,26 +40,32 @@ def main(argv=None):
     recall.add_argument('--max-chars', type=int, default=4000)
     args = parser.parse_args(argv)
     try:
-        # A reader facade avoids constructor mkdir during preview. Existing
-        # project storage is required for both commands in this first slice.
+        # A reader facade avoids constructor mkdir during preview.
         backend = FilesystemBackend.__new__(FilesystemBackend)
         backend.persistent_root = args.root / 'memory/persistent'
         backend.history_root = args.root / 'memory/history'
         backend.pending_delete_root = backend.history_root / 'pending-delete'
-        if not (backend.persistent_root / 'threads').is_dir():
-            raise ValueError('existing engine and project required')
         executor = RoutingExecutor(backend)
         if args.action == 'preview':
             memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
             context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
-            result = executor.preview(memory, context, project_revision=args.project_revision,
-                                      include_lifecycle=args.with_lifecycle)
+            if args.new_project is not None:
+                from core.storage_format import encode_document
+                template = executor.storage._deserialize(encode_document('Thread',
+                    decode_json_value(args.new_project.read_text(encoding='utf-8'))))
+                result = executor.preview_new_project(memory, context, project=template)
+            else:
+                result = executor.preview(memory, context, project_revision=args.project_revision,
+                                          include_lifecycle=args.with_lifecycle)
         elif args.action == 'recall':
             result = asdict(executor.recall(args.query,
                             query_scope=decode_json_value(args.scope.read_text(encoding='utf-8')),
                             at=args.at, mode=args.mode, project_id=args.project_id, max_chars=args.max_chars))
         else:
             prepared = decode_json_value(args.plan.read_text(encoding='utf-8'))
+            if isinstance(prepared, dict) and prepared.get('format_version') == 3:
+                backend = FilesystemBackend(backend.persistent_root, backend.history_root)
+                executor = RoutingExecutor(backend)
             result = executor.execute(prepared, intent_id=args.intent_id, actor=args.actor, timestamp=args.timestamp)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0

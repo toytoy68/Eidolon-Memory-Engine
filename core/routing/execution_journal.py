@@ -48,7 +48,7 @@ class ExecutionJournal:
             record = decode_json_value(path.read_text(encoding='utf-8'))
             common = {'format_version', 'intent_id', 'status', 'fingerprint'}
             if (not isinstance(record, dict) or type(record.get('format_version')) is not int
-                    or record['format_version'] not in {1, 2} or record.get('intent_id') != identity
+                    or record['format_version'] not in {1, 2, 3} or record.get('intent_id') != identity
                     or not isinstance(record.get('fingerprint'), str)
                     or not re.fullmatch('[0-9a-f]{64}', record['fingerprint'])):
                 raise ValueError('invalid routing identity/version')
@@ -59,7 +59,10 @@ class ExecutionJournal:
                 if set(command) != {'prepared', 'actor', 'timestamp'}:
                     raise ValueError('invalid routing command')
                 prepared = command['prepared']
-                if (set(prepared) != {'format_version', 'memory', 'context', 'policy', 'project_before', 'information_before'}
+                fields = {'format_version', 'memory', 'context', 'policy', 'project_before', 'information_before'}
+                if record['format_version'] == 3:
+                    fields.add('project_create')
+                if (set(prepared) != fields
                         or type(prepared['format_version']) is not int
                         or prepared['format_version'] != record['format_version']):
                     raise ValueError('invalid routing plan')
@@ -71,7 +74,7 @@ class ExecutionJournal:
                     raise ValueError('invalid routing receipt')
                 result = record['result']
                 keys = {'information', 'project', 'projection_digest', 'deferred'}
-                if record['format_version'] == 2:
+                if record['format_version'] >= 2:
                     keys.add('lifecycle')
                 if set(result) != keys:
                     raise ValueError('invalid routing result')
@@ -85,7 +88,7 @@ class ExecutionJournal:
                         or not isinstance(result['projection_digest'], str)
                         or not re.fullmatch('[0-9a-f]{64}', result['projection_digest'])):
                     raise ValueError('invalid routing projection result')
-                if record['format_version'] == 2:
+                if record['format_version'] >= 2:
                     lifecycle = result['lifecycle']
                     expected_trigger = 'routing-' + sha256(identity.encode()).hexdigest() + '-trigger'
                     if (set(lifecycle) != {'availability', 'trigger_id'}

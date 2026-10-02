@@ -1,6 +1,7 @@
-"""Explicit, resumable STORE/UPDATE → existing project → canonical dossier.
+"""Explicit, resumable STORE/UPDATE → chosen project → canonical dossier.
 
 Version 2 explicitly includes availability and durable schedule registration.
+Version 3 adds a deliberately supplied new project template using Thread creation.
 An intent owns its targets until the derived view is rebuilt and a compact result
 replaces the command. Child services remain responsible for their own journals.
 """
@@ -23,6 +24,7 @@ from core.storage_format import decode_json_value
 from core.threads.service import ThreadService
 from core.threads.storage import ThreadStorage, ThreadStorageError
 from core.threads.manager import ThreadError
+from core.threads.models import ThreadStatus
 
 
 def restore_context(value):
@@ -112,18 +114,50 @@ class RoutingExecutor:
             'format_version': 2 if include_lifecycle else 1, 'memory': asdict(memory), 'context': asdict(context), 'policy': policy,
             'project_before': self._project_text(project), 'information_before': self._information_text(current)}))
 
+    def preview_new_project(self, memory, context, *, project):
+        """Version 3: explicit new project identity/template, with lifecycle."""
+        policy = decode_json_value(canonical(asdict(plan(memory, context))))
+        project_id = self._validate_policy(memory, context, policy, include_lifecycle=True)
+        if context.existing_dossier is not None or policy['dossier'] != 'CREATE_OR_LINK':
+            raise OperationConflict('new project requires explicit CREATE_OR_LINK policy')
+        if project.thread_id != project_id or self.storage.get(project_id) is not None:
+            raise OperationConflict('new project identity must match an absent project')
+        current = self.backend.get(memory.information_id)
+        prepared = decode_json_value(canonical({
+            'format_version': 3, 'memory': asdict(memory), 'context': asdict(context), 'policy': policy,
+            'project_before': None, 'project_create': self._project_text(project),
+            'information_before': self._information_text(current)}))
+        memory, project = self._inputs(prepared)
+        self._initial_checks(prepared, memory, project)
+        return prepared
+
     def _inputs(self, prepared):
-        if (not isinstance(prepared, dict) or set(prepared) != {
-                'format_version', 'memory', 'context', 'policy', 'project_before', 'information_before'}
-                or type(prepared['format_version']) is not int or prepared['format_version'] not in {1, 2}):
+        fields = {'format_version', 'memory', 'context', 'policy', 'project_before', 'information_before'}
+        if isinstance(prepared, dict) and prepared.get('format_version') == 3:
+            fields.add('project_create')
+        if (not isinstance(prepared, dict) or set(prepared) != fields
+                or type(prepared['format_version']) is not int or prepared['format_version'] not in {1, 2, 3}):
             raise OperationConflict('unknown execution plan format')
         memory = Memory(**prepared['memory'])
         self.backend._serialize_checked(memory)
         project_id = self._validate_policy(memory, restore_context(prepared['context']), prepared['policy'],
-                                          include_lifecycle=prepared['format_version'] == 2)
-        project = self.storage._deserialize(prepared['project_before'])
+                                          include_lifecycle=prepared['format_version'] >= 2)
+        project = self.storage._deserialize(prepared['project_create'] if prepared['format_version'] == 3
+                                            else prepared['project_before'])
         if project.thread_id != project_id:
             raise OperationConflict('project snapshot identity mismatch')
+        if prepared['format_version'] == 3:
+            from core.threads.manager import ThreadManager
+            from core.lifecycle.journal import timestamp
+            ThreadManager.validate(project)
+            timestamp(project.created_at)
+            if (prepared['project_before'] is not None or project.revision != 1
+                    or project.status is not ThreadStatus.PROPOSED or project.actions or project.relations
+                    or project.updated_at != project.created_at
+                    or project.started_at is not None or project.completed_at is not None
+                    or prepared['context'].get('existing_dossier') is not None
+                    or prepared['policy']['dossier'] != 'CREATE_OR_LINK'):
+                raise OperationConflict('new project must be a fresh explicit PROPOSED template')
         return memory, project
 
     @staticmethod
@@ -150,7 +184,7 @@ class RoutingExecutor:
             if before.information_id != memory.information_id or before.revision != memory.revision:
                 raise OperationConflict('UPDATE snapshot identity/revision mismatch')
         # Plan validation cannot reserve a closed project for an impossible link.
-        if memory.information_id not in self.storage._concerns(project):
+        if prepared['format_version'] != 3 and memory.information_id not in self.storage._concerns(project):
             apply_command(project, {'kind': 'LINK', 'information_id': memory.information_id}, project.updated_at)
 
     def execute(self, prepared, *, intent_id, actor, timestamp):
@@ -159,6 +193,8 @@ class RoutingExecutor:
             raise ValueError('actor and timestamp required')
         command = decode_json_value(canonical({'prepared': prepared, 'actor': actor, 'timestamp': timestamp}))
         fingerprint = digest(command)
+        if isinstance(prepared, dict) and prepared.get('format_version') == 3:
+            ThreadStorage(self.backend.persistent_root)
         self.journal.root.mkdir(parents=True, exist_ok=True)
         with exclusive_write(self.backend.persistent_root), exclusive_write(self.storage.threads_root), exclusive_write(self.journal.root):
             existing = self.journal.read(intent_id)
@@ -169,7 +205,7 @@ class RoutingExecutor:
                     return existing['result']
                 return self._resume(existing)
             memory, project = self._inputs(command['prepared'])
-            if prepared['format_version'] == 2:
+            if prepared['format_version'] >= 2:
                 from core.lifecycle.journal import timestamp as validate_timestamp
                 from core.operations.readiness import check_readiness
                 validate_timestamp(timestamp)
@@ -181,9 +217,18 @@ class RoutingExecutor:
             from core.operations.models import OperationType
             kind = OperationType.INFORMATION_CREATE if command['prepared']['policy']['persistence'] == 'STORE' else OperationType.INFORMATION_UPDATE
             writes._check_deletion(kind, memory.information_id)
-            writes._pending(memory.information_id)
+            with exclusive_write(writes.operations.root):
+                writes._pending(memory.information_id)
             threads = ThreadService.for_backend(self.backend)
             threads.updates._other_pending(project.thread_id, self.child_id(intent_id, 'project'))
+            if prepared['format_version'] == 3:
+                # A deleted identity is not a new project. Never start the
+                # Information child when a prior creation/deletion owns it.
+                for repository in (threads.creation.operations, threads.deletion.operations):
+                    for path in repository.root.glob('*.json'):
+                        prior = repository.get(path.stem)
+                        if prior is not None and prior.target_id == project.thread_id:
+                            raise OperationConflict('project identity has prior creation/deletion history')
             record = {'format_version': prepared['format_version'], 'intent_id': intent_id, 'status': 'APPLYING',
                       'fingerprint': fingerprint, 'command': command}
             self.journal.save(record)
@@ -209,9 +254,11 @@ class RoutingExecutor:
             if self._information_text(self.backend.get(memory.information_id)) not in permitted:
                 raise OperationConflict('Information diverged during routing execution')
             link = {'kind': 'LINK', 'information_id': memory.information_id}
-            already_linked = memory.information_id in self.storage._concerns(before_project)
-            after_project = before_project if already_linked else apply_command(before_project, link, command['timestamp'])
-            child_project = threads.updates.operations.get(project_id)
+            creating = prepared['format_version'] == 3
+            already_linked = not creating and memory.information_id in self.storage._concerns(before_project)
+            after_project = (threads.creation.links.prepare(before_project, memory.information_id) if creating else
+                             before_project if already_linked else apply_command(before_project, link, command['timestamp']))
+            child_project = (threads.creation.operations if creating else threads.updates.operations).get(project_id)
             allowed_projects = {prepared['project_before']}
             if child_project is not None:
                 allowed_projects.add(self._project_text(after_project))
@@ -225,7 +272,10 @@ class RoutingExecutor:
             else:
                 writes.update(memory, previous_revision=memory.revision, **identity)
             self._checkpoint('after_information')
-            if not already_linked:
+            if creating:
+                threads.create_linked(before_project, memory.information_id,
+                                      operation_id=project_id, event_id=project_id + '-event')
+            elif not already_linked:
                 threads.update_thread(before_project.thread_id, link, previous_revision=before_project.revision,
                                       operation_id=project_id, event_id=project_id + '-event',
                                       actor=command['actor'], timestamp=command['timestamp'])
@@ -235,7 +285,7 @@ class RoutingExecutor:
             result = {'information': {'id': memory.information_id, 'revision': after_memory.revision},
                       'project': {'id': before_project.thread_id, 'revision': after_project.revision},
                       'projection_digest': projection['source_digest'], 'deferred': ['availability']}
-            if prepared['format_version'] == 2:
+            if prepared['format_version'] >= 2:
                 from core.lifecycle.service import LifecycleTriggers
                 trigger = prepared['policy']['proposed_trigger']
                 trigger_id = self.child_id(intent, 'trigger') if trigger is not None else None

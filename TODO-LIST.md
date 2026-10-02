@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après index des réservations, base `c3637f7` : **1007 réussis,
-5 échecs d’environnement, 50,71 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après nouveau projet par routage, base `86e205e` : **1031 réussis,
+5 échecs d’environnement, 55,00 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 201 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 225 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -144,8 +144,18 @@ Extension du 02/10 : format 2 opt-in (`--with-lifecycle`), disponibilité intég
 inchangé. Reprise globale, annulation intercalée et garde parent avant effet ;
 19 nouveaux cas, deux arrêts réels de processus. Groupe ciblé 59 réussis.
 
-Restant : création explicite de nouveaux projets par ce parcours, branches
-NONE/REVIEW/lieu/thème, autres politiques et qualification automatique.
+Extension suivante : format 3 pour projet explicitement nouveau,
+`preview_new_project` et CLI `--new-project`, modèle PROPOSED révision 1 sans
+actions/liens préexistants. Intention propriétaire, enfant thread-create-v1,
+dossier, disponibilité et échéance. Anciennes identités de projet avec
+historique de création/suppression refusées avant Information. Reprise globale,
+preuve du journal enfant, concurrence et rejeu après suppression vérifiés.
+24 nouveaux cas ; 58 ciblés réussis, preuves négatives 1 + 1 + 1. Verrou de
+journal ajouté au contrôle des réservations du routage pour compatibilité avec
+l'index facultatif, y compris en format 2. Contrat :
+[ROUTING-NEW-PROJECT.md](docs/ROUTING-NEW-PROJECT.md).
+
+Restant : branches NONE/REVIEW/lieu/thème, autres politiques et qualification automatique.
 Disponibilité encore différée pour les seuls anciens plans format 1.
 Pas de client externe ou de VM validé.
 
@@ -368,7 +378,7 @@ heuristique et exécution VM toujours manquante.
 
 ## Prochaines livraisons démontrables
 
-Le premier parcours qualifié vers un projet existant et son rappel est désormais
+Le parcours qualifié vers un projet existant ou explicitement nouveau et son rappel est désormais
 livré en local ; le rapprochement global des dossiers hors parcours est maintenant
 disponible à la demande, comme le catalogue reconstructible T-045. T-049 réduit
 les validations par commande ; l’index facultatif est livré, mais la suppression

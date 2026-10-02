@@ -352,3 +352,12 @@ bloquante. Pas de migration ni nouvelle base ; audits inchangés. Suite :
 1007 réussis, cinq échecs de sockets Manager, 50,71 s. Contrat et limites :
 RESERVATION-INDEX.md. Supprimer les lectures linéaires reste ouvert, sans
 nouveau pourcentage ni preuve VM.
+
+## Nouveau projet par routage — 02/10
+
+T-043 format 3 crée un projet explicitement décrit, avec premier lien CONCERNS,
+dossier et échéance éventuelle. L'intention réserve l'identité absente ; enfant
+thread-create-v1 et reprise globale réutilisés. Aucun changement des formats
+1/2 ni de la politique de vérité. 24 nouveaux cas, suite 1031 réussis et cinq
+sockets Manager bloquées, 55,00 s. Contrat : ROUTING-NEW-PROJECT.md. Autres
+branches, import opérationnel et VM ouverts ; pourcentages inchangés.
