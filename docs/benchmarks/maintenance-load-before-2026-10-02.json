@@ -1,0 +1,437 @@
+{
+  "source_commit": "5296cc8daaa4c8774ff9bcb72621d9abfbaa556c",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "repeats": 3,
+  "scope": "local synthetic warmed filesystem; no VM, cold-cache or load guarantee",
+  "instrumentation": "successful Path.open reads, not physical disk I/O; phase clock includes instrumentation",
+  "setup": "canonical Information writer history; fixture Threads via direct storage, outside timing",
+  "workloads": [
+    {
+      "records": 300,
+      "projects": 25,
+      "due_count": 25,
+      "history": "live",
+      "setup_seconds": 23.341567,
+      "inspect_missing": {
+        "seconds": 3.456248,
+        "reads": {
+          "history_json_opens": 9475,
+          "canonical_markdown_opens": 2600
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 3.456124,
+            "reads": {
+              "history_json_opens": 9475,
+              "canonical_markdown_opens": 2600
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 16.744353,
+        "reads": {
+          "history_json_opens": 44050,
+          "canonical_markdown_opens": 9100,
+          "derived_read_opens": 52
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.407406,
+            "reads": {
+              "history_json_opens": 1300,
+              "canonical_markdown_opens": 650
+            }
+          },
+          "triggers": {
+            "seconds": 0.226154,
+            "reads": {
+              "history_json_opens": 675,
+              "canonical_markdown_opens": 325
+            }
+          },
+          "dossiers": {
+            "seconds": 12.102103,
+            "reads": {
+              "history_json_opens": 31950,
+              "canonical_markdown_opens": 4550,
+              "derived_read_opens": 25
+            }
+          },
+          "catalogue": {
+            "seconds": 0.257106,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 975,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 3.751547,
+            "reads": {
+              "history_json_opens": 9475,
+              "canonical_markdown_opens": 2600,
+              "derived_read_opens": 26
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 8.167722,
+        "min_seconds": 7.932802,
+        "max_seconds": 8.347782,
+        "samples": [
+          {
+            "seconds": 8.347782,
+            "reads": {
+              "history_json_opens": 20250,
+              "canonical_markdown_opens": 5850,
+              "derived_read_opens": 53
+            },
+            "phases": {
+              "readiness_and_recovery": {
+                "seconds": 0.489495,
+                "reads": {
+                  "history_json_opens": 1300,
+                  "canonical_markdown_opens": 650
+                }
+              },
+              "triggers": {
+                "seconds": 0.251806,
+                "reads": {
+                  "history_json_opens": 675,
+                  "canonical_markdown_opens": 325
+                }
+              },
+              "dossiers": {
+                "seconds": 3.451375,
+                "reads": {
+                  "history_json_opens": 8150,
+                  "canonical_markdown_opens": 1300,
+                  "derived_read_opens": 25
+                }
+              },
+              "catalogue": {
+                "seconds": 0.257938,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 975,
+                  "derived_read_opens": 2
+                }
+              },
+              "verification": {
+                "seconds": 3.89713,
+                "reads": {
+                  "history_json_opens": 9475,
+                  "canonical_markdown_opens": 2600,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 7.932802,
+            "reads": {
+              "history_json_opens": 20250,
+              "canonical_markdown_opens": 5850,
+              "derived_read_opens": 53
+            },
+            "phases": {
+              "readiness_and_recovery": {
+                "seconds": 0.473917,
+                "reads": {
+                  "history_json_opens": 1300,
+                  "canonical_markdown_opens": 650
+                }
+              },
+              "triggers": {
+                "seconds": 0.225443,
+                "reads": {
+                  "history_json_opens": 675,
+                  "canonical_markdown_opens": 325
+                }
+              },
+              "dossiers": {
+                "seconds": 3.262953,
+                "reads": {
+                  "history_json_opens": 8150,
+                  "canonical_markdown_opens": 1300,
+                  "derived_read_opens": 25
+                }
+              },
+              "catalogue": {
+                "seconds": 0.273685,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 975,
+                  "derived_read_opens": 2
+                }
+              },
+              "verification": {
+                "seconds": 3.696765,
+                "reads": {
+                  "history_json_opens": 9475,
+                  "canonical_markdown_opens": 2600,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 8.167722,
+            "reads": {
+              "history_json_opens": 20250,
+              "canonical_markdown_opens": 5850,
+              "derived_read_opens": 53
+            },
+            "phases": {
+              "readiness_and_recovery": {
+                "seconds": 0.509601,
+                "reads": {
+                  "history_json_opens": 1300,
+                  "canonical_markdown_opens": 650
+                }
+              },
+              "triggers": {
+                "seconds": 0.248962,
+                "reads": {
+                  "history_json_opens": 675,
+                  "canonical_markdown_opens": 325
+                }
+              },
+              "dossiers": {
+                "seconds": 3.04776,
+                "reads": {
+                  "history_json_opens": 8150,
+                  "canonical_markdown_opens": 1300,
+                  "derived_read_opens": 25
+                }
+              },
+              "catalogue": {
+                "seconds": 0.275737,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 975,
+                  "derived_read_opens": 2
+                }
+              },
+              "verification": {
+                "seconds": 4.085631,
+                "reads": {
+                  "history_json_opens": 9475,
+                  "canonical_markdown_opens": 2600,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 18.843098,
+        "reads": {
+          "history_json_opens": 46550,
+          "canonical_markdown_opens": 7900,
+          "derived_read_opens": 103
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.491355,
+            "reads": {
+              "history_json_opens": 1300,
+              "canonical_markdown_opens": 650
+            }
+          },
+          "triggers": {
+            "seconds": 3.860528,
+            "reads": {
+              "history_json_opens": 8525,
+              "canonical_markdown_opens": 425
+            }
+          },
+          "dossiers": {
+            "seconds": 10.500191,
+            "reads": {
+              "history_json_opens": 25775,
+              "canonical_markdown_opens": 3250,
+              "derived_read_opens": 75
+            }
+          },
+          "catalogue": {
+            "seconds": 0.292506,
+            "reads": {
+              "history_json_opens": 700,
+              "canonical_markdown_opens": 975,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 3.698477,
+            "reads": {
+              "history_json_opens": 10250,
+              "canonical_markdown_opens": 2600,
+              "derived_read_opens": 26
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 7.399457,
+        "min_seconds": 7.223497,
+        "max_seconds": 7.482293,
+        "samples": [
+          {
+            "seconds": 7.223497,
+            "reads": {
+              "history_json_opens": 21900,
+              "canonical_markdown_opens": 5850,
+              "derived_read_opens": 53
+            },
+            "phases": {
+              "readiness_and_recovery": {
+                "seconds": 0.515441,
+                "reads": {
+                  "history_json_opens": 1400,
+                  "canonical_markdown_opens": 650
+                }
+              },
+              "triggers": {
+                "seconds": 0.266426,
+                "reads": {
+                  "history_json_opens": 725,
+                  "canonical_markdown_opens": 325
+                }
+              },
+              "dossiers": {
+                "seconds": 2.768933,
+                "reads": {
+                  "history_json_opens": 8825,
+                  "canonical_markdown_opens": 1300,
+                  "derived_read_opens": 25
+                }
+              },
+              "catalogue": {
+                "seconds": 0.264879,
+                "reads": {
+                  "history_json_opens": 700,
+                  "canonical_markdown_opens": 975,
+                  "derived_read_opens": 2
+                }
+              },
+              "verification": {
+                "seconds": 3.407779,
+                "reads": {
+                  "history_json_opens": 10250,
+                  "canonical_markdown_opens": 2600,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 7.399457,
+            "reads": {
+              "history_json_opens": 21900,
+              "canonical_markdown_opens": 5850,
+              "derived_read_opens": 53
+            },
+            "phases": {
+              "readiness_and_recovery": {
+                "seconds": 0.396626,
+                "reads": {
+                  "history_json_opens": 1400,
+                  "canonical_markdown_opens": 650
+                }
+              },
+              "triggers": {
+                "seconds": 0.283193,
+                "reads": {
+                  "history_json_opens": 725,
+                  "canonical_markdown_opens": 325
+                }
+              },
+              "dossiers": {
+                "seconds": 2.974297,
+                "reads": {
+                  "history_json_opens": 8825,
+                  "canonical_markdown_opens": 1300,
+                  "derived_read_opens": 25
+                }
+              },
+              "catalogue": {
+                "seconds": 0.264891,
+                "reads": {
+                  "history_json_opens": 700,
+                  "canonical_markdown_opens": 975,
+                  "derived_read_opens": 2
+                }
+              },
+              "verification": {
+                "seconds": 3.480408,
+                "reads": {
+                  "history_json_opens": 10250,
+                  "canonical_markdown_opens": 2600,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          },
+          {
+            "seconds": 7.482293,
+            "reads": {
+              "history_json_opens": 21900,
+              "canonical_markdown_opens": 5850,
+              "derived_read_opens": 53
+            },
+            "phases": {
+              "readiness_and_recovery": {
+                "seconds": 0.349382,
+                "reads": {
+                  "history_json_opens": 1400,
+                  "canonical_markdown_opens": 650
+                }
+              },
+              "triggers": {
+                "seconds": 0.233902,
+                "reads": {
+                  "history_json_opens": 725,
+                  "canonical_markdown_opens": 325
+                }
+              },
+              "dossiers": {
+                "seconds": 3.012129,
+                "reads": {
+                  "history_json_opens": 8825,
+                  "canonical_markdown_opens": 1300,
+                  "derived_read_opens": 25
+                }
+              },
+              "catalogue": {
+                "seconds": 0.224516,
+                "reads": {
+                  "history_json_opens": 700,
+                  "canonical_markdown_opens": 975,
+                  "derived_read_opens": 2
+                }
+              },
+              "verification": {
+                "seconds": 3.662327,
+                "reads": {
+                  "history_json_opens": 10250,
+                  "canonical_markdown_opens": 2600,
+                  "derived_read_opens": 26
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 300,
+      "final_ready": true,
+      "final_derived_current": true
+    }
+  ],
+  "implementation_label": "baseline_5296cc8",
+  "core_tree_sha256": "74d1a1b21d778ee9da4058cba4b6ca2966ca4ac452968b78577529a01ce905cc"
+}

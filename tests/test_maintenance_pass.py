@@ -278,3 +278,31 @@ def test_canonical_deletion_refreshes_orphaned_view_without_erasing_human_notes(
     text = (tmp_path / 'memory/dossiers/project.md').read_text()
     assert 'measure 200 W' not in text and 'Human maintenance note.' in text
     assert 'Thread source absent' in text
+
+
+def test_idle_pass_uses_readonly_verification_without_entering_writers(tmp_path, monkeypatch):
+    _, service, _ = seed(tmp_path)
+    stable = fingerprints(tmp_path)
+    def forbidden(*args, **kwargs):
+        raise ValueError('idle pass entered a writer')
+    monkeypatch.setattr('core.maintenance.service.recover_all', forbidden)
+    monkeypatch.setattr(service.lifecycle, 'run_due', forbidden)
+    monkeypatch.setattr(service.dossiers, 'apply', forbidden)
+    monkeypatch.setattr(service.catalogue, 'rebuild', forbidden)
+    result = service.run(at=STAMP, query_scope=SCOPE)
+    assert result['status'] == 'COMPLETED' and not result['verification']['work_pending']
+    assert result['triggers'] == {} and result['dossiers']['actions'] == []
+    assert result['catalogue']['status'] == 'UNCHANGED'
+    assert fingerprints(tmp_path) == stable
+
+
+def test_idle_candidate_rechecks_direct_source_edit_before_skipping_writers(tmp_path):
+    backend, service, _ = seed(tmp_path)
+    assert service.run(at=STAMP, query_scope=SCOPE)['status'] == 'COMPLETED'
+    path = backend._path('second')
+    path.write_text(path.read_text().replace('measure 200 W', 'direct correction 210 W'))
+    result = service.run(at=STAMP, query_scope=SCOPE)
+    assert result['status'] == 'COMPLETED' and result['dossiers']['actions']
+    assert result['catalogue']['status'] == 'REBUILT'
+    assert 'direct correction 210 W' in (tmp_path / 'memory/dossiers/project.md').read_text()
+    assert backend.get('second').revision == 1 and result['triggers'] == {}

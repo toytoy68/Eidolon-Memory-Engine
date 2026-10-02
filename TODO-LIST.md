@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète relancée lors du bilan du 02/10 sur `43a1214` : **947 réussis,
-5 échecs d’environnement, 43,60 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après optimisation des passes, base `5296cc8` : **962 réussis,
+5 échecs d’environnement, 44,98 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 141 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 156 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -211,11 +211,17 @@ Contrat et rapports : [JOURNAL-SCAN-COST.md](docs/JOURNAL-SCAN-COST.md).
 Mesure entretien sur `43a1214` : à 300 Informations/cinq projets, passe inactive
 3,270 s (snapshots) ou 2,454 s (reçus compactés), cinq échéances 5,543 s ou
 4,139 s. Toujours 7 890 ouvertures JSON en passe inactive. Rapport et protocole :
-[MAINTENANCE-COST.md](docs/MAINTENANCE-COST.md). Sortie rapide inactive en
-préparation seulement, mise de côté à la demande d’audit ; aucun gain livré.
+[MAINTENANCE-COST.md](docs/MAINTENANCE-COST.md). Nouvelle tranche livrée après l’audit : sortie rapide inactive vérifiée,
+audits stricts partagés dans les phases de lecture sous verrous et abandon du
+scan de journaux par dossier après audit global réussi. Invalidation à chaque
+publication canonique ; contrôle final dans une nouvelle phase. Aucun cache
+inter-passes ni lecteur allégé. 15 nouveaux cas, 52 ciblés réussis ; concurrence,
+corruption, aliases de chemin et preuves négatives vérifiés. Mesures avant/après
+et charge à 25 projets/25 échéances dans le contrat ci-dessus : 8,168 → 0,532 s
+sans effet, 18,843 → 4,064 s avec effets. À 300/5, JSON d’historique
+7 890 → 1 230 sans effet et 13 180 → 4 605 pour cinq échéances.
 
-Restant : sortie rapide vérifiée pour entretien inactif, suppression du scan
-linéaire par commande, annuaire reconstructible
+Restant : suppression du scan linéaire par commande canonique, annuaire reconstructible
 et preuve de divergence/reprise, autres familles, scans des dérivés, corpus et
 objectifs VM. L'ingestion totale demeure quadratique. Pas d'autorisation
 d'ingestion intensive déduite de la réduction locale.

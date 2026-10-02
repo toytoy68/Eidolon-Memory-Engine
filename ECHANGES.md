@@ -6,8 +6,9 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État revérifié le 02/10 à la demande de toytoy ; code métier publié `43a1214`,
-branche `refactor/architecture-v1`. Bilan : docs/AUDIT-2026-10-02.md.
+État après optimisation demandée le 02/10, base publiée `5296cc8`,
+branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
+le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
 
 - But inchangé : mémoire autonome, contextuelle et traçable ; fichiers
@@ -26,8 +27,8 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **947 réussis, 5 échecs de sockets Manager avant scénario,
-  43,60 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 141 nouveaux cas
+- Dernière suite : **962 réussis, 5 échecs de sockets Manager avant scénario,
+  44,98 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 156 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Retour Claude v2 sur `9f0eb92` relu le 02/10 : corrections déjà présentes,
   différences de libellés identifiées et filtre migration moins complet ; patch non appliqué.
@@ -36,10 +37,10 @@ Toujours vérifier HEAD et les changements locaux.
 
 Trois lots du matin poussés : `5b5e2db`, `ca977f1`, `43a1214`. Disponibilité,
 échéances, raccordement et entretien explicite livrés ; 64 cas supplémentaires.
-Mesures d’entretien terminées, sortie rapide non implémentée. La nouvelle
-demande porte sur l’analyse : préparation de cette optimisation mise de côté,
-aucun test préparatoire rouge ajouté à la branche. T-049 et recette VM restent
-ouverts ; aucun service ou ordonnanceur lancé.
+Après le bilan, toytoy a demandé l’optimisation des passes. Sortie rapide
+inactive et partage d’audits stricts sous verrous maintenant livrés, avec
+mesures avant/après et vérification finale fraîche. T-049 reste ouvert pour
+les scans par écriture et l’annuaire ; aucun service ou ordonnanceur lancé.
 
 ### Lot T-044 — rapprochement des dossiers, base `7517cc6`
 
@@ -145,6 +146,32 @@ sans effet. Pas de mesure VM ni de gain après optimisation. L’outil et le
 rapport sont conservés ; le brouillon de sortie rapide est hors de la suite
 publiée. Voir AUDIT-2026-10-02.md et MAINTENANCE-COST.md. Estimations gelées
 inchangées ; aucune nouvelle politique de rétention ou d’horaire imposée.
+
+### Optimisation des passes — base `5296cc8`, 02/10
+
+À la demande de toytoy : mesures par étape puis réduction des scans répétés.
+Sortie inactive après inspection complète sous verrous, audit readiness réussi
+partagé seulement pendant les phases de lecture/dérivation, aucune relecture
+de tous les journaux par dossier après cette preuve globale. Publication dans
+Persistent/history → invalidation ; dérivés → preuve conservée. État frais en
+phase finale distincte ; appels autonomes et racines/chemins restent contrôlés.
+Les effets canoniques et leurs réservations gardent leurs scans existants.
+
+15 nouveaux cas, 52 ciblés réussis ; suite complète **962 réussis, mêmes cinq
+sockets Manager bloquées, 44,98 s**, aucun désélectionné. Concurrence interprocessus,
+exception, corruption tardive, édition directe et alias de chemin couverts.
+Retraits partage d’audit/invalidation/fraîcheur : 1 + 1 + 1 assertions rouges,
+code restauré. Sortie inactive rouge sur la base ; cas lien symbolique suivi de
+`..` reproduit rouge puis corrigé avant livraison. Les interruptions et courses
+existantes restent vertes. Aucune VM ou coupure physique validée.
+
+Comparaisons reproductibles 50/150/300, cinq projets/cinq échéances, puis charge
+300/25/25. Historique live et compacté, médianes de trois passes inactives,
+un passage avec effets ; mêmes contrôles sémantiques après chaque corpus.
+À 300/5 : inactive 2,691 → 0,375 s ; cinq échéances 4,611 → 1,421 s.
+À 300/25 : inactive 8,168 → 0,532 s ; 25 échéances 18,843 → 4,064 s.
+Détail, rapports exacts et limites : docs/MAINTENANCE-COST.md. Aucun cache durable,
+aucune accélération d’ingestion intensive ni latence VM revendiquée.
 
 ## Sujets à relire lors d'une prochaine session disponible
 

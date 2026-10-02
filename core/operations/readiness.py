@@ -24,6 +24,10 @@ THREAD_FAMILIES = {
 def check_readiness(engine_root: Path) -> dict:
     """Report every unresolved journal, including states recover() may omit."""
     root = Path(engine_root)
+    from core.operations.read_phase import cached_readiness, remember_readiness
+    cached = cached_readiness(root)
+    if cached is not None:
+        return cached
     formats = inventory(root)
     issues = [dict(item, resumable=False) for item in formats["needs_review"]
               if item["path"] != "memory/history/information-write-v1"]
@@ -81,9 +85,11 @@ def check_readiness(engine_root: Path) -> dict:
     for item in deletions["issues"]:
         issues.append({"path": item["request"], "reason": item["reason"],
                        "resumable": item["reason"] == "deletion_requires_resume"})
-    return {"ready": not issues, "issues": issues, "records": records,
-            "information_deletions": deletions,
-            "scope": "stopped_tree_point_in_time_no_concurrent_writers"}
+    report = {"ready": not issues, "issues": issues, "records": records,
+              "information_deletions": deletions,
+              "scope": "stopped_tree_point_in_time_no_concurrent_writers"}
+    remember_readiness(root, report)
+    return report
 
 
 def recover_all(engine_root: Path) -> dict:

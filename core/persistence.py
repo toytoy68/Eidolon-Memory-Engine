@@ -76,8 +76,15 @@ def exclusive_write(root):
             held.remove(key)
 
 
+def write_lock_held(root):
+    """Whether this thread currently owns the cooperative repository lock."""
+    return str(Path(root).resolve()) in getattr(_held_locks, 'roots', set())
+
+
 def durable_replace(source, destination):
     """Publish a flushed file, then persist its directory entry on POSIX."""
+    from core.operations.read_phase import invalidate_publication
+    invalidate_publication(destination)
     os.replace(source, destination)
     if os.name != "nt":
         descriptor = os.open(destination.parent, os.O_RDONLY | os.O_DIRECTORY)

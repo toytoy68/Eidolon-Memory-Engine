@@ -105,3 +105,14 @@ La famille `routing-execution-v1` ajoute le groupe `routing-executions` à
 recover-all. Les intentions APPLYING sont reprises avant les enfants, sous
 leur réservation ; les reçus COMMITTED n’exécutent rien. Formats inconnus ou
 corrompus bloquent. Les journaux enfants conservent leurs contrôles propres.
+
+## Réutilisation interne dans une phase de lecture (02/10)
+
+L’entretien et le rapprochement peuvent partager un audit complet réussi dans
+`settled_read_phase`, sous verrous Persistent/Thread. Les gardes de chemins et
+formats restent celles de l’audit complet ; aucune validation allégée n’est
+ajoutée. La preuve est liée à la racine et au contexte, invalidée par publication
+canonique et détruite en sortie, même sur exception. Les rapports sont copiés.
+La vérification finale de maintenance démarre une nouvelle phase et relit donc
+les journaux. L’appel autonome à readiness conserve son comportement de lecture
+ponctuelle sans cache. Voir MAINTENANCE-COST.md.

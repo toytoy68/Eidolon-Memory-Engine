@@ -65,28 +65,32 @@ class ProjectDossiers:
             return handle.read()
 
     def _source(self, thread_id):
+        from core.operations.read_phase import has_settled_audit
+        settled = has_settled_audit(self.backend.persistent_root.parent.parent)
         from core.routing.execution_journal import require_available
         from core.operations.errors import OperationConflict
-        try:
-            require_available(self.backend.history_root, thread_id=thread_id)
-        except OperationConflict as exc:
-            raise DossierConflict('pending routing execution requires recovery') from exc
+        if not settled:
+            try:
+                require_available(self.backend.history_root, thread_id=thread_id)
+            except OperationConflict as exc:
+                raise DossierConflict('pending routing execution requires recovery') from exc
         thread = self.storage.get(thread_id)
         dependencies = {}
         thread_path = self.storage._path(thread_id)
         dependencies['thread:' + thread_id] = sha256(thread_path.read_bytes()).hexdigest() if thread else None
         # Do not publish an APPLYING snapshot as a settled project recap.
-        for family in ('thread-create-v1', 'thread-status-v1', 'thread-delete-v1', 'thread-update-v1'):
-            root = self.backend.history_root / 'operations' / family
-            if has_symlink_component(root):
-                raise DossierConflict('Thread source journal contains a symlink')
-            repository = FilesystemOperationRepository.__new__(FilesystemOperationRepository)
-            repository.root = root
-            for path in sorted(root.glob('*.json')):
-                operation = repository.get(path.stem)
-                if (operation and operation.target_id == thread_id
-                        and operation.status is not OperationStatus.COMMITTED):
-                    raise DossierConflict('pending Thread operation requires recovery')
+        if not settled:
+            for family in ('thread-create-v1', 'thread-status-v1', 'thread-delete-v1', 'thread-update-v1'):
+                root = self.backend.history_root / 'operations' / family
+                if has_symlink_component(root):
+                    raise DossierConflict('Thread source journal contains a symlink')
+                repository = FilesystemOperationRepository.__new__(FilesystemOperationRepository)
+                repository.root = root
+                for path in sorted(root.glob('*.json')):
+                    operation = repository.get(path.stem)
+                    if (operation and operation.target_id == thread_id
+                            and operation.status is not OperationStatus.COMMITTED):
+                        raise DossierConflict('pending Thread operation requires recovery')
         memories, missing = [], []
         ids = set()
         if thread is not None:
@@ -94,12 +98,13 @@ class ProjectDossiers:
                 if relation.get('type') != 'CONCERNS':
                     continue
                 ids.add(relation.get('target_id', relation.get('target')))
-        journal = InformationWriteJournal(self.backend.history_root)
-        for opid in journal.ids():
-            entry = journal.read(opid)
-            op = entry.operation if entry is not None else None
-            if op and op.target_id in ids and op.status is not OperationStatus.COMMITTED:
-                raise DossierConflict('pending Information operation requires recovery')
+        if not settled:
+            journal = InformationWriteJournal(self.backend.history_root)
+            for opid in journal.ids():
+                entry = journal.read(opid)
+                op = entry.operation if entry is not None else None
+                if op and op.target_id in ids and op.status is not OperationStatus.COMMITTED:
+                    raise DossierConflict('pending Information operation requires recovery')
         for information_id in sorted(ids):
             memory = self.backend.get(information_id)
             path = self.backend._path(information_id)

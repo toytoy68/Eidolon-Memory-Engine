@@ -11,6 +11,7 @@ from core.backend.errors import BackendError
 from core.dossiers.projects import BEGIN, END, DossierConflict
 from core.operations.errors import OperationRepositoryError
 from core.operations.readiness import check_readiness
+from core.operations.read_phase import settled_read_phase
 from core.persistence import exclusive_write, has_symlink_component
 from core.threads.storage import ThreadStorageError
 
@@ -96,6 +97,7 @@ class DossierReconciler:
                 locks.enter_context(exclusive_write(dossiers.storage.threads_root))
             if dossiers.root.exists():
                 locks.enter_context(exclusive_write(dossiers.root))
+            locks.enter_context(settled_read_phase(self.engine_root))
             report = self.inspect()
             if report['status'] != 'DRIFT':
                 return dict(report, actions=[])

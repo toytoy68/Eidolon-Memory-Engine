@@ -37,6 +37,9 @@ et que les dérivés gérés sont à jour. Des échéances futures peuvent subsi
 ## Ordre, reprise et résultat
 
 1. Lire readiness. Corruption, FAILED et formats inconnus bloquent sans reprise.
+   Sans reprise ni échéance arrivée, une inspection complète sous verrous permet
+   une sortie immédiate si tous les dérivés sont déjà courants. Aucun écrivain
+   métier n’est alors appelé ; `recovery` reste nul.
 2. Prendre les verrous Persistent puis Thread et reprendre les journaux connus.
    La readiness relue doit être prête avant de poursuivre.
 3. Traiter au plus `limit` échéances avec le dispatcher existant. Les effets
@@ -45,7 +48,8 @@ et que les dérivés gérés sont à jour. Des échéances futures peuvent subsi
 4. Rapprocher les dossiers gérés, en préservant les notes humaines. Une frontière
    endommagée exige une correction explicite, jamais une réparation devinée.
 5. Reconstruire le catalogue seulement s’il diffère du canonique courant.
-6. Relire readiness, échéances, dossiers et catalogue sur disque. Un faux succès
+6. Relire readiness, échéances, dossiers et catalogue dans une nouvelle phase
+   de lecture sur disque. Un faux succès
    annoncé par un composant ne suffit pas à rendre la passe réussie.
 
 Le rapport contient `stage`, `recovery`, `triggers`, `dossiers`, `catalogue` et
@@ -63,7 +67,12 @@ Ce n’est **pas** une transaction atomique de tout le lot. Si une publication d
 dossier est bloquée après un effet canonique, cet effet reste acquis, le rapport
 indique BLOCKED à l’étape dossiers et la prochaine passe termine les dérivés.
 Les journaux individuels restent la référence si le processus meurt avant de
-rendre son rapport. Les verrous sont coopératifs, les écrivains legacy doivent
+rendre son rapport. Dans les phases de réparation et de lecture finale, un audit complet réussi
+est partagé entre les lecteurs ; aucun scan simplifié ni cache inter-passes.
+Une publication canonique invalide la preuve. La lecture finale effectue son
+propre audit frais. Voir [MAINTENANCE-COST.md](MAINTENANCE-COST.md).
+
+Les verrous sont coopératifs, les écrivains legacy doivent
 rester arrêtés. Deux passes concurrentes coopératives produisent un seul effet.
 
 ## Limites de charge et de politique

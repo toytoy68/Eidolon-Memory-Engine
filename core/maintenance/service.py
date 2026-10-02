@@ -17,6 +17,7 @@ from core.lifecycle.journal import timestamp
 from core.lifecycle.service import LifecycleTriggers
 from core.operations.errors import OperationConflict, OperationRepositoryError
 from core.operations.readiness import check_readiness, recover_all
+from core.operations.read_phase import settled_read_phase
 from core.persistence import exclusive_write
 from core.threads.storage import ThreadStorageError
 from core.threads.manager import ThreadError
@@ -90,6 +91,14 @@ class MaintenancePass:
                 locks.enter_context(exclusive_write(self.backend.persistent_root))
                 if self.storage.threads_root.is_dir():
                     locks.enter_context(exclusive_write(self.storage.threads_root))
+                if state['ready'] and not self._deadlines(at)['due']:
+                    with settled_read_phase(self.root):
+                        idle = self.inspect(at=at)
+                    if idle['status'] == 'READY' and not idle['work_pending']:
+                        report.update(status='COMPLETED', stage='done', verification=idle,
+                                      dossiers=dict(idle['dossiers'], actions=[]),
+                                      catalogue=dict(idle['catalogue'], status='UNCHANGED'))
+                        return report
                 report['stage'] = 'recovery'
                 report['recovery'] = recover_all(self.root)
                 if not report['recovery']['readiness']['ready']:
@@ -100,16 +109,18 @@ class MaintenancePass:
                 report['triggers'] = {identity: dict(status=record['status'], reason=record['result']['reason'])
                                       for identity, record in effects.items()}
                 self._checkpoint('after_triggers')
-                report['stage'] = 'dossiers'
-                report['dossiers'] = self.dossiers.apply()
-                if report['dossiers']['status'] == 'BLOCKED':
-                    return report
-                self._checkpoint('after_dossiers')
-                report['stage'] = 'catalogue'
-                report['catalogue'] = self.catalogue.rebuild()
-                self._checkpoint('after_catalogue')
+                with settled_read_phase(self.root):
+                    report['stage'] = 'dossiers'
+                    report['dossiers'] = self.dossiers.apply()
+                    if report['dossiers']['status'] == 'BLOCKED':
+                        return report
+                    self._checkpoint('after_dossiers')
+                    report['stage'] = 'catalogue'
+                    report['catalogue'] = self.catalogue.rebuild()
+                    self._checkpoint('after_catalogue')
                 report['stage'] = 'verification'
-                report['verification'] = self.inspect(at=at)
+                with settled_read_phase(self.root):
+                    report['verification'] = self.inspect(at=at)
                 final = report['verification']
                 if (final['status'] != 'READY' or final['dossiers']['status'] != 'CLEAN'
                         or final['catalogue']['status'] != 'CURRENT'):

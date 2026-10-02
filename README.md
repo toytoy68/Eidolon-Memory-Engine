@@ -35,7 +35,8 @@ développement et n'est pas encore validée sur la VM.
 - [Passe d’entretien explicite](docs/MAINTENANCE-PASS.md) : reprise, échéances,
   dossiers et catalogue enchaînés, reprise par relance et vérification finale.
 - [Coût mesuré de l’entretien](docs/MAINTENANCE-COST.md) : 300 Informations,
-  passe inactive 3,27 s ; optimisation de sortie rapide non livrée.
+  à 300 Informations/25 projets, passe inactive 8,17 → 0,53 s,
+  25 échéances 18,84 → 4,06 s sur corpus synthétique local.
 - [Mesures synthétiques et procédure de répétition](docs/PERFORMANCE.md)
 
 Après une sauvegarde des données et l'arrêt des écrivains, les outils
@@ -53,8 +54,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification lors du bilan du 02/10/2026, code métier `43a1214` :
-**947 tests réussis, 5 échecs d’environnement en 43,60 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après optimisation des passes du 02/10/2026 :
+**962 tests réussis, 5 échecs d’environnement en 44,98 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -90,7 +91,9 @@ n’est encore installé sur la VM.
   applique maintenant contexte/validité/statuts et expose sources et incertitudes ;
   voir [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL-RECALL.md).
 - Poursuivre T-049 avant ingestion intensive : les nouvelles écritures font
-  désormais un scan au lieu de trois, mais le coût reste linéaire par commande.
+  un scan au lieu de trois, mais le coût reste linéaire par commande.
+  L’entretien évite maintenant les étapes inactives et partage les audits
+  entre lecteurs sous verrous, avec relecture finale indépendante.
   [Mesures reproductibles](docs/JOURNAL-SCAN-COST.md) : 300 créations en 20,42 s
   contre 59,39 s sur le corpus synthétique local. Catalogue livré à la demande ;
   déclencheurs durables et réparation des dérivés assemblés dans une passe

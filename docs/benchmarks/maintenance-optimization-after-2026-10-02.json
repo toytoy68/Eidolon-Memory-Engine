@@ -1,0 +1,1465 @@
+{
+  "source_commit": "5296cc8daaa4c8774ff9bcb72621d9abfbaa556c",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "repeats": 3,
+  "scope": "local synthetic warmed filesystem; no VM, cold-cache or load guarantee",
+  "instrumentation": "successful Path.open reads, not physical disk I/O; phase clock includes instrumentation",
+  "setup": "canonical Information writer history; fixture Threads via direct storage, outside timing",
+  "workloads": [
+    {
+      "records": 50,
+      "projects": 5,
+      "due_count": 5,
+      "history": "live",
+      "setup_seconds": 0.764165,
+      "inspect_missing": {
+        "seconds": 0.203357,
+        "reads": {
+          "history_json_opens": 585,
+          "canonical_markdown_opens": 440
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 0.203303,
+            "reads": {
+              "history_json_opens": 585,
+              "canonical_markdown_opens": 440
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 0.271097,
+        "reads": {
+          "history_json_opens": 680,
+          "canonical_markdown_opens": 1595,
+          "derived_read_opens": 12
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.125552,
+            "reads": {
+              "history_json_opens": 340,
+              "canonical_markdown_opens": 440
+            }
+          },
+          "triggers": {
+            "seconds": 0.034681,
+            "reads": {
+              "history_json_opens": 115,
+              "canonical_markdown_opens": 55
+            }
+          },
+          "dossiers": {
+            "seconds": 0.057611,
+            "reads": {
+              "history_json_opens": 110,
+              "canonical_markdown_opens": 660,
+              "derived_read_opens": 5
+            }
+          },
+          "catalogue": {
+            "seconds": 0.006153,
+            "reads": {
+              "canonical_markdown_opens": 110,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 0.047042,
+            "reads": {
+              "history_json_opens": 115,
+              "canonical_markdown_opens": 330,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 0.07944,
+        "min_seconds": 0.077311,
+        "max_seconds": 0.082589,
+        "samples": [
+          {
+            "seconds": 0.082589,
+            "reads": {
+              "history_json_opens": 230,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.08256,
+                "reads": {
+                  "history_json_opens": 230,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.07944,
+            "reads": {
+              "history_json_opens": 230,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.079412,
+                "reads": {
+                  "history_json_opens": 230,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.077311,
+            "reads": {
+              "history_json_opens": 230,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.077283,
+                "reads": {
+                  "history_json_opens": 230,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 0.334725,
+        "reads": {
+          "history_json_opens": 855,
+          "canonical_markdown_opens": 1120,
+          "derived_read_opens": 23
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.063877,
+            "reads": {
+              "history_json_opens": 225,
+              "canonical_markdown_opens": 110
+            }
+          },
+          "triggers": {
+            "seconds": 0.140989,
+            "reads": {
+              "history_json_opens": 385,
+              "canonical_markdown_opens": 75
+            }
+          },
+          "dossiers": {
+            "seconds": 0.07283,
+            "reads": {
+              "history_json_opens": 120,
+              "canonical_markdown_opens": 495,
+              "derived_read_opens": 15
+            }
+          },
+          "catalogue": {
+            "seconds": 0.0066,
+            "reads": {
+              "canonical_markdown_opens": 110,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 0.050399,
+            "reads": {
+              "history_json_opens": 125,
+              "canonical_markdown_opens": 330,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 0.088334,
+        "min_seconds": 0.086284,
+        "max_seconds": 0.094371,
+        "samples": [
+          {
+            "seconds": 0.086284,
+            "reads": {
+              "history_json_opens": 250,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.086255,
+                "reads": {
+                  "history_json_opens": 250,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.094371,
+            "reads": {
+              "history_json_opens": 250,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.094342,
+                "reads": {
+                  "history_json_opens": 250,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.088334,
+            "reads": {
+              "history_json_opens": 250,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.088305,
+                "reads": {
+                  "history_json_opens": 250,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 50,
+      "final_ready": true,
+      "final_derived_current": true
+    },
+    {
+      "records": 150,
+      "projects": 5,
+      "due_count": 5,
+      "history": "live",
+      "setup_seconds": 4.481387,
+      "inspect_missing": {
+        "seconds": 0.577127,
+        "reads": {
+          "history_json_opens": 1685,
+          "canonical_markdown_opens": 1240
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 0.577083,
+            "reads": {
+              "history_json_opens": 1685,
+              "canonical_markdown_opens": 1240
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 0.775208,
+        "reads": {
+          "history_json_opens": 1880,
+          "canonical_markdown_opens": 4495,
+          "derived_read_opens": 12
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.343784,
+            "reads": {
+              "history_json_opens": 940,
+              "canonical_markdown_opens": 1240
+            }
+          },
+          "triggers": {
+            "seconds": 0.112212,
+            "reads": {
+              "history_json_opens": 315,
+              "canonical_markdown_opens": 155
+            }
+          },
+          "dossiers": {
+            "seconds": 0.175885,
+            "reads": {
+              "history_json_opens": 310,
+              "canonical_markdown_opens": 1860,
+              "derived_read_opens": 5
+            }
+          },
+          "catalogue": {
+            "seconds": 0.015583,
+            "reads": {
+              "canonical_markdown_opens": 310,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 0.127688,
+            "reads": {
+              "history_json_opens": 315,
+              "canonical_markdown_opens": 930,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 0.259926,
+        "min_seconds": 0.223528,
+        "max_seconds": 0.269525,
+        "samples": [
+          {
+            "seconds": 0.223528,
+            "reads": {
+              "history_json_opens": 630,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.223493,
+                "reads": {
+                  "history_json_opens": 630,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.269525,
+            "reads": {
+              "history_json_opens": 630,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.269402,
+                "reads": {
+                  "history_json_opens": 630,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.259926,
+            "reads": {
+              "history_json_opens": 630,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.259892,
+                "reads": {
+                  "history_json_opens": 630,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 1.017657,
+        "reads": {
+          "history_json_opens": 2355,
+          "canonical_markdown_opens": 3120,
+          "derived_read_opens": 23
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.22994,
+            "reads": {
+              "history_json_opens": 625,
+              "canonical_markdown_opens": 310
+            }
+          },
+          "triggers": {
+            "seconds": 0.424331,
+            "reads": {
+              "history_json_opens": 1085,
+              "canonical_markdown_opens": 175
+            }
+          },
+          "dossiers": {
+            "seconds": 0.187652,
+            "reads": {
+              "history_json_opens": 320,
+              "canonical_markdown_opens": 1395,
+              "derived_read_opens": 15
+            }
+          },
+          "catalogue": {
+            "seconds": 0.022993,
+            "reads": {
+              "canonical_markdown_opens": 310,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 0.152707,
+            "reads": {
+              "history_json_opens": 325,
+              "canonical_markdown_opens": 930,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 0.261795,
+        "min_seconds": 0.240045,
+        "max_seconds": 0.270392,
+        "samples": [
+          {
+            "seconds": 0.270392,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.270355,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.261795,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.261762,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.240045,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.240013,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 150,
+      "final_ready": true,
+      "final_derived_current": true
+    },
+    {
+      "records": 300,
+      "projects": 5,
+      "due_count": 5,
+      "history": "live",
+      "setup_seconds": 15.50405,
+      "inspect_missing": {
+        "seconds": 1.110768,
+        "reads": {
+          "history_json_opens": 3335,
+          "canonical_markdown_opens": 2440
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 1.110723,
+            "reads": {
+              "history_json_opens": 3335,
+              "canonical_markdown_opens": 2440
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 1.392839,
+        "reads": {
+          "history_json_opens": 3680,
+          "canonical_markdown_opens": 8845,
+          "derived_read_opens": 12
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.618754,
+            "reads": {
+              "history_json_opens": 1840,
+              "canonical_markdown_opens": 2440
+            }
+          },
+          "triggers": {
+            "seconds": 0.254399,
+            "reads": {
+              "history_json_opens": 615,
+              "canonical_markdown_opens": 305
+            }
+          },
+          "dossiers": {
+            "seconds": 0.270646,
+            "reads": {
+              "history_json_opens": 610,
+              "canonical_markdown_opens": 3660,
+              "derived_read_opens": 5
+            }
+          },
+          "catalogue": {
+            "seconds": 0.028677,
+            "reads": {
+              "canonical_markdown_opens": 610,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 0.220328,
+            "reads": {
+              "history_json_opens": 615,
+              "canonical_markdown_opens": 1830,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 0.374888,
+        "min_seconds": 0.342285,
+        "max_seconds": 0.396193,
+        "samples": [
+          {
+            "seconds": 0.396193,
+            "reads": {
+              "history_json_opens": 1230,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.396161,
+                "reads": {
+                  "history_json_opens": 1230,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.342285,
+            "reads": {
+              "history_json_opens": 1230,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.342252,
+                "reads": {
+                  "history_json_opens": 1230,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.374888,
+            "reads": {
+              "history_json_opens": 1230,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.374856,
+                "reads": {
+                  "history_json_opens": 1230,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 1.420769,
+        "reads": {
+          "history_json_opens": 4605,
+          "canonical_markdown_opens": 6120,
+          "derived_read_opens": 23
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.335794,
+            "reads": {
+              "history_json_opens": 1225,
+              "canonical_markdown_opens": 610
+            }
+          },
+          "triggers": {
+            "seconds": 0.620551,
+            "reads": {
+              "history_json_opens": 2135,
+              "canonical_markdown_opens": 325
+            }
+          },
+          "dossiers": {
+            "seconds": 0.228376,
+            "reads": {
+              "history_json_opens": 620,
+              "canonical_markdown_opens": 2745,
+              "derived_read_opens": 15
+            }
+          },
+          "catalogue": {
+            "seconds": 0.027965,
+            "reads": {
+              "canonical_markdown_opens": 610,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 0.208045,
+            "reads": {
+              "history_json_opens": 625,
+              "canonical_markdown_opens": 1830,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 0.402148,
+        "min_seconds": 0.37045,
+        "max_seconds": 0.404134,
+        "samples": [
+          {
+            "seconds": 0.37045,
+            "reads": {
+              "history_json_opens": 1250,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.370417,
+                "reads": {
+                  "history_json_opens": 1250,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.404134,
+            "reads": {
+              "history_json_opens": 1250,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.404099,
+                "reads": {
+                  "history_json_opens": 1250,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.402148,
+            "reads": {
+              "history_json_opens": 1250,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.402115,
+                "reads": {
+                  "history_json_opens": 1250,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 300,
+      "final_ready": true,
+      "final_derived_current": true
+    },
+    {
+      "records": 50,
+      "projects": 5,
+      "due_count": 5,
+      "history": "compact",
+      "setup_seconds": 0.988326,
+      "inspect_missing": {
+        "seconds": 0.164364,
+        "reads": {
+          "history_json_opens": 585,
+          "canonical_markdown_opens": 440
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 0.164328,
+            "reads": {
+              "history_json_opens": 585,
+              "canonical_markdown_opens": 440
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 0.231725,
+        "reads": {
+          "history_json_opens": 680,
+          "canonical_markdown_opens": 1595,
+          "derived_read_opens": 12
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.094244,
+            "reads": {
+              "history_json_opens": 340,
+              "canonical_markdown_opens": 440
+            }
+          },
+          "triggers": {
+            "seconds": 0.032213,
+            "reads": {
+              "history_json_opens": 115,
+              "canonical_markdown_opens": 55
+            }
+          },
+          "dossiers": {
+            "seconds": 0.055592,
+            "reads": {
+              "history_json_opens": 110,
+              "canonical_markdown_opens": 660,
+              "derived_read_opens": 5
+            }
+          },
+          "catalogue": {
+            "seconds": 0.006177,
+            "reads": {
+              "canonical_markdown_opens": 110,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 0.043469,
+            "reads": {
+              "history_json_opens": 115,
+              "canonical_markdown_opens": 330,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 0.073912,
+        "min_seconds": 0.07184,
+        "max_seconds": 0.087597,
+        "samples": [
+          {
+            "seconds": 0.07184,
+            "reads": {
+              "history_json_opens": 230,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.071813,
+                "reads": {
+                  "history_json_opens": 230,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.073912,
+            "reads": {
+              "history_json_opens": 230,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.073883,
+                "reads": {
+                  "history_json_opens": 230,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.087597,
+            "reads": {
+              "history_json_opens": 230,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.087569,
+                "reads": {
+                  "history_json_opens": 230,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 0.292329,
+        "reads": {
+          "history_json_opens": 855,
+          "canonical_markdown_opens": 1120,
+          "derived_read_opens": 23
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.066166,
+            "reads": {
+              "history_json_opens": 225,
+              "canonical_markdown_opens": 110
+            }
+          },
+          "triggers": {
+            "seconds": 0.119651,
+            "reads": {
+              "history_json_opens": 385,
+              "canonical_markdown_opens": 75
+            }
+          },
+          "dossiers": {
+            "seconds": 0.054874,
+            "reads": {
+              "history_json_opens": 120,
+              "canonical_markdown_opens": 495,
+              "derived_read_opens": 15
+            }
+          },
+          "catalogue": {
+            "seconds": 0.006427,
+            "reads": {
+              "canonical_markdown_opens": 110,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 0.045182,
+            "reads": {
+              "history_json_opens": 125,
+              "canonical_markdown_opens": 330,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 0.089381,
+        "min_seconds": 0.075646,
+        "max_seconds": 0.095808,
+        "samples": [
+          {
+            "seconds": 0.075646,
+            "reads": {
+              "history_json_opens": 250,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.075618,
+                "reads": {
+                  "history_json_opens": 250,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.089381,
+            "reads": {
+              "history_json_opens": 250,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.089352,
+                "reads": {
+                  "history_json_opens": 250,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.095808,
+            "reads": {
+              "history_json_opens": 250,
+              "canonical_markdown_opens": 385,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.09578,
+                "reads": {
+                  "history_json_opens": 250,
+                  "canonical_markdown_opens": 385,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 50,
+      "final_ready": true,
+      "final_derived_current": true
+    },
+    {
+      "records": 150,
+      "projects": 5,
+      "due_count": 5,
+      "history": "compact",
+      "setup_seconds": 6.179828,
+      "inspect_missing": {
+        "seconds": 0.397728,
+        "reads": {
+          "history_json_opens": 1685,
+          "canonical_markdown_opens": 1240
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 0.39769,
+            "reads": {
+              "history_json_opens": 1685,
+              "canonical_markdown_opens": 1240
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 0.552028,
+        "reads": {
+          "history_json_opens": 1880,
+          "canonical_markdown_opens": 4495,
+          "derived_read_opens": 12
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.243536,
+            "reads": {
+              "history_json_opens": 940,
+              "canonical_markdown_opens": 1240
+            }
+          },
+          "triggers": {
+            "seconds": 0.076036,
+            "reads": {
+              "history_json_opens": 315,
+              "canonical_markdown_opens": 155
+            }
+          },
+          "dossiers": {
+            "seconds": 0.121564,
+            "reads": {
+              "history_json_opens": 310,
+              "canonical_markdown_opens": 1860,
+              "derived_read_opens": 5
+            }
+          },
+          "catalogue": {
+            "seconds": 0.014559,
+            "reads": {
+              "canonical_markdown_opens": 310,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 0.0963,
+            "reads": {
+              "history_json_opens": 315,
+              "canonical_markdown_opens": 930,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 0.192672,
+        "min_seconds": 0.189308,
+        "max_seconds": 0.22265,
+        "samples": [
+          {
+            "seconds": 0.22265,
+            "reads": {
+              "history_json_opens": 630,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.22262,
+                "reads": {
+                  "history_json_opens": 630,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.189308,
+            "reads": {
+              "history_json_opens": 630,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.189276,
+                "reads": {
+                  "history_json_opens": 630,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.192672,
+            "reads": {
+              "history_json_opens": 630,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.19264,
+                "reads": {
+                  "history_json_opens": 630,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 0.714655,
+        "reads": {
+          "history_json_opens": 2355,
+          "canonical_markdown_opens": 3120,
+          "derived_read_opens": 23
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.169458,
+            "reads": {
+              "history_json_opens": 625,
+              "canonical_markdown_opens": 310
+            }
+          },
+          "triggers": {
+            "seconds": 0.28555,
+            "reads": {
+              "history_json_opens": 1085,
+              "canonical_markdown_opens": 175
+            }
+          },
+          "dossiers": {
+            "seconds": 0.135514,
+            "reads": {
+              "history_json_opens": 320,
+              "canonical_markdown_opens": 1395,
+              "derived_read_opens": 15
+            }
+          },
+          "catalogue": {
+            "seconds": 0.016232,
+            "reads": {
+              "canonical_markdown_opens": 310,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 0.107867,
+            "reads": {
+              "history_json_opens": 325,
+              "canonical_markdown_opens": 930,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 0.178132,
+        "min_seconds": 0.177337,
+        "max_seconds": 0.190359,
+        "samples": [
+          {
+            "seconds": 0.190359,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.190329,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.177337,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.177308,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.178132,
+            "reads": {
+              "history_json_opens": 650,
+              "canonical_markdown_opens": 1085,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.178101,
+                "reads": {
+                  "history_json_opens": 650,
+                  "canonical_markdown_opens": 1085,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 150,
+      "final_ready": true,
+      "final_derived_current": true
+    },
+    {
+      "records": 300,
+      "projects": 5,
+      "due_count": 5,
+      "history": "compact",
+      "setup_seconds": 22.264589,
+      "inspect_missing": {
+        "seconds": 0.804759,
+        "reads": {
+          "history_json_opens": 3335,
+          "canonical_markdown_opens": 2440
+        },
+        "phases": {
+          "inspection": {
+            "seconds": 0.804716,
+            "reads": {
+              "history_json_opens": 3335,
+              "canonical_markdown_opens": 2440
+            }
+          }
+        }
+      },
+      "initial": {
+        "seconds": 1.155944,
+        "reads": {
+          "history_json_opens": 3680,
+          "canonical_markdown_opens": 8845,
+          "derived_read_opens": 12
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.519282,
+            "reads": {
+              "history_json_opens": 1840,
+              "canonical_markdown_opens": 2440
+            }
+          },
+          "triggers": {
+            "seconds": 0.172729,
+            "reads": {
+              "history_json_opens": 615,
+              "canonical_markdown_opens": 305
+            }
+          },
+          "dossiers": {
+            "seconds": 0.239025,
+            "reads": {
+              "history_json_opens": 610,
+              "canonical_markdown_opens": 3660,
+              "derived_read_opens": 5
+            }
+          },
+          "catalogue": {
+            "seconds": 0.036929,
+            "reads": {
+              "canonical_markdown_opens": 610,
+              "derived_read_opens": 1
+            }
+          },
+          "verification": {
+            "seconds": 0.187944,
+            "reads": {
+              "history_json_opens": 615,
+              "canonical_markdown_opens": 1830,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "idle": {
+        "median_seconds": 0.357608,
+        "min_seconds": 0.330193,
+        "max_seconds": 0.443055,
+        "samples": [
+          {
+            "seconds": 0.330193,
+            "reads": {
+              "history_json_opens": 1230,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.330169,
+                "reads": {
+                  "history_json_opens": 1230,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.357608,
+            "reads": {
+              "history_json_opens": 1230,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.357575,
+                "reads": {
+                  "history_json_opens": 1230,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.443055,
+            "reads": {
+              "history_json_opens": 1230,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.443017,
+                "reads": {
+                  "history_json_opens": 1230,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "due": {
+        "seconds": 1.558314,
+        "reads": {
+          "history_json_opens": 4605,
+          "canonical_markdown_opens": 6120,
+          "derived_read_opens": 23
+        },
+        "phases": {
+          "readiness_and_recovery": {
+            "seconds": 0.36349,
+            "reads": {
+              "history_json_opens": 1225,
+              "canonical_markdown_opens": 610
+            }
+          },
+          "triggers": {
+            "seconds": 0.645868,
+            "reads": {
+              "history_json_opens": 2135,
+              "canonical_markdown_opens": 325
+            }
+          },
+          "dossiers": {
+            "seconds": 0.276204,
+            "reads": {
+              "history_json_opens": 620,
+              "canonical_markdown_opens": 2745,
+              "derived_read_opens": 15
+            }
+          },
+          "catalogue": {
+            "seconds": 0.032852,
+            "reads": {
+              "canonical_markdown_opens": 610,
+              "derived_read_opens": 2
+            }
+          },
+          "verification": {
+            "seconds": 0.239863,
+            "reads": {
+              "history_json_opens": 625,
+              "canonical_markdown_opens": 1830,
+              "derived_read_opens": 6
+            }
+          }
+        }
+      },
+      "replay": {
+        "median_seconds": 0.455596,
+        "min_seconds": 0.421041,
+        "max_seconds": 0.472941,
+        "samples": [
+          {
+            "seconds": 0.421041,
+            "reads": {
+              "history_json_opens": 1250,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.421006,
+                "reads": {
+                  "history_json_opens": 1250,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.455596,
+            "reads": {
+              "history_json_opens": 1250,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.455556,
+                "reads": {
+                  "history_json_opens": 1250,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          },
+          {
+            "seconds": 0.472941,
+            "reads": {
+              "history_json_opens": 1250,
+              "canonical_markdown_opens": 2135,
+              "derived_read_opens": 6
+            },
+            "phases": {
+              "verification": {
+                "seconds": 0.472904,
+                "reads": {
+                  "history_json_opens": 1250,
+                  "canonical_markdown_opens": 2135,
+                  "derived_read_opens": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      "verified_canonical_objects": 300,
+      "final_ready": true,
+      "final_derived_current": true
+    }
+  ],
+  "implementation_label": "locked_read_phases_and_idle_exit_working_tree",
+  "core_tree_sha256": "96325117bf2cbd1c77e1a0e594dc18ae0f9d1fe5a3ff1862e85b84a8fe089130"
+}

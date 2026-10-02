@@ -320,3 +320,13 @@ sockets Manager bloquées, 43,60 s. Le benchmark d’entretien mesure encore un
 coût significatif sans travail ; aucune sortie rapide n’est implémentée.
 Voir AUDIT-2026-10-02.md et MAINTENANCE-COST.md. Pas de recette VM ni de client
 réel validés ; estimations historiques gelées, pas de nouveau pourcentage.
+
+## Optimisation après le bilan du 02/10
+
+L’entretien sort rapidement après une inspection sous verrous lorsqu’il n’y a
+aucun travail. Les phases de réparation/lecture partagent chacune un audit
+strict réussi, invalidé par une publication canonique et abandonné en sortie.
+La vérification finale utilise une nouvelle phase et relit le disque. Les
+scans par écriture et l’annuaire reconstructible restent ouverts. Suite :
+962 réussis, cinq sockets bloquées, 44,98 s. Mesures avant/après et charge
+à 25 projets dans MAINTENANCE-COST.md ; pas de résultat VM.
