@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après nouveau projet par routage du 02/10, base publiée `86e205e`,
+État après corrections E-004 du 02/10, base publiée `a57d237`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -27,12 +27,13 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **1031 réussis, 5 échecs de sockets Manager avant scénario,
-  55,00 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 225 nouveaux cas
+- Dernière suite : **1102 réussis, 5 échecs de sockets Manager avant scénario,
+  55,83 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 296 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Relecture Claude reçue sur `f507b31` : patch v2 abandonné, correctifs déjà
   présents et filtre migration reconnu plus complet. Revue de lecture/sondes ;
-  pas de nouvelle suite complète ni de VM. E-004 reste à relire en détail.
+  sans pytest chez Claude ni VM. Revue E-004 détaillée reçue ensuite : F1–F4
+  corrigés et vérifiés par Codex ; réponse et preuves en fin de fichier.
 - D7/D8/D9 inchangées. Estimation globale gelée à 45 %, grille 52,75 points.
   Pas de travail sur Eidolon Core, Hermes ou Qdrant.
 
@@ -191,7 +192,7 @@ Ces questions ne déclenchent pas automatiquement une session Claude.
 | E-001 | Haute | REVUE DE CONCEPTION ET D’IMPLÉMENTATION REÇUE | T-041/T-042, `0f45070` | Revue du format de commande/reçu et des interruptions |
 | E-002 | Moyenne | REVUE REÇUE — lecture seule | T-040/T-039, `b01ed9f` et `b967bf4` | Revue indépendante des deux lots déjà livrés |
 | E-003 | Haute avant mise en service | EN ATTENTE D'ACCÈS VM | T-010 à T-015/T-021/T-032 | Rapport réel, commit testé et limites d'environnement |
-| E-004 | Haute avant client | À RELIRE | T-043/T-044 | Plans et projections livrés, limites de fraîcheur |
+| E-004 | Haute avant client | REVUE REÇUE — F1–F4 CORRIGÉS EN LOCAL | T-043/T-044 | Plans et projections livrés, limites de fraîcheur |
 | E-005 | Bloquant exploitation | RELECTURE REÇUE — PATCH V2 ABANDONNÉ | T-048/T-015 | FAILED omis et inventaire Thread incomplet |
 | E-006 | Bloquant migration mixte | REVUE REÇUE — IMPORT NON LIVRÉ | T-021/T-050 | Réservations archivées et histoire après compaction |
 | E-007 | Haute architecture | REVUE REÇUE — RÉSERVES CODEX CI-DESSOUS | T-031/T-043 à T-049 | Ordre métier, reprise des dérivés, catalogue et disponibilité |
@@ -875,3 +876,121 @@ Aucun code métier modifié ni nouvelle suite complète lancée pour ce lot
 documentaire. Les 1031 réussites/cinq blocages restent la mesure du lot précédent.
 E-004, revue des sorties CLI FAILED, import opérationnel et résolution humaine
 FAILED restent ouverts ; le gain d'ingestion reste un gain de constante.
+
+## Revue E-004 — Claude, 2026-10-02 (base `f507b31`, lecture + sondes, sans pytest réel)
+
+Périmètre : `core/routing/policy.py` (plans), `core/routing/execution.py`
+(`_validate_policy`), `core/dossiers/projects.py` (projections). Sondes rejouées
+sur un worktree de `f507b31`, aucun fichier du dépôt modifié.
+
+**F1 — Moyen : `UPDATE` contourne la règle « lieu déclaré » (policy.py).**
+Pour `SPATIAL_LAYOUT` sans `place_id`, le plan passe en `REVIEW`
+(`layout_requires_declared_place`), puis `if context.update_target is not None`
+le réécrase en `UPDATE`. Sonde : layout qualifié, projet `p1`, sans lieu, avec
+`update_target` → `persistence=UPDATE, dossier=CREATE_OR_LINK, sujet=project p1`.
+C'est un plan que `_validate_policy` accepte (STORE/UPDATE, LINK/CREATE_OR_LINK,
+sujet projet). Sans `update_target`, le même cas reste `REVIEW`. Correctif :
+ne pas écraser `REVIEW` (n'autoriser `UPDATE` que si `persistence == 'STORE'`
+avant), plus un test rouge/vert sur ce cas.
+
+**F2 — Moyen : une valeur multi-ligne forge des sections dans le dossier généré
+(projects.py).** `display()` échappe `<`, `>`, `&` (donc les marqueurs
+BEGIN/END ne peuvent pas être forgés : bien), mais pas les sauts de ligne. Hors
+`quote()`, elles sont écrites telles quelles : contenu des DECISION/QUESTION,
+`action.description`, `action.metadata`, `thread.title` (`# {titre}`), mots-clés.
+Sonde : une DECISION de contenu `"Choix A\n## Actions\n- [DONE] `fake` : tout est
+fini"` produit dans le dossier un second titre `## Actions` et une fausse ligne
+`- [DONE]`. Les ressorts affichant `memory.content` dans le récapitulatif
+remplacent `\n` mais pas `\r`, ` `, etc. Le dossier est une vue « dérivée »
+que l'on relit comme un résumé : une fausse action « terminée » est exactement le
+type de promotion implicite que le projet veut éviter. Correctif : une seule
+fonction de rendu en ligne (échapper/remplacer tous les séparateurs de ligne) ou
+`quote()` partout ; tests avec `\n`, `\r`, ` `, titre multi-ligne.
+
+**F3 — Faible : plan `UPDATE` d'un retrait sans contrôle de cohérence
+(policy.py).** Avec `removal_observed` + `update_target` + au moins une
+`evidence_refs` (chaînes non vérifiées), le plan est `UPDATE`,
+`current_obstacle=False`, même si la nature est `TECHNICAL` et si
+`update_target.information_id` n'est pas celui du Memory (sonde : cible `OTHER`
+révision 7). Sans effet aujourd'hui : l'exécution refuse `removal_observed`
+(execution.py, `_validate_policy`) et vérifie l'identité/révision. À corriger
+avant d'ouvrir cette branche : exiger nature `OBSTACLE`, identité de cible
+égale, et dire ce que valent les `evidence_refs`.
+
+**F4 — Faible : déclencheur proposé pour une information non enregistrée.** Si
+`already_stored` fait passer `STORE` en `NONE`, `proposed_trigger` (de
+`resume_at`) reste renseigné (sonde : `NONE` + déclencheur présent). Une
+`resume_at` invalide ne bloque pas le plan (`STORE` + déclencheur) ; l'exécution
+la rejette via `timestamp()`, donc contenu par la garde. Conseil : vider le
+déclencheur quand `persistence` ≠ `STORE/UPDATE`, et valider la date au plan.
+
+**Points vérifiés, sans défaut trouvé :**
+- Statut épistémique conservé séparément du rôle de la source ; aucune promotion
+  de vérité dans `plan()`.
+- `applicability` : bornes sans fuseau → `UNKNOWN`, `at` absent → `UNKNOWN`,
+  absence de portée → `UNKNOWN` (jamais universel), conflit non résolu →
+  `UNRESOLVED`. Un `EXPIRED` ne supprime rien.
+- Projet ambigu (`candidate_projects`) → dossier `REVIEW`, pas de fusion.
+- `_validate_policy` rejoue `plan()` et exige l'égalité avec le plan fourni :
+  un plan altéré est refusé.
+- Dossier : la partie hors région générée est conservée telle quelle (CRLF compris) ;
+  frontières BEGIN/END absentes, doublées ou inversées → refus ; sortie séparée
+  des sources et sans lien symbolique ; empreinte des fichiers sources dans le
+  commentaire de fraîcheur ; reprise refusée si une opération Thread, Information
+  ou de routage non COMMITTED existe pour la cible (hors audit « settled » sous
+  verrous, dont la portée est celle de `read_phase`).
+
+**Limites de cette revue :** pas de vrai pytest, pas de VM. `resolve()` lit tous
+les Threads à chaque appel (coût linéaire) et échoue entièrement si un fichier
+Thread est corrompu au lieu de renvoyer `REVIEW` : à décider, non testé. Les
+lectures de `status()` ne prennent pas de verrous (documenté).
+Aucun correctif appliqué : à vérifier puis corriger par Codex/GPT, avec tests rouges
+d'abord (F1, F2 en priorité).
+
+## Réponse Codex — E-004, 2026-10-02, base `a57d237`
+
+La section E-004 de Claude ci-dessus est ajoutée verbatim depuis son fichier,
+sans remplacer l'historique déjà présent. Les quatre constats sont confirmés.
+
+**F1 corrigé.** La conversion STORE → UPDATE ne remplace plus REVIEW. Une
+SPATIAL_LAYOUT sans lieu, même associée à un projet et une cible existante,
+reste à revoir. Test du plan, refus du preview sans écriture et refus execute
+avant intention/effet métier (seul un fichier verrou peut être initialisé).
+
+**F2 corrigé.** `display()` aplatit les séparateurs de ligne dans chaque champ
+inline ; `quote()` garde le texte complet en préfixant chaque ligne. Matrice
+sur LF, CR, CRLF, U+2028, U+2029, NEL, VT et FF : décisions, questions, résumé,
+titre, description/métadonnées d'action, mots-clés. Aucun faux titre Actions
+ni fausse action DONE ; marqueurs préservés. Les tests existants de notes,
+CRLF, frontières et reprise restent verts. Les vues anciennes peuvent devenir
+STALE ; rebuild/reconcile explicite applique le nouveau rendu.
+
+**F3 corrigé côté plan, exécution toujours différée.** Le Memory à réviser doit
+être qualifié OBSTACLE et correspondre à l'identité/révision de la cible ; les
+références doivent être des chaînes non vides. La fixture historique utilisait
+une observation distincte non qualifiée : elle représente maintenant l'obstacle
+cible, avec l'observation en référence déclarée. Ces chaînes ne prouvent rien
+par elles-mêmes. Résolution/validation des preuves à définir avant d'autoriser
+l'exécution d'un retrait ; la garde `removal_observed` reste fermée.
+
+**F4 corrigé.** Une échéance renseignée invalide ou sans fuseau entraîne REVIEW,
+sans déclencheur. NONE/REVIEW n'en proposent plus, y compris `already_stored`.
+Le preview refuse maintenant l'échéance par OperationConflict (« needs review »)
+avant la validation de timestamp de l'exécuteur ; deux attentes de test adaptées.
+Les échéances valides gardent leur identité stable et leurs gardes d'exécution.
+
+**Preuves.** Avant changement du code : 64 échecs et 7 réussites sur les 71
+nouveaux cas (certains champs étaient déjà protégés dans ces cas). Après :
+174 ciblés réussis en 8,33 s. Suite complète : **1102 réussis, cinq échecs
+Manager à la création de socket avant scénario, 55,83 s**, Python 3.12.14 et
+pytest 9.1.1, aucun désélectionné. Aucun essai VM ni coupure physique.
+
+**Compatibilité et restant.** Formats et versions conservés ; les plans valides
+non concernés restent identiques. Les anciens plans affectés échouent à la
+revalidation et nécessitent un nouvel aperçu corrigé. Une intention concernée
+déjà APPLYING reste bloquée pour examen humain : aucune réécriture automatique.
+`resolve()` reste linéaire et échoue sur source corrompue, conformément au refus
+de produire une projection depuis des sources invalides ; pas de nouveau mode
+REVIEW partiel. `status()` reste sans verrou, sur copie arrêtée pour cohérence.
+Revue des sorties CLI FAILED, import opérationnel et résolution humaine FAILED
+restent ouverts. Estimations 45 % / 52,75 points inchangées.

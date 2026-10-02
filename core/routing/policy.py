@@ -140,12 +140,15 @@ def plan(memory: Memory, context: RoutingContext) -> RoutingPlan:
     qualified = (labels.get('version') == '0.1' and nature in NATURES
                  and bool(labels.get('qualified_by')))
     if context.removal_observed:
-        if context.update_target is not None and context.evidence_refs:
+        if (qualified and nature == 'OBSTACLE'
+                and context.update_target == TargetRevision(memory.information_id, memory.revision)
+                and context.evidence_refs
+                and all(isinstance(ref, str) and ref.strip() for ref in context.evidence_refs)):
             persistence, target, evidence = 'UPDATE', context.update_target, tuple(context.evidence_refs)
             current_obstacle = False
             reasons.append('observed_removal_updates_known_revision_with_evidence_keeps_history')
         else:
-            reasons.append('removal_needs_known_target_revision_and_evidence')
+            reasons.append('removal_needs_qualified_obstacle_matching_revision_and_evidence_refs')
     elif not qualified:
         reasons.append('explicit_qualification_required_no_inference_from_text')
     elif nature == 'REFLECTION' and not context.explicit_memory_request and project is None:
@@ -177,19 +180,25 @@ def plan(memory: Memory, context: RoutingContext) -> RoutingPlan:
         else:
             availability = 'LOW' if declared_horizon == 'LONG_TERM' else 'INTERMEDIATE'
             reasons.append('qualified_information_or_explicit_memory_request')
-        if context.update_target is not None:
+        if persistence == 'STORE' and context.update_target is not None:
             persistence, target = 'UPDATE', context.update_target
             reasons.append('explicit_target_and_revision_for_update')
         if subject is not None:
             dossier = 'LINK' if context.existing_dossier or context.tracking_task else 'CREATE_OR_LINK'
             reasons.append('resolve_existing_dossier_before_creating_projection')
-        if memory.temporal.get('resume_at'):
-            availability = 'INTERMEDIATE'
-            payload = json.dumps([memory.information_id, memory.revision, memory.temporal['resume_at']],
-                                 ensure_ascii=False, separators=(',', ':'))
-            proposed_trigger = {'kind': 'REACTIVATE', 'at': memory.temporal['resume_at'],
-                                'trigger_id': 'reactivate-' + hashlib.sha256(payload.encode()).hexdigest()}
-            reasons.append('scheduled_reactivation_proposal_requires_T046_executor')
+        if persistence in {'STORE', 'UPDATE'} and memory.temporal.get('resume_at') is not None:
+            try:
+                _instant(memory.temporal['resume_at'])
+            except (ValueError, TypeError, AttributeError):
+                persistence, target = 'REVIEW', None
+                reasons.append('resume_at_requires_valid_explicit_timezone')
+            else:
+                availability = 'INTERMEDIATE'
+                payload = json.dumps([memory.information_id, memory.revision, memory.temporal['resume_at']],
+                                     ensure_ascii=False, separators=(',', ':'))
+                proposed_trigger = {'kind': 'REACTIVATE', 'at': memory.temporal['resume_at'],
+                                    'trigger_id': 'reactivate-' + hashlib.sha256(payload.encode()).hexdigest()}
+                reasons.append('scheduled_reactivation_proposal_requires_T046_executor')
     if context.candidate_projects and (
         project is None or project not in context.candidate_projects
     ):
@@ -198,6 +207,10 @@ def plan(memory: Memory, context: RoutingContext) -> RoutingPlan:
     if context.already_stored and persistence == 'STORE':
         persistence = 'NONE'
         reasons.append('existing_memory_no_duplicate_store')
+    if persistence not in {'STORE', 'UPDATE'}:
+        proposed_trigger = None
+        reasons = [reason for reason in reasons
+                   if reason != 'scheduled_reactivation_proposal_requires_T046_executor']
     applies = applicability(memory, context.query_scope, at=context.at,
                             unresolved_conflict=context.unresolved_conflict)
     reasons.append('applicability_' + applies.lower())

@@ -71,7 +71,10 @@ def test_fork_bypassed_keeps_obstacle_and_recheck_separate_from_action():
 
 def test_removal_requires_target_revision_and_evidence():
     case = CASES['fork-removal-observed']['given']
-    memory = Memory('removal-observation', provenance={'source': case['observation_source']})
+    memory = Memory(case['known_obstacle_id'], revision=case['expected_revision'],
+                    metadata={'qualification': {'version': '0.1', 'nature': 'OBSTACLE',
+                                                 'qualified_by': 'acceptance-fixture'}},
+                    provenance={'source': case['observation_source']})
     target = TargetRevision(case['known_obstacle_id'], case['expected_revision'])
     context = RoutingContext(removal_observed=True, update_target=target,
                              evidence_refs=('observation-removal-1',))

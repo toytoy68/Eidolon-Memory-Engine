@@ -145,3 +145,18 @@ rapprochement des dossiers et reconstruction du catalogue, avec relecture finale
 Relancer après interruption termine les dérivés sans rejouer les effets acquis.
 `inspect` reste en lecture seule. Aucun ordonnanceur ni fenêtre horaire installé ;
 voir [MAINTENANCE-PASS.md](MAINTENANCE-PASS.md) pour les limites et commandes.
+
+## Rendu des valeurs après revue E-004 du 02/10
+
+Les titres, résumés, décisions/questions, descriptions et métadonnées d'actions,
+mots-clés et autres champs en ligne passent par un rendu commun qui remplace
+les séparateurs de ligne (LF, CR, CRLF, séparateurs Unicode et historiques) par
+des espaces. Une valeur ne peut donc plus ajouter une section ou une ligne
+d'action dans la structure générée. Les contenus complets et objectifs restent
+multilignes, chaque ligne étant préfixée comme citation. L'échappement HTML des
+marqueurs BEGIN/END est conservé ; les notes humaines hors bloc sont intactes.
+
+Les dossiers déjà produits peuvent devenir STALE : un rebuild ou reconcile
+explicite applique le nouveau rendu, sans changer les sources canoniques.
+Les tests E-004 couvrent huit séparateurs dans sept types de champs ; les tests
+existants couvrent toujours notes humaines, CRLF, frontières et reprise.

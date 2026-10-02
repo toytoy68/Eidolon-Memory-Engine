@@ -64,11 +64,16 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après création de projet par routage du 02/10/2026 :
-**1031 tests réussis, 5 échecs d’environnement en 55,00 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après corrections de la revue E-004 du 02/10/2026 :
+**1102 tests réussis, 5 échecs d’environnement en 55,83 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
+
+Revue E-004 intégrée : REVIEW ne peut plus être contourné par UPDATE, les
+valeurs multilignes ne forgent plus de sections de dossier, les propositions de
+retrait exigent une cible cohérente et les échéances sont validées dès le plan.
+71 cas supplémentaires ; détails et limites dans [ECHANGES.md](ECHANGES.md).
 
 Sur une copie arrêtée, `MEMORY_ENGINE_ROOT` désigne la racine contenant `memory/` :
 

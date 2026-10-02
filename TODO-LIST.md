@@ -27,19 +27,37 @@ ou micro-durcissements T-031a…bc. Les constats datés restent conservés ; la 
 poursuit les lots prioritaires avec preuves et documentation par étape. Revue Claude demandée E-005 à E-007 ;
 revue complète reçue par fichier, patch vérifié mais non intégré. Relecture
 Claude sur `f507b31` reçue le 02/10 : patch v2 abandonné, correctifs déjà présents ;
-E-004 et sorties CLI FAILED restent à relire. Périmètre de l’index dérivé et
+E-004 reçue et F1–F4 corrigés/testés en local ; sorties CLI FAILED encore à relire. Périmètre de l’index dérivé et
 archivage en conversion clarifiés dans MIGRATION.md. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
 ## Dernière vérification
 
-Suite complète après nouveau projet par routage, base `86e205e` : **1031 réussis,
-5 échecs d’environnement, 55,00 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après corrections E-004, base `a57d237` : **1102 réussis,
+5 échecs d’environnement, 55,83 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 225 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 296 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index, 24 nouveaux projets, 71 revue E-004). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
+
+## Revue E-004 — FAIT EN LOCAL / NON TESTÉ VM
+
+- F1 : une disposition sans lieu reste REVIEW malgré une cible UPDATE ; refus
+  vérifié avant intention et écriture métier.
+- F2 : rendu commun des champs en ligne ; tous les séparateurs testés sont
+  aplatis, contenus complets cités et notes humaines préservées.
+- F3 : retrait proposé seulement pour OBSTACLE qualifié, même identité/révision,
+  références déclarées non vides. Exécution toujours fermée ; validation réelle
+  des preuves à définir avant ouverture de cette branche.
+- F4 : échéance invalide → REVIEW ; NONE/REVIEW sans déclencheur.
+
+Preuve avant correction : 64 échecs et 7 réussites sur 71 nouveaux cas ; après,
+174 ciblés réussis en 8,33 s. Les sept déjà verts portaient sur des champs déjà protégés dans ces cas. Fixture de retrait alignée sur le Memory cible ;
+refus d'échéance désormais OperationConflict (plan REVIEW), au lieu de ValueError.
+Les plans anciens affectés sont refusés à la revalidation ; une intention déjà
+APPLYING exige examen humain, sans réécriture forcée. Dossiers existants à
+rafraîchir explicitement s'ils deviennent STALE. Aucun changement des estimations.
 
 ## Ordre prioritaire
 

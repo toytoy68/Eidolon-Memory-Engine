@@ -148,7 +148,7 @@ def test_routed_correction_invalidates_old_deadline_and_schedules_new_revision(t
 def test_invalid_deadline_is_refused_during_readonly_preview(tmp_path, due):
     backend, executor, memory = seed(tmp_path)
     before = fingerprints(tmp_path)
-    with pytest.raises(ValueError):
+    with pytest.raises(OperationConflict, match='needs review'):
         prepare(executor, replace(memory, temporal={'resume_at': due}))
     assert fingerprints(tmp_path) == before and backend.get('second') is None
 

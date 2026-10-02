@@ -26,13 +26,18 @@ class DossierConflict(Exception):
     """Ambiguous or unfinished source/projection requires review."""
 
 
-def display(value):
+def _escaped_text(value):
     text = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, sort_keys=True)
     return html.escape(text, quote=False)
 
 
+def display(value):
+    """Render one inline field, including Unicode and legacy line separators."""
+    return ' '.join(_escaped_text(value).splitlines())
+
+
 def quote(value):
-    return '\n'.join('> ' + line for line in display(value).splitlines())
+    return '\n'.join('> ' + line for line in _escaped_text(value).splitlines())
 
 
 class ProjectDossiers:
@@ -130,7 +135,7 @@ class ProjectDossiers:
             for memory in memories:
                 state = memory.metadata.get('epistemic_status', 'NON RENSEIGNÉ')
                 lines.append(f'- `{memory.information_id}` revision {memory.revision} — **{display(state)}** : '
-                             + display(str(memory.content).replace('\n', ' ')[:180]))
+                             + display(str(memory.content))[:180])
             if not memories:
                 lines.append('Aucune Information liée disponible.')
             for title, kind in [('Décisions déclarées', 'DECISION'), ('Questions ouvertes', 'QUESTION')]:

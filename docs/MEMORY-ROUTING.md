@@ -19,8 +19,10 @@ restent au producteur/futur adaptateur ; une qualification absente donne REVIEW.
 - Les dimensions STORE/UPDATE/NONE/REVIEW, HIGH/INTERMEDIATE/LOW et
   CREATE_OR_LINK/LINK/NONE/REVIEW sont décidées séparément, avec raisons stables.
 - Une mise à jour proposée référence une identité et une révision explicites.
-  Une suppression d'obstacle observée exige aussi une référence de preuve ;
-  un compte rendu de contournement ne modifie pas son état de présence.
+  Un retrait observé exige un Memory qualifié OBSTACLE dont l'identité et la
+  révision correspondent à la cible, ainsi que des références déclarées non
+  vides (chaînes). Ces références ne constituent pas des preuves vérifiées.
+  Un compte rendu de contournement ne modifie pas son état de présence.
 
 ## Profil de référence et limites
 
@@ -79,3 +81,25 @@ Le planner reste pur. RoutingExecutor exécute désormais le sous-ensemble
 STORE/UPDATE → projet existant → dossier, avec revalidation, intention durable,
 reprise et reçu compact. Les autres branches sont refusées ou explicitement
 différées ; voir [ROUTING-EXECUTION.md](ROUTING-EXECUTION.md).
+
+## Corrections après revue E-004 du 02/10
+
+Une disposition spatiale sans `place_id` reste REVIEW, même avec une cible de
+mise à jour explicite et un projet. UPDATE ne remplace que STORE, jamais REVIEW.
+Le retrait cohérent reste une **proposition** : l'exécuteur refuse toujours
+`removal_observed`. L'ouverture de cette branche nécessite encore de définir
+la résolution et la validation des preuves, sans déduire une vérité de simples
+chaînes `evidence_refs`. Le Memory proposé est celui de l'obstacle à réviser ;
+une observation distincte doit être référencée comme preuve déclarée.
+
+`resume_at`, lorsqu'il est renseigné (non null), doit être une date valide avec
+fuseau explicite. Sinon le plan exige REVIEW sans déclencheur ; le preview
+exécutable refuse ce plan par OperationConflict. NONE/REVIEW ne portent jamais
+de `proposed_trigger`, notamment après `already_stored`. Les échéances valides
+conservent leur identifiant déterministe et leur garde à l'exécution.
+
+Les formats et versions restent inchangés ; les plans valides non concernés
+conservent leur résultat. Un ancien plan affecté par ces corrections est refusé
+à la revalidation : refaire l'aperçu après correction des entrées. Si une
+intention affectée est déjà APPLYING, elle reste bloquée pour examen humain ;
+ne pas la réécrire ni forcer sa reprise automatiquement.
