@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après lots bornés demandés le 02/10, base publiée `72f4033`,
+État après index demandé le 02/10, base publiée `c3637f7`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -27,8 +27,8 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **983 réussis, 5 échecs de sockets Manager avant scénario,
-  46,18 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 177 nouveaux cas
+- Dernière suite : **1007 réussis, 5 échecs de sockets Manager avant scénario,
+  50,71 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 201 nouveaux cas
   dans la poursuite après `9063313` ; aucun essai VM ni coupure de stockage.
 - Retour Claude v2 sur `9f0eb92` relu le 02/10 : corrections déjà présentes,
   différences de libellés identifiées et filtre migration moins complet ; patch non appliqué.
@@ -40,9 +40,10 @@ Trois lots du matin poussés : `5b5e2db`, `ca977f1`, `43a1214`. Disponibilité,
 Après le bilan, toytoy a demandé l’optimisation des passes. Sortie rapide
 inactive et partage d’audits stricts sous verrous maintenant livrés, avec
 mesures avant/après et vérification finale fraîche. T-049 reste ouvert pour
-le scan par lot et l’annuaire ; aucun service ou ordonnanceur lancé.
+la lecture complète par lot ; aucun service ou ordonnanceur lancé.
 Les lots bornés et leur raccordement aux échéances sont maintenant livrés ;
-voir la tranche ci-dessous et INFORMATION-BATCHES.md.
+voir la tranche ci-dessous et INFORMATION-BATCHES.md. L’index facultatif
+est également livré ; il conserve la lecture des octets avant réutilisation.
 
 ### Lot T-044 — rapprochement des dossiers, base `7517cc6`
 
@@ -751,3 +752,37 @@ ordonnanceur, promesse de charge intensive ou validation VM. Pourcentages gelés
 
 Suite complète finale du lot : **983 réussis, cinq échecs Manager à la création
 de socket, 46,18 s**, aucun désélectionné. Aucun nouveau blocage métier observé.
+
+## Index des réservations — T-049, base `c3637f7`
+
+Demandé explicitement par toytoy après les lots. Index dérivé JSON activable
+par `index-rebuild`, sans migration des sources ni nouvelle dépendance.
+Chaque usage vérifie les SHA-256 complets des plans/reçus ; validation stricte
+réutilisée seulement pour les paires inchangées. Nouveaux/modifiés revalidés,
+cache incorrect reconstruit intégralement, source incorrecte bloquante.
+`index-status` sans écriture. Writers individuels, lots, compaction et dispatcher
+raccordés ; les audits globaux continuent à lire directement les sources.
+
+24 nouveaux cas : modification de même taille/date restaurée, version inconnue,
+paire divergente, perte/altération d’index, Event manquant, FAILED, changement
+par autre processus, concurrence, compaction/suppression et reprise après
+arrêts Event/COMMITTED/publication de l’index. Preuves négatives 2 + 3 + 1 ;
+code restauré. Suite complète : **1007 réussis, cinq échecs de sockets Manager
+avant scénario, 50,71 s**, aucun désélectionné. Pas de VM ni coupure physique.
+
+Contrat et mesures : RESERVATION-INDEX.md. L’index économise du décodage et des
+validations, pas l’énumération ni la lecture complète. Le coût croissant demeure
+quadratique à taille fixe ; pas d’annonce d’ingestion intensive validée.
+Checksum contre les altérations accidentelles, pas de signature contre une
+falsification volontaire recalculée. Activation explicite et retour aux scans
+par retrait du seul index, écrivains arrêtés. Les pourcentages restent gelés.
+
+Mesure finale sur 300 snapshots : 50 créations individuelles **4,861 → 0,987 s**,
+updates **4,769 → 1,059 s**. Créations en lot **0,247 → 0,243 s**, gain
+négligeable ; updates en lot **0,278 → 0,196 s**, un seul passage. Avec reçus,
+créations individuelles **4,086 → 0,971 s**, updates **4,058 → 1,026 s**.
+Appels au lecteur strict 16 275 → 99 ; noms/fichiers toujours lus (JSON
+16 325 → 16 423). Première construction 0,08–0,15 s exclue et rapportée.
+16 corpus neufs, audits/objets vérifiés, aucun test lourd en parallèle.
+Rapport : docs/benchmarks/reservation-index-2026-10-02.json. Conserver les lots
+pour les imports ; index surtout utile aux petites écritures successives.

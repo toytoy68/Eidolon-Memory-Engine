@@ -341,3 +341,14 @@ restent individuels ; conflit/interruption se reprennent par rejeu stable.
 4,156 → 1,770 s sur nouvelle comparaison. Contrat : INFORMATION-BATCHES.md.
 Le terme quadratique d'ingestion à taille fixe, l'annuaire et la recette VM
 restent ouverts ; aucune hausse des estimations globales.
+
+## Index de réservations facultatif — 02/10
+
+Un index JSON reconstructible est livré pour les écritures Information,
+activé explicitement par `index-rebuild`. Les octets de toutes les sources
+sont relus avant réutilisation de leurs validations ; nouveaux contenus ou
+contenus modifiés revalidés, cache corrompu reconstruit, source corrompue
+bloquante. Pas de migration ni nouvelle base ; audits inchangés. Suite :
+1007 réussis, cinq échecs de sockets Manager, 50,71 s. Contrat et limites :
+RESERVATION-INDEX.md. Supprimer les lectures linéaires reste ouvert, sans
+nouveau pourcentage ni preuve VM.

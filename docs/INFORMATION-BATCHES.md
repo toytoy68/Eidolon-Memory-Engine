@@ -166,3 +166,12 @@ les deux cas live/compact ; retirer l'ajout de réservation Event ou la
 libération de cible après reprise donne 1 + 1 échec comportemental. Le code
 est restauré après chaque expérience. Suite complète : **983 réussis, cinq échecs de sockets Manager avant scénario,
 46,18 s**, aucun désélectionné. Ces cinq scénarios restent à valider en VM.
+
+## Index facultatif ajouté ensuite
+
+Après `index-rebuild`, la création de la vue initiale peut réutiliser les
+validations d’entrées dont les octets sont identiques. L’énumération et le
+hachage des sources restent complets, puis le lot actualise sa vue en mémoire
+comme précédemment. Le protocole de reprise et les bornes sont inchangés.
+Voir [RESERVATION-INDEX.md](RESERVATION-INDEX.md) ; les mesures ci-dessus
+correspondent aux lots sans cet index facultatif.

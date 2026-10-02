@@ -196,3 +196,12 @@ finaux confirment les 300 objets attendus, readiness prête et dérivés courant
 Des tests ciblés ont tourné au début de la préparation de la référence ; aucun
 test lourd pendant la variante optimisée. Filesystem réchauffé, hôte non
 contrôlé, un seul passage avec effets : aucune garantie de latence VM.
+
+## Index de réservations facultatif
+
+Les mesures d'entretien ci-dessus conservent les scans des réservations, avec
+ou sans lots selon leur date. Le nouvel [index](RESERVATION-INDEX.md) est raccordé
+au dispatcher mais n'a pas fait l'objet d'une nouvelle comparaison temporelle
+de passe complète. Son gain mesuré concerne les écritures individuelles et
+par lots. Les audits globaux et la vérification finale d'entretien restent
+complets ; aucun gain additionnel de passe inactive n'est revendiqué.

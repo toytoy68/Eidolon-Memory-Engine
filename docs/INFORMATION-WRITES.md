@@ -134,3 +134,12 @@ La compaction retire les snapshots avant/après. Le reçu et l'Event permettent
 la traçabilité/reprise, pas la reconstruction intégrale des anciens textes.
 Conserver les observations historiques nécessaires comme Informations distinctes
 reliées ; une archive de révisions demanderait une politique séparée (T-050).
+
+## Index de réservations facultatif
+
+`index-rebuild` active/reconstruit un index dérivé ; `index-status` inspecte sa
+fraîcheur sans écrire. Les commandes et lots peuvent réutiliser la validation
+des plans/reçus après vérification de leurs octets complets. Les nouveaux
+contenus passent toujours dans le lecteur strict, les audits restent directs.
+Les journaux de reprise sont inchangés. Voir [RESERVATION-INDEX.md](RESERVATION-INDEX.md)
+pour activation, reconstruction, protocole et limites de coût.

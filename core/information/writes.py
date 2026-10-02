@@ -115,6 +115,16 @@ class FilesystemInformationWrites:
         from core.information.batch import execute_batch
         return execute_batch(self, commands)
 
+    def rebuild_reservation_index(self):
+        """Explicitly activate/rebuild the derived index from strict readers."""
+        from core.information.reservation_index import ReservationIndex
+        with exclusive_write(self.backend.persistent_root), exclusive_write(self.operations.root):
+            return ReservationIndex(self.journal, self).refresh(rebuild=True)[1]
+
+    def _reservations(self):
+        from core.information.reservation_index import reservations
+        return reservations(self)
+
     def _deletion_status(self, target_id):
         path = self.backend.pending_delete_root / f'{target_id}.json'
         if path.exists() or path.is_symlink():
@@ -129,7 +139,7 @@ class FilesystemInformationWrites:
             raise OperationConflict(f'Information reserved by {status}')
 
     def _pending(self, target_id, *, excluding=None):
-        self.journal.reservations().require_available(target_id, excluding)
+        self._reservations().require_available(target_id, excluding)
 
     def _execute(self, kind, memory, previous, opid, event_id, actor, timestamp, *, reservations=None):
         self.backend._validate_memory_shape(memory)
@@ -149,7 +159,7 @@ class FilesystemInformationWrites:
             require_available(self.backend.history_root, information_id=after.information_id)
             self._check_deletion(kind, after.information_id)
             if reservations is None:
-                reservations = self.journal.reservations()
+                reservations = self._reservations()
             reservations.require_available(after.information_id)
             current = self.backend.get(after.information_id)
             if kind is OperationType.INFORMATION_CREATE:
@@ -188,7 +198,7 @@ class FilesystemInformationWrites:
         require_available(self.backend.history_root, information_id=op.target_id)
         self._check_deletion(op.operation_type, op.target_id)
         if reservations is None:
-            reservations = self.journal.reservations()
+            reservations = self._reservations()
         reservations.require_available(op.target_id, excluding=op.operation_id)
         current = self.backend.get(op.target_id)
         if current != before and current != after:

@@ -32,7 +32,7 @@ def command(number, *, update=False):
     return result
 
 
-def run(size, incoming, history, workload, mode):
+def run(size, incoming, history, workload, mode, *, reservation_index=False):
     with tempfile.TemporaryDirectory(prefix='eidolon-batch-benchmark-') as directory:
         root = Path(directory)
         writer = FilesystemInformationWrites(FilesystemBackend(root / 'memory/persistent', root / 'memory/history'))
@@ -45,6 +45,10 @@ def run(size, incoming, history, workload, mode):
             for i in range(size):
                 writer.compact(f'create-{i:05d}')
         setup_seconds = round(perf_counter() - setup_started, 6)
+        index_started = perf_counter()
+        if reservation_index:
+            writer.rebuild_reservation_index()
+        index_build_seconds = round(perf_counter() - index_started, 6) if reservation_index else 0
         commands = [command(i, update=workload == 'update')
                     for i in (range(incoming) if workload == 'update' else range(size, size + incoming))]
         with count_reads() as counts:
@@ -67,7 +71,8 @@ def run(size, incoming, history, workload, mode):
         if audit['issues'] or any(writer.backend.get(memory.information_id) != memory for memory in expected.values()):
             raise RuntimeError('benchmark failed canonical/audit verification')
         return dict(history_records=size, incoming=incoming, history=history, workload=workload,
-                    mode=mode, seconds=seconds, setup_seconds=setup_seconds, **counts,
+                    mode=mode, seconds=seconds, setup_seconds=setup_seconds,
+                    reservation_index=reservation_index, index_build_seconds=index_build_seconds, **counts,
                     final_audit_issues=0, canonical_verified=len(expected))
 
 

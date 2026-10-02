@@ -56,7 +56,7 @@ class _LockedWrites:
             self.writer = self.writer or FilesystemInformationWrites(self.backend)
             self.stack.enter_context(exclusive_write(self.writer.operations.root))
             self.stack.enter_context(exclusive_write(self.writer.events.events_root))
-            self.reservations = _Reservations(self.writer.journal.reservations())
+            self.reservations = _Reservations(self.writer._reservations())
 
     def _execute(self, kind, memory, previous, operation_id, event_id, actor, timestamp):
         try:

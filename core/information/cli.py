@@ -24,13 +24,33 @@ def main(argv=None):
             sub.add_argument('--previous-revision', type=int, required=True)
     batch = commands.add_parser('batch')
     batch.add_argument('--input', type=Path, required=True, help='JSON array of 1–100 stable CREATE/UPDATE commands')
+    commands.add_parser('index-rebuild', help='Activate or fully rebuild the optional reservation index')
+    commands.add_parser('index-status', help='Read-only freshness report; run on a stopped copy')
     commands.add_parser('recover')
     compact = commands.add_parser('compact')
     compact.add_argument('operation_id')
     args = parser.parse_args(argv)
+    if args.command == 'index-status':
+        from core.information.reservation_index import ReservationIndex
+        from core.information.batch import ERRORS
+        # Avoid writer constructors: inspection must not create journal dirs.
+        from core.information.write_journal import InformationWriteJournal
+        try:
+            result = ReservationIndex(InformationWriteJournal(HISTORY_ROOT)).status()
+        except ERRORS as exc:
+            result = dict(status='BLOCKED', reason=str(exc))
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return int(result['status'] not in {'CURRENT', 'DISABLED'})
     check_environment(ENGINE_ROOT)
     writer = FilesystemInformationWrites(FilesystemBackend(PERSISTENT_ROOT, HISTORY_ROOT))
-    if args.command == 'batch':
+    if args.command == 'index-rebuild':
+        from core.information.batch import ERRORS
+        try:
+            result = writer.rebuild_reservation_index()
+        except ERRORS as exc:
+            result = dict(status='BLOCKED', reason=str(exc))
+        status = int(result['status'] == 'BLOCKED')
+    elif args.command == 'batch':
         from core.information.batch import ERRORS
         from core.storage_format import decode_json_value
         try:

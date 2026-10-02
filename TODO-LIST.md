@@ -30,11 +30,11 @@ revue complète reçue par fichier, patch vérifié mais non intégré. Voir
 
 ## Dernière vérification
 
-Suite complète après lots bornés, base `72f4033` : **983 réussis,
-5 échecs d’environnement, 46,18 s**, pytest 9.1.1/Python 3.12.14, aucun
+Suite complète après index des réservations, base `c3637f7` : **1007 réussis,
+5 échecs d’environnement, 50,71 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket
-interdite avant scénario métier. 177 cas ajoutés depuis `9063313` (21 exécution,
-15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés). Arrêts de processus, courses sans Manager et preuves négatives
+interdite avant scénario métier. 201 cas ajoutés depuis `9063313` (21 exécution,
+15 rappel, 17 rapprochement, 16 catalogue, 8 scans, 25 cycle de vie, 19 raccordement, 20 entretien, 15 optimisation des passes, 21 lots bornés, 24 index). Arrêts de processus, courses sans Manager et preuves négatives
 comportementales détaillés dans les contrats. Aucune VM, donnée réelle ou
 coupure électrique testée.
 
@@ -232,8 +232,20 @@ conflit, journaux individuels et rejeu de la liste entière. 21 nouveaux cas,
 de file durable pour la fin du lot ni de libération du verrou extérieur
 d'entretien entre tranches.
 
-Restant : suppression du scan linéaire par lot canonique, annuaire reconstructible
-et preuve de divergence/reprise, autres familles, scans des dérivés, corpus et
+Quatrième tranche : index de réservations reconstructible activé par
+`index-rebuild`, inspection sans écriture par `index-status`. Empreintes de tous
+les octets plan/reçu vérifiées ; seuls les contenus nouveaux/modifiés sont
+revalidés strictement. Index invalide reconstruit, source invalide bloquante.
+24 nouveaux cas ; retrait réutilisation/identité des sources/checksum :
+2 + 3 + 1 assertions rouges, code restauré. Arrêts réels, concurrence,
+compaction, suppression et dispatcher couverts. Contrat :
+[RESERVATION-INDEX.md](docs/RESERVATION-INDEX.md). À 300 snapshots :
+50 créations individuelles 4,861 → 0,987 s, updates 4,769 → 1,059 s ;
+créations en lot 0,247 → 0,243 s (gain négligeable). Lecteur strict
+16 275 → 99, fichiers toujours lus ; index initial 0,08 à 0,15 s hors mesure.
+
+Restant : suppression de l’énumération et des lectures linéaires par lot,
+protocole d’invalidation couvrant tous les écrivains, autres familles, dérivés, corpus et
 objectifs VM. L'ingestion totale demeure quadratique à taille de lot fixe (O(N²/B)). Pas d'autorisation
 d'ingestion intensive déduite de la réduction locale.
 
@@ -359,7 +371,8 @@ heuristique et exécution VM toujours manquante.
 Le premier parcours qualifié vers un projet existant et son rappel est désormais
 livré en local ; le rapprochement global des dossiers hors parcours est maintenant
 disponible à la demande, comme le catalogue reconstructible T-045. T-049 réduit
-les scans par commande ; un annuaire reconstructible et la mesure VM restent
+les validations par commande ; l’index facultatif est livré, mais la suppression
+des lectures complètes et la mesure VM restent
 nécessaires avant ingestion intensive. Disponibilité et échéances raccordées
 au routage ; entretien explicite assemblé. Récurrence, coût des scans et
 autres branches des plans à poursuivre. La mise en service exige toujours import/migration décidée,

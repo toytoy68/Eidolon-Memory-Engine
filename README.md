@@ -14,6 +14,10 @@ développement et n'est pas encore validée sur la VM.
   et [conception des écritures Information](docs/DESIGN-INFORMATION-WRITES.md)
 - [Dossiers Markdown de projet](docs/PROJECT-DOSSIERS.md) : reconstruction explicite,
   rapprochement global reprenable, sources/révisions et notes humaines conservées.
+- [Index des réservations](docs/RESERVATION-INDEX.md) : reconstructible et activable
+  par `index-rebuild`, réutilisation des validations après contrôle des octets.
+  Sur 300 entrées : 50 créations individuelles 4,86 → 0,99 s ;
+  en lot ~0,24 s avec ou sans index, sur cette comparaison locale.
 - [Lots Information bornés](docs/INFORMATION-BATCHES.md) : 1 à 100 CREATE/UPDATE,
   scan partagé, arrêt au conflit et reprise par rejeu des commandes stables.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
@@ -58,8 +62,8 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière vérification après lots bornés du 02/10/2026 :
-**983 tests réussis, 5 échecs d’environnement en 46,18 s**, Python 3.12.14, pytest 9.1.1.
+Dernière vérification après index des réservations du 02/10/2026 :
+**1007 tests réussis, 5 échecs d’environnement en 50,71 s**, Python 3.12.14, pytest 9.1.1.
 Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
 métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
 validation VM, donnée réelle ou coupure électrique.
@@ -97,7 +101,9 @@ n’est encore installé sur la VM.
 - Poursuivre T-049 avant ingestion intensive : les nouvelles écritures font
   un scan par commande individuelle ou par lot de 100 commandes au plus.
   Le dispatcher des échéances partage ce scan ; l’ingestion croissante à
-  taille de lot fixe conserve un coût quadratique réduit.
+  taille de lot fixe conserve un coût quadratique réduit. L’index facultatif
+  évite maintenant les revalidations des journaux inchangés, tout en relisant
+  leurs octets ; supprimer ces lectures exige un protocole supplémentaire.
   L’entretien évite maintenant les étapes inactives et partage les audits
   entre lecteurs sous verrous, avec relecture finale indépendante.
   [Mesures reproductibles](docs/JOURNAL-SCAN-COST.md) : 300 créations en 20,42 s

@@ -5,7 +5,10 @@
 Les chiffres ci-dessous documentent le premier lot. Depuis le 02/10,
 [les lots bornés](INFORMATION-BATCHES.md) partagent aussi ce scan entre 1 à 100
 commandes sous verrous et dans le dispatcher des échéances. Les commandes
-individuelles conservent le fonctionnement décrit ici.
+individuelles conservent le fonctionnement décrit ici sans index. Un
+[index de réservations facultatif](RESERVATION-INDEX.md) permet maintenant
+de réutiliser la validation après contrôle intégral des octets. Les chiffres
+historiques ci-dessous ne mesurent pas cet index.
 
 Une nouvelle écriture métier Information faisait trois parcours complets de
 son journal : écriture en attente sur la cible, réservation d'Event, puis
