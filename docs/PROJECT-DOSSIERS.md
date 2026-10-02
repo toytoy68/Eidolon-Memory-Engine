@@ -27,7 +27,8 @@ Threads lisibles pointent vers l'Information : le fichier manquant à l'analyse
 pourrait contenir une autre liaison. `resolve()` propage l'erreur de lecture ;
 il ne renvoie ni LINK/UNASSIGNED ni une liste partielle en REVIEW. REVIEW décrit
 l'ambiguïté entre sources lisibles. Choix conservateur confirmé après E-004 ;
-le scan reste linéaire et sa corruption demande encore un test dédié.
+le scan reste linéaire. Deux cas API/CLI vérifient le refus sans écriture,
+avec et sans sélection explicite ; ignorer la corruption les fait échouer.
 
 Les dossiers de lieu et de thème ne sont pas couverts par cette première vue.
 

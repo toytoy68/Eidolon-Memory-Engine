@@ -93,3 +93,33 @@ def test_non_persistent_plan_has_no_trigger(review):
     result = plan(memory, RoutingContext(already_stored=not review))
     assert result.persistence == ('REVIEW' if review else 'NONE')
     assert result.proposed_trigger is None
+
+
+@pytest.mark.parametrize('resume_at', ['invalid', '2026-10-03T08:00:00'])
+def test_review_for_invalid_deadline_does_not_claim_an_update(resume_at):
+    memory = qualified(temporal={'resume_at': resume_at})
+    result = plan(memory, RoutingContext(update_target=TargetRevision('obstacle', 1)))
+    assert result.persistence == 'REVIEW'
+    assert result.update_target is None
+    assert 'explicit_target_and_revision_for_update' not in result.reasons
+    assert 'resume_at_requires_valid_explicit_timezone' in result.reasons
+
+
+@pytest.mark.parametrize('selected', [None, 'thread-cooling'])
+def test_corrupt_thread_blocks_resolution_without_partial_candidates(tmp_path, selected, capsys):
+    from core.dossiers.cli import main
+    from core.threads.storage import ThreadStorageError
+    from tests.test_project_dossiers import seed as dossier_seed
+    _, storage, dossiers = dossier_seed(tmp_path)
+    storage._path('z-corrupt').write_text('Invalid Thread, relations cannot be inspected')
+    before = fingerprints(tmp_path)
+    with pytest.raises(ThreadStorageError):
+        dossiers.resolve('info-1', selected_thread=selected)
+    args = ['--root', str(tmp_path), 'resolve', 'info-1']
+    if selected:
+        args += ['--selected-thread', selected]
+    assert main(args) == 1
+    result = json.loads(capsys.readouterr().out)
+    assert result['status'] == 'BLOCKED'
+    assert 'candidates' not in result
+    assert fingerprints(tmp_path) == before

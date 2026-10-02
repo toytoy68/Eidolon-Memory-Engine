@@ -66,10 +66,15 @@ identiques sur la base précédente (absence de `monkeypatch.context`).
 
 Suivi restant après revue :
 - `resolve()` : maintien du blocage intégral sur Thread corrompu, contrat
-  explicité dans PROJECT-DOSSIERS.md ; test comportemental dédié encore à ajouter.
-- Nettoyage cosmétique de `reasons` quand une échéance invalide transforme
-  UPDATE en REVIEW, sans incidence sur la décision d'exécution.
+  explicité et deux tests API/CLI livrés (avec ou sans sélection explicite).
+- Nettoyage de `reasons` livré : une échéance invalide ne conserve plus la
+  raison annonçant UPDATE ; décision d’exécution inchangée.
 - Résolution humaine FAILED, import opérationnel DELETED et recette VM : ouverts.
+
+Suivi E-004 du 02/10 après-midi : 122 tests ciblés réussis en 2,63 s, quatre
+cas supplémentaires. Deux rouges avant correction des raisons ; ignorer
+expérimentalement les Threads corrompus fait échouer les deux autres.
+Suite complète précédente inchangée ; aucune nouvelle recette VM.
 
 ## Ordre prioritaire
 

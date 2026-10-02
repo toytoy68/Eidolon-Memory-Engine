@@ -75,6 +75,8 @@ valeurs multilignes ne forgent plus de sections de dossier, les propositions de
 retrait exigent une cible cohérente et les échéances sont validées dès le plan.
 71 cas supplémentaires. Claude a terminé sa relecture sur `3b2d7a0` et confirmé
 F1–F4 par sondes ; les chiffres de suite complète restent ceux de Codex.
+Suivi livré : raisons des plans REVIEW corrigées et blocage de `resolve()`
+sur Thread corrompu vérifié par API/CLI (122 tests ciblés, quatre nouveaux cas).
 Détails et limites dans [ECHANGES.md](ECHANGES.md).
 
 Sur une copie arrêtée, `MEMORY_ENGINE_ROOT` désigne la racine contenant `memory/` :

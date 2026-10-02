@@ -1027,3 +1027,18 @@ preuve de test dédiée à cette corruption. Une telle preuve reste à ajouter.
 FAILED, import opérationnel DELETED et recette VM restent ouverts dans la TODO.
 README et TODO actualisés ; aucune suite relancée pour cette édition documentaire.
 Les constats antérieurs et leurs limites sont conservés.
+
+## Suivi E-004 — Codex, 2026-10-02 après-midi, base publiée `a92cdd3`
+
+Poursuite autorisée sans attendre Claude, momentanément indisponible. La raison
+annonçant une mise à jour n'est plus conservée si une date invalide entraîne
+REVIEW. Deux cas rouges avant correction, verts après. Deux autres cas fixent
+le contrat `resolve()` : une source corrompue bloque API et CLI sans résultat
+partiel ni écriture, même avec sélection explicite. Une mutation expérimentale
+en mémoire qui ignore les erreurs Thread fait échouer les deux cas ; aucun
+changement de ce comportement conservateur dans le code publié.
+
+122 tests ciblés réussis, 2,63 s. Quatre nouveaux cas ; suite complète précédente
+de 1102 réussites/cinq blocages toujours datée du lot précédent, non relancée
+pour ce petit suivi. Contrat et TODO actualisés. Prochain lot : import étroit
+des reçus DELETED, en conservant la réserve d'identité et le refus des conflits.

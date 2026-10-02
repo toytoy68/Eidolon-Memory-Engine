@@ -210,7 +210,8 @@ def plan(memory: Memory, context: RoutingContext) -> RoutingPlan:
     if persistence not in {'STORE', 'UPDATE'}:
         proposed_trigger = None
         reasons = [reason for reason in reasons
-                   if reason != 'scheduled_reactivation_proposal_requires_T046_executor']
+                   if reason not in {'scheduled_reactivation_proposal_requires_T046_executor',
+                                     'explicit_target_and_revision_for_update'}]
     applies = applicability(memory, context.query_scope, at=context.at,
                             unresolved_conflict=context.unresolved_conflict)
     reasons.append('applicability_' + applies.lower())
