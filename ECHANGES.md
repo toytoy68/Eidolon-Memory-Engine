@@ -6,7 +6,7 @@ Mode d'emploi : [COLLABORATION.md](docs/COLLABORATION.md).
 
 ## Reprise rapide
 
-État après extension aux éditions Thread FAILED du 02/10, base publiée `121764a`,
+État après passage de la suite sur la VM le 02/10, code testé `ac4d739`,
 branche `refactor/architecture-v1`. Le bilan AUDIT-2026-10-02.md conserve
 le constat avant optimisation ; état et mesures actuels dans MAINTENANCE-COST.md.
 Toujours vérifier HEAD et les changements locaux.
@@ -29,10 +29,13 @@ Toujours vérifier HEAD et les changements locaux.
   T-046 : disponibilité, échéances, raccordement au routage et passe d’entretien
   explicite livrés en local. T-047 livre un premier rappel
   contextualisé avec sources, modes explicites et incertitudes.
-- Dernière suite : **1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, Python 3.12.14/pytest 9.1.1, aucun désélectionné. 401 nouveaux cas
-  après `9063313`. Groupe ciblé : 107 verts, 4,52 s. Aucun essai VM ni coupure
-  de stockage. Import étroit DELETED et reprise humaine des statuts et éditions FAILED
-  livrés ; autres reçus/journaux et familles FAILED encore ouverts.
+- Dernière suite exécutée par toytoy sur `Eidolon-Memory` : **1212 réussis en
+  28,89 s**, Python 3.13.5/pytest 9.1.1, commit `ac4d739`, aucune désélection.
+  Les cinq tests Manager bloqués dans Work passent sur la VM. Suite sur données
+  temporaires ; sauvegarde/restauration, audits des données réelles, services et
+  coupure électrique restent à vérifier. Voir docs/VM-TESTS-2026-10-02.md.
+  401 nouveaux cas après `9063313` ; import étroit DELETED et reprises humaines
+  des statuts/éditions FAILED livrés, autres familles et reçus ouverts.
 - Relecture Claude reçue sur `f507b31` : patch v2 abandonné, correctifs déjà
   présents et filtre migration reconnu plus complet. Revue de lecture/sondes ;
   sans pytest chez Claude ni VM. Revue E-004 détaillée reçue ensuite : F1–F4
@@ -1147,3 +1150,19 @@ FAILED, écritures Information, intentions parentes, conflits réels/abandon et
 recette VM. Les FAILED simultanés de familles différentes restent bloqués pour
 examen ; aucun contournement de dépendance. Import opérationnel général ouvert.
 Estimation globale toujours gelée à 45 % / 52,75 points.
+
+## Première suite complète sur VM — retour toytoy, 2026-10-02, 22 h 27
+
+Mise à jour fast-forward de `b470bdf` à `ac4d739`, puis suite complète dans
+`/tmp/eidolon-tests-doLWCH` avec MEMORY_ENGINE_ROOT isolé, sans cache pytest
+ni bytecode. Python 3.13.5, pytest 9.1.1, PyYAML 6.0.3. Sortie terminal
+transmise par toytoy : `1212 passed in 28.89s`. Aucun échec ni désélection ;
+les cinq tests de concurrence Manager auparavant bloqués dans Work sont inclus.
+
+Codex a lu le retour terminal ; il n'a pas exécuté directement les commandes
+sur la VM ni récupéré le journal complet `/tmp/eidolon-tests-doLWCH/pytest.log`.
+README/TODO actualisés et preuve bornée dans docs/VM-TESTS-2026-10-02.md.
+Pas de nouvelle exécution nécessaire pour ce lot exclusivement documentaire.
+Restent l'inventaire des écrivains et racines, la sauvegarde/restauration,
+les audits sur copie réelle, la reprise opérationnelle et l'intégration services.
+Aucune coupure électrique testée ; estimations gelées inchangées.

@@ -34,6 +34,18 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
+VM `Eidolon-Memory`, retour terminal de toytoy du 02/10/2026 à 22 h 27 :
+**1212 réussis en 28,89 s**, commit `ac4d739`, Python 3.13.5/pytest 9.1.1,
+aucun échec ni désélection. Les cinq scénarios de concurrence Manager passent.
+Suite isolée dans `/tmp/eidolon-tests-doLWCH` ; journal conservé sur la VM.
+Voir [le compte rendu](docs/VM-TESTS-2026-10-02.md). Cette étape valide la suite
+sur la VM, pas encore la sauvegarde/restauration, les audits des données réelles,
+les services ni une coupure électrique. Les limites VM des lots ci-dessous
+restent applicables à cette recette opérationnelle ; leurs chiffres datés
+conservent la preuve disponible au moment de chaque livraison.
+
+Mesure historique dans Work :
+
 Suite complète après extension aux éditions Thread FAILED, base publiée `121764a` :
 **1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, pytest 9.1.1/Python 3.12.14, aucun
 désélectionné. Les cinq tests Manager échouent à la création d’une socket

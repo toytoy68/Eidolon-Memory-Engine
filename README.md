@@ -4,7 +4,8 @@ Moteur de mémoire en fichiers pour Eidolon. Les Informations et Threads sous
 `memory/` sont la source de vérité ; un port d’index reconstructible et sa
 référence sans dépendance externe existent. Le connecteur Qdrant reste différé.
 La branche `refactor/architecture-v1` est en cours de
-développement et n'est pas encore validée sur la VM.
+développement. Sa suite de tests passe sur la VM ; la recette sur données
+réelles et le déploiement restent à valider.
 
 ## Point de départ
 
@@ -68,12 +69,16 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète après extension aux éditions Thread FAILED du 02/10/2026 :
-**1207 réussis, 5 échecs de sockets Manager avant scénario en 75,62 s**, Python 3.12.14, pytest 9.1.1.
-Les cinq tests Manager échouent sur les sockets interdites avant leur scénario
-métier et restent à valider sur la VM. Aucun test désélectionné ; aucune
-validation VM, donnée réelle ou coupure électrique. Le lot ajoute 36 cas de
-résolution des éditions ; groupe ciblé : 107 réussis en 4,52 s.
+Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,
+commit `ac4d739` : **1212 réussis en 28,89 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec ni test désélectionné. Les cinq tests de concurrence bloqués par
+les sockets de Work passent également. Données de test temporaires isolées.
+[Preuve rapportée et périmètre](docs/VM-TESTS-2026-10-02.md).
+
+Résultat antérieur dans Work : 1207 réussis, cinq blocages de sockets Manager
+avant scénario, 75,62 s sous Python 3.12.14. La recette sauvegarde/restauration,
+les audits sur copie des données réelles, les services et la coupure électrique
+restent à vérifier ; ce résultat n'autorise pas à lui seul la mise en production.
 
 Revue E-004 intégrée : REVIEW ne peut plus être contourné par UPDATE, les
 valeurs multilignes ne forgent plus de sections de dossier, les propositions de
