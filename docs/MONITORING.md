@@ -122,3 +122,26 @@ et les commandes actives avant de le lancer. Sur la VM, il a été utilisé pour
 relancer uniquement le dashboard identifié ; `/` et `/sources` répondent 200.
 Un nouveau test rouge avant lot vérifie le refus avant création du serveur,
 sans modification du corpus ; dix tests dashboard/HTTP passent après correction.
+
+## Lisibilité mobile et fonds volumineux — après revue Claude
+
+Les références longues et noms de fichiers peuvent revenir à la ligne ; champs
+et zones de texte restent dans leur conteneur, grille adaptée aux petites largeurs.
+Des surfaces sombres derrière texte/liens assurent leur lisibilité même quand
+l’utilisateur réduit l’assombrissement sur une image claire ; liens/boutons ont
+une hauteur de cible de 44 px. Les index des paragraphes conservent leur place.
+
+L’image de fond sélectionnée (toujours 2 Mo maximum) est désormais redimensionnée
+à 1920×1080 maximum et encodée en JPEG dans un canevas local avant stockage,
+avec limite d’URL data inférieure à celle constatée par Claude sous Chromium.
+Les fonds déjà enregistrés au-delà de cette limite sont adaptés à leur prochain
+chargement. Le fichier d’origine sur le PC n’est pas modifié, aucune image n’est
+transmise à la VM. L’actualisation utilise le script CSP autorisé et se suspend
+quand la personnalisation est ouverte ou l’onglet masqué. Sans JavaScript,
+l’actualisation automatique et les préférences locales ne fonctionnent pas.
+
+17 tests dashboard/HTTP passent, empreinte CSP recalculée automatiquement.
+Vérification de rendu en navigateur réel de ce nouveau lot demandée à Claude :
+aucun Chromium/Playwright disponible sur cette VM, aucun résultat navigateur
+précédent attribué à cette modification. Les mesures de contraste et le défaut
+de grande URL data proviennent de sa revue cloud `5e8c161`.

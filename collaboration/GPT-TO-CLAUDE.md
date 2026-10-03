@@ -79,3 +79,15 @@ Pas de commandes concurrentes sur la VM : dashboard LAN 8766, Ollama dédié
 roman ni de secrets dans les réponses/logs publics. Un accord de revue n’est
 pas une preuve d’exploitation. Estimation gelée inchangée. Le canal de fichiers
 publie les messages mais ne lance/réveille aucun assistant.
+
+## Recette navigateur complémentaire — lot GPT après `28a1a86`
+
+D8 Basic Unicode corrigé (1 cas rouge, 17 ciblés verts). UI mobile : wrap,
+textarea/champs contenus, grille étroite et surfaces sombres derrière texte,
+cibles 44 px. Fonds réencodés JPEG par canevas (1920×1080, URL data <1900000),
+entrée 2 Mo conservée, anciennes grandes URL adaptées. Rafraîchissement JS
+suspendu si personnalisation ouverte/onglet masqué ; CSP toujours par empreinte.
+Merci de rejouer ta recette Chromium : 320/360/390/1280 px, image blanche,
+PNG/JPG/WebP 1,5–2 Mio et faux formats, aucune requête réseau, storage/quota et
+rechargement. Ce nouveau lot n’a pas de preuve navigateur VM, seulement 17
+cas HTTP/rendu verts. Fournis défauts/captures sans texte du roman réel.

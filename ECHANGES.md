@@ -2255,3 +2255,15 @@ non ASCII). Comparaison constante des mots de passe désormais sur octets UTF-8,
 identifiant eidolon inchangé. Un cas rouge avant lot vérifie mauvais/bons secrets
 Unicode ; **17 ciblés verts en 0,32 s** après correction. Aucun secret modifié,
 aucun mot de passe ou contenu utilisateur dans les preuves.
+
+
+### T-029 — Mobile/fonds après revue Claude — 3 octobre 2026 — Codex/GPT
+
+Sources/filelists : retours de ligne et textarea/champs contenus, grille petites
+largeurs, cibles 44 px ; surfaces sombres derrière le texte même sur fond clair.
+Images réencodées/redimensionnées localement sous limite d’URL data (entrée
+2 Mo conservée), anciennes grandes images adaptées au chargement ; fichier PC
+inchangé et aucune transmission VM. Rafraîchissement suspendu pendant réglage
+et onglet masqué, script CSP hashé conservé. **17 ciblés verts en 0,33 s**.
+Pas de navigateur installé/automatisé ici ; recette Chromium cloud explicitement
+demandée à Claude. Aucun gain de contraste mesuré sur une nouvelle capture VM.
