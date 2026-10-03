@@ -34,9 +34,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après parcours Information sans dossier T-043 : **1545 réussis en 38,70 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `3eda522` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-fR5fDp`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après budget du rappel complet T-047 : **1581 réussis en 38,62 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `2a95849` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-MwgpSL`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -544,10 +544,18 @@ linéaire sur le corpus malgré quatre résultats. Rapports/logs/code-outil hash
 Aucun code métier changé ; suite 1516 précédente applicable, pas réexécutée.
 [Mesures et limites](docs/VM-RECALL-2026-10-03.md).
 
+Ajout du 03/10, base `2a95849` vérifiée sur GitHub : recall_payload/API/CLI
+borne le JSON complet et le cadrage explicite ; sources entières omises si
+nécessaire, jamais leurs réserves/preuves. Compteur de tokens explicite sur le
+rendu entier, budgets d’extraits distincts, résultat vide/erreur explicites.
+36 nouveaux cas, 24 rouges renderer puis sept rouges raccordement ;
+113 ciblés verts, deux substitutions négatives. [Contrat](docs/RECALL-PAYLOAD.md).
+
 Restant : qualité/latence sur corpus représentatif, politiques plus fines,
 catalogue/recherche sémantique, clients réels et recette VM sur corpus réel. Le mode historique ne restaure
-pas les révisions textuelles remplacées. Les budgets ne couvrent pas les
-métadonnées ni le prompt final ; verrou/scans à mesurer sous T-049.
+pas les révisions textuelles remplacées. Les budgets du rappel simple couvrent les extraits ; recall_payload couvre
+JSON et cadrage fourni, pas d’autres messages/enveloppes ajoutés ensuite.
+Verrou/scans à mesurer sous T-049.
 
 ### T-050 — Histoire et effacement — À CONCEVOIR
 

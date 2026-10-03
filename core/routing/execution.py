@@ -60,6 +60,11 @@ class RoutingExecutor:
         from core.retrieval.contextual import ContextualRecall
         return ContextualRecall(self.backend).recall(query, **options)
 
+    def recall_payload(self, query, **options):
+        """Render complete recall JSON under an explicit client payload budget."""
+        from core.retrieval.contextual import ContextualRecall
+        return ContextualRecall(self.backend).recall_payload(query, **options)
+
     @staticmethod
     def child_id(intent, step):
         return 'routing-' + sha256(intent.encode()).hexdigest() + '-' + step

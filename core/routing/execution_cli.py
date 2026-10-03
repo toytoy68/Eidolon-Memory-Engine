@@ -2,6 +2,7 @@
 import argparse
 from dataclasses import asdict
 import json
+import sys
 from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
@@ -45,6 +46,16 @@ def main(argv=None):
     recall.add_argument('--mode', choices=['operational', 'historical'], default='operational')
     recall.add_argument('--project-id')
     recall.add_argument('--max-chars', type=int, default=4000)
+    payload = sub.add_parser('recall-payload', help='Bound exact recall JSON plus explicit client framing')
+    payload.add_argument('query')
+    payload.add_argument('--scope', type=Path, required=True)
+    payload.add_argument('--at')
+    payload.add_argument('--mode', choices=['operational', 'historical'], default='operational')
+    payload.add_argument('--project-id')
+    payload.add_argument('--max-chars', type=int, default=4000)
+    payload.add_argument('--max-payload-chars', type=int, required=True)
+    payload.add_argument('--prefix', default='')
+    payload.add_argument('--suffix', default='')
     args = parser.parse_args(argv)
     try:
         # A reader facade avoids constructor mkdir during preview.
@@ -76,6 +87,13 @@ def main(argv=None):
             else:
                 result = executor.preview(memory, context, project_revision=args.project_revision,
                                           include_lifecycle=args.with_lifecycle)
+        elif args.action == 'recall-payload':
+            result = executor.recall_payload(args.query,
+                query_scope=decode_json_value(args.scope.read_text(encoding='utf-8')),
+                at=args.at, mode=args.mode, project_id=args.project_id, max_chars=args.max_chars,
+                max_payload_chars=args.max_payload_chars, prefix=args.prefix, suffix=args.suffix)
+            sys.stdout.write(result.text)
+            return 0
         elif args.action == 'recall':
             result = asdict(executor.recall(args.query,
                             query_scope=decode_json_value(args.scope.read_text(encoding='utf-8')),

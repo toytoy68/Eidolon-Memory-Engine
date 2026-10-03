@@ -47,8 +47,9 @@ excluded_counts sur les candidats effectivement examinés, pas sur tout le corpu
 Les exclusions s’appliquent **avant** les budgets, et la pagination continue même
 si les 100 premiers candidats sont tous exclus. Les limites de caractères et
 les tokens comptés concernent les extraits seuls : métadonnées, sérialisation,
-instructions et prompt complet ne sont pas compris. Le client conserve donc
-la responsabilité de son budget final. Les corps JSON restent optionnels et
+instructions et prompt complet ne sont pas compris. Le client peut utiliser le rendu optionnel [recall_payload](RECALL-PAYLOAD.md)
+pour borner JSON/métadonnées/instructions explicites ; les ajouts ultérieurs
+restent à sa charge. Les corps JSON restent optionnels et
 peuvent être tronqués comme dans ContextAssembler.
 
 Avec project_id, seuls les liens CONCERNS effectivement persistés du Thread

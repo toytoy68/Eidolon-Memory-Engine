@@ -57,6 +57,14 @@ class ContextualRecall:
         self.storage.persistent_root = backend.persistent_root
         self.storage.threads_root = backend.persistent_root / 'threads'
 
+    def recall_payload(self, query, *, max_payload_chars, max_payload_tokens=None,
+                       payload_token_counter=None, prefix='', suffix='', **options):
+        from core.retrieval.payload import render, validate_limits
+        limits = dict(max_payload_chars=max_payload_chars, max_payload_tokens=max_payload_tokens,
+                      payload_token_counter=payload_token_counter, prefix=prefix, suffix=suffix)
+        validate_limits(**limits)
+        return render(self.recall(query, **options), **limits)
+
     def recall(self, query, *, query_scope=None, at=None, mode='operational', project_id=None,
                max_items=5, max_chars=4000, max_item_chars=1000,
                max_tokens=None, token_counter=None, include_structured_content=False, availability=None):
