@@ -166,9 +166,15 @@ def render_extraction(record, extraction, *, csrf=None, ai_enabled=False, page=1
 
 
 def render_proposals(record, proposals, tokens, csrf):
+    skipped = proposals.get('skipped_paragraphs', [])
+    status = 'Passage non analysé' if skipped else 'Passage analysé'
     body = (f'<a href="/source/text?id={record["source_id"]}">Retour au texte</a>'
-            f'<p>Passage analysé : paragraphes {proposals["first_paragraph"]} à {proposals["last_paragraph"]}. '
+            f'<p>{status} : paragraphes {proposals["first_paragraph"]} à {proposals["last_paragraph"]}. '
             f'IA locale : {escape(proposals["model"])}. Aucun souvenir créé avant validation.</p>')
+    for item in skipped:
+        body += (f'<p>Paragraphe {item["paragraph"]} non analysé : {item["characters"]} caractères, '
+                 'au-delà de la limite de 6000. Son texte reste conservé intégralement. '
+                 'Vous pouvez poursuivre au passage suivant.</p>')
     for item, token in zip(proposals['details'], tokens):
         body += (f'<section><p>Paragraphe {item["paragraph"]}</p><blockquote>{escape(item["quote"])}</blockquote>'
                  '<form action="/source/accept" method="post">'

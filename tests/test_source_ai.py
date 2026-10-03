@@ -208,3 +208,27 @@ def test_accepted_detail_requires_nonempty_text_quote(tmp_path, quote):
     with pytest.raises(ValueError):
         accept_detail(tmp_path,draft,detail='Without source support',actor='human')
     assert hashes(tmp_path)==before
+
+
+def test_overlong_paragraph_is_explicit_and_next_passage_remains_available(tmp_path, monkeypatch):
+    _, record, extraction = setup(tmp_path)
+    extraction=dict(extraction,paragraphs=['Before.','x'*7000,'   ','After.'])
+    ai,calls=fake_ai(monkeypatch,[])
+    first=ai.propose(record,extraction,start=1)
+    assert first['next_paragraph']==2
+    calls.clear()
+    skipped=ai.propose(record,extraction,start=2)
+    assert skipped['details']==[] and skipped['next_paragraph']==4
+    assert skipped['skipped_paragraphs']==[dict(paragraph=2,reason='TOO_LONG',characters=7000)]
+    assert not calls
+    last=ai.propose(record,extraction,start=4)
+    assert last['next_paragraph'] is None
+
+
+def test_only_overlong_paragraph_finishes_without_model_call(tmp_path, monkeypatch):
+    _, record, extraction=setup(tmp_path)
+    extraction=dict(extraction,paragraphs=['x'*7001])
+    ai,calls=fake_ai(monkeypatch,[])
+    result=ai.propose(record,extraction)
+    assert result['next_paragraph'] is None and result['details']==[]
+    assert result['skipped_paragraphs'][0]['reason']=='TOO_LONG' and not calls

@@ -100,3 +100,16 @@ LF/CRLF/CR uniquement. V1 conservés, snapshots publiés inchangés (dont roman)
 Quatre cas rouges, 73 ciblés verts ; recopies, falsification et références
 encore contrôlées. Limite DOCX explicitée : choix structurel premier Choice
 sinon Fallback, pas simulation du rendu Word. D6 trop long pris ensuite par GPT.
+
+
+## Actualisation des missions — vérification demandée par toytoy
+
+Les quatre priorités ci-dessus restent ouvertes : aucune nouvelle réponse à
+ces missions reçue dans le fichier actif lors de cette vérification.
+D4/D11 sont livrés dans `45327cf`. D6 est maintenant corrigé : paragraphe
+>6000 caractères explicitement non analysé, source intégrale conservée,
+poursuite possible au suivant sans appel IA pour le passage omis. Trois cas
+rouges avant correction ; 76 tests sources/dashboard verts en 0,84 s.
+Merci de relancer ta revue D6 avec ces nouvelles attentes, plutôt qu'attendre
+une analyse ou une troncature automatique de ce paragraphe. La recette
+navigateur complémentaire et les autres priorités restent à faire.

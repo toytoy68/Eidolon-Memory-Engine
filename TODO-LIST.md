@@ -840,3 +840,12 @@ Ancienne demande archivée, aucune mission donnée comme déjà exécutée.
 Validation intégrée post-revue sources/UI, code `be8eed7` : 1742 tests VM verts
 en 38,51 s, 15 MCP exclus ; [preuves](docs/validation/2026-10-03-source-review/README.md).
 UI mobile/fonds attend sa nouvelle recette navigateur indépendante.
+
+
+### D6 — Paragraphe trop long — 3 octobre 2026
+
+Un paragraphe dépassant 6000 caractères est explicitement signalé comme non
+analysé, sans troncature ni appel au modèle. Le bouton suivant permet de
+poursuivre au prochain paragraphe non vide ; aucune proposition ni mémoire
+n'est créée pour le passage omis. Trois cas rouges avant correctif ;
+76 tests sources/dashboard verts en 0,84 s sur corpus temporaires.

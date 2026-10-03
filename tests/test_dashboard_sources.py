@@ -314,3 +314,21 @@ def test_invalid_extraction_stage_does_not_hide_other_published_sources(tmp_path
         assert request(port,'/source?id='+first['source_id'])[0]==200
         assert hashes(tmp_path)==before
         assert not check_readiness(tmp_path)['ready']
+
+
+def test_overlong_passage_page_signals_omission_without_writes(tmp_path):
+    from tests.test_source_library import add
+    from core.sources.local_ai import LocalDetailAI
+    store=seed(tmp_path)
+    record=add(store,('x'*7000+'\nAfter.').encode(),original_name='long.txt')['source']
+    store.extract(record['source_id'])
+    with server(tmp_path,ai=LocalDetailAI(model='qwen3:0.6b')) as port:
+        page=request(port,'/source/text?id='+record['source_id'])[2]
+        csrf=re.search(b'name="csrf" value="([^"]+)"',page)[1].decode()
+        before=hashes(tmp_path)
+        status,_,page=request(port,'/source/propose',method='POST',
+            body=urlencode(dict(id=record['source_id'],csrf=csrf,start=1)),
+            content_type='application/x-www-form-urlencoded')
+        assert status==200 and 'non analysé'.encode() in page and b'7000' in page
+        assert b'Analyser le passage suivant' in page and b'name="start" value="2"' in page
+        assert b'name="review"' not in page and hashes(tmp_path)==before

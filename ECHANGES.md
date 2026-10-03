@@ -2284,3 +2284,12 @@ Quatre cas rouges avant lot ; **73 ciblés verts en 0,78 s**, ancienne extractio
 DOCX avec doublons et ancienne numérotation TXT encore vérifiées exactes et
 readiness valide après changement de défaut. Contrat explicite : XML principal,
 pas rendu Word ni sélection selon capacités graphiques du lecteur.
+
+
+### D6 — Paragraphe trop long — 3 octobre 2026
+
+Un paragraphe dépassant 6000 caractères est explicitement signalé comme non
+analysé, sans troncature ni appel au modèle. Le bouton suivant permet de
+poursuivre au prochain paragraphe non vide ; aucune proposition ni mémoire
+n'est créée pour le passage omis. Trois cas rouges avant correctif ;
+76 tests sources/dashboard verts en 0,84 s sur corpus temporaires.

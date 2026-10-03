@@ -73,7 +73,13 @@ class LocalDetailAI:
             length += len(text)
         if not selected:
             if any(text.strip() for text in extraction['paragraphs'][start-1:]):
-                raise LocalAIError('PASSAGE_TOO_LONG', 'selected paragraph is too long; select another starting paragraph')
+                following = next((index for index, passage in enumerate(
+                    extraction['paragraphs'][number:], number + 1) if passage.strip()), None)
+                return dict(source_id=record['source_id'], source_sha256=record['sha256'],
+                            extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
+                            model=self.model, model_digest=None, details=[], first_paragraph=start,
+                            last_paragraph=number, next_paragraph=following,
+                            skipped_paragraphs=[dict(paragraph=number, reason='TOO_LONG', characters=len(text))])
             return dict(source_id=record['source_id'], source_sha256=record['sha256'],
                         extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
                         model=self.model, model_digest=None, details=[], first_paragraph=start,
