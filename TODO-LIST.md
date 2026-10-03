@@ -67,6 +67,12 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Import ChatGPT CLI du 03/10 : lecteur dédié et corpus séparé, archives
+OBSERVATION/UNVERIFIED, rôles/dates/parents conservés ; originaux hors Git.
+30 tests ciblés verts. Aucun fait sémantique confirmé, pas de Threads,
+pas de campagne IA ni de prise en charge JSON du dashboard.
+[Procédure VM et limites](docs/CHATGPT-IMPORT.md). NON TESTÉ VM.
+
 Lot concurrence transferts E/copie, **03/10/2026**, base GitHub `3a6062b` :
 patch de Claude (annexe `14de6a7`) intégré avec ses 11 régressions.
 Avant : 3 rouges / 8 verts ; après : **116 ciblés verts** (imports supprimés,
