@@ -74,6 +74,15 @@ legacy, puis tools.check_chatgpt_recall.
 [Commandes et critères](docs/CHATGPT-IMPORT.md#recette-vm-en-attente--nuit-du-0410).
 Aucune relance/déploiement VM effectué en autonomie.
 
+D7/D9 — 04/10 : identité v2 des détails stable entre analyses/acteurs,
+normalisation NFC/blancs, rejeu v1 conservé, aucun historique réécrit ;
+heure du dashboard correctement libellée Europe/Paris. Six cas D7 et un cas
+D9 rouges avant, 129 tests ciblés verts après. Limite des variantes v1
+supprimées et coût du scan documentés dans [Sources](docs/SOURCE-LIBRARY.md).
+Suite complète locale sans proxy : 1816 réussis, 5 échecs à la création
+des sockets Manager interdits, avant les scénarios métier ; aucun saut.
+NON TESTÉ VM ; D10 et F1 restent ouverts.
+
 Corrections locales supplémentaires : import de reçus Information concurrent
 avec attente et revalidation sous verrou ; historique core retenu (Events,
 reçus, suppressions, cycle de vie) empêchant la réouverture des anciens writers.
@@ -120,9 +129,9 @@ avant les scénarios métier ; **15 MCP verts** avec proxy neutralisé.
 **NON TESTÉ VM**. Aucun corpus utilisateur ni transfert réel exécuté.
 La présence du fichier de verrou permet une revalidation sous verrou ; elle
 ne prouve pas qu'un écrivain est actif. Les résidus abandonnés restent bloquants.
-`import_write_receipts` possède aussi un refus préalable à la prise des verrous :
-reproduction dédiée et correctif à traiter dans un lot séparé.
-Identité D7/D10, frontière legacy/core, F1, D9 et UI restent à corriger.
+Le refus préalable de `import_write_receipts` et la frontière legacy/core
+ont été corrigés dans le lot publié `873487a` (voir dernière vérification).
+D7 et D9 sont livrés en local ci-dessus ; D10, F1 et la recette UI réelle restent ouverts.
 
 
 Lot sources/dashboard/IA locale T-051 du **03/10/2026** : **1712 réussis en

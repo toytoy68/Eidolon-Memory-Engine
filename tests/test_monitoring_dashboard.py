@@ -70,3 +70,19 @@ def test_unicode_credentials_do_not_crash_authentication():
     assert not authorized(basic('eidolon:mauvais-é'), 'secret')
     assert not authorized(basic('eidolon:secret'), 'sécure')
     assert authorized(basic('eidolon:sécure'), 'sécure')
+
+
+def test_measurement_label_matches_paris_timezone_in_summer_winter_and_dst_fold():
+    metrics = dict(host='test',data_path='/tmp',ram_bytes=dict(total=1,used=0,available=1),
+        volume_bytes=dict(total=1,used=0,free=1),engine_data=dict(files=0,bytes=0,symlinks_skipped=0))
+    state=dict(threads=dict(statuses={},needs_review=[]),
+        thread_status_operations=dict(statuses={},needs_review=[]),pending_operations=0)
+    for instant,expected in (
+        ('2026-07-01T12:00:00+00:00','01-07-2026 T 14:00:00 +02:00'),
+        ('2026-01-01T12:00:00+00:00','01-01-2026 T 13:00:00 +01:00'),
+        ('2026-10-25T00:30:00+00:00','25-10-2026 T 02:30:00 +02:00'),
+        ('2026-10-25T01:30:00+00:00','25-10-2026 T 02:30:00 +01:00'),
+    ):
+        html=render_dashboard(dict(metrics,measured_at=instant),state)
+        assert expected+' (Europe/Paris)' in html
+        assert expected+' UTC' not in html

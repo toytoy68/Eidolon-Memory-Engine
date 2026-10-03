@@ -96,7 +96,9 @@ git pull --ff-only origin refactor/architecture-v1
 .venv/bin/python -m pytest -q \
   tests/test_chatgpt_passages.py tests/test_chatgpt_import.py \
   tests/test_write_receipt_import.py tests/test_write_receipt_import_concurrency.py \
-  tests/test_legacy_writer_guard.py tests/test_legacy_history_guard.py
+  tests/test_legacy_writer_guard.py tests/test_legacy_history_guard.py \
+  tests/test_source_detail_identity.py tests/test_source_ai.py \
+  tests/test_monitoring_dashboard.py
 .venv/bin/python -m tools.check_chatgpt_recall \
   --root /home/toytoy/eidolon-corpus-gpt-test
 ```
@@ -110,3 +112,7 @@ Les tests supplémentaires couvrent l’attente des imports concurrents de reçu
 et le blocage des anciens outils d’écriture lorsque seul l’historique core
 subsiste. Ces corrections restent NON TESTÉES VM. Aucun transfert ni aucune
 suppression de données ne sont nécessaires pour cette recette.
+
+D7/D9 ajoutés à la reprise : les tests vérifient l’identité des détails et le
+libellé Europe/Paris. Compléter ensuite par une visite du tableau de bord sur
+mobile ; les tests de rendu local ne constituent pas une recette navigateur.

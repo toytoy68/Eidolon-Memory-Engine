@@ -234,3 +234,43 @@ ces pilotes. Aucun snapshot existant, notamment celui du roman, n’est réécri
 extract sur une source déjà extraite renvoie toujours UNCHANGED. Quatre nouveaux
 cas rouges avant le lot vérifient doublon DOCX, lignes TXT et conservation v1 ;
 **73 ciblés verts**, contrôles de falsification et sauvegarde sources inclus.
+
+## Identité des détails relus v2 — D7, 4 octobre 2026
+
+Une nouvelle validation produit `source-detail-v2-<empreinte>` et conserve en
+provenance `detail_key_version: 2`, `detail_normalization: nfc-ws-v1`.
+L’identité contient la source, ses empreintes source/extraction, le pilote,
+le paragraphe, la citation exacte et le détail normalisé. La normalisation NFC
+retire les blancs périphériques et remplace une suite de blancs par une espace ;
+elle conserve casse, ponctuation et accents. Le contenu publié est normalisé,
+la proposition originale du modèle reste conservée en provenance.
+
+Le modèle, l’acteur et la date du formulaire ne changent plus cette identité.
+Une seconde analyse ou un autre acteur retrouve le résultat de la première
+validation, dont la provenance reste intacte. Le contrôle du passage source
+reste obligatoire avant tout rejeu. Les verrous Persistent coordonnent recherche
+et création ; deux validations concurrentes produisent une seule Information.
+
+Compatibilité : une commande v1 exacte garde son empreinte et son rejeu,
+y compris par reçu compacté après suppression. Un détail v1 encore présent et
+équivalent désigne sa validation existante sans réécriture. Les validations v2
+supprimées sont également reconnues par leur reçu, sans résurrection.
+**Limite :** une variante d’un détail v1 déjà supprimé peut créer une validation
+v2 : le reçu historique ne conserve pas son texte. Aucun fichier historique
+n’est migré. La comparaison avec les v1 présents nécessite un scan en lecture ;
+le coût sur de grands corpus reste à mesurer. Les synonymes ne sont pas fusionnés.
+
+D10 reste ouvert : ce lot conserve `MODEL_GENERATED` pour éviter de mélanger
+le changement d’identité avec le choix entre les vocabulaires de schéma.
+F1 (substitution manuelle d’une extraction par une autre version légitime)
+reste ouvert et nécessite un engagement durable d’extraction distinct.
+
+Preuves locales : six cas rouges avant D7 ; 129 tests ciblés verts après,
+compatibilité v1, compaction, suppression, concurrence et tableau de bord inclus.
+D9 : le tableau de bord affiche `(Europe/Paris)` après l’heure et son décalage,
+avec contrôles été/hiver et les deux occurrences de l’heure au changement DST.
+**NON TESTÉ VM**, notamment pas de validation navigateur mobile réelle.
+
+Suite complète locale Python 3.12.14/pytest 9.1.1, proxy neutralisé :
+**1816 réussis, 5 échecs** (sockets multiprocessing.Manager interdits,
+avant les scénarios métier), aucun saut. Les 15 tests MCP sont inclus et verts.

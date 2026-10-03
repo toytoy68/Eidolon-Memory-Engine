@@ -3,6 +3,8 @@ import base64
 from hashlib import sha256
 import hmac
 import json
+import re
+import unicodedata
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
@@ -31,6 +33,27 @@ def unseal(token, secret):
         return value
     except (ValueError, UnicodeError) as exc:
         raise ValueError('review form expired or changed') from exc
+
+
+def normalized_detail(value):
+    """nfc-ws-v1: preserve case, accents and punctuation; collapse whitespace."""
+    return ' '.join(unicodedata.normalize('NFC', value).split())
+
+
+def detail_identity(review, detail):
+    return dict(source=review['source_id'], source_sha256=review['source_sha256'],
+                extraction_sha256=review['extraction_sha256'], extractor=review['extractor'],
+                paragraph=review['paragraph'], quote=review['quote'],
+                detail=normalized_detail(detail))
+
+
+def _replay_detail(writer, entry, operation_id):
+    if entry.receipt is not None:
+        return entry.result
+    plan = entry.operation.plan
+    return writer.create(writer.backend._deserialize(plan.after_state),
+                         operation_id=operation_id, event_id=plan.event_id,
+                         actor=plan.actor, timestamp=plan.timestamp)
 
 
 def accept_detail(root, review, *, detail, actor):
@@ -63,5 +86,35 @@ def accept_detail(root, review, *, detail, actor):
         memory = Memory('source-detail-'+key, content=detail,
                         metadata={'type': 'INTERPRETATION', 'epistemic_status': 'UNVERIFIED'}, provenance=provenance)
         backend = FilesystemBackend(store.root / 'memory/persistent', store.root / 'memory/history')
-        return FilesystemInformationWrites(backend).create(memory, operation_id='source-accept-'+key,
-            event_id='source-event-'+key, actor=actor, timestamp=review['proposed_at'])
+        writer = FilesystemInformationWrites(backend)
+        # Exact historical commands keep the v1 fingerprint and vocabulary.
+        old_entry = writer.journal.read('source-accept-'+key)
+        if old_entry is not None:
+            return writer.create(memory, operation_id='source-accept-'+key,
+                event_id='source-event-'+key, actor=actor, timestamp=review['proposed_at'])
+        identity = detail_identity(review, detail)
+        new_key = sha256(json.dumps(identity, sort_keys=True, ensure_ascii=False,
+                                   separators=(',', ':')).encode()).hexdigest()
+        opid = 'source-accept-v2-'+new_key
+        entry = writer.journal.read(opid)
+        if entry is not None:
+            return _replay_detail(writer, entry, opid)
+        # Only existing v1 details are compared. Deleted v1 variants cannot be
+        # reconstructed from content-free receipts; no implicit migration runs.
+        for previous in backend.list(limit=2**31):
+            if ('detail_key_version' in previous.provenance
+                    or not re.fullmatch(r'source-detail-[0-9a-f]{64}', previous.information_id)):
+                continue
+            fields = previous.provenance
+            previous_identity = {name: fields.get(name) for name in identity if name != 'detail'}
+            previous_identity['detail'] = normalized_detail(previous.content)
+            if previous_identity == identity:
+                previous_opid = 'source-accept-'+previous.information_id.removeprefix('source-detail-')
+                previous_entry = writer.journal.read(previous_opid)
+                if previous_entry is not None:
+                    return _replay_detail(writer, previous_entry, previous_opid)
+        provenance.update(detail_key_version=2, detail_normalization='nfc-ws-v1')
+        memory = Memory('source-detail-v2-'+new_key, content=normalized_detail(detail),
+            metadata={'type': 'INTERPRETATION', 'epistemic_status': 'UNVERIFIED'}, provenance=provenance)
+        return writer.create(memory, operation_id=opid,
+            event_id='source-event-v2-'+new_key, actor=actor, timestamp=review['proposed_at'])
