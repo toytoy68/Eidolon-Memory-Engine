@@ -1888,3 +1888,25 @@ Script corrigé : runtime Python root, lisible/exécutable par le compte service
 sans permission d'écriture pour ce compte. Fichiers credentials/état restent
 privés. Réparation existante par chmod go+rX sur le seul venv puis restart.
 Syntaxe Bash vérifiée ; validation publique à refaire après exécution sudo.
+
+
+### Recette réelle Claude Web ↔ GitHub — 3 octobre 2026 — Codex/GPT
+
+Domaine eidolon.re acquis chez OVH, DNS délégués à Cloudflare après désactivation
+DNSSEC OVH ; statut Actif montré par utilisateur. Tunnel eidolon-memory Optimal,
+route mcp.eidolon.re vers http://localhost:8765. Auth0 et utilisateur autorisé
+configurés avec l'opérateur ; credentials Git privés maintenus sur VM.
+
+Après correction des permissions venv, contrôle direct : service actif ; endpoint
+public /mcp HTTP 401 sans token avec challenge OAuth, découverte RFC 9728 HTTP
+200 annonçant Auth0 et scope eidolon:exchange. Test Claude rapporté par toytoy :
+statut ready=true et lecture GPT, puis publication
+`f2a41197a8ee379e0767cb4610ffa99e6b992fc9`. Commit récupéré et examiné directement
+par Codex : exactement réponse Claude et archive précédente, texte de test
+conforme, aucune modification métier. Aller-retour réel confirmé. Message GPT
+de préparation archivé et remplacé par ce statut actuel.
+
+Les approbations par outil restent un réglage de l'interface Claude ;
+authentification OAuth et autorisations métier distinctes. Aucun réveil
+automatique, service permanent testé sans coupure électrique ou jeton expiré ;
+ces scénarios d'exploitation restent non validés. Estimation globale inchangée.

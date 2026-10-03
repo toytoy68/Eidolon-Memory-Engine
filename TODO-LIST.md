@@ -41,7 +41,7 @@ budget de rappel, recettes synthétiques et mesures tmpfs/ext4.
 Les anciens résultats datés restent conservés ; les statuts actuels ci-dessous
 distinguent désormais VM synthétique et validation sur corpus réel.
 
-## Canal GPT ↔ Claude — CODE LIVRÉ / ACTIVATION DISTANTE À FAIRE
+## Canal GPT ↔ Claude — ACTIVÉ / ALLER-RETOUR CLAUDE WEB VALIDÉ
 
 Demande du 03/10 dans « Connecter GitHub à Claude » reprise sur VM depuis
 `d9c8ba8`. Deux messages actifs courts, archivage des réponses, serveur MCP
@@ -54,8 +54,11 @@ Aucun test sur données mémoire actives.
 Paquet reproductible et script d’installation sans activation préparés ensuite ;
 11 tests supplémentaires réussis. Droit administrateur : mot de passe requis.
 
-**À FAIRE** : domaine public/DNS/HTTPS, fournisseur OAuth et identité autorisée,
-clé GitHub dédiée, installation permanente et recette Claude Web réelle.
+**ACTIVÉ le 03/10** : domaine mcp.eidolon.re via Cloudflare Tunnel, Auth0,
+clé GitHub dédiée et service systemd. HTTPS 401 sans token / découverte 200
+vérifiés directement ; réponse réelle Claude Web publiée dans `f2a4119`,
+commit distant et archivage vérifiés par Codex. Reconnexion après expiration,
+redémarrage VM et restauration du service restent à vérifier.
 Caddy absent sur la VM ; modèle non validé par Caddy. Syntaxe systemd vérifiée
 sur copie avec chemin Python existant, unité permanente non installée.
 [Contrat, installation et reprise](docs/COLLABORATION-MCP.md). Estimation globale
