@@ -69,9 +69,17 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 **VM EN ATTENTE (04/10, toytoy au repos, accès VM indisponible)** : après la
 base VM vérifiée 88050bc, synchroniser fenêtres v2 b3ae58e et les lots suivants,
-relancer tests_chatgpt_passages/import puis tools.check_chatgpt_recall.
+relancer les tests de rappel/import, de concurrence des reçus et de frontière
+legacy, puis tools.check_chatgpt_recall.
 [Commandes et critères](docs/CHATGPT-IMPORT.md#recette-vm-en-attente--nuit-du-0410).
 Aucune relance/déploiement VM effectué en autonomie.
+
+Corrections locales supplémentaires : import de reçus Information concurrent
+avec attente et revalidation sous verrou ; historique core retenu (Events,
+reçus, suppressions, cycle de vie) empêchant la réouverture des anciens writers.
+Reproductions rouges puis 86 tests ciblés verts. Suite : 1799 verts,
+5 blocages sockets Manager de l’environnement et 1 échec proxy SOCKS ;
+15 MCP verts en relance sans proxy (dont le cas SOCKS). NON TESTÉ VM.
 
 Classement global des passages : option backend passage_chars explicite pour
 lexical_v1, sélection avant pagination ; objets ordinaires inchangés.

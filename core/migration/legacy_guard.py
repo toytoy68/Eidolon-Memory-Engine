@@ -26,8 +26,23 @@ def require_legacy_persistent_only(persistent_root: Path, history_root: Path) ->
     threads = persistent / "threads"
     if has_symlink_component(threads) or (threads.is_dir() and any(threads.glob("*.md"))):
         raise ValueError("legacy writer blocked: core Thread storage exists")
-    for category in ("operations", "events"):
-        for name in ("thread-create-v1", "thread-status-v1", "thread-update-v1", "routing-execution-v1"):
-            journal = history / category / name
-            if has_symlink_component(journal) or (journal.is_dir() and any(journal.iterdir())):
-                raise ValueError("legacy writer blocked: core operation journal exists")
+    # Retained canonical history remains a boundary even with no visible objects.
+    families = ("thread-create-v1", "thread-status-v1", "thread-update-v1",
+                "thread-delete-v1", "routing-execution-v1", "information-write-v1",
+                "lifecycle-trigger-v1")
+    directories = [history / category / name
+                   for category in ("operations", "events", "operation-receipts")
+                   for name in families]
+    directories.append(history / "pending-delete")
+    for journal in directories:
+        if has_symlink_component(journal):
+            raise ValueError("legacy writer blocked: core history journal contains a symlink")
+        try:
+            if journal.exists():
+                if not journal.is_dir() or any(
+                    entry.name != '.write.lock' or entry.is_symlink() or not entry.is_file()
+                    for entry in journal.iterdir()
+                ):
+                    raise ValueError("legacy writer blocked: core operation journal exists")
+        except OSError as exc:
+            raise ValueError("legacy writer blocked: unreadable core history") from exc

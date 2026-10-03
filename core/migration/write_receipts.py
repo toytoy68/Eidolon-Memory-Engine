@@ -156,7 +156,13 @@ def import_write_receipts(source, destination):
     unknown temporary residues are blocked by readiness, never automatically removed.
     """
     report, _ = _prepare(source, destination)
-    if report['status'] != 'READY':
+    lock_file = Path(destination) / 'memory/persistent/.write.lock'
+    # Only a destination readiness issue beside an existing cooperative lock
+    # may be transient. Source/tree/receipt problems remain immediate.
+    contended = (report['status'] == 'BLOCKED' and bool(report['issues']) and all(
+        issue.get('side') == 'destination' and issue.get('reason') == 'readiness_blocked'
+        for issue in report['issues']) and lock_file.is_file() and not lock_file.is_symlink())
+    if report['status'] != 'READY' and not contended:
         return dict(report, imported=[])
     destination = Path(destination)
     imported = []

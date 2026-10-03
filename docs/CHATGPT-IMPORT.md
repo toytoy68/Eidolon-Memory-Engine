@@ -93,7 +93,10 @@ correctifs suivants doivent être synchronisés et testés demain :
 cd /opt/eidolon-memory-engine
 git status --short
 git pull --ff-only origin refactor/architecture-v1
-.venv/bin/python -m pytest -q tests/test_chatgpt_passages.py tests/test_chatgpt_import.py
+.venv/bin/python -m pytest -q \
+  tests/test_chatgpt_passages.py tests/test_chatgpt_import.py \
+  tests/test_write_receipt_import.py tests/test_write_receipt_import_concurrency.py \
+  tests/test_legacy_writer_guard.py tests/test_legacy_history_guard.py
 .venv/bin/python -m tools.check_chatgpt_recall \
   --root /home/toytoy/eidolon-corpus-gpt-test
 ```
@@ -102,3 +105,8 @@ Ne pas réimporter les données pour les corrections de rappel. Ne pas attribuer
 les mesures cloud à la VM. Résultat attendu de la recette : status PASS,
 unchanged et references_exact vrais. La couverture partielle de certains
 résultats est explicitement affichée ; elle n'est pas une erreur de référence.
+
+Les tests supplémentaires couvrent l’attente des imports concurrents de reçus
+et le blocage des anciens outils d’écriture lorsque seul l’historique core
+subsiste. Ces corrections restent NON TESTÉES VM. Aucun transfert ni aucune
+suppression de données ne sont nécessaires pour cette recette.
