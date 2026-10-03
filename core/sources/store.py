@@ -121,6 +121,9 @@ class SourceStore:
         _fields(original_name, title, author, added_at)
         if not isinstance(content, bytes) or not 0 < len(content) <= MAX_BYTES:
             raise ValueError('source must contain 1 byte to 10 MiB')
+        # Resolve runtime dependencies before creating any publication stage.
+        from core.migration.converter import _atomic_bytes
+        from core.migration.core_copy import _publish
         self._paths()
         persistent = self.root / 'memory/persistent'
         if not persistent.is_dir():
@@ -154,13 +157,11 @@ class SourceStore:
                     record = prepared
                 else:
                     stage.mkdir()
-                    from core.migration.converter import _atomic_bytes
                     _atomic_bytes(stage / 'original', content)
                     atomic_write_text(stage / 'metadata.json', json.dumps(record, ensure_ascii=False, sort_keys=True)+'\n')
                     self._bundle(stage, identity)
                 self._checkpoint('after_staging')
                 # Same Linux NOREPLACE primitive used by core-tree transfers.
-                from core.migration.core_copy import _publish
                 _publish(stage, target)
                 invalidate_publication(persistent)
                 self._checkpoint('after_publication')

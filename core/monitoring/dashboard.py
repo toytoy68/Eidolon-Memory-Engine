@@ -176,6 +176,9 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                 upload = parse_upload(self.headers.get('Content-Type'), raw, csrf)
                 result = store.add(**upload, added_at=datetime.now(timezone.utc).isoformat())
                 self._page(render_sources(store.list(), csrf=csrf, result=result['status']))
+            except ImportError:
+                self.log_error('Missing runtime dependency; launch using the project virtual environment')
+                self.send_error(500, 'Dependance serveur manquante; contacter l administrateur.')
             except (OSError, ValueError, TypeError, KeyError, BackendError, OperationRepositoryError):
                 self.send_error(400, 'Action non terminee; verifier le fichier, le formulaire et le moteur local. Une source deja conservee reste intacte.')
 

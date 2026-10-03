@@ -63,6 +63,27 @@ def test_authenticated_upload_list_and_exact_attachment(tmp_path):
         assert request(port, '/source?id=../other')[0] == 404
 
 
+def test_missing_runtime_dependency_returns_http_error_without_writes(tmp_path, monkeypatch):
+    import builtins
+    store = seed(tmp_path)
+    original_import = builtins.__import__
+
+    def missing_converter(name, *args, **kwargs):
+        if name == 'core.migration.converter':
+            raise ModuleNotFoundError("No module named 'yaml'")
+        return original_import(name, *args, **kwargs)
+
+    with server(tmp_path) as port:
+        page = request(port, '/sources')[2]
+        csrf = re.search(b'name="csrf" value="([^"]+)"', page)[1].decode()
+        before = hashes(tmp_path)
+        monkeypatch.setattr(builtins, '__import__', missing_converter)
+        status, _, body = request(port, '/sources', method='POST', body=multipart(csrf),
+                                  content_type='multipart/form-data; boundary=BOUNDARY')
+        assert status == 500 and b'Dependance serveur manquante' in body
+        assert hashes(tmp_path) == before and store.list() == []
+
+
 def test_csrf_unauthorized_and_readonly_uploads_do_not_write(tmp_path):
     store = seed(tmp_path)
     with server(tmp_path) as port:

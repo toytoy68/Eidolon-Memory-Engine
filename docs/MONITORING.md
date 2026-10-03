@@ -45,7 +45,7 @@ authentification HTTP Basic (identifiant `eidolon`). Exemple local :
 
 ```sh
 export EIDOLON_DASHBOARD_TOKEN='un-secret-long-et-aleatoire'
-python -m core.monitoring.dashboard --root /opt/eidolon-memory-engine
+.venv/bin/python -m core.monitoring.dashboard --root /opt/eidolon-memory-engine
 ```
 
 Ouvrir `http://127.0.0.1:8766/` sur la machine serveur. Sur la VM 110 indiquée
@@ -81,3 +81,14 @@ synthétiques : les limites historiques ci-dessus concernant l’absence de
 test socket décrivent la première livraison. Aucun navigateur/LAN/corpus réel,
 service dashboard permanent ni HTTPS dashboard nouvellement installé. Le port
 par défaut 8766 est distinct du service MCP actif sur 8765.
+
+Le 03/10/2026, le dashboard a été activé sur `192.168.1.110:8766` avec
+l’environnement `.venv` du projet, dépôt de sources et Qwen3 0.6B activés.
+Les accès authentifiés à `/` et `/sources` ont été vérifiés ; l’accès depuis
+le PC a également été constaté dans les journaux. Le lancement reste manuel.
+Un premier envoi a échoué car le Python système ne disposait pas de PyYAML :
+aucun original n’avait été écrit. Le dossier temporaire vide a été conservé
+hors bibliothèque dans `tmp/dashboard`, puis le serveur relancé avec `.venv`.
+Les dépendances de publication sont désormais chargées avant toute création
+de dossier temporaire ; une dépendance manquante produit une réponse HTTP 500.
+Les 23 tests ciblés d’import et de bibliothèque passent, dont cette régression.
