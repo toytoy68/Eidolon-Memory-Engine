@@ -9,7 +9,8 @@ MAX_TEXT_BYTES = 16 * 1024 * 1024
 W = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
 
 
-def extract_paragraphs(record, original):
+def _extract_v1(record, original):
+    """Frozen v1 semantics; new parsing rules require a separately named driver."""
     suffix = Path(record['original_name']).suffix.lower()
     if suffix in {'.txt', '.md'}:
         text = original.decode('utf-8-sig')
@@ -53,11 +54,39 @@ def extract_paragraphs(record, original):
                 text_sha256=sha256(text.encode('utf-8')).hexdigest(), paragraphs=paragraphs)
 
 
+_EXTRACTORS = {
+    'utf8-lines-v1': ({'.txt', '.md'}, _extract_v1),
+    'docx-paragraph-v1': ({'.docx'}, _extract_v1),
+}
+_DEFAULT_EXTRACTORS = {'.txt': 'utf8-lines-v1', '.md': 'utf8-lines-v1', '.docx': 'docx-paragraph-v1'}
+
+
+def reproduce_extraction(record, original, *, extractor):
+    """Verify a published snapshot using its recorded version, never the default."""
+    if not isinstance(extractor, str) or extractor not in _EXTRACTORS:
+        raise ValueError('unsupported frozen source extractor')
+    suffixes, driver = _EXTRACTORS[extractor]
+    if Path(record['original_name']).suffix.lower() not in suffixes:
+        raise ValueError('source format differs from frozen extractor')
+    result = driver(record, original)
+    if result['extractor'] != extractor:
+        raise ValueError('frozen extractor returned a different version')
+    return result
+
+
+def extract_paragraphs(record, original):
+    """Select the current default for a new extraction only."""
+    extractor = _DEFAULT_EXTRACTORS.get(Path(record['original_name']).suffix.lower())
+    if extractor is None:
+        raise ValueError('PDF originals can be preserved; PDF text extraction is not available in this version')
+    return reproduce_extraction(record, original, extractor=extractor)
+
+
 def validate_extraction(value, identity):
     keys = {'format_version', 'extractor', 'source_sha256', 'text_sha256', 'paragraphs'}
     if (not isinstance(value, dict) or set(value) != keys or type(value['format_version']) is not int
             or value['format_version'] != 1 or value['source_sha256'] != identity
-            or value['extractor'] not in {'utf8-lines-v1', 'docx-paragraph-v1'}
+            or not isinstance(value['extractor'], str) or value['extractor'] not in _EXTRACTORS
             or not isinstance(value['paragraphs'], list)
             or not all(isinstance(p, str) for p in value['paragraphs'])):
         raise ValueError('invalid source extraction')

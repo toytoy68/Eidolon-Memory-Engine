@@ -111,3 +111,12 @@ préremplis, reprise exacte et date initiale conservée. Temporaire d’extracti
 lot signalé, autres sources disponibles, aucune purge/réparation implicite ;
 readiness reste bloquante. Deux tests rouges, 58 ciblés verts. D3 réparation du
 lot lui-même reste manuelle. D5 et Basic/mobile sont les prochains lots GPT.
+
+## Suite D5 après `8dd2f33`
+
+Alternative conservant les anciennes versions choisie : extraction publiée
+reproduite avec son pilote enregistré, defaults nouveaux documents séparés.
+V1 inchangés ; contrôle complet original/texte maintenu, inconnus/incompatibles
+refusés. Test d’évolution rouge avant lot, 65 ciblés verts dont falsification
+réhashée toujours bloquante. Pas de migration du roman ni affaiblissement en
+simple checksum ; une future correction D4/D11 devra introduire un pilote v2.

@@ -197,3 +197,20 @@ d’extraction est signalé pour vérification, sans lecture de contenu invalide
 suppression/purge ou réparation implicite. Deux parcours HTTP rouges avant le lot,
 **58 ciblés verts**, reprise réelle et conservation de date testées sur corpus
 factice ; source valide accessible et readiness toujours bloquante en cas d’anomalie.
+
+## Versions d’extraction figées (revue Claude D5)
+
+Chaque lecture d’une extraction publiée reproduit son texte avec le pilote
+correspondant au champ extractor enregistré, et non avec l’extracteur par défaut
+pour les nouveaux documents. Les pilotes `utf8-lines-v1` et `docx-paragraph-v1`
+conservent leurs règles antérieures ; toute nouvelle règle doit recevoir un
+nouveau nom/version et être ajoutée au registre. Les formats sont vérifiés par
+version ; une version inconnue ou incompatible reste bloquante.
+
+L’extraction continue d’être comparée à l’original : cette séparation ne rend
+pas valable un texte falsifié dont l’empreinte aurait été recalculée. Aucun
+snapshot existant n’est migré ni réécrit et les versions par défaut n’ont pas
+changé dans ce lot. Un cas rouge reproduit l’évolution de l’extracteur courant
+avec suppression des vides ; l’extraction v1/readiness restent maintenant valides
+sans écriture. **65 ciblés verts**, contrôles de falsification inclus. Conserver
+les anciens pilotes est une obligation lors des évolutions ultérieures.

@@ -69,8 +69,9 @@ class SourceStore:
                 or record['sha256'] != identity or sha256(data).hexdigest() != identity):
             raise ValueError('source original or identity differs from metadata')
         if (path / 'extraction.json').exists():
-            from core.sources.extraction import extract_paragraphs
-            if self._extraction(path, identity) != extract_paragraphs(record, data):
+            from core.sources.extraction import reproduce_extraction
+            frozen = self._extraction(path, identity)
+            if frozen != reproduce_extraction(record, data, extractor=frozen['extractor']):
                 raise ValueError('frozen extraction differs from original source')
         return record, data
 

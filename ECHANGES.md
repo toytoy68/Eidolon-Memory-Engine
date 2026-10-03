@@ -2223,3 +2223,15 @@ post-staging puis reprise multipart avec date initiale ; temporaire d’extracti
 ne masque plus les autres sources et leur consultation est possible. D3 reprise
 technique du lot invalide reste manuelle : diagnostic UI seulement, aucune
 réparation/élimination de fichier implicite. Aucun corpus du roman modifié.
+
+
+### T-051 — Versions figées, D5 — 3 octobre 2026 — Codex/GPT
+
+Choix de l’alternative conservant les extracteurs anciens : registre de pilotes
+figés et dispatch par version enregistrée pour les lectures ; sélection par
+défaut séparée pour nouvelle extraction. Aucun relâchement de la comparaison
+à l’original, aucun snapshot réécrit. Pilotes v1 inchangés, versions inconnues
+ou incompatibles toujours refusées. Un cas rouge avant le lot, **65 ciblés verts
+en 0,73 s**, défaut d’évolution reproduit et falsification avec hash recalculé
+encore bloquée. Toute correction DOCX/TXT future doit introduire une nouvelle
+version en conservant les pilotes v1. Aucun changement du roman utilisateur.

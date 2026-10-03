@@ -167,3 +167,22 @@ def test_core_copy_carries_frozen_text_extraction(tmp_path):
     assert copy_core(source,target)['status'] == 'COPIED'
     assert SourceStore(target).extraction(identity) == extracted
     assert SourceStore(target).read(identity) == store.read(identity)
+
+
+def test_frozen_extraction_survives_change_to_default_extractor(tmp_path, monkeypatch):
+    import core.sources.extraction as module
+    from core.operations.readiness import check_readiness
+    store=seed(tmp_path)
+    record=add(store,b'First paragraph\n\nSecond paragraph',original_name='frozen.txt')['source']
+    frozen=store.extract(record['source_id'])['extraction']
+    original=module.extract_paragraphs
+    def newer(record,data):
+        old=original(record,data)
+        paragraphs=[text for text in old['paragraphs'] if text.strip()]
+        from hashlib import sha256
+        return dict(old,extractor='utf8-lines-v2',paragraphs=paragraphs,
+                    text_sha256=sha256('\n'.join(paragraphs).encode()).hexdigest())
+    before=hashes(tmp_path)
+    monkeypatch.setattr(module,'extract_paragraphs',newer)
+    assert store.extraction(record['source_id'])==frozen
+    assert check_readiness(tmp_path)['ready'] and hashes(tmp_path)==before
