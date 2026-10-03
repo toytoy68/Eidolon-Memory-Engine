@@ -2009,3 +2009,62 @@ Contrat docs/MAINTENANCE-PASS.md : uniquement occupation de verrous coopératifs
 canoniques, pas CPU/SSH/inactivité humaine ; autres verrous et scans peuvent
 encore attendre. Aucun ordonnanceur, horaire, donnée réelle, branche Windows
 ou coupure électrique validé. Estimation 45 % / 52,75 points inchangée.
+
+
+### T-051/T-029 — Sources et détails IA validés — 3 octobre 2026 — Codex/GPT
+
+Demande directe toytoy après proposition Claude `4982014`, puis précisions :
+propositions de détails par IA locale, modèle petit pour limiter la concurrence
+avec Eidolon Core, choix explicite Qwen3 0.6B. Revue if-idle `2387dec` reçue/lue
+pendant ce lot ; A/B/C de Claude conservés pour un correctif distinct. Claude
+n’a pas livré de changement dashboard dans ces messages ; attribution limitée
+à proposition et revue, aucun test VM de sa part attribué à cette séance.
+
+Base code `4982014`, checkout isolé /tmp/em-sources-lLnCIA/repo, branche
+codex/dashboard-source-library. Conservation DOCX/PDF/TXT/Markdown byte-exact,
+fiche/hash, versions par nouveau hash ; Sources/upload/téléchargement/consultation
+authentifiés, opt-in --allow-source-upload et CSRF. Port dashboard 8766 distinct
+du MCP actif. Extraction DOCX/TXT/Markdown figée, vérifiée contre l’original,
+paragraphes/hash ; PDF original uniquement. Inventaire/readiness et convertisseur
+legacy raccordés ; transfert core conserve aussi original/extraction.
+
+Ollama 0.35.1 installé manuellement hors Git dans tmp/local-ai/runtime, modèle
+qwen3:0.6b 522653767 octets, digest 7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435.
+Daemon dédié 127.0.0.1:11435 démarré à nice 19, cloud désactivé, concurrence 1 ;
+appel un thread, 4096 contexte, 512 tokens, keep_alive=0. Aucun service Core,
+Hermes, Qdrant ou Claude modifié, aucun secret ajouté au dépôt. Une seule analyse
+locale à la fois ; pas de quota matériel ni de garantie de zéro impact sur Core.
+
+Parcours passage borné → propositions avec citations exactes → formulaire signé,
+correction/validation explicite → écriture Information coordonnée. Détail
+INTERPRETATION/UNVERIFIED, provenance MODEL_GENERATED avec source/texte/model
+hashés, paragraphe, citation et auteur de validation ; aucune vérité inférée,
+aucun texte intégral ingéré. Rejeu stable du formulaire et détail sans seconde
+écriture ni résurrection après suppression ; source jamais supprimée implicitement.
+
+47 nouveaux tests : 16 rouges sur squelette SourceStore, quatre scénarios HTTP
+rouges contre handler de base ; **49 ciblés verts en 0,55 s** avec les deux cas
+dashboard existants. Arrêt réel après staging (code 74), deux ajouteurs, exception
+post-préparation, corruption/hash recalculé d’extraction, copie byte-exact,
+replay après suppression, absence d’écriture avant validation, CSRF/signature,
+source périmée et limites d’inférence contrôlés. Fixtures corrigées avant
+assertions métier : clé result information_id, compaction requise avant
+approbation delete ; bruit des IDs de gros paramètres supprimé. Trois premiers
+cas HTTP bloqués par sockets sandbox ; relance sur ports éphémères hors sandbox.
+Substitution en mémoire supprimant la garde du snapshot : un échec comportemental,
+sources disque intactes. CLI ajout/extract/list/rejeu exercée réellement sur copie.
+
+Validation finale hors sandbox, corpus et basetemp uniques : **1712 réussis en
+37,83 s**, Python 3.13.5, aucun échec/saut/désélection parmi les fichiers exécutés.
+15 tests MCP exclus : processus 20208 toujours présent sur ce fichier, laissé
+intact. Pas une suite complète. Test réel Qwen sur court récit synthétique :
+quatre propositions, citations exactes, 7,347 s, hashes avant/après inchangés ;
+/api/ps vide après réponse, daemon RSS 41088 ko au contrôle. Ni pic de ressources
+ni impact conjoint Core mesurés. Log/manifest et résultat synthétique sous
+docs/validation/2026-10-03-sources/.
+
+Contrat docs/SOURCE-LIBRARY.md ; docs writers/emplacements/copie/migration/
+monitoring et TODO actualisées. Manuscrit réel non fourni/importé ; aucun
+service permanent dashboard/IA, accès LAN/navigateur ou HTTPS nouveau installé.
+Extraction PDF, file durable, traitement intégral du manuscrit, qualité IA et
+coupure électrique ouverts. Estimation 45 % / 52,75 points inchangée.

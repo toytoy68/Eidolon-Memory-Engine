@@ -235,6 +235,7 @@ Les budgets d'extraits n'incluent pas automatiquement le prompt final du client.
 | `memory/history/events/{thread-create-v1,thread-status-v1,information-write-v1}` | Existants : Events par famille ; pas d'Event de suppression produit actuellement |
 | `memory/history/operation-receipts/information-write-v1` | Existant : reçus compacts |
 | `memory/history/pending-delete` | Existant : reçus de suppression Information |
+| `memory/sources` | Sources originales, fiches et extraction figée T-051 ; non supprimées automatiquement, à sauvegarder |
 | `memory/dossiers` ou sortie dédiée | Existant : projection projet explicite et notes humaines |
 | `memory/catalogue/information-v1.json` | Livré : catalogue reconstructible ; index externe différé |
 | Métadonnée availability ; `memory/history/operations/lifecycle-trigger-v1` | Livrés : niveaux et intentions durables ; projections réparées à partir de leur fraîcheur |

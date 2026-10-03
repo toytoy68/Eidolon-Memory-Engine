@@ -48,9 +48,9 @@ export EIDOLON_DASHBOARD_TOKEN='un-secret-long-et-aleatoire'
 python -m core.monitoring.dashboard --root /opt/eidolon-memory-engine
 ```
 
-Ouvrir `http://127.0.0.1:8765/` sur la machine serveur. Sur la VM 110 indiquée
+Ouvrir `http://127.0.0.1:8766/` sur la machine serveur. Sur la VM 110 indiquée
 à l'adresse locale `192.168.1.110`, après validation, lancer avec
-`--host 192.168.1.110` puis ouvrir `http://192.168.1.110:8765/` depuis le PC
+`--host 192.168.1.110` puis ouvrir `http://192.168.1.110:8766/` depuis le PC
 principal, si le pare-feu l'autorise. **HTTP Basic sur HTTP ne
 chiffre pas le mot de passe** ; pour un accès régulier au-delà d'un réseau local
 de confiance, placer un proxy HTTPS authentifié devant le service. Ne pas
@@ -66,3 +66,18 @@ Les opérations JSON et les fichiers hors de ces répertoires ne sont pas expos�
 
 Aucun navigateur ni socket réseau n'a encore été testé dans l'environnement de
 développement. Aucun service systemd ni lancement automatique n'est installé.
+
+
+## Bibliothèque de sources et validation de détails
+
+Le dashboard comprend désormais Sources : consultation et téléchargement
+authentifiés des originaux. Ajouter `--allow-source-upload` pour permettre
+leur dépôt explicite ; `--local-ai-model qwen3:0.6b` active les propositions de
+détails par le moteur Ollama local dédié (port 11435). Seule la validation
+humaine crée une Information. [Parcours, formats, sauvegarde et limites](SOURCE-LIBRARY.md).
+
+Les tests HTTP loopback du 03/10 sont exécutés sur ports éphémères et corpus
+synthétiques : les limites historiques ci-dessus concernant l’absence de
+test socket décrivent la première livraison. Aucun navigateur/LAN/corpus réel,
+service dashboard permanent ni HTTPS dashboard nouvellement installé. Le port
+par défaut 8766 est distinct du service MCP actif sur 8765.

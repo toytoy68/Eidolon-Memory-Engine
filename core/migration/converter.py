@@ -74,6 +74,8 @@ def operational_import_blockers(source: Path) -> list[dict]:
     history = source / 'memory/history'
     for name in ('pending-delete', 'operation-receipts', 'operations'):
         visit(history / name, legacy_root=name == 'operations')
+    # Preserved sources are active artifacts, never silently demote to archives.
+    visit(source / 'memory/sources')
     return sorted(blockers, key=lambda item: item['file'])
 
 

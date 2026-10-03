@@ -1,20 +1,27 @@
-"""Minimal authenticated, read-only HTML dashboard for the engine host."""
+"""Authenticated dashboard; source additions and reviewed details are explicit opt-ins."""
 
 from __future__ import annotations
 
 import argparse
 import base64
 import binascii
+from datetime import datetime, timezone
 from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import os
 from pathlib import Path
-from secrets import compare_digest
+from secrets import compare_digest, token_urlsafe
 from urllib.parse import parse_qs, quote, urlsplit
 
 from core.monitoring.files import DIRECTORIES, PAGE_SIZE, list_documents, read_document
 from core.monitoring.metrics import collect_metrics
 from core.monitoring.overview import overview
+from core.sources.store import SourceStore
+from core.sources.validation import seal, unseal, accept_detail
+from core.sources.local_ai import LocalDetailAI
+from core.backend.errors import BackendError
+from core.operations.errors import OperationRepositoryError
+from core.monitoring.sources import MAX_REQUEST, parse_upload, render_sources, render_source, render_extraction, render_proposals
 
 
 def authorized(header: str | None, token: str) -> bool:
@@ -49,7 +56,7 @@ h1{{color:#8bd8ff}}main{{display:grid;grid-template-columns:repeat(auto-fit,minm
 section{{background:#1d2b3e;border:1px solid #3b5369;border-radius:12px;padding:1rem}}
 table{{width:100%;border-collapse:collapse}}td{{padding:.4rem;border-bottom:1px solid #3b5369}}
 td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}</style></head>
-<body><h1>Eidolon Memory Engine</h1><p><a href="/files">Parcourir les fichiers Markdown</a></p>
+<body><h1>Eidolon Memory Engine</h1><p><a href="/files">Parcourir les fichiers Markdown</a> · <a href="/sources">Sources</a></p>
 <p>Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(str(metrics['measured_at']))} UTC · rafraîchissement 30 s</small></p>
 <main><section><h2>RAM hôte</h2><p>Utilisée : {_size(ram['used'])}<br>Disponible : {_size(ram['available'])}<br>
@@ -101,8 +108,77 @@ def render_document(category: str, name: str, content: str) -> str:
             f"<h1>{escape(name)}</h1><pre>{escape(content)}</pre></body></html>")
 
 
-def handler_factory(engine_root: Path, token: str):
+def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False, local_ai=None):
+    store = SourceStore(engine_root)
+    csrf = token_urlsafe(32)
     class DashboardHandler(BaseHTTPRequestHandler):
+        def _page(self, page, status=200):
+            body = page.encode('utf-8')
+            self.send_response(status)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Content-Length', str(len(body)))
+            self.send_header('Cache-Control', 'no-store')
+            self.send_header('X-Content-Type-Options', 'nosniff')
+            self.send_header('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_POST(self):
+            if not authorized(self.headers.get('Authorization'), token):
+                self.send_error(401)
+                return
+            if self.path not in {'/sources', '/source/extract', '/source/propose', '/source/accept'} or not allow_source_upload:
+                self.send_error(403, 'Source upload is disabled')
+                return
+            try:
+                lengths = self.headers.get_all('Content-Length', [])
+                if len(lengths) != 1 or self.headers.get('Transfer-Encoding'):
+                    raise ValueError('bounded content length required')
+                size = int(lengths[0])
+                if not 0 < size <= MAX_REQUEST:
+                    self.send_error(413, 'Source exceeds upload limit')
+                    return
+                self.connection.settimeout(10)
+                raw = self.rfile.read(size)
+                if len(raw) != size:
+                    raise ValueError('incomplete upload')
+                if self.path != '/sources':
+                    if self.headers.get('Content-Type', '').split(';')[0] != 'application/x-www-form-urlencoded' or size > 65536:
+                        raise ValueError('invalid source action form')
+                    fields = parse_qs(raw.decode('utf-8'), strict_parsing=True)
+                    if any(len(v) != 1 for v in fields.values()) or not compare_digest(fields.get('csrf', [''])[0], csrf):
+                        raise ValueError('invalid source action request')
+                    if self.path == '/source/accept':
+                        if set(fields) != {'csrf', 'review', 'detail'}:
+                            raise ValueError('incomplete detail validation')
+                        review = unseal(fields['review'][0], csrf.encode())
+                        result = accept_detail(engine_root, review, detail=fields['detail'][0], actor='dashboard-user')
+                        self._page(render_sources(store.list(), csrf=csrf, result='DETAIL_ACCEPTED'))
+                        return
+                    if set(fields) != ({'csrf', 'id'} if self.path == '/source/extract' else {'csrf', 'id', 'start'}):
+                        raise ValueError('incomplete source action')
+                    identity = fields['id'][0]
+                    record = store.read(identity)[0]
+                    if self.path == '/source/extract':
+                        extracted = store.extract(identity)['extraction']
+                        self._page(render_extraction(record, extracted, csrf=csrf, ai_enabled=local_ai is not None))
+                        return
+                    if local_ai is None:
+                        raise ValueError('local AI is not configured')
+                    proposals = local_ai.propose(record, store.extraction(identity), start=int(fields['start'][0]))
+                    proposed_at = datetime.now(timezone.utc).isoformat()
+                    tokens = [seal(dict(source_id=identity, source_sha256=proposals['source_sha256'],
+                        extraction_sha256=proposals['extraction_sha256'], extractor=proposals['extractor'],
+                        model=proposals['model'], model_digest=proposals['model_digest'],
+                        proposed_at=proposed_at, **item), csrf.encode()) for item in proposals['details']]
+                    self._page(render_proposals(record, proposals, tokens, csrf))
+                    return
+                upload = parse_upload(self.headers.get('Content-Type'), raw, csrf)
+                result = store.add(**upload, added_at=datetime.now(timezone.utc).isoformat())
+                self._page(render_sources(store.list(), csrf=csrf, result=result['status']))
+            except (OSError, ValueError, TypeError, KeyError, BackendError, OperationRepositoryError):
+                self.send_error(400, 'Action non terminee; verifier le fichier, le formulaire et le moteur local. Une source deja conservee reste intacte.')
+
         def do_GET(self):
             if not authorized(self.headers.get("Authorization"), token):
                 self.send_response(401)
@@ -114,6 +190,29 @@ def handler_factory(engine_root: Path, token: str):
                 url = urlsplit(self.path)
                 if url.path == "/" and not url.query:
                     page = render_dashboard(collect_metrics(engine_root), overview(engine_root))
+                elif url.path == '/sources' and not url.query:
+                    page = render_sources(store.list(), csrf=csrf if allow_source_upload else None)
+                elif url.path in {'/source', '/source/original', '/source/text'}:
+                    query = parse_qs(url.query)
+                    if set(query) != {'id'} or len(query['id']) != 1:
+                        raise ValueError('one source identity required')
+                    record, original = store.read(query['id'][0])
+                    if url.path == '/source/original':
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/octet-stream')
+                        self.send_header('Content-Disposition', "attachment; filename*=UTF-8''" + quote(record['original_name'], safe=''))
+                        self.send_header('Content-Length', str(len(original)))
+                        self.send_header('Cache-Control', 'no-store')
+                        self.send_header('X-Content-Type-Options', 'nosniff')
+                        self.end_headers()
+                        self.wfile.write(original)
+                        return
+                    if url.path == '/source/text':
+                        page = render_extraction(record, store.extraction(record['source_id']),
+                                                 csrf=csrf if allow_source_upload else None, ai_enabled=local_ai is not None)
+                    else:
+                        page = render_source(record, csrf=csrf if allow_source_upload else None,
+                                             has_extraction=(store.directory / record['source_id'] / 'extraction.json').exists())
                 elif url.path == "/files":
                     query = parse_qs(url.query)
                     category = query.get("category", [None])[0]
@@ -128,34 +227,30 @@ def handler_factory(engine_root: Path, token: str):
                 else:
                     self.send_error(404)
                     return
-                body = page.encode("utf-8")
             except (OSError, ValueError, KeyError, TypeError):
                 self.send_error(404, "Page or document unavailable")
                 return
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(body)))
-            self.send_header("Cache-Control", "no-store")
-            self.send_header("X-Content-Type-Options", "nosniff")
-            self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'")
-            self.end_headers()
-            self.wfile.write(body)
+            self._page(page)
 
     return DashboardHandler
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Authenticated read-only HTML dashboard")
+    parser = argparse.ArgumentParser(description="Authenticated dashboard with optional source upload and human-reviewed AI details")
     parser.add_argument("--root", type=Path, required=True, help="Engine root containing memory/")
     parser.add_argument("--host", default="127.0.0.1", help="Bind address (default: loopback)")
-    parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--port", type=int, default=8766)
+    parser.add_argument('--allow-source-upload', action='store_true', help='Enable explicit source additions; canonical memory remains separate')
+    parser.add_argument('--local-ai-model', help='Explicit installed local Ollama model for detail proposals')
+    parser.add_argument('--local-ai-url', default='http://127.0.0.1:11435', help='Dedicated loopback Ollama endpoint')
     args = parser.parse_args(argv)
     token = os.environ.get("EIDOLON_DASHBOARD_TOKEN", "")
     if not token:
         parser.error("EIDOLON_DASHBOARD_TOKEN must be set")
     if not args.root.is_dir():
         parser.error("engine root is not a directory")
-    server = ThreadingHTTPServer((args.host, args.port), handler_factory(args.root, token))
+    local_ai = LocalDetailAI(model=args.local_ai_model, endpoint=args.local_ai_url) if args.local_ai_model else None
+    server = ThreadingHTTPServer((args.host, args.port), handler_factory(args.root, token, allow_source_upload=args.allow_source_upload, local_ai=local_ai))
     print(f"Eidolon dashboard listening on {args.host}:{args.port}", flush=True)
     try:
         server.serve_forever()

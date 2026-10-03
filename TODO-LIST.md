@@ -67,6 +67,14 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Lot sources/dashboard/IA locale T-051 du **03/10/2026** : **1712 réussis en
+37,83 s**, 47 nouveaux cas, 49 ciblés verts ; **15 cas MCP exclus** pour éviter
+de doubler le processus existant. Ce n’est pas une suite complète. Test réel
+Qwen3 0.6B sur récit synthétique : quatre propositions exactes, 7,347 s, mémoire
+inchangée ; modèle déchargé après appel. [Preuves](docs/SOURCE-LIBRARY.md),
+logs/manifest dans docs/validation/2026-10-03-sources/. Aucun manuscrit réel validé.
+
+
 Validation du lot T-046 if-idle, **03/10/2026** : **1665 réussis en 37,42 s**,
 12 nouveaux cas, 74 ciblés verts. Checkout et corpus /tmp distincts. Les 15
 cas MCP sont exclus car un processus les exécutait déjà sur la VM : **ce n’est
@@ -671,6 +679,30 @@ archives optionnelles ; les statuts LONG_TERM/PERMANENT ne suffisent pas à
 activer la conservation de toutes les versions. Aucun choix métier nouveau
 considéré comme approuvé par la seule revue.
 
+### T-051 — Sources originales et détails IA à valider — PREMIÈRE TRANCHE LIVRÉE
+
+Autorisation directe toytoy du 03/10 après proposition Claude 4982014 :
+DOCX/PDF/TXT/Markdown conservés exacts sous memory/sources, fiche et SHA256,
+versions par nouveau hash ; upload/consultation/téléchargement authentifiés
+dans le dashboard, port 8766 distinct du MCP. Extraction texte figée
+DOCX/TXT/Markdown, paragraphes et empreintes vérifiés ; PDF original uniquement.
+
+IA locale choisie : Qwen3 0.6B, 523 Mo, Ollama dédié port 11435 préparé/lancé
+hors Git, priorité basse, un thread d’inférence, une analyse, déchargement
+après usage. Parcours passage borné → propositions avec citations → correction
+et validation humaine → Information INTERPRETATION/UNVERIFIED avec provenance.
+Aucun texte intégral ingéré, aucune validation ou suppression automatique.
+
+Inventaire/readiness et refus conversion legacy raccordés ; copie core conserve
+originaux/extractions. Reprise après préparation complète, arrêt réel, deux
+ajouteurs et rejeu d’acceptation après suppression vérifiés. Contrat :
+[Sources et limites](docs/SOURCE-LIBRARY.md).
+
+Restant : extraction PDF, file de propositions durable, comparaison/édition des
+fiches, validation navigateur/LAN, extraction de tout un manuscrit, qualité
+IA sur corpus réel et impact conjoint avec Eidolon Core. Aucun service permanent
+dashboard/IA ni nouveau proxy public installé ; pas de garantie de zéro impact.
+
 ## Recette VM — RÉUSSIE SUR ARBRE VIDE / CORPUS RÉEL NON VALIDÉ
 
 | Tâche | Preuve exigée |
@@ -701,7 +733,7 @@ heuristique ; recette VM réussie sur arbre vide le 03/10, corpus réel toujours
 | T-026 | PARTIEL : projections et notes T-044 ; édition canonique uniquement par commandes à définir |
 | T-027 | PARTIEL : interruptions/processus testés ; lecture multi-fichiers et coupure électrique non validées |
 | T-028 | FAIT POUR CE BILAN DOCUMENTAIRE : architecture actuelle/cible et TODO consolidées ; aucun déploiement validé |
-| T-029 | DIFFÉRÉ : dashboard local présent, navigateur/LAN/VM non validés |
+| T-029 | PARTIEL, extension autorisée le 03/10 : sources/upload et détails IA validés ; HTTP VM synthétique testé, navigateur/LAN/corpus réel non validés |
 | T-035 | PARTIEL : corpus reproductible 500 legacy/499 core, 12 Threads ; données réelles anonymisées/mesures VM manquantes |
 | T-039 | FAIT EN LOCAL : delete implicite coordonné ; assemblage manuel T-031 |
 | T-040 | FAIT EN LOCAL v0.1 : contrat/mapping, 500 candidats ; pas de qualification automatique |

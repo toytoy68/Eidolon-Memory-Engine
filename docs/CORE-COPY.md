@@ -3,7 +3,7 @@
 Ce transfert vers une **destination neuve** conserve les octets de `memory/` :
 Informations actuelles, Threads/actions/révisions, Events, journaux complets,
 reçus compacts et audits humains, parents de routage, échéances et suppressions,
-dossiers et notes situés dans cet arbre. Il n’exécute aucune commande et ne
+dossiers, notes et sources originales/fiches/extractions situées dans cet arbre. Il n’exécute aucune commande et ne
 convertit aucun format legacy. Un mélange legacy/core doit suivre une politique
 de conversion séparée ; le convertisseur historique conserve ses refus.
 

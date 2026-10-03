@@ -313,3 +313,11 @@ y compris Threads/actions, journaux et parents, sans conversion ni exécution.
 Préparation reprenable, publication atomique sans remplacement, contrôles de
 formats/readiness/liens et manifeste final. [Contrat et limites](CORE-COPY.md).
 Ce chemin n’autorise aucune fusion avec un arbre existant ni source legacy mixte.
+
+
+## Sources originales — T-051, 03/10
+
+Le convertisseur legacy refuse aussi les bundles de `memory/sources/` avant
+écriture destination. Le transfert core byte-exact conserve originaux, fiches
+et extractions figées ; aucune ingestion ou génération IA pendant la copie.
+[Contrat, validation humaine et sauvegarde](SOURCE-LIBRARY.md).

@@ -76,3 +76,14 @@ opt-in enregistre disponibilité et échéance via LifecycleTriggers. Le CLI pre
 est en lecture seule. Le parcours
 utilise les services canoniques et actualise memory/dossiers ; aucun ordonnanceur
 n’est installé. Voir ROUTING-EXECUTION.md.
+
+
+## Sources et détails explicitement validés — T-051
+
+SourceStore / core.sources.cli / POST sources du dashboard : Persistent →
+Sources, bundles exacts, préparation et publication Linux sans remplacement ;
+extraction texte figée facultative. La génération IA locale ne tient pas les
+verrous canoniques et ne crée aucune Information. La validation humaine utilise
+FilesystemInformationWrites sous Persistent, avec relecture du snapshot source.
+Le dashboard reste lecteur sans --allow-source-upload. Sources non supprimées
+automatiquement ; [contrat](SOURCE-LIBRARY.md).

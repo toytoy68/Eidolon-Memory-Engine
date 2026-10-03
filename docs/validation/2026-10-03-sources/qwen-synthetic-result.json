@@ -1,0 +1,33 @@
+{
+  "source_id": "28f5efcdbbd16adf46f344ecefe0f6938e81e2fc44ee9cdb542ded02bd76e349",
+  "source_sha256": "28f5efcdbbd16adf46f344ecefe0f6938e81e2fc44ee9cdb542ded02bd76e349",
+  "extraction_sha256": "28f5efcdbbd16adf46f344ecefe0f6938e81e2fc44ee9cdb542ded02bd76e349",
+  "extractor": "utf8-lines-v1",
+  "model": "qwen3:0.6b",
+  "model_digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+  "details": [
+    {
+      "detail": "Lina vit à Lyon.",
+      "paragraph": 1,
+      "quote": "Dans ce récit fictif, Lina vit à Lyon. Son chat se nomme Plume."
+    },
+    {
+      "detail": "Plume est le chat de Lina.",
+      "paragraph": 1,
+      "quote": "Son chat se nomme Plume."
+    },
+    {
+      "detail": "Lina porte toujours un carnet bleu.",
+      "paragraph": 1,
+      "quote": "Elle porte toujours un carnet bleu."
+    },
+    {
+      "detail": "Marc habite à Nantes.",
+      "paragraph": 2,
+      "quote": "Son frère Marc habite à Nantes."
+    }
+  ],
+  "first_paragraph": 1,
+  "last_paragraph": 2,
+  "next_paragraph": null
+}

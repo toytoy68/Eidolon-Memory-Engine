@@ -182,6 +182,9 @@ def inventory(engine_root: Path) -> dict:
     for issue in result["information_writes"]["issues"]:
         result["needs_review"].append({"path": "memory/history/information-write-v1",
                                      "reason": issue["reason"], "operation_id": issue["operation_id"]})
+    from core.sources.store import audit_sources
+    result['sources'] = audit_sources(root)
+    result['needs_review'].extend(result['sources']['issues'])
     return result
 
 

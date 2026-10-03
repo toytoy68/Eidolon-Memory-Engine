@@ -1,0 +1,31 @@
+{
+  "code_base": "4982014",
+  "python": "3.13.5",
+  "command": "/opt/eidolon-memory-engine/.venv/bin/python -m pytest -q --ignore=tests/test_collaboration_mcp.py --basetemp=/tmp/em-sources-lLnCIA/final-suite",
+  "result": "1712 passed in 37.83s",
+  "excluded_mcp_cases": 15,
+  "real_model": "qwen3:0.6b",
+  "inference_seconds": 7.347,
+  "inference_source": "short synthetic fiction only",
+  "inference_canonical_unchanged": true,
+  "model_unloaded_after_response": true,
+  "sha256": {
+    "core/sources/__init__.py": "eac9e2ad92bbe1fd7161d8fb2b29244cb53cd806d558eaf57e486b49e9ac54dd",
+    "core/sources/cli.py": "c5e764fc0ac62c9df7da9421f3950cf04f28ba7a283d758d2dd2584f23632be7",
+    "core/sources/extraction.py": "183c9c2bf4f37c33c6aff1d404ac37b170f5d686198d80e1c978691f8a0cb68c",
+    "core/sources/local_ai.py": "1ba617f7b3a2ff3fdb1d1dd6a5d3704eca25221a41071088a60609efb5d627d1",
+    "core/sources/store.py": "c35c60062b08603948cd00640f19c636fea6d6bea0678034532b4640094c7da7",
+    "core/sources/validation.py": "1cfc251f94a5bf6caa1b59e5564124e9977c89fa5c8b055b20331ac705b4e47a",
+    "core/monitoring/dashboard.py": "55cf3a3d6d28e3b0ac04390621bcbd7a04dc7336d36bdcf486cdb4986d415eab",
+    "core/monitoring/sources.py": "cee89d60734f4b04a7e01844c2554c3ccbc33b60c463cab2d02ef52a014cd34f",
+    "core/migration/inventory.py": "04289675047e1ddb655d16e62d5cbeda0028b7666e69783aad3ede5620bfbe0d",
+    "core/migration/converter.py": "0c0cbebdb518f32f733789c99bcb1eec2cc5ea669fb1dd55ea427f947821c742",
+    "scripts/run-source-ai.sh": "3ad5ad4daefb9e9db3c30171f4c324fe4510995a816508684fd52602973924a6",
+    "tests/test_source_ai.py": "4f2363646314d13f288ee2a920949befb7feef2789cbe97b100f92866bbc4dbb",
+    "tests/test_source_extraction.py": "efec94ec64c3939fd45044ea5ed4bd0265fa021ca0a6ffa943ff86957f4bd28d",
+    "tests/test_source_library.py": "bb9eb9fc3c130058e47a6c3cde857031f14d951b425c2537f8394660a3de27b6",
+    "tests/test_dashboard_sources.py": "4877c806bd6a706e63a2de4d4d17fba4571f18497196cdd1ea294dde851e994a",
+    "docs/validation/2026-10-03-sources/pytest.txt": "e3e6700f14f4b0dfa9240799206c30605c8fc2257843535f2b9838439031eeeb",
+    "docs/validation/2026-10-03-sources/qwen-synthetic-result.json": "a16cf588940c53e62481ea8769a4bbe68854c06e39113fb9e2d9ee43e41602fd"
+  }
+}
