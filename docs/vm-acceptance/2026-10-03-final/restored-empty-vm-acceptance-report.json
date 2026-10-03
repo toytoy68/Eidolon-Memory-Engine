@@ -1,0 +1,145 @@
+{
+  "source": "/home/toytoy/eidolon-backups/backup-20261002-225227-mtsJkO/restauration-i2mwDP/eidolon-memory-engine",
+  "status": "OK",
+  "steps": [
+    {
+      "details": {
+        "limitation": "known command markers are heuristic; inspect services and jobs manually",
+        "open_writable_descriptors": [],
+        "system_writers": {
+          "configured": [],
+          "coverage": "heuristic_manual_service_review_required",
+          "running": [],
+          "unreadable": [
+            "/var/spool/cron/crontabs"
+          ]
+        }
+      },
+      "duration_seconds": 0.01,
+      "name": "writers",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "categories": {
+          "events": {},
+          "information": {},
+          "information_write_events": {},
+          "information_write_operations": {},
+          "information_write_receipts": {},
+          "lifecycle_triggers": {},
+          "operations": {},
+          "pending_delete": {},
+          "reviews": {},
+          "routing_executions": {},
+          "thread_create_events": {},
+          "thread_create_operations": {},
+          "thread_delete_operations": {},
+          "thread_status_events": {},
+          "thread_status_operations": {},
+          "thread_update_events": {},
+          "thread_update_operations": {},
+          "threads": {},
+          "working": {}
+        },
+        "information_writes": {
+          "issues": [],
+          "records": {}
+        },
+        "needs_review": []
+      },
+      "duration_seconds": 0.002,
+      "name": "formats",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "files_verified": 2448,
+        "source_sha256": "05b0f84a50f8fd1e05dec039b21cd4490f960b0da3fbd162b140b388c7e3c246"
+      },
+      "duration_seconds": 0.424,
+      "name": "backup_restore",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "log": "concurrency.log",
+        "tests_passed": 5
+      },
+      "duration_seconds": 0.909,
+      "name": "concurrency",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "information_count": 0,
+        "policy": "read_only_no_target_type_inferred",
+        "relations": {},
+        "source_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "duration_seconds": 0.0,
+      "name": "audit_relations",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "applicability": {},
+        "as_of": "2026-10-03T01:20:00+00:00",
+        "count": 0,
+        "epistemic_by_applicability": {},
+        "exact_content_duplicates": {
+          "documents_in_groups": 0,
+          "groups": 0
+        },
+        "policy": "read_only_no_deletion_inferred",
+        "retention": {},
+        "retention_by_applicability": {},
+        "source_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "duration_seconds": 0.0,
+      "name": "audit_lifecycle",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "issues": [],
+        "requests_checked": 0
+      },
+      "duration_seconds": 0.0,
+      "name": "audit_deletions",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "issues": [],
+        "records": {}
+      },
+      "duration_seconds": 0.0,
+      "name": "audit_information_writes",
+      "status": "OK"
+    },
+    {
+      "details": {
+        "information_deletions": {
+          "issues": [],
+          "requests_checked": 0
+        },
+        "issues": [],
+        "ready": true,
+        "records": {},
+        "scope": "stopped_tree_point_in_time_no_concurrent_writers"
+      },
+      "duration_seconds": 0.008,
+      "name": "startup_readiness",
+      "status": "OK"
+    }
+  ],
+  "versions": {
+    "engine_branch": "refactor/architecture-v1",
+    "engine_commit": "2fed27951f9272b9f8ed68019eafbcbbe47e35aa",
+    "platform": "Linux 6.12.107+deb13-amd64",
+    "pytest": "9.1.1",
+    "python": "3.13.5"
+  },
+  "workdir": "/tmp/em-oJIl9V"
+}

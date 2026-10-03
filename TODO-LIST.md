@@ -38,6 +38,15 @@ Suite complète directe sur VM du **03/10/2026** après budget du rappel complet
 aucun échec, saut ou désélection. Base `2a95849` plus le lot documenté ci-dessous ;
 racine `/tmp/em-suite-MwgpSL`, corpus synthétique isolé, journal conservé.
 
+Dernière recette du code `2fed279`, **03/10/2026** : **neuf étapes OK**
+sur copie restaurée vide et corpus synthétique peuplé ; cinq concurrents
+réussis pour chacun, 2448/93 fichiers SHA256 contrôlés, sources inchangées,
+readiness vraie. Corpus synthétique : 11 Informations, un projet, 14 reçus
+routage, cinq échéances achevées, journaux complets/compactés et suppressions.
+102 fichiers archivés et vérifiés dans recette-20261003-final-2fed279.
+Crontabs illisibles sans sudo ; pas de corpus réel/coupure électrique.
+[Preuves](docs/VM-ACCEPTANCE-2026-10-03.md).
+
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
 2448 fichiers vérifiés par SHA256, source restaurée inchangée, `ready=true`.

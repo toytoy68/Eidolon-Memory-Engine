@@ -1,0 +1,257 @@
+{
+  "active_project_count": 1,
+  "compacted_information_writes": {
+    "error": null,
+    "next_index": 17,
+    "results": [
+      {
+        "index": 0,
+        "operation_id": "lifecycle-809d9dd82b1522296a1ce5b97b40deed3cb5fbbb8e1a0184f8ff8b75f022ea2f-write",
+        "result": {
+          "event_id": "lifecycle-809d9dd82b1522296a1ce5b97b40deed3cb5fbbb8e1a0184f8ff8b75f022ea2f-event",
+          "information_id": "info-3",
+          "previous_revision": 1,
+          "revision": 2
+        }
+      },
+      {
+        "index": 1,
+        "operation_id": "lifecycle-af19a298adb09701d18c3835a49df9f5718d68c368b5517952bd4d11ead42c5c-write",
+        "result": {
+          "event_id": "lifecycle-af19a298adb09701d18c3835a49df9f5718d68c368b5517952bd4d11ead42c5c-event",
+          "information_id": "interrupted",
+          "previous_revision": 1,
+          "revision": 2
+        }
+      },
+      {
+        "index": 2,
+        "operation_id": "lifecycle-e60a36999077119bad8fc1d9967b12d15d3b3b45b7569d042cda4292052f38a9-write",
+        "result": {
+          "event_id": "lifecycle-e60a36999077119bad8fc1d9967b12d15d3b3b45b7569d042cda4292052f38a9-event",
+          "information_id": "info-0",
+          "previous_revision": 1,
+          "revision": 2
+        }
+      },
+      {
+        "index": 3,
+        "operation_id": "lifecycle-f19ac87b822a039a3e5851324bfd8e00a5235a19596836269808cad3266c0236-write",
+        "result": {
+          "event_id": "lifecycle-f19ac87b822a039a3e5851324bfd8e00a5235a19596836269808cad3266c0236-event",
+          "information_id": "info-6",
+          "previous_revision": 1,
+          "revision": 2
+        }
+      },
+      {
+        "index": 4,
+        "operation_id": "lifecycle-f3ece336a795e9747f4eaaa90d2cd25dc1c8d45985cba350f38df7ebe38aab2a-write",
+        "result": {
+          "event_id": "lifecycle-f3ece336a795e9747f4eaaa90d2cd25dc1c8d45985cba350f38df7ebe38aab2a-event",
+          "information_id": "info-9",
+          "previous_revision": 1,
+          "revision": 2
+        }
+      },
+      {
+        "index": 5,
+        "operation_id": "routing-2c6ec8ab6a0ebea17cd80e6eb3cadedb233cabffb171f0fd48cb85d952c8cf29-information",
+        "result": {
+          "event_id": "routing-2c6ec8ab6a0ebea17cd80e6eb3cadedb233cabffb171f0fd48cb85d952c8cf29-information-event",
+          "information_id": "info-4",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 6,
+        "operation_id": "routing-3da02bc61bf2d960ef319f0909e0bc2d8ca4d1ab0ee74aad02b0f568c0ef3b8a-information",
+        "result": {
+          "event_id": "routing-3da02bc61bf2d960ef319f0909e0bc2d8ca4d1ab0ee74aad02b0f568c0ef3b8a-information-event",
+          "information_id": "info-9",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 7,
+        "operation_id": "routing-5876dc500d7f9c2ce5cd8d78b19bb04ae8617e0e2d72ae4b8281fc8be1ff004a-information",
+        "result": {
+          "event_id": "routing-5876dc500d7f9c2ce5cd8d78b19bb04ae8617e0e2d72ae4b8281fc8be1ff004a-information-event",
+          "information_id": "info-8",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 8,
+        "operation_id": "routing-7d8f8af31caec6d93176184afd7c2ad558ac5b7d0177c08669b10de6303b330d-information",
+        "result": {
+          "event_id": "routing-7d8f8af31caec6d93176184afd7c2ad558ac5b7d0177c08669b10de6303b330d-information-event",
+          "information_id": "info-5",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 9,
+        "operation_id": "routing-7e299a8dc8cc2b920d9998e453d358e838554f6b65d51d5b09b5a4fa4ba28cfc-information",
+        "result": {
+          "event_id": "routing-7e299a8dc8cc2b920d9998e453d358e838554f6b65d51d5b09b5a4fa4ba28cfc-information-event",
+          "information_id": "info-0",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 10,
+        "operation_id": "routing-83b987cb1d78a4fe51370523f85f180613ac1e5718bb2b31e54d15d661059fd6-information",
+        "result": {
+          "event_id": "routing-83b987cb1d78a4fe51370523f85f180613ac1e5718bb2b31e54d15d661059fd6-information-event",
+          "information_id": "interrupted",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 11,
+        "operation_id": "routing-8abe3e0981bc58849dddebb80ba13b102491c201af331ebcd7e3aed1ac5ff852-information",
+        "result": {
+          "event_id": "routing-8abe3e0981bc58849dddebb80ba13b102491c201af331ebcd7e3aed1ac5ff852-information-event",
+          "information_id": "info-6",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 12,
+        "operation_id": "routing-8e58fb4f1af5ea8aa39f34460c93b41f56a3a1b175f6f8a7872b7f0f3296e8c7-information",
+        "result": {
+          "event_id": "routing-8e58fb4f1af5ea8aa39f34460c93b41f56a3a1b175f6f8a7872b7f0f3296e8c7-information-event",
+          "information_id": "info-7",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 13,
+        "operation_id": "routing-a0b6988682ec993cf94abb9ecd65b15e1a4b2c642e6f5d4a0d88298130caeca2-information",
+        "result": {
+          "event_id": "routing-a0b6988682ec993cf94abb9ecd65b15e1a4b2c642e6f5d4a0d88298130caeca2-information-event",
+          "information_id": "project-source",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 14,
+        "operation_id": "routing-cd9eb030bab0cbb7d315f8bd8fe4a865dd395d9fb905113954e04efb81efed72-information",
+        "result": {
+          "event_id": "routing-cd9eb030bab0cbb7d315f8bd8fe4a865dd395d9fb905113954e04efb81efed72-information-event",
+          "information_id": "info-1",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 15,
+        "operation_id": "routing-cf3743610bc544012927c6bc7d4a48d175a4e176cb1a7461289ced99b2966468-information",
+        "result": {
+          "event_id": "routing-cf3743610bc544012927c6bc7d4a48d175a4e176cb1a7461289ced99b2966468-information-event",
+          "information_id": "info-3",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      },
+      {
+        "index": 16,
+        "operation_id": "routing-dc2e9285c3c601254778c3bb1463d708ce793f270e2be4e88d0fc5113252b96e-information",
+        "result": {
+          "event_id": "routing-dc2e9285c3c601254778c3bb1463d708ce793f270e2be4e88d0fc5113252b96e-information-event",
+          "information_id": "info-2",
+          "previous_revision": 0,
+          "revision": 1
+        }
+      }
+    ],
+    "status": "COMPLETED",
+    "total": 17
+  },
+  "completed_triggers": 5,
+  "deleted_project_count": 1,
+  "limitation": "Synthetic only; no real user corpus, active service or power cut tested",
+  "original_information_count": 12,
+  "readiness": {
+    "information_deletions": {
+      "issues": [],
+      "requests_checked": 2
+    },
+    "issues": [],
+    "ready": true,
+    "records": {
+      "information-write-v1/lifecycle-809d9dd82b1522296a1ce5b97b40deed3cb5fbbb8e1a0184f8ff8b75f022ea2f-write": "COMPACTED",
+      "information-write-v1/lifecycle-af19a298adb09701d18c3835a49df9f5718d68c368b5517952bd4d11ead42c5c-write": "COMPACTED",
+      "information-write-v1/lifecycle-e60a36999077119bad8fc1d9967b12d15d3b3b45b7569d042cda4292052f38a9-write": "COMPACTED",
+      "information-write-v1/lifecycle-f19ac87b822a039a3e5851324bfd8e00a5235a19596836269808cad3266c0236-write": "COMPACTED",
+      "information-write-v1/lifecycle-f3ece336a795e9747f4eaaa90d2cd25dc1c8d45985cba350f38df7ebe38aab2a-write": "COMPACTED",
+      "information-write-v1/routing-2c6ec8ab6a0ebea17cd80e6eb3cadedb233cabffb171f0fd48cb85d952c8cf29-information": "COMPACTED",
+      "information-write-v1/routing-3da02bc61bf2d960ef319f0909e0bc2d8ca4d1ab0ee74aad02b0f568c0ef3b8a-information": "COMPACTED",
+      "information-write-v1/routing-5876dc500d7f9c2ce5cd8d78b19bb04ae8617e0e2d72ae4b8281fc8be1ff004a-information": "COMPACTED",
+      "information-write-v1/routing-7d8f8af31caec6d93176184afd7c2ad558ac5b7d0177c08669b10de6303b330d-information": "COMPACTED",
+      "information-write-v1/routing-7e299a8dc8cc2b920d9998e453d358e838554f6b65d51d5b09b5a4fa4ba28cfc-information": "COMPACTED",
+      "information-write-v1/routing-83b987cb1d78a4fe51370523f85f180613ac1e5718bb2b31e54d15d661059fd6-information": "COMPACTED",
+      "information-write-v1/routing-8abe3e0981bc58849dddebb80ba13b102491c201af331ebcd7e3aed1ac5ff852-information": "COMPACTED",
+      "information-write-v1/routing-8e58fb4f1af5ea8aa39f34460c93b41f56a3a1b175f6f8a7872b7f0f3296e8c7-information": "COMPACTED",
+      "information-write-v1/routing-a0b6988682ec993cf94abb9ecd65b15e1a4b2c642e6f5d4a0d88298130caeca2-information": "COMPACTED",
+      "information-write-v1/routing-cd9eb030bab0cbb7d315f8bd8fe4a865dd395d9fb905113954e04efb81efed72-information": "COMPACTED",
+      "information-write-v1/routing-cf3743610bc544012927c6bc7d4a48d175a4e176cb1a7461289ced99b2966468-information": "COMPACTED",
+      "information-write-v1/routing-d4111e761f2b49dd299d4df3de1383af626aaa842986fc7b8755630d4afb5773-information": "COMMITTED",
+      "information-write-v1/routing-dc2e9285c3c601254778c3bb1463d708ce793f270e2be4e88d0fc5113252b96e-information": "COMPACTED",
+      "memory/history/operations/lifecycle-trigger-v1/routing-3da02bc61bf2d960ef319f0909e0bc2d8ca4d1ab0ee74aad02b0f568c0ef3b8a-trigger.json": "COMPLETED",
+      "memory/history/operations/lifecycle-trigger-v1/routing-7e299a8dc8cc2b920d9998e453d358e838554f6b65d51d5b09b5a4fa4ba28cfc-trigger.json": "COMPLETED",
+      "memory/history/operations/lifecycle-trigger-v1/routing-83b987cb1d78a4fe51370523f85f180613ac1e5718bb2b31e54d15d661059fd6-trigger.json": "COMPLETED",
+      "memory/history/operations/lifecycle-trigger-v1/routing-8abe3e0981bc58849dddebb80ba13b102491c201af331ebcd7e3aed1ac5ff852-trigger.json": "COMPLETED",
+      "memory/history/operations/lifecycle-trigger-v1/routing-cf3743610bc544012927c6bc7d4a48d175a4e176cb1a7461289ced99b2966468-trigger.json": "COMPLETED",
+      "memory/history/operations/routing-execution-v1/interrupted-route.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/link-existing.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/new-project.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-0.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-1.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-2.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-3.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-4.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-5.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-6.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-7.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-8.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/store-9.json": "COMMITTED",
+      "memory/history/operations/routing-execution-v1/update-information.json": "COMMITTED",
+      "memory/history/operations/thread-create-v1/routing-a0b6988682ec993cf94abb9ecd65b15e1a4b2c642e6f5d4a0d88298130caeca2-project.json": "COMMITTED",
+      "memory/history/operations/thread-create-v1/temporary-project.json": "COMMITTED",
+      "memory/history/operations/thread-delete-v1/delete-project.json": "COMMITTED",
+      "memory/history/operations/thread-update-v1/project-action.json": "COMMITTED",
+      "memory/history/operations/thread-update-v1/routing-a4f45c1b3776581251025cd908bf9012c65fd762fe3ba458f201f0443b8110a6-project.json": "COMMITTED"
+    },
+    "scope": "stopped_tree_point_in_time_no_concurrent_writers"
+  },
+  "recall_payload": {
+    "format_version": "recall-payload/1",
+    "included_ids": [
+      "info-0",
+      "project-source"
+    ],
+    "omitted_ids": [],
+    "payload_chars": 2124,
+    "payload_tokens": null,
+    "text": "Synthetic sources:\n{\"at\":\"2026-10-04T01:20:00Z\",\"dossier_status\":\"CURRENT\",\"excluded_counts\":{\"OUTSIDE_PROJECT\":9},\"items\":[{\"applicability\":\"MATCH\",\"availability\":\"INTERMEDIATE\",\"confidence\":null,\"content\":\"Synthetic measurement info-0\",\"content_format\":\"text\",\"context\":{\"scope\":{\"goal\":\"synthetic-vm-acceptance\"}},\"epistemic_status\":\"UNVERIFIED\",\"freshness\":\"CANONICAL_AT_READ\",\"importance\":null,\"information_id\":\"info-0\",\"needs_review\":true,\"operational_state\":null,\"provenance\":{\"author_role\":\"ADMIN\",\"source\":\"synthetic-fixture\"},\"ranking\":{\"content_coverage\":1.0,\"coverage\":1.0,\"frequency\":0.3333333333333333,\"phrase_in_content\":true,\"policy\":\"lexical_v1\"},\"relations\":[],\"retention\":null,\"revision\":2,\"score\":0.9666666666666668,\"selection_reasons\":[\"canonical_source\",\"lexical_v1_candidate\",\"applicability_match\",\"epistemic_unverified\",\"explicit_recheck_required\"],\"temporal\":{\"resume_at\":\"2026-10-04T01:20:00Z\"},\"token_count\":null,\"truncated\":false,\"valid_from\":null,\"valid_until\":null,\"verification\":{\"evidence\":{\"fixture\":true}}},{\"applicability\":\"MATCH\",\"availability\":\"INTERMEDIATE\",\"confidence\":null,\"content\":\"Synthetic measurement project-source\",\"content_format\":\"text\",\"context\":{\"project_id\":\"project\",\"scope\":{\"goal\":\"synthetic-vm-acceptance\"}},\"epistemic_status\":\"UNVERIFIED\",\"freshness\":\"CANONICAL_AT_READ\",\"importance\":null,\"information_id\":\"project-source\",\"needs_review\":true,\"operational_state\":null,\"provenance\":{\"author_role\":\"ADMIN\",\"source\":\"synthetic-fixture\"},\"ranking\":{\"content_coverage\":1.0,\"coverage\":1.0,\"frequency\":0.3333333333333333,\"phrase_in_content\":true,\"policy\":\"lexical_v1\"},\"relations\":[],\"retention\":null,\"revision\":1,\"score\":0.9666666666666668,\"selection_reasons\":[\"canonical_source\",\"lexical_v1_candidate\",\"applicability_match\",\"epistemic_unverified\"],\"temporal\":{},\"token_count\":null,\"truncated\":false,\"valid_from\":null,\"valid_until\":null,\"verification\":{\"evidence\":{\"fixture\":true}}}],\"mode\":\"operational\",\"policy_version\":\"contextual-recall/0.1\",\"query\":\"measurement\",\"query_scope\":{\"goal\":\"synthetic-vm-acceptance\"},\"used_chars\":64,\"used_tokens\":null}\nReview uncertainty."
+  },
+  "recovered_interruption": true,
+  "remaining_information_count": 11,
+  "retained_live_information_write": "routing-d4111e761f2b49dd299d4df3de1383af626aaa842986fc7b8755630d4afb5773-information",
+  "root": "/tmp/em-src-vZT77E",
+  "routing_receipts": 14,
+  "status": "OK",
+  "synthetic": true,
+  "tool_sha256": "bf129a0a40b47673c6871b990bee6176fe636f221001747d031858cc84f262fd"
+}

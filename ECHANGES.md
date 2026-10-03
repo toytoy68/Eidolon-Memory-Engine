@@ -1690,3 +1690,36 @@ payload.text seulement, pas d’enveloppe réseau ou de messages ajoutés ensuit
 aucun tokenizer réel, client externe, corpus utilisateur ou coupure électrique
 validé. Données actives/sauvegarde préservées, estimation 45 % / 52,75 inchangée.
 Contrat : docs/RECALL-PAYLOAD.md.
+
+## Recette VM du code 2fed279, vide et synthétique peuplée — 3 octobre 2026
+
+Commit GitHub `2fed279` confirmé avant démarrage. Deux dossiers courts,
+/tmp/em-oJIl9V (restauration d’origine) et /tmp/em-jQ4gTi (source synthétique
+/tmp/em-src-vZT77E). **Neuf étapes OK chacune**, cinq concurrents réussis
+en 0,81 / 0,80 s (40 désélections du filtre), copies/restaurations SHA256
+2448 / 93 fichiers, sources recontrôlées inchangées, readiness vraie.
+Code des audits/tests du dépôt courant, indépendant des anciens fichiers code
+de la copie restaurée. L’inventaire de cette dernière reste vide.
+
+Scénario direct via tools.vm_synthetic_scenario : parcours v3/v4/v5 rejoués,
+interruption après écriture puis reprise globale, action projet, projet supprimé,
+suppression Information annulée/approuvée, cinq échéances RECHECK, entretien,
+compaction par lot et payload projet CURRENT avec incertitude. Première tentative
+refusée avant suppression faute de compaction ; corrigé par API puis nouvelle
+source. Garde active-root et vérificateur needs_review contrôlés négativement,
+code métier inchangé. Suite core précédente 1581 conservée sans répétition.
+
+Inventaire final : 11 Informations, un Thread, 18 Events Information, 17 reçus
+compactés + un journal complet, 14 reçus routage, cinq déclencheurs achevés,
+deux reçus suppression Information. Aucun FAILED fabriqué. Rapports/logs/outil
+hashés et source complète archivés sous
+/home/toytoy/eidolon-backups/backup-20261002-225227-mtsJkO/recette-20261003-final-2fed279 :
+**102 fichiers SHA256 revérifiés**. Preuves versionnées dans
+docs/vm-acceptance/2026-10-03-final, protocole docs/VM-ACCEPTANCE-2026-10-03.md.
+
+Inventaires non-sudo configured=[], running=[], writable descriptors=[] ;
+unreadable=[/var/spool/cron/crontabs]. Confirmation sudo antérieure distincte,
+pas de nouvelle inspection exhaustive services/jobs. Corpus synthétique réduit,
+pas de corpus utilisateur, migration réelle, latence production, client externe
+ou coupure électrique validés. Données actives/sauvegarde originales intactes,
+estimation 45 % / 52,75 inchangée.

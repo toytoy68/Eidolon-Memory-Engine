@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/eidolon-memory-engine/tools/vm_synthetic_scenario.py", line 143, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/opt/eidolon-memory-engine/tools/vm_synthetic_scenario.py", line 135, in main
+    result = run(root)
+  File "/opt/eidolon-memory-engine/tools/vm_synthetic_scenario.py", line 98, in run
+    backend.approve_delete('info-7', 'delete-information')
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/eidolon-memory-engine/core/persistence.py", line 121, in wrapped
+    return method(self, *args, **kwargs)
+  File "/opt/eidolon-memory-engine/core/backend/filesystem.py", line 475, in approve_delete
+    ensure_information_write_safety(self.history_root, information_id, require_compacted=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/eidolon-memory-engine/core/information/references.py", line 164, in ensure_information_write_safety
+    raise InformationDeletionBlocked('compact Information write snapshots before deletion')
+core.backend.errors.InformationDeletionBlocked: compact Information write snapshots before deletion

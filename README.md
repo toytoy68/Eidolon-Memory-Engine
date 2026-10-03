@@ -102,6 +102,13 @@ aucun échec ni test désélectionné. Les cinq tests de concurrence bloqués pa
 les sockets de Work passent également. Données de test temporaires isolées.
 [Preuve rapportée et périmètre](docs/VM-TESTS-2026-10-02.md).
 
+Recette supplémentaire du code `2fed279` : **neuf étapes OK** sur la
+restauration d’origine vide et sur un corpus synthétique neuf peuplé ;
+cinq tests concurrents réussis pour chacune. Source/restauration SHA256 vérifiées,
+readiness vraie, rapports/logs/corpus archivés. Crontabs illisibles sans sudo ;
+aucune validation de corpus réel ou coupure électrique.
+[Preuves et limites](docs/VM-ACCEPTANCE-2026-10-03.md).
+
 Correctif inventaire cron `9780473` : cinq tests inventaire réussis et
 inventaire sudo vide confirmés par toytoy. Recette exécutée directement par
 Codex le 03/10 depuis `.venv`, dans `/tmp/em-yZKsKq` hors sandbox : **neuf étapes
