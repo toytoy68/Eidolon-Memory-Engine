@@ -432,6 +432,16 @@ indexé hors construction. L’index conserve ses lectures ; préparation compac
 pas de latence disque réelle ni corpus réel. Aucun nouveau code métier/test ;
 suite 1457 du commit précédent applicable. [Preuves](docs/VM-PERFORMANCE-2026-10-03.md).
 
+Extension du 03/10, base `08f0284` vérifiée sur GitHub : 24 mesures supplémentaires,
+1000 antécédents tmpfs / 300 ext4, 25 CREATE en lot, trois répétitions,
+strict/index et live/compact. Tous les audits et 1025/325 objets conformes.
+1000 compact : préparation médiane 154,829 s, lot strict 0,170881 s,
+indexé 0,062659 s hors construction ; toujours 1050 ouvertures JSON.
+300 ext4/live : lot strict 0,302016 s contre 0,251664 s indexé hors construction.
+Manifeste, logs et cleanup vérifiés, aucun code core changé. La compaction
+individuelle devient un prochain coût à réduire ; pas de garantie de latence
+physique, charge réelle, coupure ou ingestion intensive.
+
 Restant : suppression de l’énumération et des lectures linéaires par lot,
 protocole d’invalidation couvrant tous les écrivains, autres familles, dérivés, corpus et
 objectifs VM. L'ingestion totale demeure quadratique à taille de lot fixe (O(N²/B)). Pas d'autorisation

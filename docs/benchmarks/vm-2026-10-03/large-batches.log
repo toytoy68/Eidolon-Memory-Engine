@@ -1,0 +1,25 @@
+START 1 live False 2026-10-02T23:47:50.236253+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "live", "workload": "create", "mode": "batch", "seconds": 0.217938, "setup_seconds": 2.314176, "reservation_index": false, "index_build_seconds": 0, "journal_reads": 1025, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 1 live True 2026-10-02T23:47:53.056493+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "live", "workload": "create", "mode": "batch", "seconds": 0.065335, "setup_seconds": 2.305588, "reservation_index": true, "index_build_seconds": 0.227852, "journal_reads": 25, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 1 compact False 2026-10-02T23:47:55.938849+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "compact", "workload": "create", "mode": "batch", "seconds": 0.172204, "setup_seconds": 158.45839, "reservation_index": false, "index_build_seconds": 0, "journal_reads": 1025, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 1 compact True 2026-10-02T23:50:34.794871+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "compact", "workload": "create", "mode": "batch", "seconds": 0.062659, "setup_seconds": 154.731122, "reservation_index": true, "index_build_seconds": 0.170435, "journal_reads": 25, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 2 live False 2026-10-02T23:53:09.984842+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "live", "workload": "create", "mode": "batch", "seconds": 0.219085, "setup_seconds": 2.249297, "reservation_index": false, "index_build_seconds": 0, "journal_reads": 1025, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 2 live True 2026-10-02T23:53:12.739831+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "live", "workload": "create", "mode": "batch", "seconds": 0.063263, "setup_seconds": 2.222462, "reservation_index": true, "index_build_seconds": 0.219024, "journal_reads": 25, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 2 compact False 2026-10-02T23:53:15.521933+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "compact", "workload": "create", "mode": "batch", "seconds": 0.170881, "setup_seconds": 154.829268, "reservation_index": false, "index_build_seconds": 0, "journal_reads": 1025, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 2 compact True 2026-10-02T23:55:50.748972+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "compact", "workload": "create", "mode": "batch", "seconds": 0.064456, "setup_seconds": 154.180142, "reservation_index": true, "index_build_seconds": 0.166923, "journal_reads": 25, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 3 live False 2026-10-02T23:58:25.385584+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "live", "workload": "create", "mode": "batch", "seconds": 0.2179, "setup_seconds": 2.238251, "reservation_index": false, "index_build_seconds": 0, "journal_reads": 1025, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 3 live True 2026-10-02T23:58:28.124241+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "live", "workload": "create", "mode": "batch", "seconds": 0.063187, "setup_seconds": 2.212992, "reservation_index": true, "index_build_seconds": 0.219365, "journal_reads": 25, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 3 compact False 2026-10-02T23:58:30.894963+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "compact", "workload": "create", "mode": "batch", "seconds": 0.169221, "setup_seconds": 154.054243, "reservation_index": false, "index_build_seconds": 0, "journal_reads": 1025, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+START 3 compact True 2026-10-03T00:01:05.340003+00:00
+DONE {"history_records": 1000, "incoming": 25, "history": "compact", "workload": "create", "mode": "batch", "seconds": 0.062367, "setup_seconds": 154.559687, "reservation_index": true, "index_build_seconds": 0.167541, "journal_reads": 25, "journal_scans": 1, "journal_json_opens": 1050, "final_audit_issues": 0, "canonical_verified": 1025}
+COMPLETE

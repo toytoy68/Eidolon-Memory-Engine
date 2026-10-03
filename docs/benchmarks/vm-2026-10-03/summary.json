@@ -2,6 +2,134 @@
   "summary_version": 1,
   "rows": [
     {
+      "experiment": "ext4-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.308451,
+      "min_seconds": 0.274893,
+      "max_seconds": 0.322319,
+      "median_setup_seconds": 21.465864,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "ext4-batches-1.json",
+        "ext4-batches-2.json",
+        "ext4-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "ext4-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.268084,
+      "min_seconds": 0.246138,
+      "max_seconds": 0.269656,
+      "median_setup_seconds": 21.318789,
+      "median_index_build_seconds": 0.063348,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "ext4-batches-1.json",
+        "ext4-batches-2.json",
+        "ext4-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "ext4-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.302016,
+      "min_seconds": 0.300534,
+      "max_seconds": 0.311646,
+      "median_setup_seconds": 3.142427,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        325
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "ext4-batches-1.json",
+        "ext4-batches-2.json",
+        "ext4-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "ext4-batches",
+      "history_records": 300,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.251664,
+      "min_seconds": 0.249943,
+      "max_seconds": 0.261616,
+      "median_setup_seconds": 2.957146,
+      "median_index_build_seconds": 0.082497,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        350
+      ],
+      "canonical_verified": [
+        325
+      ],
+      "reports": [
+        "ext4-batches-1.json",
+        "ext4-batches-2.json",
+        "ext4-batches-3.json"
+      ]
+    },
+    {
       "experiment": "information-batches",
       "history_records": 100,
       "incoming": 25,
@@ -383,6 +511,134 @@
         "information-batches-1.json",
         "information-batches-2.json",
         "information-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "large-batches",
+      "history_records": 1000,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.170881,
+      "min_seconds": 0.169221,
+      "max_seconds": 0.172204,
+      "median_setup_seconds": 154.829268,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        1025
+      ],
+      "journal_json_opens": [
+        1050
+      ],
+      "canonical_verified": [
+        1025
+      ],
+      "reports": [
+        "large-batches-1.json",
+        "large-batches-2.json",
+        "large-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "large-batches",
+      "history_records": 1000,
+      "incoming": 25,
+      "history": "compact",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.062659,
+      "min_seconds": 0.062367,
+      "max_seconds": 0.064456,
+      "median_setup_seconds": 154.559687,
+      "median_index_build_seconds": 0.167541,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        1050
+      ],
+      "canonical_verified": [
+        1025
+      ],
+      "reports": [
+        "large-batches-1.json",
+        "large-batches-2.json",
+        "large-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "large-batches",
+      "history_records": 1000,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": false,
+      "independent_runs": 3,
+      "median_seconds": 0.217938,
+      "min_seconds": 0.2179,
+      "max_seconds": 0.219085,
+      "median_setup_seconds": 2.249297,
+      "median_index_build_seconds": 0,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        1025
+      ],
+      "journal_json_opens": [
+        1050
+      ],
+      "canonical_verified": [
+        1025
+      ],
+      "reports": [
+        "large-batches-1.json",
+        "large-batches-2.json",
+        "large-batches-3.json"
+      ]
+    },
+    {
+      "experiment": "large-batches",
+      "history_records": 1000,
+      "incoming": 25,
+      "history": "live",
+      "workload": "create",
+      "mode": "batch",
+      "reservation_index": true,
+      "independent_runs": 3,
+      "median_seconds": 0.063263,
+      "min_seconds": 0.063187,
+      "max_seconds": 0.065335,
+      "median_setup_seconds": 2.222462,
+      "median_index_build_seconds": 0.219365,
+      "journal_scans": [
+        1
+      ],
+      "journal_reads": [
+        25
+      ],
+      "journal_json_opens": [
+        1050
+      ],
+      "canonical_verified": [
+        1025
+      ],
+      "reports": [
+        "large-batches-1.json",
+        "large-batches-2.json",
+        "large-batches-3.json"
       ]
     },
     {

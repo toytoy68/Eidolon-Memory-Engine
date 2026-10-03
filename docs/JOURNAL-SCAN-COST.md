@@ -115,3 +115,10 @@ entretenus avec cinq échéances/rejeu. [Rapport et données brutes](VM-PERFORMA
 0,046 s en lot indexé hors construction de l’index. Attention : `/tmp` est tmpfs ;
 ni latence disque physique, ni corpus réel, ni autorisation d’ingestion intensive.
 L’index conserve les lectures d’octets ; l’entretien à vide conserve ses scans.
+
+Extension sur base `08f0284` : 24 mesures supplémentaires, trois répétitions,
+1000 antécédents tmpfs et 300 ext4. À 1000 compact, préparation médiane
+154,829 s, lot strict 0,170881 s ; l’index ne supprime pas les 1050 ouvertures.
+À 300 ext4/live, lot strict 0,302016 s contre 0,251664 s indexé hors construction.
+[Tableaux, protocole et manifeste](VM-PERFORMANCE-2026-10-03.md).
+La compaction individuelle constitue un coût à réduire dans un lot distinct.
