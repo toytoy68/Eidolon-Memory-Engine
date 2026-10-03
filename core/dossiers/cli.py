@@ -7,6 +7,7 @@ from core.backend.filesystem import FilesystemBackend
 from core.dossiers.projects import DossierConflict, ProjectDossiers
 from core.dossiers.reconciliation import DossierReconciler, READ_ERRORS
 from core.preflight import check_environment
+from core.storage_format import decode_json_value
 from core.threads.storage import ThreadStorage
 
 
@@ -17,6 +18,11 @@ def main(argv=None):
     commands = parser.add_subparsers(dest='command', required=True)
     for name in ('rebuild', 'status'):
         commands.add_parser(name).add_argument('thread_id')
+    commands.add_parser('notes', help='Read human sections and whole-document SHA256').add_argument('thread_id')
+    edit = commands.add_parser('edit-notes', help='Replace human sections under an expected document SHA256')
+    edit.add_argument('thread_id')
+    edit.add_argument('--notes', type=Path, required=True, help='JSON with exactly before and after text')
+    edit.add_argument('--expected-document-sha256', required=True)
     resolve = commands.add_parser('resolve')
     resolve.add_argument('information_id')
     resolve.add_argument('--selected-thread')
@@ -37,7 +43,16 @@ def main(argv=None):
         storage.persistent_root, storage.threads_root = persistent, persistent / 'threads'
     try:
         dossiers = ProjectDossiers(backend, storage, args.output or args.root / 'memory/dossiers')
-        if args.command == 'resolve':
+        if args.command == 'notes':
+            result = dict(status='READ', **dossiers.read_notes(args.thread_id))
+        elif args.command == 'edit-notes':
+            check_environment(args.root)
+            notes = decode_json_value(args.notes.read_text(encoding='utf-8'))
+            if not isinstance(notes, dict) or set(notes) != {'before', 'after'}:
+                raise DossierConflict('notes JSON must contain exactly before and after')
+            result = dossiers.replace_notes(args.thread_id, **notes,
+                expected_document_sha256=args.expected_document_sha256)
+        elif args.command == 'resolve':
             result = dossiers.resolve(args.information_id, selected_thread=args.selected_thread)
         elif args.command == 'reconcile':
             reconciler = DossierReconciler(dossiers)

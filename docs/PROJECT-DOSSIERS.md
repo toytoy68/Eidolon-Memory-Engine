@@ -168,3 +168,10 @@ Les dossiers déjà produits peuvent devenir STALE : un rebuild ou reconcile
 explicite applique le nouveau rendu, sans changer les sources canoniques.
 Les tests E-004 couvrent huit séparateurs dans sept types de champs ; les tests
 existants couvrent toujours notes humaines, CRLF, frontières et reprise.
+
+## Édition explicite des sections humaines — ajout du 03/10
+
+read_notes fournit un snapshot en lecture seule ; replace_notes/CLI edit-notes
+remplace avant/après sous SHA256 du document entier et verrous partagés avec
+rebuild. Les notes restent non canoniques, sans ingestion ou merge automatique.
+[Contrat, concurrence et perte de réponse](DOSSIER-HUMAN-NOTES.md).

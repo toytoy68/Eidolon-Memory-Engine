@@ -7,6 +7,7 @@ from hashlib import sha256
 from contextlib import ExitStack
 import html
 import json
+import re
 from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
@@ -177,6 +178,48 @@ class ProjectDossiers:
         _, generated, _ = self._parts(self._read_text(path))
         return {'status': 'CURRENT' if generated == self._generated(thread_id, source) else 'STALE',
                 'path': str(path), 'source_digest': source[3]}
+
+    def read_notes(self, thread_id):
+        """Read human sections and the exact document hash without initialization."""
+        path = self._path(thread_id)
+        if not path.is_file():
+            raise DossierConflict('existing dossier required for notes')
+        raw = path.read_bytes()
+        before, _, after = self._parts(raw.decode('utf-8'))
+        return {'before': before, 'after': after, 'document_sha256': sha256(raw).hexdigest(),
+                'path': str(path), 'canonical_ingestion': False}
+
+    def replace_notes(self, thread_id, *, before, after, expected_document_sha256):
+        """Replace only explicit human sections if the whole snapshot is current."""
+        if (not isinstance(before, str) or not isinstance(after, str)
+                or any(marker in text for text in (before, after) for marker in (BEGIN, END))):
+            raise DossierConflict('human notes must be text without generated section markers')
+        before.encode('utf-8'); after.encode('utf-8')
+        if (not isinstance(expected_document_sha256, str)
+                or not re.fullmatch('[0-9a-f]{64}', expected_document_sha256)):
+            raise DossierConflict('expected whole-document SHA256 required')
+        path = self._path(thread_id)
+        if not self.backend.persistent_root.is_dir() or not path.is_file():
+            raise DossierConflict('existing engine and dossier required for notes')
+        with ExitStack() as locks:
+            locks.enter_context(exclusive_write(self.backend.persistent_root))
+            if self.storage.threads_root.is_dir():
+                locks.enter_context(exclusive_write(self.storage.threads_root))
+            locks.enter_context(exclusive_write(self.root))
+            from core.operations.readiness import check_readiness
+            if not check_readiness(self.backend.persistent_root.parent.parent)['ready']:
+                raise DossierConflict('recover or review before editing human notes')
+            raw = path.read_bytes()
+            if sha256(raw).hexdigest() != expected_document_sha256:
+                raise DossierConflict('dossier changed; reread notes before editing')
+            _, generated, _ = self._parts(raw.decode('utf-8'))
+            updated = before + generated + after
+            state = 'UNCHANGED' if updated.encode('utf-8') == raw else 'UPDATED'
+            if state == 'UPDATED':
+                atomic_write_text(path, updated)
+            return {'status': state, 'path': str(path),
+                    'document_sha256': sha256(updated.encode('utf-8')).hexdigest(),
+                    'canonical_ingestion': False}
 
     def rebuild(self, thread_id):
         path = self._path(thread_id)

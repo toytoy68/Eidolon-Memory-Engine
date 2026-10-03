@@ -1723,3 +1723,28 @@ pas de nouvelle inspection exhaustive services/jobs. Corpus synthétique réduit
 pas de corpus utilisateur, migration réelle, latence production, client externe
 ou coupure électrique validés. Données actives/sauvegarde originales intactes,
 estimation 45 % / 52,75 inchangée.
+
+## T-044 — Édition explicite des notes humaines, 3 octobre 2026
+
+Base `1d01498` vérifiée sur GitHub avant ce lot. read_notes fournit les deux
+sections humaines et SHA256 du document entier en lecture seule. replace_notes
+et CLI edit-notes remplacent ces seules sections sous CAS/verrous partagés
+avec rebuild ; aucune ingestion, Information/Thread/Event ou vue rafraîchie
+implicitement. CRLF/Unicode et région générée préservés, readiness exigée,
+ancien snapshot refusé. Vues périmées/orphelines éditables sans résurrection.
+
+25 nouveaux tests, 21 rouges sur squelette. Deux processus éditeurs, arrêt réel
+après publication atomique puis inspection/reprise sous nouveau SHA256, faute
+avant publication, conservation après rebuild, JSON CLI/read-only, garde de
+reprise, notes invalides et digest contrôlés. Une fixture pointait incoming au
+lieu du second objet de seed ; corrigée avant exécution des assertions métier.
+Neutraliser CAS ou conservation de la région générée en mémoire produit un
+échec chacun. **129 ciblés verts en 6,80 s**.
+
+Suite VM complète hors sandbox : **1606 réussis en 39,46 s**, aucun échec,
+saut ou désélection, Python 3.13.5/pytest 9.1.1 ;
+`/tmp/em-suite-h7wYKC/pytest.log`, corpus synthétiques isolés.
+Contrat docs/DOSSIER-HUMAN-NOTES.md. Pas de journal/versionnement des notes,
+merge automatique, ingestion, client réel ou garantie sur éditeur externe
+ignorant les verrous. Aucun corpus actif, service ou sauvegarde modifié ;
+pas de coupure électrique validée. Estimation 45 % / 52,75 inchangée.

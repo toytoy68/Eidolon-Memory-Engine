@@ -23,6 +23,8 @@ réelles et le déploiement restent à valider.
   scan partagé, arrêt au conflit et reprise par rejeu des commandes stables.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
+- [Édition des notes humaines](docs/DOSSIER-HUMAN-NOTES.md) : snapshot SHA256,
+  remplacement explicite et refus des éditions concurrentes périmées.
 - [Budget du rappel complet](docs/RECALL-PAYLOAD.md) : JSON, métadonnées et
   instructions explicites bornés, réserves et preuves conservées par source.
 - [Résultats client NONE/REVIEW](docs/ROUTING-OUTCOMES.md) :
@@ -90,10 +92,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1581 réussis en
-38,62 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `2a95849` plus le budget du rappel complet ;
-36 nouveaux cas, 113 ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1606 réussis en
+39,46 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `1d01498` plus l’édition explicite des notes humaines ;
+25 nouveaux cas, 129 ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,

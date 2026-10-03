@@ -34,9 +34,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après budget du rappel complet T-047 : **1581 réussis en 38,62 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `2a95849` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-MwgpSL`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après édition des notes humaines T-044 : **1606 réussis en 39,46 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `1d01498` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-h7wYKC`, corpus synthétique isolé, journal conservé.
 
 Dernière recette du code `2fed279`, **03/10/2026** : **neuf étapes OK**
 sur copie restaurée vide et corpus synthétique peuplé ; cinq concurrents
@@ -372,8 +372,15 @@ code restauré. Contrat : [PROJECT-DOSSIERS.md](docs/PROJECT-DOSSIERS.md).
 
 Raccordement du 02/10 : la passe d’entretien explicite répare les vues après
 reprise et échéances, puis contrôle leur état final. Voir MAINTENANCE-PASS.md.
+Ajout du 03/10, base `1d01498` vérifiée sur GitHub : read_notes/replace_notes
+et CLI notes/edit-notes, sections humaines seules sous SHA256 du document
+entier. Source/résumé canonique inchangés, reconstruction conserve CRLF ;
+25 nouveaux cas, 21 rouges sur squelette, concurrence et arrêt réel après
+publication, deux substitutions négatives.
+[Contrat](docs/DOSSIER-HUMAN-NOTES.md).
+
 Restant : déclenchement système récurrent, coût des scans/verrous
-T-049, édition concurrente/ingestion explicite des notes non reconstructibles.
+T-049, ingestion explicite des notes non reconstructibles et clients réels.
 Le rappel écarte le texte des vues et signale leur fraîcheur. Lieux/thèmes après
 projets. Le manifeste est recalculé, pas un index incrémental. Définir la clôture de purge
 sur les vues gérées par le moteur, distincte du DELETED canonique actuel et des
