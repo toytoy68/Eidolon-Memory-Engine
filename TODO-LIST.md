@@ -59,8 +59,9 @@ clé GitHub dédiée et service systemd. HTTPS 401 sans token / découverte 200
 vérifiés directement ; réponse réelle Claude Web publiée dans `f2a4119`,
 commit distant et archivage vérifiés par Codex. Reconnexion après expiration,
 redémarrage VM et restauration du service restent à vérifier.
-Caddy absent sur la VM ; modèle non validé par Caddy. Syntaxe systemd vérifiée
-sur copie avec chemin Python existant, unité permanente non installée.
+Caddy absent sur la VM ; son modèle alternatif n’est pas celui déployé.
+Unité permanente systemd installée, services MCP/cloudflared actifs revérifiés
+à la reprise ; découverte Auth0 conforme et accès sans token 401 confirmés.
 [Contrat, installation et reprise](docs/COLLABORATION-MCP.md). Estimation globale
 45 % / 52,75 points inchangée ; ce canal est un outillage de collaboration.
 

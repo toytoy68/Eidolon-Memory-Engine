@@ -62,10 +62,42 @@ La connexion Claude Web passe par l'infrastructure Anthropic : une adresse LAN
 ou le port local seul ne suffit pas. Un PAT GitHub n'est pas un identifiant
 client OAuth et ne doit jamais être collé dans Claude.
 
-## Installation sur la VM
+## Déploiement réel — activé le 03/10/2026
+
+Le déploiement en service utilise **Cloudflare Tunnel**, et non le modèle Caddy
+ci-dessous : `https://mcp.eidolon.re/mcp` → tunnel `eidolon-memory` →
+`http://localhost:8765`. Le DNS du domaine eidolon.re est délégué à Cloudflare.
+Auth0 fournit l’authentification, avec émetteur public
+`https://eidolon-lab.eu.auth0.com/`, audience `https://mcp.eidolon.re/mcp` et
+scope `eidolon:exchange`. L’identité autorisée et les credentials restent dans
+la configuration privée de la VM, jamais dans les documents versionnés.
+
+L’unité permanente `/etc/systemd/system/eidolon-collaboration.service` est
+installée ; services `eidolon-collaboration` et `cloudflared` actifs, revérifiés
+en lecture seule le 03/10 lors de la reprise après `180886b`. Sans token, `/mcp`
+répond 401 ; découverte publique consultée avec resource, issuer et scope
+conformes. Aller-retour Claude vérifié dans `f2a4119`, puis seconde réponse
+réelle reçue dans `a349b83` ; ces réponses ne sont pas une revue du code serveur.
+
+Pour diagnostiquer un incident sur ce déploiement, vérifier successivement le
+service MCP local, le service cloudflared et sa route vers localhost:8765,
+le DNS/tunnel Cloudflare, puis découverte et authentification Auth0. Une panne
+HTTP 502 demande de vérifier le runtime local avant de modifier OAuth. Ne pas
+installer ou recharger Caddy pour réparer cette route. L’examen des journaux
+locaux et la réconciliation Git suivent la section Audit et reprise ci-dessous.
+
+Le venv est possédé par root mais doit être lisible et traversable par le
+compte du service ; un mode 0700 a produit status 203/EXEC, corrigé après
+installation. Credentials et état restent privés. Expiration/reconnexion OAuth,
+redémarrage VM et restauration du service restent non validés ; l’état actif
+observé ne prouve pas ces scénarios.
+
+## Installation sur la VM — modèle alternatif Caddy
 
 Les modèles sont dans `deployment/collaboration/`. Ne pas activer le service
 avant d'avoir renseigné le domaine, le fournisseur et le compte autorisé.
+Les prérequis et commandes Caddy de cette section concernent uniquement ce
+modèle alternatif, pas le tunnel actuellement déployé.
 Prérequis : Python >= 3.10, Git, compte système dédié, Caddy installé, DNS public
 et ports 80/443 joignables depuis Internet. Garder 8765 local uniquement.
 
@@ -166,7 +198,7 @@ Validation HTTPS/DNS, émission OAuth réelle et session Claude Web ne sont pas
 couvertes par ces tests. Les modèles sont préparés ; aucun service permanent
 ni endpoint public ne doit être annoncé actif avant cette recette.
 
-Résultat du 03/10/2026 sur la VM : **1643 réussis en 38,02 s**, dont 37 nouveaux
+Résultat initial du 03/10/2026 sur la VM, avant activation publique : **1643 réussis en 38,02 s**, dont 37 nouveaux
 cas de collaboration. Le client MCP officiel a également été connecté sur HTTP
 loopback à un serveur réel, avec dépôt/remote bare isolés : trois outils, lecture,
 publication et statut contrôlés. Neutraliser le push ou le vérificateur OAuth
@@ -195,6 +227,7 @@ renseignés. Sans ces paramètres, seuls les modèles sont fournis. La destinati
 ne doit pas exister ; un paquet existant n'est jamais écrasé. Le fichier
 `NEXT-STEPS.md` du paquet détaille la configuration et l'activation finales.
 
-Sur cette session, `sudo -n` confirme qu'un mot de passe administrateur est
+Lors de la préparation initiale du 03/10, `sudo -n` confirme qu'un mot de passe administrateur est
 nécessaire. Le paquet peut être préparé et testé ici ; installation système
-et activation nécessitent ce droit et les paramètres encore manquants.
+et activation nécessitaient ce droit et les paramètres alors manquants.
+L’activation ultérieure est décrite dans Déploiement réel ci-dessus.

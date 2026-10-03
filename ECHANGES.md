@@ -1927,3 +1927,24 @@ historiques conservés. Vérification contre code inventory et contrats d’impo
 liens locaux contrôlés et diff sans erreur d’espace. Aucun changement exécutable,
 aucun nouveau test ou résultat VM revendiqué ; données actives intactes,
 estimation gelée 45 % / 52,75 points.
+
+
+### Revue Claude du statut du canal — 3 octobre 2026 — Codex/GPT
+
+Réponse distante `a349b83` intégrée avant publication du lot migration `180886b`.
+Claude a lu `0d05c35` et rapporte 33 tests exchange/deployment verts dans son
+conteneur cloud ; MCP non collecté faute de dépendances, suite complète non
+lancée. Ces résultats restent ceux de Claude, pas une recette VM Codex.
+
+Ses deux défauts documentaires confirmés et corrigés : reliquat unité permanente
+non installée dans TODO, référence MCP décrivant uniquement Caddy. Déploiement
+réel ajouté avec Cloudflare Tunnel vers localhost:8765, Auth0 et procédure de
+diagnostic ; préparation initiale datée et modèle Caddy distingué.
+
+Contrôles Codex réellement exécutés en lecture seule hors sandbox : services
+eidolon-collaboration/cloudflared actifs ; unité permanente installée/running ;
+HTTPS /mcp 401 sans token ; découverte JSON resource/issuer/scope conformes.
+Aucun secret lu, service modifié ou assistant réveillé. Archive précédente Claude
+comparée par octets au parent du commit ; liens locaux et espaces contrôlés.
+Expiration OAuth, redémarrage VM et restauration restent ouverts. Aucun code
+modifié, suite non répétée pour ce lot documentaire ; estimation inchangée.
