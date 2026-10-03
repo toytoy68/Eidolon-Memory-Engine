@@ -94,10 +94,16 @@ class LocalDetailAI:
                         or type(item['paragraph']) is not int or item['paragraph'] not in passages
                         or not isinstance(item['detail'], str) or not 1 <= len(item['detail'].strip()) <= 1000
                         or not isinstance(item['quote'], str) or not item['quote'].strip()
-                        or len(item['quote']) > 2000 or item['quote'] not in passages[item['paragraph']]
+                        or len(item['quote']) > 2000
                         or '\x00' in item['detail']):
                     raise ValueError('proposal has no exact source support; no memories created')
-                details.append(dict(item))
+                supported = dict(item)
+                if item['quote'] not in passages[item['paragraph']]:
+                    matches = [number for number, text in passages.items() if item['quote'] in text]
+                    if len(matches) != 1:
+                        raise ValueError('proposal has no unique exact source support; no memories created')
+                    supported['paragraph'] = matches[0]
+                details.append(supported)
             last = selected[-1]['paragraph']
             return dict(source_id=record['source_id'], source_sha256=record['sha256'],
                         extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],

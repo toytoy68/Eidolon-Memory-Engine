@@ -43,6 +43,24 @@ def test_local_ai_bounded_drafts_have_exact_support_without_writes(tmp_path, mon
     assert draft['next_paragraph'] is None
 
 
+def test_exact_quote_repairs_wrong_paragraph_without_writes(tmp_path, monkeypatch):
+    _, record, extraction = setup(tmp_path)
+    ai, _ = fake_ai(monkeypatch, [dict(detail='Le chat se nomme Plume.',
+        paragraph=1, quote='Elle possède un chat nommé Plume.')])
+    before = hashes(tmp_path)
+    result = ai.propose(record, extraction)
+    assert result['details'][0]['paragraph'] == 2
+    assert hashes(tmp_path) == before
+
+
+def test_wrong_paragraph_with_ambiguous_quote_is_rejected(tmp_path, monkeypatch):
+    _, record, extraction = setup(tmp_path)
+    extraction = dict(extraction, paragraphs=['Autre passage.', 'Citation répétée.', 'Citation répétée.'])
+    ai, _ = fake_ai(monkeypatch, [dict(detail='Un détail.', paragraph=1, quote='Citation répétée.')])
+    with pytest.raises(ValueError, match='unique exact source support'):
+        ai.propose(record, extraction)
+
+
 @pytest.mark.parametrize('item', [
     {'detail':'Invented', 'paragraph':1, 'quote':'not in the source'},
     {'detail':'Invented', 'paragraph':99, 'quote':'Lina'},
