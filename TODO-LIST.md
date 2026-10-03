@@ -67,6 +67,14 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Rappel des archives GPT : sélection d'un passage exact dans un seul message,
+référence auteur/date/message/parent/offsets ; aucune modification des archives.
+4 régressions rouges avant, 94 ciblés verts après. Corpus réel cloud : quatre
+requêtes, 5 extraits chacune contenant le terme, références exactes, empreintes
+inchangées ; 1,934–2,195 s. Suite cloud : 1763 verts, 5 échecs sockets Manager
+interdits ; 15 MCP verts séparés. NON TESTÉ VM pour ce correctif.
+Classement global des archives inchangé, amélioration sémantique et vitesse à venir.
+
 Import ChatGPT CLI du 03/10 : lecteur dédié et corpus séparé, archives
 OBSERVATION/UNVERIFIED, rôles/dates/parents conservés ; originaux hors Git.
 30 tests ciblés verts. Aucun fait sémantique confirmé, pas de Threads,

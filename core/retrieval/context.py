@@ -27,6 +27,7 @@ class ContextItem:
     valid_from: str | None = None
     valid_until: str | None = None
     content_format: str = "text"
+    excerpt_reference: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -110,6 +111,16 @@ class ContextAssembler:
                         continue
                 content = memory.content
                 content_format = "text"
+                excerpt_reference = None
+                if (memory.metadata.get('archive_kind') == 'conversation'
+                        and memory.provenance.get('importer') == 'chatgpt-archive-v1'
+                        and isinstance(content, str)):
+                    from core.retrieval.chatgpt_passages import select_passage
+                    passage = select_passage(content, query)
+                    if passage is None:
+                        continue
+                    content, excerpt_reference = passage
+
                 if include_structured_content and isinstance(content, (dict, list)):
                     try:
                         content = json.dumps(content, ensure_ascii=False, sort_keys=True,
@@ -126,12 +137,14 @@ class ContextAssembler:
                         content, length, remaining_tokens, token_counter)
                     if length == 0:
                         continue
+                if excerpt_reference is not None:
+                    excerpt_reference["end"] = excerpt_reference["start"] + length
                 items.append(ContextItem(
                     information_id=memory.information_id,
                     revision=memory.revision,
                     content=content[:length],
                     score=result.score,
-                    truncated=length < len(content),
+                    truncated=excerpt_reference is not None or length < len(content),
                     epistemic_status=self._label(memory.metadata, "epistemic_status"),
                     operational_state=self._label(memory.metadata, "operational_state"),
                     confidence=self._label(memory.metadata, "confidence"),
@@ -142,6 +155,7 @@ class ContextAssembler:
                     valid_from=self._label(memory.temporal, "valid_from"),
                     valid_until=self._label(memory.temporal, "valid_until"),
                     content_format=content_format,
+                    excerpt_reference=excerpt_reference,
                 ))
                 remaining -= length
                 if remaining_tokens is not None:
