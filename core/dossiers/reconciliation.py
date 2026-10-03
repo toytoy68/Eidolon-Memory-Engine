@@ -84,12 +84,14 @@ class DossierReconciler:
             report['status'] = 'DRIFT'
         return report
 
-    def apply(self):
+    def apply(self, *, limit=None):
         """Recompute work; rerunning converges without replaying canonical writes.
 
         Failures during publication propagate. Earlier atomic publications stay
         valid; inspection discovers the remaining work on the next invocation.
         """
+        if limit is not None and (type(limit) is not int or not 1 <= limit <= 100):
+            raise ValueError('dossier limit must be an integer from 1 to 100')
         dossiers = self.dossiers
         with ExitStack() as locks:
             locks.enter_context(exclusive_write(dossiers.backend.persistent_root))
@@ -111,9 +113,16 @@ class DossierReconciler:
             actions = []
             for item in report['items']:
                 if item['status'] in {'MISSING', 'STALE', 'ORPHANED'}:
+                    if limit is not None and len(actions) >= limit:
+                        break
                     result = dossiers.rebuild(item['thread_id'])
                     actions.append(dict(result, thread_id=item['thread_id']))
             final = self.inspect()
+            if limit is not None:
+                final['remaining_count'] = sum(item['status'] in {'MISSING', 'STALE', 'ORPHANED'}
+                                               for item in final['items'])
+                if final['status'] == 'DRIFT':
+                    final['status'] = 'PARTIAL'
             if final['status'] == 'CLEAN' and actions:
                 final['status'] = 'RECONCILED'
             return dict(final, actions=actions)

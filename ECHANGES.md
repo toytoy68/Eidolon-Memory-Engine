@@ -1948,3 +1948,30 @@ Aucun secret lu, service modifié ou assistant réveillé. Archive précédente 
 comparée par octets au parent du commit ; liens locaux et espaces contrôlés.
 Expiration OAuth, redémarrage VM et restauration restent ouverts. Aucun code
 modifié, suite non répétée pour ce lot documentaire ; estimation inchangée.
+
+
+### T-044/T-046 — Publications de dossiers bornées — 3 octobre 2026 — Codex/GPT
+
+Base publiée `f11ae11`, après lot migration `180886b` et intégration de la réponse
+Claude `a349b83`. DossierReconciler.apply(limit=1…100), reconcile --limit et
+MaintenancePass.run(dossier_limit=…) / --dossier-limit livrés. Ordre déterministe,
+PARTIAL si backlog relu, finalisation seulement quand dérivés courants ;
+compatibilité des appels sans limite conservée. Catalogue et audits restent
+complets ; aucune file durable ni ordonnanceur installé.
+
+14 nouveaux cas dans tests/test_dossier_batches.py : 11 rouges avant raccordement
+(API/options absentes), puis 53 ciblés verts en 2,94 s avec les suites existantes.
+Préfixe durable/reprise après exception post-publication, notes CRLF, canonique
+inchangé, orphelin nettoyé, corruption hors lot bloquante, faux succès refusé,
+inspection CLI sans écriture et deux processus concurrents couverts. L’arrêt
+nouveau est une exception simulée, pas une nouvelle coupure de processus/VM.
+Deux substitutions en mémoire (borne supprimée ; backlog masqué) donnent un
+échec comportemental chacune ; sources disque intactes.
+
+Suite complète réellement exécutée hors sandbox avec .venv/bin/python -m pytest
+-q --basetemp=/tmp/em-dossier-batches-suite : **1668 réussis en 37,63 s**,
+aucun échec/saut/désélection. Corpus synthétiques isolés uniquement, aucune
+écriture dans les données mémoire actives. Diff sans erreur d’espace.
+Contrat docs/MAINTENANCE-PASS.md. Limite des seules publications ; scans, reprise,
+catalogue et durée des verrous non bornés. Aucune latence production, récurrence,
+corpus réel ou coupure électrique validée. Estimation 45 % / 52,75 inchangée.

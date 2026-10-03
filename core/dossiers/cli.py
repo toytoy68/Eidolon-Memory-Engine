@@ -28,6 +28,8 @@ def main(argv=None):
     resolve.add_argument('--selected-thread')
     reconcile = commands.add_parser('reconcile', help='Inspect all project views; --apply repairs them')
     reconcile.add_argument('--apply', action='store_true')
+    reconcile.add_argument('--limit', type=int, choices=range(1, 101), metavar='1..100',
+                           help='Bound dossier publications with --apply; inspection remains complete')
     args = parser.parse_args(argv)
     persistent, history = args.root / 'memory/persistent', args.root / 'memory/history'
     if args.command == 'rebuild':
@@ -58,7 +60,7 @@ def main(argv=None):
             reconciler = DossierReconciler(dossiers)
             if args.apply:
                 check_environment(args.root)
-            result = reconciler.apply() if args.apply else reconciler.inspect()
+            result = reconciler.apply(limit=args.limit) if args.apply else reconciler.inspect()
         else:
             result = getattr(dossiers, args.command)(args.thread_id)
     except READ_ERRORS as exc:

@@ -17,12 +17,14 @@ def main(argv=None):
         if name == 'run':
             action.add_argument('--scope', type=Path, help='Explicit current execution context JSON; absence means unknown')
             action.add_argument('--limit', type=int, default=100, help='Bound due dispatch only; recovery and derived scans are unbounded')
+            action.add_argument('--dossier-limit', type=int, choices=range(1, 101), metavar='1..100',
+                                help='Bound dossier publications only; scans and catalogue remain complete')
     args = parser.parse_args(argv)
     try:
         service = MaintenancePass(args.root)
         result = (service.inspect(at=args.at) if args.command == 'inspect' else service.run(
             at=args.at, query_scope=decode_json_value(args.scope.read_text(encoding='utf-8')) if args.scope else {},
-            limit=args.limit))
+            limit=args.limit, dossier_limit=args.dossier_limit))
     except ERRORS as exc:
         result = dict(status='BLOCKED', error=dict(type=type(exc).__name__, reason=str(exc)))
     print(json.dumps(result, ensure_ascii=False, indent=2))

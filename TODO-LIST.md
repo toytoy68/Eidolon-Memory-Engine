@@ -67,6 +67,12 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Suite complète de reprise du **03/10/2026**, base `f11ae11` plus lot dossiers
+bornés : **1668 réussis en 37,63 s**, aucun échec/saut/désélection,
+corpus synthétiques isolés sous `/tmp/em-dossier-batches-suite`. 14 nouveaux
+cas ; 53 ciblés verts. Contrat et limites : [entretien](docs/MAINTENANCE-PASS.md).
+
+
 Suite complète directe sur VM du **03/10/2026** après édition des notes humaines T-044 : **1606 réussis en 39,46 s**, Python 3.13.5/pytest 9.1.1,
 aucun échec, saut ou désélection. Base `1d01498` plus le lot documenté ci-dessous ;
 racine `/tmp/em-suite-h7wYKC`, corpus synthétique isolé, journal conservé.
@@ -567,6 +573,12 @@ Passe d’entretien explicite livrée : reprise globale → échéances → doss
 backlog, reprise par relance et notes conservées. 20 nouveaux cas, groupe ciblé
 72 réussis, deux arrêts réels et concurrence sans Manager ; trois preuves
 négatives. Contrat : [MAINTENANCE-PASS.md](docs/MAINTENANCE-PASS.md).
+Ajout du 03/10 après reprise MCP : reconstruction des dossiers par lots
+optionnels de 1 à 100 publications, API/CLI et entretien --dossier-limit.
+PARTIAL et backlog explicites, relance convergente, notes préservées ; contrôles
+globaux et catalogue restent complets. Aucun gain de scans ou borne de latence
+revendiqué. Voir [contrat](docs/MAINTENANCE-PASS.md).
+
 Restant : récurrence/charge/fenêtre horaire, dérivés incrémentaux et consommateurs
 externes. Aucun ordonnanceur système ni job récurrent installé.
 

@@ -72,11 +72,13 @@ class MaintenancePass:
             report['error'] = dict(type=type(exc).__name__, reason=str(exc))
         return report
 
-    def run(self, *, at, query_scope=None, limit=100):
+    def run(self, *, at, query_scope=None, limit=100, dossier_limit=None):
         """One explicit pass. Limit bounds due dispatch only, not recovery/scans."""
         timestamp(at)
         if type(limit) is not int or limit < 1 or (query_scope is not None and not isinstance(query_scope, dict)):
             raise ValueError('positive limit and object query_scope required')
+        if dossier_limit is not None and (type(dossier_limit) is not int or not 1 <= dossier_limit <= 100):
+            raise ValueError('dossier limit must be an integer from 1 to 100')
         scope = deepcopy(query_scope) if query_scope is not None else {}
         report = dict(status='BLOCKED', at=at, stage='readiness', recovery=None,
                       triggers={}, dossiers=None, catalogue=None, verification=None)
@@ -111,7 +113,8 @@ class MaintenancePass:
                 self._checkpoint('after_triggers')
                 with settled_read_phase(self.root):
                     report['stage'] = 'dossiers'
-                    report['dossiers'] = self.dossiers.apply()
+                    report['dossiers'] = (self.dossiers.apply() if dossier_limit is None
+                                          else self.dossiers.apply(limit=dossier_limit))
                     if report['dossiers']['status'] == 'BLOCKED':
                         return report
                     self._checkpoint('after_dossiers')
@@ -122,10 +125,14 @@ class MaintenancePass:
                 with settled_read_phase(self.root):
                     report['verification'] = self.inspect(at=at)
                 final = report['verification']
-                if (final['status'] != 'READY' or final['dossiers']['status'] != 'CLEAN'
+                dossier_backlog = (dossier_limit is not None
+                    and report['dossiers']['status'] == 'PARTIAL'
+                    and final['dossiers']['status'] == 'DRIFT')
+                if (final['status'] != 'READY'
+                        or (final['dossiers']['status'] != 'CLEAN' and not dossier_backlog)
                         or final['catalogue']['status'] != 'CURRENT'):
                     raise OperationConflict('maintenance final verification failed')
-                report['status'] = 'PARTIAL' if final['deadlines']['due'] else 'COMPLETED'
+                report['status'] = 'PARTIAL' if final['deadlines']['due'] or dossier_backlog else 'COMPLETED'
                 report['stage'] = 'done'
         except ERRORS as exc:
             report['error'] = dict(type=type(exc).__name__, reason=str(exc))

@@ -30,7 +30,8 @@ python -B -m core.maintenance.cli --root RACINE run \
 
 Le JSON de contexte est le même objet `query_scope` que pour le dispatcher.
 Le CLI renvoie 1 pour BLOCKED, 0 sinon. PARTIAL signifie qu’une passe bornée a
-réussi mais qu’il reste des échéances arrivées ; relancer pour les suivantes.
+réussi mais qu’il reste des échéances arrivées ou des dossiers à reconstruire
+avec la limite optionnelle ci-dessous ; relancer pour les suivants.
 COMPLETED signifie qu’il ne reste aucune échéance arrivée **au temps fourni**
 et que les dérivés gérés sont à jour. Des échéances futures peuvent subsister.
 
@@ -112,3 +113,31 @@ Persistent/Thread extérieurs restent détenus pendant la passe entière.
 Aucun audit global, contrôle de révision ou contrôle final n’est supprimé.
 Voir [INFORMATION-BATCHES.md](INFORMATION-BATCHES.md) et les mesures comparées
 dans [MAINTENANCE-COST.md](MAINTENANCE-COST.md).
+
+## Publications de dossiers bornées — 03/10
+
+`DossierReconciler.apply(limit=1…100)` et
+`core.dossiers.cli … reconcile --apply --limit 20` reconstruisent au plus ce
+nombre de dossiers, dans l’ordre des identités. Sans limite, le comportement
+complet précédent reste inchangé. L’inspection reste complète et sans écriture.
+La corruption d’un dossier hors du premier lot bloque toute publication.
+
+`MaintenancePass.run(…, dossier_limit=20)` et
+`core.maintenance.cli … run --at DATE --dossier-limit 20` raccordent cette
+borne à la passe. `limit` / `--limit` continuent de borner les seules échéances.
+Le résultat dossiers expose `remaining_count` après publication ; PARTIAL
+signale les vues encore MISSING/STALE/ORPHANED. Le CLI renvoie 0 pour ce progrès
+partiel, 1 pour BLOCKED. La vérification finale fraîche conserve le backlog
+visible et interdit COMPLETED tant que les dossiers ou échéances restent dus.
+
+Relancer la même commande découvre le travail restant depuis les sources et
+les régions générées, sans nouvelle file durable. Une interruption après une
+publication ne la rejoue pas si elle est courante. Notes humaines préservées,
+vues orphelines nettoyées sans recréer le Thread ; deux travailleurs coopératifs
+sérialisent leurs publications sous les mêmes verrous.
+
+Cette borne limite les publications, pas les scans, la reprise globale, le
+catalogue, la mémoire ou la durée des verrous. Aucun ordonnanceur installé,
+aucune fenêtre ou politique d’occupation choisie. Les dérivés peuvent rester
+périmés entre passes ; ne pas interpréter PARTIAL comme une mise à jour complète.
+Preuves synthétiques : tests/test_dossier_batches.py ; résultats dans ECHANGES.md.
