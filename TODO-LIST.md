@@ -67,6 +67,15 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+04/10 — Fenêtres GPT v2 : couverture calculée dans le budget caractères,
+préférence pour termes rapprochés ; 3 régressions rouges puis 97 ciblés verts.
+Recette tools.check_chatgpt_recall : citations/rôles/dates/offsets exacts,
+budgets/réserves, cas sans réponse et empreintes vérifiés, sans texte privé.
+Corpus réel cloud PASS : « mémoire robot » 2/2 termes pour 2 extraits et 1/2
+pour 3 ; « Dans les bras » 3/3 pour 5. Classement global à améliorer.
+NON TESTÉ VM pour v2. VM sur 88050bc : 4 tests et contrôle 20/20 termes
+avec références présents validés par toytoy, 1,381–1,548 s.
+
 Rappel des archives GPT : sélection d'un passage exact dans un seul message,
 référence auteur/date/message/parent/offsets ; aucune modification des archives.
 4 régressions rouges avant, 94 ciblés verts après. Corpus réel cloud : quatre

@@ -116,7 +116,7 @@ class ContextAssembler:
                         and memory.provenance.get('importer') == 'chatgpt-archive-v1'
                         and isinstance(content, str)):
                     from core.retrieval.chatgpt_passages import select_passage
-                    passage = select_passage(content, query)
+                    passage = select_passage(content, query, min(max_item_chars, remaining))
                     if passage is None:
                         continue
                     content, excerpt_reference = passage

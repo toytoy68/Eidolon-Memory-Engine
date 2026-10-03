@@ -46,3 +46,21 @@ def test_token_budget_counts_selected_excerpt(tmp_path):
     assert bundle.used_tokens<=15
     item=bundle.items[0];assert len(item.content)<=15
     assert item.excerpt_reference['end']-item.excerpt_reference['start']==len(item.content)
+
+
+def test_later_window_contains_both_terms_under_small_budget(tmp_path):
+    text='mémoire '+('ancien '*100)+'mémoire du robot durable'
+    _,bundle=recall(tmp_path,'mémoire robot',[message(text)],max_item_chars=40,max_chars=40)
+    assert 'mémoire' in bundle.items[0].content and 'robot' in bundle.items[0].content
+
+
+def test_window_quality_beats_whole_message_term_coverage(tmp_path):
+    spread='mémoire '+('ancien '*100)+'robot'
+    _,bundle=recall(tmp_path,'mémoire robot',[message(spread,'a'),message('mémoire du robot','b')],
+        max_item_chars=40,max_chars=40)
+    assert bundle.items[0].excerpt_reference['message_id']=='b'
+
+
+def test_fully_visible_term_required_by_character_budget(tmp_path):
+    _,bundle=recall(tmp_path,'Eidolon',[message('Eidolon')],max_chars=3,max_item_chars=3)
+    assert not bundle.items

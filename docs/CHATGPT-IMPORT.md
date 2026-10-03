@@ -9,7 +9,8 @@ ne sont pas proposés au rappel. Les fichiers originaux restent exacts.
 
 Ce lot n'extrait pas de faits sémantiques, ne confirme pas les réponses de GPT,
 ne crée pas de Threads et ne fournit pas de campagne IA durable. Le rappel sélectionne désormais un message par archive, selon la couverture des
-termes, puis un extrait exact débutant au premier terme trouvé. excerpt_reference
+termes, puis une fenêtre exacte maximisant les termes présents dans le budget caractères,
+avec préférence pour les termes rapprochés (politique v2). excerpt_reference
 porte conversation/message/nœud/parent/auteur/date et offsets caractères.
 Le classement entre archives reste lexical_v1 sur le contenu complet : pas de
 reclassement global par passage ni de recherche sémantique. La date du message
@@ -59,3 +60,21 @@ dashboard n'accepte pas encore ces JSON ; utiliser cette CLI dédiée.
 Quatre tests locaux : provenance/rôles/branches, exclusion du raisonnement,
 rejeu sans doublon et octets originaux, refus de versions contradictoires,
 refus d'une racine active. Validation VM non effectuée.
+
+## Recette du rappel sur corpus réel
+
+```bash
+.venv/bin/python -m tools.check_chatgpt_recall \
+  --root /home/toytoy/eidolon-corpus-gpt-test
+```
+
+Ne publie aucun texte privé. Contrôle exact des références, des offsets, des
+réserves UNVERIFIED, des budgets, du cas sans résultat et des empreintes de la
+racine entière (hors fichiers de verrou). La couverture lexicale n'est pas une
+mesure de pertinence sémantique ; les synonymes et réponses attendues restent à
+évaluer. Les fenêtres sont choisies avant l'éventuel budget tokens, qui peut
+encore réduire la couverture finale.
+
+Résultat VM communiqué par toytoy sur 88050bc (04/10) : quatre régressions vertes,
+20/20 extraits contenant le terme avec références présentes ; 1,381–1,548 s.
+Ce contrôle VM n'incluait pas la comparaison exacte de toutes les références.
