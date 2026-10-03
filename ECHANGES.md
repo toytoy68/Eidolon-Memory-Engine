@@ -2141,3 +2141,15 @@ Mesure deux corpus tmpfs arrêtés 100/300, trois échantillons par classe :
 200→100 et 600→300 décodages, snapshots strictement égaux. Médiane à 300
 0,018615→0,016109 s, lectures physiques non réduites, pas d’impact Core garanti.
 Aucun fichier du roman modifié. Formats et interfaces publics inchangés.
+
+
+### T-012/T-029 — Lanceur dashboard et dépendances — 3 octobre 2026 — Codex/GPT
+
+Suite opérationnelle de l’incident upload : scripts/run-dashboard.sh utilise
+le .venv du checkout depuis tout répertoire ; options et authentification
+existantes conservées. Mode upload vérifie ses imports avant toute ouverture
+réseau ; erreur explicite si environnement incomplet. Aucun service ni secret
+nouveau, aucun arrêt d’un autre intervenant. Test rouge avant lot, dix tests
+ciblés verts (0,34 s), lanceur réellement utilisé sur VM et GET /, /sources 200.
+Les tailles adaptées du lot `4dfc617` sont désormais actives. Ollama/Core/MCP
+laissés intacts ; aucun nouveau souvenir ni appel IA effectués.

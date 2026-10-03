@@ -100,3 +100,25 @@ ils ne sont ni envoyés à la VM ni intégrés à la mémoire. Si le stockage es
 indisponible ou plein, un message indique que le choix reste temporaire.
 Le bouton de réinitialisation rétablit le fond uni. Le script de personnalisation
 est autorisé par son empreinte CSP, sans autoriser les autres scripts intégrés.
+
+## Lanceur utilisant l’environnement du projet
+
+`scripts/run-dashboard.sh` fonctionne depuis n’importe quel répertoire et
+utilise toujours `.venv/bin/python` à la racine du checkout. Il transmet les
+options du dashboard, conserve le mode loopback/lecture seule par défaut et
+exige toujours EIDOLON_DASHBOARD_TOKEN. Il ne génère ni ne publie de secret.
+Exemple après définition privée de cette variable :
+
+```sh
+scripts/run-dashboard.sh --host 192.168.1.110 --port 8766 \
+  --allow-source-upload --local-ai-model qwen3:0.6b
+```
+
+Avant d’ouvrir le port, le mode upload charge désormais les dépendances de
+publication et refuse le démarrage avec une indication d’environnement si elles
+manquent. Le lanceur n’installe aucun service, ne choisit pas un autre port,
+ne termine aucun processus existant et ne démarre pas Ollama. Vérifier le port
+et les commandes actives avant de le lancer. Sur la VM, il a été utilisé pour
+relancer uniquement le dashboard identifié ; `/` et `/sources` répondent 200.
+Un nouveau test rouge avant lot vérifie le refus avant création du serveur,
+sans modification du corpus ; dix tests dashboard/HTTP passent après correction.

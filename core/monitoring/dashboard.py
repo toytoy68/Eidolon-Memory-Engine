@@ -275,6 +275,12 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("EIDOLON_DASHBOARD_TOKEN must be set")
     if not args.root.is_dir():
         parser.error("engine root is not a directory")
+    if args.allow_source_upload:
+        try:
+            from core.migration.converter import _atomic_bytes
+            from core.migration.core_copy import _publish
+        except ImportError:
+            parser.error('Source upload dependencies unavailable; use .venv/bin/python or scripts/run-dashboard.sh')
     local_ai = LocalDetailAI(model=args.local_ai_model, endpoint=args.local_ai_url) if args.local_ai_model else None
     server = ThreadingHTTPServer((args.host, args.port), handler_factory(args.root, token, allow_source_upload=args.allow_source_upload, local_ai=local_ai))
     print(f"Eidolon dashboard listening on {args.host}:{args.port}", flush=True)
