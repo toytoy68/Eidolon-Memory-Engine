@@ -25,6 +25,8 @@ réelles et le déploiement restent à valider.
   reprise et audit ; livré en local, essais VM encore requis.
 - [Résultats client NONE/REVIEW](docs/ROUTING-OUTCOMES.md) :
   évaluation sans écriture, revue explicite et prochaine étape avant exécution.
+- [Rattachement d’une Information existante](docs/ROUTING-EXISTING-INFORMATION.md) :
+  source canonique inchangée, lien/dossier récupérables, format 4 explicite.
 - [Nouveau projet par routage](docs/ROUTING-NEW-PROJECT.md) : aperçu explicite,
   création journalisée, dossier et échéance ; format 3 compatible avec 1/2.
 - [Contrat fonctionnel mémoire 0.1](schemas/memory-policy-v0.1.md) :
@@ -82,10 +84,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1483 réussis en
-37,03 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `797c432` plus la compaction bornée ;
-26 nouveaux cas, 124 ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1516 réussis en
+37,84 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `2a50395` plus le rattachement d’Information existante ;
+33 nouveaux cas, 182 ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,

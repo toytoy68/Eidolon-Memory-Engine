@@ -23,11 +23,18 @@ def assess(memory, context):
         reasons.append('same_context_conflict_requires_evidence_no_automatic_winner')
     if (policy['persistence'] == 'NONE'
             and policy['dossier'] in {'LINK', 'CREATE_OR_LINK'}):
-        reasons.append('association_requires_explicit_command')
+        subject = policy['dossier_subject']
+        explicit_link = (context.already_stored is True and isinstance(subject, dict)
+                         and subject.get('kind') == 'project' and context.existing_dossier == subject['id'])
+        if not explicit_link:
+            reasons.append('association_requires_explicit_command')
     if reasons:
         status, next_step = 'REVIEW_REQUIRED', 'RESOLVE_REVIEW'
     elif policy['persistence'] == 'NONE':
-        status, next_step = 'NO_ACTION', 'DO_NOT_PERSIST'
+        if policy['dossier'] in {'LINK', 'CREATE_OR_LINK'}:
+            status, next_step = 'PREVIEW_REQUIRED', 'PREVIEW_LINK_EXISTING'
+        else:
+            status, next_step = 'NO_ACTION', 'DO_NOT_PERSIST'
     else:
         subject = policy['dossier_subject']
         if (not isinstance(subject, dict) or subject.get('kind') != 'project'

@@ -29,6 +29,7 @@ def main(argv=None):
     project.add_argument('--project-revision', type=int)
     project.add_argument('--new-project', type=Path, help='Explicit new Thread JSON template; version 3 includes lifecycle')
     preview.add_argument('--with-lifecycle', action='store_true', help='Version 2: persist availability and register proposed deadline')
+    preview.add_argument('--link-only', action='store_true', help='Version 4: link exact already-stored Information without writing it')
     execute = sub.add_parser('execute')
     execute.add_argument('--plan', type=Path, required=True)
     execute.add_argument('--intent-id', required=True)
@@ -56,7 +57,11 @@ def main(argv=None):
         elif args.action == 'preview':
             memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
             context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
-            if args.new_project is not None:
+            if args.link_only:
+                if args.new_project is not None or args.with_lifecycle:
+                    raise ValueError('link-only requires an existing project and excludes lifecycle writes')
+                result = executor.preview_link(memory, context, project_revision=args.project_revision)
+            elif args.new_project is not None:
                 from core.storage_format import encode_document
                 template = executor.storage._deserialize(encode_document('Thread',
                     decode_json_value(args.new_project.read_text(encoding='utf-8'))))

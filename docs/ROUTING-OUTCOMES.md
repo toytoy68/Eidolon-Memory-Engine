@@ -10,12 +10,13 @@ Information. Le résultat ne contient pas le corps de l’Information.
 | --- | --- |
 | NO_ACTION | DO_NOT_PERSIST : aucune persistance, suppression ou échéance |
 | REVIEW_REQUIRED | RESOLVE_REVIEW : qualification, association ou preuves à revoir explicitement |
-| PREVIEW_REQUIRED | PREVIEW_EXISTING_PROJECT si dossier explicitement fourni ; sinon RESOLVE_PROJECT |
+| PREVIEW_REQUIRED | PREVIEW_LINK_EXISTING pour NONE et projet explicite ; PREVIEW_EXISTING_PROJECT pour écriture ; sinon RESOLVE_PROJECT |
 | CAPABILITY_REQUIRED | UNSUPPORTED_ROUTE : voie sans projet, lieu ou thème non exécutée |
 
 Les dimensions du plan sont indépendantes. NONE avec une association demandée
 ne devient pas un succès silencieux : cela exige une commande explicite de
-rattachement, signalée par REVIEW_REQUIRED. Une association ambiguë, une
+rattachement, signalée par PREVIEW_LINK_EXISTING si le projet est déjà choisi,
+sinon REVIEW_REQUIRED. [Contrat du format 4](ROUTING-EXISTING-INFORMATION.md). Une association ambiguë, une
 qualification manquante, une date invalide, un conflit non résolu et un retrait
 observé appellent une revue. Des références déclarées ne valident pas seules la
 preuve d’un retrait. NONE conserve les mémoires préexistantes intactes.
@@ -41,8 +42,8 @@ Un client peut afficher NO_ACTION sans stocker le corps ; pour une revue il
 présente les raisons à l’humain, refait l’assessment après correction explicite,
 puis passe au parcours journalisé. Aucune file de revue durable, résolution
 humaine automatique, journal d’assessment, qualification automatique ou client
-externe n’est livré. Les branches lieu/thème et rattachement d’une Information
-déjà stockée restent ouvertes.
+externe n’est livré. Les branches lieu/thème restent ouvertes ; le rattachement explicite d’une
+Information déjà stockée est livré par le format 4.
 
 Preuves du 03/10 : 28 nouveaux cas, 25 rouges sur le squelette, 106 ciblés verts.
 Client factice qualification → assessment → aperçu/exécution → rappel avec

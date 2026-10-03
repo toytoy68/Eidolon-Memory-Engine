@@ -34,9 +34,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après compaction bornée T-049 : **1483 réussis en 37,03 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `797c432` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-GthGBD`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après rattachement source existante T-043 : **1516 réussis en 37,84 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `2a50395` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-R0r3S8`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -323,8 +323,16 @@ explicite ; pas de readiness affirmée, pas de création supposée du projet.
 jusqu’au rappel, preuve NONE != DELETE, deux substitutions négatives.
 Suite VM 1457 réussis en 36,29 s. [Contrat](docs/ROUTING-OUTCOMES.md).
 
-Restant : résolution/file de revue durable, rattachement sans nouvelle écriture,
-lieu/thème, autres politiques et qualification automatique.
+Ajout rattachement existant du 03/10, base `2a50395` vérifiée sur GitHub :
+format 4 preview_link / --link-only, NONE sur Memory canonique exact vers projet
+choisi. Source octets/révision/Events/disponibilité/échéances inchangés ; LINK
+Thread si absent, dossier et notes conservés. Intention/reçu/recovery/inventaire
+et copie core raccordés. 33 nouveaux cas, 29 rouges sur squelette et un rouge
+dédié de conflit avant réservation ; 182 ciblés verts, suite VM 1516 réussis
+en 37,84 s. [Contrat](docs/ROUTING-EXISTING-INFORMATION.md).
+
+Restant : résolution/file de revue durable, lieu/thème, autres politiques et
+qualification automatique.
 Disponibilité encore différée pour les seuls anciens plans format 1.
 Pas de client externe ou de VM validé.
 

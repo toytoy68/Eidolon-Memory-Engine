@@ -152,3 +152,12 @@ NO_ACTION, REVIEW_REQUIRED, PREVIEW_REQUIRED ou CAPABILITY_REQUIRED. Le client
 résout explicitement les points de revue et le projet, puis utilise le parcours
 journalisé existant. Aucun résultat d’assessment ne vaut plan exécutable ou
 readiness moteur. [Contrat et limites](ROUTING-OUTCOMES.md).
+
+## Rattachement d’une source déjà stockée — format 4
+
+`preview_link` et CLI `preview --link-only` exécutent explicitement NONE → projet
+existant → dossier. Information actuelle exacte et révision du projet exigées ;
+aucune réécriture Information ni changement de disponibilité/échéance. Le lien
+Thread est récupérable, les notes conservées et le parent devient un reçu compact.
+[Contrat et limites](ROUTING-EXISTING-INFORMATION.md). Les formats 1/2/3 restent
+compatibles ; l’assessment propose désormais PREVIEW_LINK_EXISTING si résolu.

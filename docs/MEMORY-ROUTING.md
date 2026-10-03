@@ -110,3 +110,8 @@ La façade `assess` conserve le plan pur et fournit une prochaine étape explici
 y compris NONE/REVIEW. Aucune écriture ou résolution humaine implicite. La voie
 STORE/UPDATE vers projet exige toujours un aperçu revalidé avant exécution.
 [Résultats client et limites](ROUTING-OUTCOMES.md).
+
+Le format 4 ajouté le 03/10 traite explicitement NONE avec association à un
+projet choisi : source canonique exacte → lien Thread → dossier, sans nouvelle
+révision Information ni échéance. [Contrat](ROUTING-EXISTING-INFORMATION.md).
+Le planner pur conserve ses décisions ; NONE ne signifie toujours pas DELETE.

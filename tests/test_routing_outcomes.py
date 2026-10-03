@@ -69,8 +69,8 @@ def test_already_stored_with_requested_association_is_not_silent_noop():
     memory=qualified(project_id='one')
     result=assess(memory,RoutingContext(already_stored=True,existing_dossier='one'))
     assert result['policy']['persistence']=='NONE'
-    assert result['status']=='REVIEW_REQUIRED'
-    assert 'association_requires_explicit_command' in result['review_reasons']
+    assert result['status']=='PREVIEW_REQUIRED'
+    assert result['next_step']=='PREVIEW_LINK_EXISTING' and result['review_reasons']==[]
 
 
 def test_already_stored_without_association_is_noop_and_preserves_deadline():

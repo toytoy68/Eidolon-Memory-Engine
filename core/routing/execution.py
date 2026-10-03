@@ -74,16 +74,20 @@ class RoutingExecutor:
     def _project_text(self, project):
         return None if project is None else self.storage._serialize_checked(project)
 
-    def _validate_policy(self, memory, context, policy, *, include_lifecycle=False):
+    def _validate_policy(self, memory, context, policy, *, include_lifecycle=False, link_only=False):
         if decode_json_value(canonical(asdict(plan(memory, context)))) != policy:
             raise OperationConflict('policy changed or plan does not match its inputs')
         subject = policy['dossier_subject']
-        if (policy['persistence'] not in {'STORE', 'UPDATE'}
+        if (policy['persistence'] not in ({'NONE'} if link_only else {'STORE', 'UPDATE'})
                 or policy['dossier'] not in {'LINK', 'CREATE_OR_LINK'}
                 or not isinstance(subject, dict) or subject.get('kind') != 'project'
                 or (policy['proposed_trigger'] is not None and not include_lifecycle) or context.removal_observed
                 or (policy['dossier_id'] is not None and policy['dossier_id'] != subject['id'])):
             raise OperationConflict('plan needs review or an unsupported execution capability')
+        if link_only and (context.already_stored is not True
+                          or context.existing_dossier != subject['id']
+                          or policy['applicability'] == 'UNRESOLVED'):
+            raise OperationConflict('link-only requires an explicitly chosen existing project and stored source')
         if include_lifecycle and policy['proposed_trigger'] is not None:
             from core.lifecycle.journal import timestamp
             trigger = policy['proposed_trigger']
@@ -119,6 +123,23 @@ class RoutingExecutor:
             'format_version': 2 if include_lifecycle else 1, 'memory': asdict(memory), 'context': asdict(context), 'policy': policy,
             'project_before': self._project_text(project), 'information_before': self._information_text(current)}))
 
+    def preview_link(self, memory, context, *, project_revision):
+        """Version 4: NONE links an exact stored source to a chosen project."""
+        self.backend._serialize_checked(memory)
+        policy = decode_json_value(canonical(asdict(plan(memory, context))))
+        project_id = self._validate_policy(memory, context, policy, link_only=True)
+        project = self.storage.get(project_id)
+        if project is None or type(project_revision) is not int or project.revision != project_revision:
+            raise OperationConflict('existing project with expected revision required')
+        current = self.backend.get(memory.information_id)
+        if current is None or current != memory:
+            raise OperationConflict('link-only needs the exact canonical Information')
+        prepared = decode_json_value(canonical({
+            'format_version': 4, 'memory': asdict(memory), 'context': asdict(context), 'policy': policy,
+            'project_before': self._project_text(project), 'information_before': self._information_text(current)}))
+        self._initial_checks(prepared, memory, project)
+        return prepared
+
     def preview_new_project(self, memory, context, *, project):
         """Version 3: explicit new project identity/template, with lifecycle."""
         policy = decode_json_value(canonical(asdict(plan(memory, context))))
@@ -141,12 +162,13 @@ class RoutingExecutor:
         if isinstance(prepared, dict) and prepared.get('format_version') == 3:
             fields.add('project_create')
         if (not isinstance(prepared, dict) or set(prepared) != fields
-                or type(prepared['format_version']) is not int or prepared['format_version'] not in {1, 2, 3}):
+                or type(prepared['format_version']) is not int or prepared['format_version'] not in {1, 2, 3, 4}):
             raise OperationConflict('unknown execution plan format')
         memory = Memory(**prepared['memory'])
         self.backend._serialize_checked(memory)
         project_id = self._validate_policy(memory, restore_context(prepared['context']), prepared['policy'],
-                                          include_lifecycle=prepared['format_version'] >= 2)
+                                          include_lifecycle=prepared['format_version'] in {2, 3},
+                                          link_only=prepared['format_version'] == 4)
         project = self.storage._deserialize(prepared['project_create'] if prepared['format_version'] == 3
                                             else prepared['project_before'])
         if project.thread_id != project_id:
@@ -163,11 +185,13 @@ class RoutingExecutor:
                     or prepared['context'].get('existing_dossier') is not None
                     or prepared['policy']['dossier'] != 'CREATE_OR_LINK'):
                 raise OperationConflict('new project must be a fresh explicit PROPOSED template')
+        if prepared['format_version'] == 4 and prepared['information_before'] != self._information_text(memory):
+            raise OperationConflict('link-only snapshot differs from the supplied canonical Information')
         return memory, project
 
     @staticmethod
     def _lifecycle_memory(memory, prepared):
-        if prepared['format_version'] == 1:
+        if prepared['format_version'] in {1, 4}:
             return memory
         metadata = deepcopy(memory.metadata)
         metadata['availability'] = prepared['policy']['availability']
@@ -224,6 +248,8 @@ class RoutingExecutor:
             writes._check_deletion(kind, memory.information_id)
             with exclusive_write(writes.operations.root):
                 writes._pending(memory.information_id)
+                if prepared['format_version'] == 4 and writes.journal.read(self.child_id(intent_id, 'information')) is not None:
+                    raise OperationConflict('link-only intent has a conflicting Information child')
             threads = ThreadService.for_backend(self.backend)
             threads.updates._other_pending(project.thread_id, self.child_id(intent_id, 'project'))
             if prepared['format_version'] == 3:
@@ -253,6 +279,8 @@ class RoutingExecutor:
             after_memory = replace(memory, revision=memory.revision + 1) if prepared['policy']['persistence'] == 'UPDATE' else memory
             expected_info = self._information_text(after_memory)
             child = writes.journal.read(info_id)
+            if prepared['format_version'] == 4 and child is not None:
+                raise OperationConflict('link-only intent cannot own an Information write child')
             permitted = {prepared['information_before']}
             if child is not None:
                 permitted.add(expected_info)
@@ -274,7 +302,7 @@ class RoutingExecutor:
                         'actor': command['actor'], 'timestamp': command['timestamp']}
             if prepared['policy']['persistence'] == 'STORE':
                 writes.create(memory, **identity)
-            else:
+            elif prepared['policy']['persistence'] == 'UPDATE':
                 writes.update(memory, previous_revision=memory.revision, **identity)
             self._checkpoint('after_information')
             if creating:
@@ -290,7 +318,7 @@ class RoutingExecutor:
             result = {'information': {'id': memory.information_id, 'revision': after_memory.revision},
                       'project': {'id': before_project.thread_id, 'revision': after_project.revision},
                       'projection_digest': projection['source_digest'], 'deferred': ['availability']}
-            if prepared['format_version'] >= 2:
+            if prepared['format_version'] in {2, 3}:
                 from core.lifecycle.service import LifecycleTriggers
                 trigger = prepared['policy']['proposed_trigger']
                 trigger_id = self.child_id(intent, 'trigger') if trigger is not None else None
