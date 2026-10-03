@@ -2114,3 +2114,16 @@ Suite des tâches dashboard : format de taille adapté à l’ordre de grandeur
 taille. Vérification du rendu local : 648,18 KiB logiques au moment du contrôle,
 sans lecture du contenu dans le rapport ; deux tests dashboard existants verts.
 Changement de présentation uniquement, aucun nouveau test miroir ajouté.
+
+
+### T-049 — Mesure avant/après de la passe inactive — 3 octobre 2026 — Codex/GPT
+
+Code `e49caa7` extrait séparément contre `b7ebdb4`/correctif `208a6ee`, VM,
+100/300 Informations, cinq projets/échéances, live/compact, trois répétitions
+inactives/rejeu, huit corpus synthétiques indépendants. À 300 live :
+0,256671 → 0,148833 s médian ; compact : 0,207244 → 0,118216 s.
+JSON historiques 1230 → 620, Markdown 2135 → 1830 ; dérivés 6 inchangés.
+Cinq échéances : gain non démontré, mesure unique par corpus. Tous les objets,
+effets, rejeux et audits finaux conformes. Aucun code métier ajouté, aucun
+appel IA/entretien du roman. tmpfs chaud et instrumentation, pas disque réel
+ni coexistence Core garantie. [Échantillons et protocole](docs/validation/2026-10-03-maintenance-comparison/README.md).

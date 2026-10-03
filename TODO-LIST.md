@@ -548,6 +548,12 @@ réussis en 37,03 s. Trois répétitions avant/après : 1000 tmpfs, compaction
 Outil reproductible, rapports/logs et hashes ; toujours un scan par lot et coût
 croissant quadratique réduit. [Contrat](docs/INFORMATION-COMPACTION-BATCHES.md).
 
+Mesure complémentaire post-revue Claude A/B/C : à 300 Informations, passe
+inactive live 0,256671 → 0,148833 s, compact 0,207244 → 0,118216 s ;
+JSON 1230 → 620 et Markdown 2135 → 1830. Huit corpus VM tmpfs indépendants,
+100/300, trois répétitions ; aucun gain d’écriture/latence physique revendiqué.
+[Protocole et échantillons](docs/validation/2026-10-03-maintenance-comparison/README.md).
+
 Restant : suppression de l’énumération et des lectures linéaires par lot,
 protocole d’invalidation couvrant tous les écrivains, autres familles, dérivés, corpus et
 objectifs VM. L'ingestion totale demeure quadratique à taille de lot fixe (O(N²/B)). Pas d'autorisation
