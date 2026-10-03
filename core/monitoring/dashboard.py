@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 from secrets import compare_digest, token_urlsafe
 from urllib.parse import parse_qs, quote, urlsplit
+from zoneinfo import ZoneInfo
 
 from core.monitoring.files import DIRECTORIES, PAGE_SIZE, list_documents, read_document
 from core.monitoring.metrics import collect_metrics
@@ -38,6 +39,12 @@ def authorized(header: str | None, token: str) -> bool:
 
 def _size(value: int) -> str:
     return f"{value / (1024 ** 3):.2f} GiB"
+
+
+def _measurement_time(value: str) -> str:
+    local = datetime.fromisoformat(value).astimezone(ZoneInfo('Europe/Paris'))
+    offset = local.strftime('%z')
+    return local.strftime('%d-%m-%Y T %H;%M:%S ') + offset[:3] + ':' + offset[3:]
 
 
 def render_dashboard(metrics: dict, state: dict) -> str:
@@ -71,7 +78,7 @@ td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}
 .donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
 <body><h1>Eidolon Memory Engine</h1><p><a href="/files">Parcourir les fichiers Markdown</a> · <a href="/sources">Sources</a></p>
 <p>Machine : <strong>{escape(str(metrics['host']))}</strong><br>
-<small>Mesuré le {escape(str(metrics['measured_at']))} UTC · rafraîchissement 30 s</small></p>
+<small>Mesuré le {escape(_measurement_time(str(metrics['measured_at'])))} UTC · rafraîchissement 30 s</small></p>
 <main><section><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
 <section><h2>Espace disque</h2>{chart(volume['used'], volume['total'], volume['free'], 'Espace disque')}<small>{escape(str(metrics['data_path']))}</small></section>
 <section><h2>Fichiers du moteur</h2><p>{int(data['files'])} fichiers · {_size(data['bytes'])} logiques<br>
