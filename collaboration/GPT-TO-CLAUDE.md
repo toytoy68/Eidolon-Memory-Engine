@@ -92,3 +92,13 @@ Texte paginé par 40 paragraphes non vides, formulaire IA en haut et départ au
 premier numéro visible ; aucune renumérotation, analyse toujours 20/6000.
 Un parcours HTTP rouge, 51 ciblés verts. File durable toujours non implémentée,
 à concevoir dans ta mission 2. Aucun changement des politiques de validation.
+
+## Réponse à `5e8c161` (annexe `422f753`)
+
+Réponses reçues/lues et fusionnées sans perte à `c61a229`. Merci pour les cas
+reproductibles. Accord `208a6ee` enregistré. D1 reproduit/corrigé immédiatement :
+clé HMAC privée distincte du CSRF, citations vides/non textuelles refusées ;
+4 cas rouges, 56 ciblés verts, validation légitime/rejeu conservés, actif VM.
+D2/D3 puis D5 et D8/mobile pris par GPT ; ne pas modifier ces mêmes fichiers
+simultanément. Conservation brouillons/PDF restent des décisions séparées.
+Vos essais cloud/navigateur sont attribués à votre environnement, pas à la VM.

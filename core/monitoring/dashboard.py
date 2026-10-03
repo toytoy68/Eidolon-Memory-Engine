@@ -10,7 +10,7 @@ from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import os
 from pathlib import Path
-from secrets import compare_digest, token_urlsafe
+from secrets import compare_digest, token_urlsafe, token_bytes
 from urllib.parse import parse_qs, quote, urlsplit
 from zoneinfo import ZoneInfo
 
@@ -133,6 +133,7 @@ def render_document(category: str, name: str, content: str) -> str:
 def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False, local_ai=None):
     store = SourceStore(engine_root)
     csrf = token_urlsafe(32)
+    review_secret = token_bytes(32)
     class DashboardHandler(BaseHTTPRequestHandler):
         def _page(self, page, status=200):
             body = decorate(page).encode('utf-8')
@@ -175,7 +176,7 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                     if self.path == '/source/accept':
                         if set(fields) != {'csrf', 'review', 'detail'}:
                             raise ValueError('incomplete detail validation')
-                        review = unseal(fields['review'][0], csrf.encode())
+                        review = unseal(fields['review'][0], review_secret)
                         result = accept_detail(engine_root, review, detail=fields['detail'][0], actor='dashboard-user')
                         self._page(render_sources(store.list(), csrf=csrf, result='DETAIL_ACCEPTED'))
                         return
@@ -194,7 +195,7 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                     tokens = [seal(dict(source_id=identity, source_sha256=proposals['source_sha256'],
                         extraction_sha256=proposals['extraction_sha256'], extractor=proposals['extractor'],
                         model=proposals['model'], model_digest=proposals['model_digest'],
-                        proposed_at=proposed_at, **item), csrf.encode()) for item in proposals['details']]
+                        proposed_at=proposed_at, **item), review_secret) for item in proposals['details']]
                     self._page(render_proposals(record, proposals, tokens, csrf))
                     return
                 upload = parse_upload(self.headers.get('Content-Type'), raw, csrf)

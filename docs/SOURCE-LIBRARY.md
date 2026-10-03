@@ -165,3 +165,18 @@ le texte ne lance aucune IA et n’écrit aucune donnée. Aucun texte non vide e
 signalé explicitement. Un test HTTP rouge avant le lot couvre deux pages,
 numéros source avec vides intercalés, formulaire en haut, pages invalides/refus
 des paramètres dupliqués et absence d’écriture. **51 tests ciblés verts**.
+
+## Correction de la signature de validation (revue Claude D1)
+
+La clé de signature HMAC est désormais un secret de 32 octets propre au serveur,
+distinct du jeton CSRF rendu dans les formulaires et jamais envoyé au navigateur.
+Connaître le jeton CSRF ne permet donc plus d’inventer une proposition portant
+une fausse provenance modèle. Les citations vides, non textuelles ou de plus de
+2000 caractères sont refusées avant toute écriture. Les signatures expirent au
+redémarrage comme auparavant. Les contrôles du snapshot, de citation exacte et
+du rejeu sans résurrection restent en place.
+
+Défaut confirmé sur corpus factice : 4 cas rouges (formulaire forgé, citation
+vide et deux types non textuels), 1 cas espaces déjà rejeté. **56 ciblés verts**
+après correction. Signature privée et pagination activées sur la VM ; GET pages
+1 et 2 du roman répondent 200 sans analyse ni validation automatique.

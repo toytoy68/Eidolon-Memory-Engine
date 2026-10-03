@@ -197,3 +197,14 @@ def test_blank_only_tail_completes_without_loading_model(tmp_path, monkeypatch):
     assert result['details'] == [] and result['next_paragraph'] is None
     assert result['first_paragraph'] == 2 and result['last_paragraph'] == 3
     assert not calls
+
+
+@pytest.mark.parametrize('quote', ['', '   ', None, 123])
+def test_accepted_detail_requires_nonempty_text_quote(tmp_path, quote):
+    _, record, extraction = setup(tmp_path)
+    draft=review(record,extraction)
+    draft['quote']=quote
+    before=hashes(tmp_path)
+    with pytest.raises(ValueError):
+        accept_detail(tmp_path,draft,detail='Without source support',actor='human')
+    assert hashes(tmp_path)==before

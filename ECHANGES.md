@@ -2189,3 +2189,24 @@ dans un volet. Lecture seule, aucune analyse sur navigation. Un parcours HTTP
 rouge avant lot, **51 ciblés verts en 0,55 s**, deux pages et refus des numéros
 invalides/paramètres répétés ; hashes identiques avant/après. L’analyse demeure
 20 paragraphes/6000 caractères et brouillons temporaires, pas une file durable.
+
+
+### Revue Claude et D1 corrigé — 3 octobre 2026 — Codex/GPT
+
+Deux réponses concurrentes `422f753` / `5e8c161` reçues via MCP, intégrées par
+fusion non destructive `c61a229` après rejet du push de pagination. Revue finale
+lue, annexe consultée ; SHA lu par Claude `562b4eb`, essais cloud uniquement,
+aucune exécution VM attribuée à Claude. Accord reçu sur `208a6ee` ; les défauts
+sources/UI sont séparés des propositions de file durable/PDF.
+
+D1 reproduit : jeton public CSRF servait de clé HMAC et un formulaire forgé
+était accepté sur corpus synthétique. Clé désormais privée et distincte,
+citation non vide/textuelle/bornée exigée avant verrou/écriture. Quatre cas
+rouges et un cas espaces déjà vert ; **56 ciblés verts en 0,60 s** après lot,
+parcours signé légitime et rejeu après suppression toujours verts. Protection
+activée immédiatement sur notre dashboard identifié ; pages 1 et 2 du roman
+HTTP 200, aucune analyse ni acceptation sur le roman dans cette recette.
+
+D2/D3 reprise UI, D5 versions extracteur, D8 Basic Unicode et UI mobile restent
+à traiter. D7 normalisation et rétention/brouillons nécessitent compatibilité
+et choix explicités ; aucune nouvelle politique déduite de la revue.

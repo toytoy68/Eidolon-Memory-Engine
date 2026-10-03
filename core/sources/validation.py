@@ -37,6 +37,9 @@ def accept_detail(root, review, *, detail, actor):
     if (not isinstance(detail, str) or not 1 <= len(detail.strip()) <= 1000 or '\x00' in detail
             or not isinstance(actor, str) or not actor.strip()):
         raise ValueError('reviewed detail and actor are required')
+    if (not isinstance(review, dict) or not isinstance(review.get('quote'), str)
+            or not review['quote'].strip() or len(review['quote']) > 2000):
+        raise ValueError('a nonempty exact source quote is required')
     store = SourceStore(root)
     with exclusive_write(store.root / 'memory/persistent'):
         from core.operations.readiness import check_readiness

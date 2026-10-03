@@ -251,3 +251,20 @@ def test_extracted_text_pages_keep_original_numbers_and_put_analysis_first(tmp_p
         for suffix in ['&page=0','&page=3','&page=2&page=2','&page=abc']:
             assert request(port,base+suffix)[0]==404
         assert hashes(tmp_path)==before
+
+
+def test_public_csrf_token_cannot_sign_an_invented_ai_review(tmp_path):
+    from tests.test_source_ai import setup, review
+    from core.sources.validation import seal
+    _, record, extracted = setup(tmp_path)
+    with server(tmp_path) as port:
+        page=request(port,'/sources')[2]
+        csrf=re.search(b'name="csrf" value="([^"]+)"',page)[1].decode()
+        forged=review(record,extracted)
+        forged['model']='model-never-run'
+        token=seal(forged,csrf.encode())
+        before=hashes(tmp_path)
+        status,_,_=request(port,'/source/accept',method='POST',
+            body=urlencode(dict(csrf=csrf,review=token,detail='Invented model provenance')),
+            content_type='application/x-www-form-urlencoded')
+        assert status==400 and hashes(tmp_path)==before
