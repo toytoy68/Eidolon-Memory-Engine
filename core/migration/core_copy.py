@@ -174,9 +174,23 @@ def _publish(tree, destination):
         os.close(descriptor)
 
 
+def _copy_may_be_in_progress(source, destination):
+    """A staging or destination tree beside an existing writer lock may belong to a cooperative copier."""
+    try:
+        _, destination, stage = _paths(source, destination)
+        lock = destination.parent / '.write.lock'
+        return ((stage.exists() or destination.exists())
+                and lock.is_file() and not lock.is_symlink())
+    except (OSError, ValueError):
+        return False
+
+
 def copy_core(source, destination):
     preview = inspect_core_copy(source, destination)
-    if preview['status'] != 'READY':
+    if preview['status'] == 'UNCHANGED':
+        return preview
+    # An unlocked preview can observe another copier's staging in flight: decide it under the lock.
+    if preview['status'] == 'BLOCKED' and not _copy_may_be_in_progress(source, destination):
         return preview
     try:
         source, destination, stage = _paths(source, destination)

@@ -67,6 +67,20 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Lot concurrence transferts E/copie, **03/10/2026**, base GitHub `3a6062b` :
+patch de Claude (annexe `14de6a7`) intégré avec ses 11 régressions.
+Avant : 3 rouges / 8 verts ; après : **116 ciblés verts** (imports supprimés,
+copie core, reçus Information). Suite cloud Python 3.12.14 : **1755 réussis,
+5 échecs** à la création des sockets multiprocessing.Manager interdits,
+avant les scénarios métier ; **15 MCP verts** avec proxy neutralisé.
+**NON TESTÉ VM**. Aucun corpus utilisateur ni transfert réel exécuté.
+La présence du fichier de verrou permet une revalidation sous verrou ; elle
+ne prouve pas qu'un écrivain est actif. Les résidus abandonnés restent bloquants.
+`import_write_receipts` possède aussi un refus préalable à la prise des verrous :
+reproduction dédiée et correctif à traiter dans un lot séparé.
+Identité D7/D10, frontière legacy/core, F1, D9 et UI restent à corriger.
+
+
 Lot sources/dashboard/IA locale T-051 du **03/10/2026** : **1712 réussis en
 37,83 s**, 47 nouveaux cas, 49 ciblés verts ; **15 cas MCP exclus** pour éviter
 de doubler le processus existant. Ce n’est pas une suite complète. Test réel

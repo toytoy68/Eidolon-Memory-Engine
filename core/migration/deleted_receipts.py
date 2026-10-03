@@ -140,10 +140,20 @@ def import_deleted_receipts(source, destination, *, include_cancelled=False):
     Source/legacy writers must be stopped. Existing destination core writers
     coordinate through Persistent and Thread locks; independent low-level journal
     writers are not covered. A failed publication may leave a committed prefix.
+
+    A destination readiness issue seen before the locks may be the in-flight
+    publication of a cooperative writer. When the destination writer lock file
+    already exists, that issue is only decided under the locks. Tree, source and
+    receipt issues, and a destination no cooperative writer ever locked, stay
+    immediate: no lock is taken and no lock file is created.
     """
     prepare = (lambda src, dst: _prepare(src, dst, include_cancelled=True)) if include_cancelled else _prepare
     report, _ = prepare(source, destination)
-    if report['status'] != 'READY':
+    lock_file = Path(destination) / 'memory/persistent/.write.lock'
+    contended = (report['status'] == 'BLOCKED' and bool(report['issues']) and all(
+        issue.get('side') == 'destination' and issue.get('reason') == 'readiness_blocked'
+        for issue in report['issues']) and lock_file.is_file() and not lock_file.is_symlink())
+    if report['status'] != 'READY' and not contended:
         return dict(report, imported=[])
     destination = Path(destination)
     persistent = destination / 'memory/persistent'
