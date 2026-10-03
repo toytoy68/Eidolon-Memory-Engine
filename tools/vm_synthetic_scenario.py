@@ -7,6 +7,7 @@ from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
+from core.dossiers.projects import DossierConflict
 from core.information.writes import FilesystemInformationWrites
 from core.lifecycle.service import LifecycleTriggers
 from core.maintenance.service import MaintenancePass
@@ -97,8 +98,23 @@ def run(root):
     backend.delete_request('info-7', 'synthetic-human', 'Synthetic approved deletion', 1, 'delete-information')
     backend.approve_delete('info-7', 'delete-information')
     assert backend.get('info-7') is None and backend.get('info-8').revision == 1
+    notes_before = 'Synthetic human notes before\r\n'
+    notes_after = '\r\nSynthetic human notes after\r\n'
+    snapshot = executor.dossiers.read_notes('project')
+    note_edit = executor.dossiers.replace_notes('project', before=notes_before, after=notes_after,
+        expected_document_sha256=snapshot['document_sha256'])
+    assert note_edit['status'] == 'UPDATED'
+    try:
+        executor.dossiers.replace_notes('project', before='Stale editor overwrite', after='',
+            expected_document_sha256=snapshot['document_sha256'])
+    except DossierConflict:
+        pass
+    else:
+        raise AssertionError('stale notes editor overwrote the current human notes')
     maintenance = MaintenancePass(root).run(at=DUE, query_scope=SCOPE)
     assert maintenance['status'] == 'COMPLETED', maintenance
+    notes = executor.dossiers.read_notes('project')
+    assert notes['before'] == notes_before and notes['after'] == notes_after
     lifecycle = LifecycleTriggers(backend)
     assert len(lifecycle.journal.ids()) == 5
     assert all(lifecycle.journal.read(identity)['status'] == 'COMPLETED' for identity in lifecycle.journal.ids())
@@ -115,13 +131,16 @@ def run(root):
     assert recalled['dossier_status'] == 'CURRENT' and recalled['items']
     assert all(item['needs_review'] and item['epistemic_status'] == 'UNVERIFIED' for item in recalled['items'])
     assert payload.payload_chars <= 8000
+    assert notes_before.strip() not in payload.text and notes_after.strip() not in payload.text
     # Original routing receipt remains replayable after compaction and deletion.
     deleted_receipt = executor.journal.read('store-7')
     assert deleted_receipt['status'] == 'COMMITTED' and backend.get('info-7') is None
     return dict(status='OK', synthetic=True, root=str(root), original_information_count=12,
                 remaining_information_count=11, active_project_count=1, deleted_project_count=1,
                 routing_receipts=len(executor.journal.ids()), completed_triggers=5,
-                recovered_interruption=True, retained_live_information_write=kept_live,
+                recovered_interruption=True, human_notes_preserved=True, stale_note_editor_refused=True,
+                human_notes_not_ingested=True, human_note_edit=note_edit,
+                retained_live_information_write=kept_live,
                 compacted_information_writes=compact,
                 recall_payload=asdict(payload), readiness=check_readiness(root),
                 limitation='Synthetic only; no real user corpus, active service or power cut tested')

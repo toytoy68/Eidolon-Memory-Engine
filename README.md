@@ -104,6 +104,11 @@ aucun échec ni test désélectionné. Les cinq tests de concurrence bloqués pa
 les sockets de Work passent également. Données de test temporaires isolées.
 [Preuve rapportée et périmètre](docs/VM-TESTS-2026-10-02.md).
 
+Dernière recette peuplée du code `7eddfe0`, avec édition des notes humaines :
+**neuf étapes OK**, cinq concurrents réussis en 0,80 s, 93 fichiers SHA256,
+readiness vraie et notes CRLF conservées hors rappel canonique.
+[Preuves et limites](docs/VM-ACCEPTANCE-2026-10-03.md).
+
 Recette supplémentaire du code `2fed279` : **neuf étapes OK** sur la
 restauration d’origine vide et sur un corpus synthétique neuf peuplé ;
 cinq tests concurrents réussis pour chacune. Source/restauration SHA256 vérifiées,

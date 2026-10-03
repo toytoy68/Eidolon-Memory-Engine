@@ -38,7 +38,14 @@ Suite complète directe sur VM du **03/10/2026** après édition des notes humai
 aucun échec, saut ou désélection. Base `1d01498` plus le lot documenté ci-dessous ;
 racine `/tmp/em-suite-h7wYKC`, corpus synthétique isolé, journal conservé.
 
-Dernière recette du code `2fed279`, **03/10/2026** : **neuf étapes OK**
+Dernière recette peuplée du code `7eddfe0` avec édition des notes : neuf
+étapes OK, cinq concurrents réussis en 0,80 s, 93 fichiers SHA256, source
+inchangée/readiness vraie, notes CRLF conservées hors rappel canonique.
+99 fichiers archivés/vérifiés dans recette-20261003-notes-7eddfe0.
+Corpus synthétique uniquement, crontabs illisibles sans sudo, aucune coupure
+électrique. [Preuves](docs/VM-ACCEPTANCE-2026-10-03.md).
+
+Recette du code `2fed279`, **03/10/2026** : **neuf étapes OK**
 sur copie restaurée vide et corpus synthétique peuplé ; cinq concurrents
 réussis pour chacun, 2448/93 fichiers SHA256 contrôlés, sources inchangées,
 readiness vraie. Corpus synthétique : 11 Informations, un projet, 14 reçus
