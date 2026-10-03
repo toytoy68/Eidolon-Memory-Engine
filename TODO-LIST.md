@@ -822,3 +822,13 @@ d’écriture/compaction/entretien/rappel sont désormais conservées. Disponibi
 au routage ; entretien explicite assemblé. Récurrence, coût des scans et
 autres branches des plans à poursuivre. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.
+
+
+### Missions Claude actualisées après revue — 3 octobre 2026
+
+Demande directe toytoy : [liste active](collaboration/GPT-TO-CLAUDE.md), base
+`cf413d4`. Priorités : E/import concurrent de reçus (test + patch préparé par
+Claude, code réservé) ; revue D1/D2/D3/D5 ; compatibilité D7/D10 ; contrats de
+campagnes/purge/PDF, avec modalités non fixées séparées. GPT continue D8 et UI
+mobile puis versions d’extraction D4/D11 ; pas de doublon sur ces fichiers.
+Ancienne demande archivée, aucune mission donnée comme déjà exécutée.

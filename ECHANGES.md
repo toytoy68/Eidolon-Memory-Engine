@@ -2235,3 +2235,14 @@ ou incompatibles toujours refusées. Un cas rouge avant le lot, **65 ciblés ver
 en 0,73 s**, défaut d’évolution reproduit et falsification avec hash recalculé
 encore bloquée. Toute correction DOCX/TXT future doit introduire une nouvelle
 version en conservant les pilotes v1. Aucun changement du roman utilisateur.
+
+
+### Missions Claude renouvelées — 3 octobre 2026 — Codex/GPT
+
+Relais `4932336` reçu/lues et intégré à `cf413d4`, correctif D5 conservé après
+nouvelle publication concurrente. À la demande directe de toytoy, liste de
+missions renouvelée : défaut E et patch minimal distinct réservé à Claude,
+relecture sources, compatibilité D7/D10 et variantes de contrats campagne/PDF.
+Les décisions relayées sont consignées comme telles, modalités de purge non
+fixées ; aucune opération destructive/installation déduite du relais. GPT
+continue D8/mobile et nouvelles versions d’extraction. Ancienne demande archivée.
