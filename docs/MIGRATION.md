@@ -8,13 +8,31 @@ porte sur le dépôt ; les données et services de la VM restent à examiner.
 
 ## Conversion sur une copie et contrôle après écriture
 
-**Limite reproduite le 01/10 (A-03/T-021)** : une source mixte legacy/core
-contenant un reçu DELETED peut être convertie sans rejet ; son reçu reste en
-archive et ne réserve plus l'identité dans la destination. Les journaux,
-Threads et reçus archivés ne sont pas importés comme états actifs. Il faut
-un rejet explicite ou un import de ces invariants avant d'activer une telle
-destination. Un rapport sans rejet et des hashes égaux ne prouvent pas la
-continuité métier. Voir [l'audit](AUDIT-2026-10-01.md).
+**État actuel au 03/10 — A-03/T-021 corrigé par refus préalable** : le
+convertisseur rejette les sources portant des reçus de suppression, des reçus
+compactés ou des journaux opérationnels avant toute écriture en destination.
+La perte de réservation reproduite le 01/10 reste un constat historique ; elle
+ne décrit plus le comportement actuel. Les archives ne deviennent jamais des
+états opérationnels actifs. Le détail du refus est conservé plus bas.
+
+## Choisir le chemin de transfert actuellement livré
+
+Travailler sur une copie arrêtée, avec des racines distinctes. Le choix dépend
+des formats source et de la destination ; aucun outil ne constitue une
+approbation de mise en service.
+
+| Situation | Chemin disponible | Limite à conserver |
+| --- | --- | --- |
+| Informations legacy compatibles, sans état opérationnel core | Conversion puis vérification indépendante décrites ci-dessous | Rejets et correspondance métier à examiner ; archives inactives |
+| Arbre core complet vers une destination neuve | [Transfert core](CORE-COPY.md), aperçu puis `--apply` | Aucun mélange legacy/core, aucune fusion ; fichiers hors `memory/` sauvegardés séparément |
+| Réservations DELETED vers un arbre core préparé | [Import des reçus de suppression](DELETED-RECEIPT-IMPORT.md) | Aucun corps ou journal transféré ; CANCELLED exige `--include-cancelled` et canonique compatible |
+| Reçus compactés Information et Events vers un arbre core au même état canonique | [Import des reçus de rejeu](WRITE-RECEIPT-IMPORT.md) | Réservations DELETED identiques requises si canonique absent ; autres familles exclues |
+| Source mixte ou fusion générale vers un arbre existant | Aucun chemin général livré | Examen et politique de migration nécessaires ; ne pas contourner les refus |
+
+Pour les imports, maintenir la destination arrêtée jusqu'au résultat final :
+une readiness vraie seule ne prouve pas que le lot est entièrement importé.
+Les preuves disponibles portent sur des corpus synthétiques ; migration réelle,
+adoption par les services et fidélité métier restent non validées.
 
 Après l'inventaire, le précontrôle et la simulation décrits plus bas, utiliser
 deux dossiers **distincts** sur une copie arrêtée. La destination doit être
@@ -59,10 +77,10 @@ ou un lien symbolique ; sinon 0. **Une signature reconnue ne prouve pas qu'un
 document entier est valide.** Le scanner ne suit pas les liens symboliques
 rencontrés dans les catégories inventoriées ; examiner aussi la structure de la
 copie avant de l'utiliser. Les fichiers portant d'autres extensions et les
-sous-dossiers non listés ne sont pas inventoriés. L'omission connue de
-`memory/history/operations/thread-delete-v1` reste à corriger sous T-048.
-Un JSON corrompu dans cette famille n'apparaît actuellement pas dans
-`needs_review` ; compléter manuellement l'inventaire de la copie.
+sous-dossiers non listés ne sont pas inventoriés. La famille `memory/history/operations/thread-delete-v1` est désormais
+inventoriée sous T-048, ainsi que les fichiers et sous-familles inconnus sous
+`memory/history/`. Cela ne remplace pas le [contrôle de démarrage](STARTUP-READINESS.md),
+qui valide les états opérationnels et distingue les reprises des examens humains.
 
 Pour un premier contrôle structurel des Informations historiques persistantes :
 
@@ -251,7 +269,8 @@ Le cache ne permet pas de contourner ce refus. Après une migration/import
 compatible, reconstruire un index neuf depuis les journaux **canoniques de la
 destination**, avec `index-rebuild` ; ne pas promouvoir l'archive en index actif.
 Un index reconstruit ne réimporte pas les journaux absents et ne restaure pas
-leurs réservations. L'import opérationnel reste un travail distinct non livré.
+leurs réservations. Les imports étroits et le transfert core décrits ci-dessous sont livrés ;
+la fusion opérationnelle générale reste ouverte.
 
 Vérification de cette clarification sur fixture temporaire : Persistent vide,
 un fichier dérivé synthétique, inventaire sans alerte, une archive exacte,
@@ -266,7 +285,8 @@ reçus terminaux DELETED entre arbres core compatibles et distincts. Aperçu san
 reprise par relance ; l'identité supprimée reste réservée en destination.
 Voir [le contrat et les commandes](DELETED-RECEIPT-IMPORT.md). Ce chemin ne copie
 ni les Informations, ni les autres journaux/reçus, ni les Events/Threads/index.
-PENDING_DELETE, APPLYING_DELETE et CANCELLED restent refusés. Le convertisseur
+PENDING_DELETE et APPLYING_DELETE restent refusés. CANCELLED est refusé par
+défaut ; l’extension explicite du 03/10 est décrite ci-dessous. Le convertisseur
 legacy conserve intégralement son refus préalable des sources mixtes ; l'import
 opérationnel général et la validation VM ne sont pas livrés.
 

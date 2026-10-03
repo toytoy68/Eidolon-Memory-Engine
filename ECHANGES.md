@@ -1910,3 +1910,20 @@ Les approbations par outil restent un réglage de l'interface Claude ;
 authentification OAuth et autorisations métier distinctes. Aucun réveil
 automatique, service permanent testé sans coupure électrique ou jeton expiré ;
 ces scénarios d'exploitation restent non validés. Estimation globale inchangée.
+
+
+### Reprise après activation MCP — 3 octobre 2026 — Codex/GPT
+
+Base `0d05c35`, branche refactor/architecture-v1 propre et références GitHub
+récupérées : aucun écart. Message CLAUDE-TO-GPT lu : test de connexion uniquement,
+aucune revue métier nouvelle. TODO active et échanges de fin de séance relus.
+
+Premier lot de reprise T-021/T-033 : MIGRATION.md présentait encore A-03 et
+l’omission thread-delete comme défauts actuels malgré leurs correctifs livrés.
+État courant clarifié et tableau de choix ajouté : conversion legacy, copie core
+neuve, imports terminaux étroits ; fusion générale toujours ouverte. Refus par
+défaut de CANCELLED distingué de l’option explicite livrée. Constats et preuves
+historiques conservés. Vérification contre code inventory et contrats d’import,
+liens locaux contrôlés et diff sans erreur d’espace. Aucun changement exécutable,
+aucun nouveau test ou résultat VM revendiqué ; données actives intactes,
+estimation gelée 45 % / 52,75 points.

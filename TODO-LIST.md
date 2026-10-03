@@ -305,6 +305,11 @@ atomique sans remplacement. 42 nouveaux cas, quatre arrêts réels, concurrence,
 refus source mixte/divergente, deux substitutions négatives. Suite VM 1429 réussis
 en 36,38 s. Contrat : [CORE-COPY.md](docs/CORE-COPY.md).
 
+Clarification du 03/10 après activation du canal : guide MIGRATION.md actualisé
+avec choix conversion/import étroit/transfert core, refus A-03 et inventaire
+thread-delete désormais corrigés. Lot documentaire uniquement ; aucune nouvelle
+validation VM ni modification de l’estimation.
+
 Restant : migration entre formats et fusion opérationnelle générale vers un
 arbre existant ; aucune activation implicite des journaux archivés. Les notes
 hors `memory/` exigent une sauvegarde séparée. Migration réelle, adoption par les
