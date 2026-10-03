@@ -2127,3 +2127,17 @@ Cinq échéances : gain non démontré, mesure unique par corpus. Tous les objet
 effets, rejeux et audits finaux conformes. Aucun code métier ajouté, aucun
 appel IA/entretien du roman. tmpfs chaud et instrumentation, pas disque réel
 ni coexistence Core garantie. [Échantillons et protocole](docs/validation/2026-10-03-maintenance-comparison/README.md).
+
+
+### T-045/T-049 — Décodage unique du catalogue — 3 octobre 2026 — Codex/GPT
+
+Suite sur base `17c644e` : projection filtrée des métadonnées après validation
+manifeste, seconde lecture/hash conservés ; pas de corps/extensions privées
+retenus, aucun cache inter-commandes. Deux nouveaux cas, un rouge avant lot et
+refus de mutation entre lectures toujours vert. 67 ciblés verts ; suite VM
+**1727 réussis en 37,99 s**, 15 MCP exclus. Contrat et preuve dans
+[validation catalogue](docs/validation/2026-10-03-catalogue-decode/README.md).
+Mesure deux corpus tmpfs arrêtés 100/300, trois échantillons par classe :
+200→100 et 600→300 décodages, snapshots strictement égaux. Médiane à 300
+0,018615→0,016109 s, lectures physiques non réduites, pas d’impact Core garanti.
+Aucun fichier du roman modifié. Formats et interfaces publics inchangés.

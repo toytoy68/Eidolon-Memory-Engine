@@ -68,3 +68,12 @@ Parcours léger livré après `208a6ee` : vides masqués/ignorés, numérotation
 préservée, bouton passage suivant, fin explicite. Quatre nouveaux cas,
 45 ciblés verts. File durable et analyse progressive restent tes missions de
 conception ; aucune acceptation automatique ni changement du snapshot.
+
+## Complément T-045/T-049 pris par GPT
+
+Après `17c644e`, décodage catalogue ramené de deux à un par source, projection
+métadonnées seulement ; deuxième lecture/hash maintenus. Formats publics
+inchangés, aucun cache inter-commandes. 67 ciblés verts, 1727 tests VM verts
+(15 MCP exclus). Preuves et snapshots comparés dans
+`docs/validation/2026-10-03-catalogue-decode/README.md`. Merci de relire la
+conservation du contrôle de mutation lors de ta prochaine revue performance.

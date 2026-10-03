@@ -226,3 +226,53 @@ def test_unknown_availability_is_not_inferred_from_retention(tmp_path):
     assert [row['information_id'] for row in catalogue.query(availability='LOW')] == ['pump']
     assert len(catalogue.query('pompe')) == 2
     assert catalogue.query(epistemic_status='CONFIRMED') == []
+
+
+def test_catalogue_decodes_each_source_once_but_checks_both_reads(tmp_path, monkeypatch):
+    import core.indexing.catalogue as module
+    backend, catalogue = seed(tmp_path)
+    monkeypatch.setattr(module, 'check_readiness', lambda root: {'ready': True})
+    original = FilesystemBackend._deserialize
+    parsed = []
+    reads = []
+    read_bytes = Path.read_bytes
+
+    def tracked_parse(raw):
+        parsed.append(raw)
+        return original(raw)
+
+    def tracked_read(path):
+        if path == backend._path('pump'):
+            reads.append(path)
+        return read_bytes(path)
+
+    monkeypatch.setattr(FilesystemBackend, '_deserialize', staticmethod(tracked_parse))
+    monkeypatch.setattr(Path, 'read_bytes', tracked_read)
+    snapshot = catalogue._snapshot()
+    assert snapshot['entries'][0]['information_id'] == 'pump'
+    assert len(reads) == 2 and len(parsed) == 1
+    assert 'SECRET_BODY_ONLY' not in json.dumps(snapshot)
+    assert 'SECRET_EXTENSION_ONLY' not in json.dumps(snapshot)
+
+
+def test_catalogue_refuses_changed_bytes_between_manifest_and_projection(tmp_path, monkeypatch):
+    import core.indexing.catalogue as module
+    backend, catalogue = seed(tmp_path)
+    monkeypatch.setattr(module, 'check_readiness', lambda root: {'ready': True})
+    original = Path.read_bytes
+    count = 0
+
+    def changed(path):
+        nonlocal count
+        raw = original(path)
+        if path == backend._path('pump'):
+            count += 1
+            if count == 2:
+                return raw.replace(b'SECRET_BODY_ONLY', b'CHANGED_BODY_ONLY')
+        return raw
+
+    monkeypatch.setattr(Path, 'read_bytes', changed)
+    before = hashes(tmp_path)
+    with pytest.raises(OperationConflict, match='source changed'):
+        catalogue._snapshot()
+    assert hashes(tmp_path) == before

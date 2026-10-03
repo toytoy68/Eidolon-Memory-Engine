@@ -466,6 +466,12 @@ Contrat : [INFORMATION-CATALOGUE.md](docs/INFORMATION-CATALOGUE.md).
 Trois retraits de garanties donnent chacun un échec comportemental. Destruction/
 reconstruction identique et disparition des anciens mots-clés vérifiées.
 Rattrapage raccordé à la passe d’entretien explicite T-046.
+Ajout T-049 du 03/10 : catalogue décode une fois chaque source au lieu de deux,
+avec projection limitée aux métadonnées et deuxième lecture/SHA256 conservés.
+Deux cas ajoutés, 67 ciblés verts ; 1727 tests VM réussis, 15 MCP exclus.
+À 300 synthétiques tmpfs, 600→300 décodages, snapshots égaux ; lectures inchangées.
+[Preuves et limites](docs/validation/2026-10-03-catalogue-decode/README.md).
+
 Restant : récurrence système, mesure sur corpus réel et accélération
 des lectures ; cette version scanne le canonique pour prouver la fraîcheur.
 Aucun connecteur externe ni activation autonome des disponibilités.

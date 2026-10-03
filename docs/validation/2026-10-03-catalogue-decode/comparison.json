@@ -1,0 +1,73 @@
+{
+  "before": "e49caa7",
+  "after_parent": "17c644e",
+  "scope": "VM tmpfs synthetic same stopped source tree; warmed complete snapshot incl readiness; 3 repetitions; no disk or Core claim",
+  "measurements": [
+    {
+      "records": 100,
+      "variants": {
+        "before": {
+          "samples_seconds": [
+            0.011921438970603049,
+            0.008385946974158287,
+            0.00818095199065283
+          ],
+          "median_seconds": 0.008385946974158287,
+          "deserialize_calls": [
+            200,
+            200,
+            200
+          ],
+          "snapshot_sha256": "5502282af9aa883adedaec02f429089e95639cc87548eed20143a775dc4a19b3"
+        },
+        "after": {
+          "samples_seconds": [
+            0.0072864340036176145,
+            0.0071246319566853344,
+            0.007175726990681142
+          ],
+          "median_seconds": 0.007175726990681142,
+          "deserialize_calls": [
+            100,
+            100,
+            100
+          ],
+          "snapshot_sha256": "5502282af9aa883adedaec02f429089e95639cc87548eed20143a775dc4a19b3"
+        }
+      }
+    },
+    {
+      "records": 300,
+      "variants": {
+        "before": {
+          "samples_seconds": [
+            0.019186552963219583,
+            0.018615203036461025,
+            0.01839867001399398
+          ],
+          "median_seconds": 0.018615203036461025,
+          "deserialize_calls": [
+            600,
+            600,
+            600
+          ],
+          "snapshot_sha256": "30cbc44d06d4e3f739c700496adb7bd1e85fcb41123522242380a3abdb35b980"
+        },
+        "after": {
+          "samples_seconds": [
+            0.015947830979712307,
+            0.016815657960250974,
+            0.01610876602353528
+          ],
+          "median_seconds": 0.01610876602353528,
+          "deserialize_calls": [
+            300,
+            300,
+            300
+          ],
+          "snapshot_sha256": "30cbc44d06d4e3f739c700496adb7bd1e85fcb41123522242380a3abdb35b980"
+        }
+      }
+    }
+  ]
+}

@@ -75,6 +75,11 @@ def _validate_manifest(manifest: IndexManifest) -> None:
 
 def build_manifest(persistent_root: Path) -> IndexManifest:
     """Read canonical files once; fail if any Information cannot be indexed safely."""
+    return _build_manifest(persistent_root)
+
+
+def _build_manifest(persistent_root: Path, *, on_source=None) -> IndexManifest:
+    """Optional internal projection of already validated sources; no cached bodies."""
     root = Path(persistent_root)
     if has_symlink_component(root) or not root.is_dir():
         raise ValueError("persistent root must be a real directory")
@@ -92,6 +97,9 @@ def build_manifest(persistent_root: Path) -> IndexManifest:
         if (not re.fullmatch(r"[A-Za-z0-9._-]+", path.stem)
                 or type(memory.revision) is not int or memory.revision < 1):
             raise InvalidMemory("Information manifest identity or revision is invalid")
-        entries.append(SourceEntry(path.stem, memory.revision, sha256(raw).hexdigest()))
+        entry = SourceEntry(path.stem, memory.revision, sha256(raw).hexdigest())
+        entries.append(entry)
+        if on_source is not None:
+            on_source(entry, memory)
     frozen = tuple(entries)
     return IndexManifest(frozen, _digest(frozen))

@@ -90,3 +90,13 @@ rapprochement des dossiers et reconstruction du catalogue, avec relecture finale
 Relancer après interruption termine les dérivés sans rejouer les effets acquis.
 `inspect` reste en lecture seule. Aucun ordonnanceur ni fenêtre horaire installé ;
 voir [MAINTENANCE-PASS.md](MAINTENANCE-PASS.md) pour les limites et commandes.
+
+## Réduction du décodage des sources — 3 octobre 2026
+
+Le catalogue réutilise une projection limitée aux métadonnées obtenue lors du
+décodage validé du manifeste. Il relit toujours chaque source et compare son
+SHA256 avant d’utiliser cette projection ; une modification entre les lectures
+reste bloquante. Aucun corps ou extension arbitraire n’est gardé dans la projection,
+aucun cache ne survit à la commande. Le format/digest public du catalogue et
+l’API build_manifest restent inchangés. Il reste deux lectures d’octets par source.
+[Tests, comparaison et limites](validation/2026-10-03-catalogue-decode/README.md).

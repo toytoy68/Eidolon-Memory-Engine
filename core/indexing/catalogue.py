@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
-from core.indexing.manifest import build_manifest
+from core.indexing.manifest import _build_manifest
 from core.operations.errors import OperationConflict
 from core.operations.readiness import check_readiness
 from core.persistence import atomic_write_text, exclusive_write, has_symlink_component
@@ -54,28 +54,11 @@ class InformationCatalogue:
         self._paths()
         if not check_readiness(self.root)['ready']:
             raise OperationConflict('readiness blocks catalogue; recover or review first')
-        manifest = build_manifest(self.backend.persistent_root)
-        dependencies = {'information': manifest.digest, 'threads': {}, 'deletions': {}}
-        projects = {}
-        for thread in self.storage.list():
-            path = self.storage._path(thread.thread_id)
-            dependencies['threads'][thread.thread_id] = sha256(path.read_bytes()).hexdigest()
-            for identity in self.storage._concerns(thread):
-                projects.setdefault(identity, []).append(thread.thread_id)
         entries = []
-        for source in manifest.entries:
-            raw = self.backend._path(source.information_id).read_bytes()
-            if sha256(raw).hexdigest() != source.file_sha256:
-                raise OperationConflict('catalogue source changed during scan')
-            memory = self.backend._deserialize(raw.decode('utf-8'))
+
+        def project(source, memory):
             metadata = memory.metadata
             qualification = metadata.get('qualification')
-            receipt_path = self.backend.pending_delete_root / (memory.information_id + '.json')
-            deletion_status = None
-            if receipt_path.exists() or receipt_path.is_symlink():
-                receipt = self.backend._load_delete_request(receipt_path, memory.information_id)
-                dependencies['deletions'][memory.information_id] = sha256(receipt_path.read_bytes()).hexdigest()
-                deletion_status = receipt['status']
             entries.append(dict(
                 information_id=memory.information_id, revision=memory.revision,
                 file_sha256=source.file_sha256, pointer=f'memory/persistent/{memory.information_id}.md',
@@ -86,8 +69,27 @@ class InformationCatalogue:
                 operational_state=metadata.get('operational_state'), retention=metadata.get('retention'),
                 availability=metadata.get('availability'), recheck_required=bool(metadata.get('recheck_required')),
                 temporal=memory.temporal,
-                project_ids=projects.get(memory.information_id, []), deletion_status=deletion_status,
             ))
+
+        manifest = _build_manifest(self.backend.persistent_root, on_source=project)
+        dependencies = {'information': manifest.digest, 'threads': {}, 'deletions': {}}
+        projects = {}
+        for thread in self.storage.list():
+            path = self.storage._path(thread.thread_id)
+            dependencies['threads'][thread.thread_id] = sha256(path.read_bytes()).hexdigest()
+            for identity in self.storage._concerns(thread):
+                projects.setdefault(identity, []).append(thread.thread_id)
+        for source, entry in zip(manifest.entries, entries):
+            raw = self.backend._path(source.information_id).read_bytes()
+            if sha256(raw).hexdigest() != source.file_sha256:
+                raise OperationConflict('catalogue source changed during scan')
+            receipt_path = self.backend.pending_delete_root / (source.information_id + '.json')
+            deletion_status = None
+            if receipt_path.exists() or receipt_path.is_symlink():
+                receipt = self.backend._load_delete_request(receipt_path, source.information_id)
+                dependencies['deletions'][source.information_id] = sha256(receipt_path.read_bytes()).hexdigest()
+                deletion_status = receipt['status']
+            entry.update(project_ids=projects.get(source.information_id, []), deletion_status=deletion_status)
         return dict(format_version=1, policy='catalogue-metadata/1',
                     source_digest=sha256(canonical(dependencies).encode()).hexdigest(), entries=entries)
 
