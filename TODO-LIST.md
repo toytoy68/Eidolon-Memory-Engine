@@ -32,6 +32,15 @@ sorties CLI FAILED encore à relire. Périmètre de l’index dérivé et
 archivage en conversion clarifiés dans MIGRATION.md. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
+## Bilan du créneau de trois heures du 03/10
+
+18 lots publiés et vérifiés séquentiellement sur GitHub : reprise FAILED,
+imports étroits/copie core, routage, compaction par lots, notes humaines,
+budget de rappel, recettes synthétiques et mesures tmpfs/ext4.
+[Bilan, commits et travaux ouverts](docs/SESSION-2026-10-03.md).
+Les anciens résultats datés restent conservés ; les statuts actuels ci-dessous
+distinguent désormais VM synthétique et validation sur corpus réel.
+
 ## Dernière vérification
 
 Suite complète directe sur VM du **03/10/2026** après édition des notes humaines T-044 : **1606 réussis en 39,46 s**, Python 3.13.5/pytest 9.1.1,
@@ -135,7 +144,7 @@ Suite complète précédente inchangée ; aucune nouvelle recette VM.
 
 | Ordre | Tâches | Résultat attendu |
 | --- | --- | --- |
-| 1 — Avant exploitation | T-048, T-021/T-033 | Reprise/inventaire et refus des sources mixtes livrés ; import opérationnel et recette VM restent ouverts |
+| 1 — Avant exploitation | T-048, T-021/T-033 | Reprise/inventaire et refus des sources mixtes livrés ; import opérationnel général et recette sur données réelles restent ouverts |
 | 2 — Parcours métier | T-031/T-041 puis T-043 | Commandes Thread et assemblage livrés ; façade complète et exécution des plans avec révisions/reprise |
 | 3 — Projet utilisable | T-044 puis T-045 | Ajouter une Information au même projet, dossier actualisé ou explicitement périmé, catalogue reconstructible |
 | Avant ingestion intensive | T-049 | Réduire les scans sans perdre réservations/conflits/reprise ; lot distinct |
@@ -278,7 +287,7 @@ arbre existant ; aucune activation implicite des journaux archivés. Les notes
 hors `memory/` exigent une sauvegarde séparée. Migration réelle, adoption par les
 services et revue des pertes de sens toujours non testées.
 
-### T-031 / T-041 — Services métier canoniques — PARTIEL / NON TESTÉ VM
+### T-031 / T-041 — Services métier canoniques — PARTIEL / TESTÉ VM SYNTHÉTIQUE
 
 Fait : Information create/update/recover/compact ; Thread création liée,
 statut et suppression journalisés. T-039 corrige le delete implicite canonique.
@@ -356,7 +365,8 @@ Deux substitutions négatives observées. [Contrat](docs/ROUTING-INFORMATION-ONL
 Restant : résolution/file de revue durable, lieu/thème, autres politiques et
 qualification automatique.
 Disponibilité encore différée pour les seuls anciens plans format 1.
-Pas de client externe ou de VM validé.
+Parcours testés sur VM avec corpus synthétiques ; aucun client externe
+ni corpus réel validé.
 
 ### T-044 — Dossiers vivants — PARTIEL
 
@@ -393,7 +403,7 @@ projets. Le manifeste est recalculé, pas un index incrémental. Définir la cl�
 sur les vues gérées par le moteur, distincte du DELETED canonique actuel et des
 copies hors de son contrôle. Aucun effacement automatique de notes humaines.
 
-### T-045 — Catalogue léger — FAIT EN LOCAL / NON TESTÉ VM
+### T-045 — Catalogue léger — LIVRÉ / TESTÉ VM SYNTHÉTIQUE
 
 Fiches ID/révision/hash, mots-clés, nature, contexte, statuts, échéances,
 disponibilité déclarée et pointeurs, sans corps d'Information. Membres de projet

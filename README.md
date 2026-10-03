@@ -94,6 +94,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
+[Bilan du créneau VM de trois heures](docs/SESSION-2026-10-03.md) : 18 lots
+publiés/vérifiés successivement, résultats, preuves archivées et travaux ouverts.
+
+
 Dernière suite complète directe sur VM le **03/10/2026** : **1606 réussis en
 39,46 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
 Base `1d01498` plus l’édition explicite des notes humaines ;
