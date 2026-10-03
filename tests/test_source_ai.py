@@ -174,3 +174,26 @@ def test_inference_error_releases_analysis_slot(tmp_path, monkeypatch):
         ai.propose(record,extraction)
     monkeypatch.setattr(ai,'_request',original)
     assert ai.propose(record,extraction)['details']
+
+
+def test_blank_paragraphs_do_not_consume_analysis_slots_or_renumber_quotes(tmp_path, monkeypatch):
+    _, record, extraction = setup(tmp_path)
+    paragraphs = [''] * 25 + ['Lina habite à Lyon.'] + ['   '] * 10 + ['Texte '+str(i) for i in range(25)]
+    extraction = dict(extraction, paragraphs=paragraphs)
+    ai, calls = fake_ai(monkeypatch, [dict(detail='Lina habite à Lyon.', paragraph=26, quote='Lina habite à Lyon.')])
+    result = ai.propose(record, extraction)
+    sent = json.loads(calls[1][1]['prompt'])
+    assert len(sent) == 20 and sent[0]['paragraph'] == 26
+    assert all(item['text'].strip() for item in sent)
+    assert result['details'][0]['paragraph'] == 26
+    assert result['last_paragraph'] == 55 and result['next_paragraph'] == 56
+
+
+def test_blank_only_tail_completes_without_loading_model(tmp_path, monkeypatch):
+    _, record, extraction = setup(tmp_path)
+    extraction = dict(extraction, paragraphs=['Lina.', '', '   '])
+    ai, calls = fake_ai(monkeypatch, [])
+    result = ai.propose(record, extraction, start=2)
+    assert result['details'] == [] and result['next_paragraph'] is None
+    assert result['first_paragraph'] == 2 and result['last_paragraph'] == 3
+    assert not calls

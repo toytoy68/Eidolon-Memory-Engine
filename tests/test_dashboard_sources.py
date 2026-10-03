@@ -147,3 +147,41 @@ def test_ia_proposals_require_explicit_human_acceptance_and_signed_source(tmp_pa
         stable=hashes(tmp_path)
         assert request(port,'/source/accept',method='POST',body=body,content_type='application/x-www-form-urlencoded')[0]==200
         assert hashes(tmp_path)==stable
+
+
+def test_next_passage_button_continues_analysis_without_memory_write(tmp_path):
+    from tests.test_source_ai import setup
+    _, record, _ = setup(tmp_path)
+    starts = []
+    class FakeAI:
+        def propose(self, source, text, start):
+            starts.append(start)
+            return dict(source_id=source['source_id'], source_sha256=source['sha256'],
+                extraction_sha256=text['text_sha256'], extractor=text['extractor'],
+                model='qwen3:0.6b', model_digest='a'*64, first_paragraph=start,
+                last_paragraph=start, next_paragraph=2 if start == 1 else None, details=[])
+    with server(tmp_path, ai=FakeAI()) as port:
+        page = request(port, '/source/text?id='+record['source_id'])[2]
+        csrf = re.search(b'name="csrf" value="([^"]+)"', page)[1].decode()
+        before = hashes(tmp_path)
+        status, _, page = request(port, '/source/propose', method='POST',
+            body=urlencode(dict(id=record['source_id'],csrf=csrf,start=1)),
+            content_type='application/x-www-form-urlencoded')
+        assert status == 200 and b'Analyser le passage suivant' in page
+        start = re.search(b'name="start" value="([^"]+)"', page)[1].decode()
+        assert start == '2'
+        status, _, page = request(port, '/source/propose', method='POST',
+            body=urlencode(dict(id=record['source_id'],csrf=csrf,start=start)),
+            content_type='application/x-www-form-urlencoded')
+        assert status == 200 and b'Fin du document' in page
+        assert b'Analyser le passage suivant' not in page
+        assert starts == [1,2] and hashes(tmp_path) == before
+
+
+def test_empty_paragraphs_hidden_but_source_numbers_preserved(tmp_path):
+    from core.monitoring.sources import render_extraction
+    _, record, _ = __import__('tests.test_source_ai', fromlist=['setup']).setup(tmp_path)
+    page = render_extraction(record, dict(extractor='test', text_sha256='a'*64,
+        paragraphs=['', 'Lina.', '   ', 'Plume.']),csrf='secret',ai_enabled=True)
+    assert '<li value="1">' not in page and '<li value="3">' not in page
+    assert '<li value="2">' in page and '<li value="4">' in page

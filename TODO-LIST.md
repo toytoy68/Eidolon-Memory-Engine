@@ -703,6 +703,11 @@ fiches, validation navigateur/LAN, extraction de tout un manuscrit, qualité
 IA sur corpus réel et impact conjoint avec Eidolon Core. Aucun service permanent
 dashboard/IA ni nouveau proxy public installé ; pas de garantie de zéro impact.
 
+Ajout T-051 : paragraphes vides masqués et ignorés dans les portions IA,
+références inchangées, bouton de passage suivant, fin de document explicite.
+Quatre cas rouges avant le lot, 45 ciblés verts après correction. Brouillons
+toujours temporaires ; aucune validation automatique ni analyse globale.
+
 ## Répartition GPT / Claude — 3 octobre, après mise en service dashboard
 
 Missions Claude publiées dans [GPT-TO-CLAUDE.md](collaboration/GPT-TO-CLAUDE.md)

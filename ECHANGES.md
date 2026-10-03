@@ -2093,3 +2093,15 @@ proposition réelle réussies ; captures utilisateur valident diagrammes et fond
 personnalisé. Aucun souvenir accepté par GPT. Pas de service automatique/HTTPS.
 Le tri portion par portion reste lourd : proposition de file progressive demandée
 à Claude. Estimation gelée inchangée.
+
+
+### T-051 — Parcours des passages allégé — 3 octobre 2026 — Codex/GPT
+
+Après demande de poursuivre les lots sans bilan intermédiaire, réduction du
+tri manuel : paragraphes vides masqués/ignorés dans les slots d’analyse, numéros
+et snapshot conservés ; bouton de passage suivant et fin explicite, aucune
+acceptation implicite. Fin vide sans chargement modèle, paragraphes trop longs
+non tronqués. Quatre nouveaux cas rouges avant correction, **45 ciblés verts
+en 0,50 s** ; tests HTTP de poursuite sans écritures sur corpus indépendants.
+Contrat complété dans docs/SOURCE-LIBRARY.md. File durable et traitement global
+restent dans la proposition Claude ; aucun original utilisateur modifié.

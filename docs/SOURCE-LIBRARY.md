@@ -122,3 +122,19 @@ mémoire/CPU pendant l’inférence, ni la qualité sur le manuscrit réel.
 Références : [modèle officiel](https://ollama.com/library/qwen3:0.6b),
 [API génération](https://docs.ollama.com/api/generate),
 [installation Linux officielle](https://docs.ollama.com/linux).
+
+## Parcours allégé des passages — 3 octobre 2026
+
+Les paragraphes vides sont masqués dans le texte et ignorés dans la limite des
+20 paragraphes transmis au modèle. Les numéros d’origine et l’extraction figée
+restent inchangés ; les citations continuent de pointer vers le paragraphe réel.
+Un bouton « Analyser le passage suivant » reprend au prochain paragraphe non
+vide, en conservant les limites 6000 caractères et un appel local à la fois.
+Une fin entièrement vide est signalée sans charger le modèle. Un paragraphe
+non vide dépassant seul la limite reste refusé, sans découpage implicite.
+
+Les brouillons restent temporaires : valider les détails souhaités avant de
+quitter leur page. Ce bouton ne valide rien, ne traite pas tout le manuscrit et
+n’installe aucune analyse automatique. La file durable fait l’objet d’une
+proposition séparée demandée à Claude. Quatre nouveaux cas rouges avant le lot,
+45 tests sources/IA/HTTP réussis après correction.

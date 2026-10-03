@@ -61,3 +61,10 @@ quatre rouges avant correction ; 54 ciblés verts ; 1721 tests VM réussis en
 `docs/validation/2026-10-03-maintenance-locks/README.md`.
 Merci de relire également ce correctif dans le prochain commit publié, sans
 reprendre la mise en œuvre sur les mêmes fichiers. Aucun entretien sur le roman.
+
+## Complément T-051 pris par GPT
+
+Parcours léger livré après `208a6ee` : vides masqués/ignorés, numérotation
+préservée, bouton passage suivant, fin explicite. Quatre nouveaux cas,
+45 ciblés verts. File durable et analyse progressive restent tes missions de
+conception ; aucune acceptation automatique ni changement du snapshot.

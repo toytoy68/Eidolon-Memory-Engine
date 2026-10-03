@@ -98,9 +98,10 @@ def render_source(record, *, csrf=None, has_extraction=False):
 
 def render_extraction(record, extraction, *, csrf=None, ai_enabled=False):
     paragraphs = ''.join(f'<li value="{index}"><pre>{escape(text)}</pre></li>'
-                         for index, text in enumerate(extraction['paragraphs'], 1))
+                         for index, text in enumerate(extraction['paragraphs'], 1) if text.strip())
     body = (f'<a href="/source?id={record["source_id"]}">Retour à la source</a>'
             '<p>Texte extrait : aucun souvenir créé. Les propositions IA devront être validées.</p>'
+            '<p>Les paragraphes vides sont masqués ; les numéros de référence sont conservés.</p>'
             f'<p>Version : {escape(extraction["extractor"])} · Empreinte : {extraction["text_sha256"]}</p>'
             f'<ol>{paragraphs}</ol>')
     if csrf is not None and ai_enabled:
@@ -131,6 +132,14 @@ def render_proposals(record, proposals, tokens, csrf):
     if not proposals['details']:
         body += '<p>Aucun détail proposé pour ce passage.</p>'
     if proposals['next_paragraph'] is not None:
-        body += f'<p>Passage suivant : commencer au paragraphe {proposals["next_paragraph"]}.</p>'
+        body += (f'<form action="/source/propose" method="post">'
+                 f'<input type="hidden" name="csrf" value="{escape(csrf, quote=True)}">'
+                 f'<input type="hidden" name="id" value="{record["source_id"]}">'
+                 f'<input type="hidden" name="start" value="{proposals["next_paragraph"]}">'
+                 f'<p>Passage suivant : paragraphe {proposals["next_paragraph"]}. '
+                 'Validez les détails souhaités avant de quitter cette page ; les propositions ne sont pas enregistrées.</p>'
+                 '<button>Analyser le passage suivant</button></form>')
+    else:
+        body += '<p>Fin du document : aucun passage suivant à analyser.</p>'
     body += '<p>Pour refuser une proposition, ne pas la valider et revenir au texte.</p>'
     return shell('Détails à valider', body)

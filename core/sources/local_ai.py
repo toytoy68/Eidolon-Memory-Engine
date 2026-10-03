@@ -56,12 +56,19 @@ class LocalDetailAI:
             raise ValueError('invalid starting paragraph')
         selected, length = [], 0
         for number, text in enumerate(extraction['paragraphs'][start-1:], start):
+            if not text.strip():
+                continue
             if len(selected) == 20 or length + len(text) > 6000:
                 break
             selected.append({'paragraph': number, 'text': text})
             length += len(text)
-        if not selected or not any(p['text'].strip() for p in selected):
-            raise ValueError('selected passage is empty or too long; select another starting paragraph')
+        if not selected:
+            if any(text.strip() for text in extraction['paragraphs'][start-1:]):
+                raise ValueError('selected paragraph is too long; select another starting paragraph')
+            return dict(source_id=record['source_id'], source_sha256=record['sha256'],
+                        extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
+                        model=self.model, model_digest=None, details=[], first_paragraph=start,
+                        last_paragraph=len(extraction['paragraphs']), next_paragraph=None)
         if not _inference.acquire(blocking=False):
             raise ValueError('another local detail analysis is in progress; retry later')
         try:
@@ -105,10 +112,12 @@ class LocalDetailAI:
                     supported['paragraph'] = matches[0]
                 details.append(supported)
             last = selected[-1]['paragraph']
+            following = next((number for number, text in enumerate(extraction['paragraphs'][last:], last+1)
+                              if text.strip()), None)
             return dict(source_id=record['source_id'], source_sha256=record['sha256'],
                         extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
                         model=self.model, model_digest=digest, details=details,
                         first_paragraph=start, last_paragraph=last,
-                        next_paragraph=last+1 if last < len(extraction['paragraphs']) else None)
+                        next_paragraph=following)
         finally:
             _inference.release()
