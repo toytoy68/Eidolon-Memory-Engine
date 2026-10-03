@@ -16,6 +16,7 @@ from urllib.parse import parse_qs, quote, urlsplit
 from core.monitoring.files import DIRECTORIES, PAGE_SIZE, list_documents, read_document
 from core.monitoring.metrics import collect_metrics
 from core.monitoring.overview import overview
+from core.monitoring.appearance import decorate, SCRIPT_HASH
 from core.sources.store import SourceStore
 from core.sources.validation import seal, unseal, accept_detail
 from core.sources.local_ai import LocalDetailAI
@@ -123,13 +124,15 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
     csrf = token_urlsafe(32)
     class DashboardHandler(BaseHTTPRequestHandler):
         def _page(self, page, status=200):
-            body = page.encode('utf-8')
+            body = decorate(page).encode('utf-8')
             self.send_response(status)
             self.send_header('Content-Type', 'text/html; charset=utf-8')
             self.send_header('Content-Length', str(len(body)))
             self.send_header('Cache-Control', 'no-store')
             self.send_header('X-Content-Type-Options', 'nosniff')
-            self.send_header('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'")
+            self.send_header('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; "
+                             f"script-src 'sha256-{SCRIPT_HASH}'; img-src data:; "
+                             "form-action 'self'; frame-ancestors 'none'; base-uri 'none'")
             self.end_headers()
             self.wfile.write(body)
 

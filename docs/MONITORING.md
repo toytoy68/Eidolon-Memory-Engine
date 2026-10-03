@@ -92,3 +92,11 @@ hors bibliothèque dans `tmp/dashboard`, puis le serveur relancé avec `.venv`.
 Les dépendances de publication sont désormais chargées avant toute création
 de dossier temporaire ; une dépendance manquante produit une réponse HTTP 500.
 Les 23 tests ciblés d’import et de bibliothèque passent, dont cette régression.
+
+L’option « Personnaliser le fond d’écran » permet de choisir une image JPG,
+PNG ou WebP de 2 Mo maximum et de régler son assombrissement. L’image et le
+réglage restent dans le stockage local du navigateur, pour cette adresse ;
+ils ne sont ni envoyés à la VM ni intégrés à la mémoire. Si le stockage est
+indisponible ou plein, un message indique que le choix reste temporaire.
+Le bouton de réinitialisation rétablit le fond uni. Le script de personnalisation
+est autorisé par son empreinte CSP, sans autoriser les autres scripts intégrés.

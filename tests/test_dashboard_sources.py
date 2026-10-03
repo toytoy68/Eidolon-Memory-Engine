@@ -53,7 +53,10 @@ def test_authenticated_upload_list_and_exact_attachment(tmp_path):
         csrf = re.search(b'name="csrf" value="([^"]+)"', page)[1].decode()
         status, _, page = request(port, '/sources', method='POST', body=multipart(csrf), content_type='multipart/form-data; boundary=BOUNDARY')
         assert status == 200 and b'Source ajout' in page
-        assert b'<script>' not in page and b'&lt;script&gt;' in page
+        from core.monitoring.appearance import SCRIPT, SCRIPT_HASH
+        assert b'<script>' not in page.replace(('<script>'+SCRIPT+'</script>').encode(), b'')
+        assert b'&lt;script&gt;' in page
+        assert "script-src 'sha256-"+SCRIPT_HASH+"'" in headers['Content-Security-Policy']
         identity = store.list()[0]['source_id']
         status, headers, original = request(port, '/source/original?id='+identity)
         assert status == 200 and original == DATA
