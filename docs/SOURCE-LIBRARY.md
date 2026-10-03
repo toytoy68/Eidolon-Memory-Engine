@@ -214,3 +214,23 @@ changé dans ce lot. Un cas rouge reproduit l’évolution de l’extracteur cou
 avec suppression des vides ; l’extraction v1/readiness restent maintenant valides
 sans écriture. **65 ciblés verts**, contrôles de falsification inclus. Conserver
 les anciens pilotes est une obligation lors des évolutions ultérieures.
+
+## Nouveaux pilotes DOCX/TXT v2 (D4/D11)
+
+Les nouvelles extractions DOCX utilisent `docx-paragraph-v2` : une seule branche
+AlternateContent est retenue (premier Choice, sinon Fallback) et les paragraphes
+imbriqués ne sont plus agrégés dans le texte de leur paragraphe porteur. Les zones
+de texte apparaissent donc une fois. Le parcours reste structurel dans
+word/document.xml, sans prétendre reproduire la mise en page Word ni évaluer
+les capacités visuelles de chaque branche.
+
+Les nouvelles extractions TXT/Markdown utilisent `utf8-lines-v2` : limites de
+ligne LF, CRLF et CR uniquement. Saut de page et séparateur Unicode U+2028 restent
+dans leur ligne et ne créent plus de faux numéros. Le dernier terminateur de
+ligne conserve le comportement antérieur (pas de ligne vide ajoutée pour lui).
+
+Les pilotes v1 restent dans le registre et leurs snapshots sont vérifiés par
+ces pilotes. Aucun snapshot existant, notamment celui du roman, n’est réécrit ;
+extract sur une source déjà extraite renvoie toujours UNCHANGED. Quatre nouveaux
+cas rouges avant le lot vérifient doublon DOCX, lignes TXT et conservation v1 ;
+**73 ciblés verts**, contrôles de falsification et sauvegarde sources inclus.

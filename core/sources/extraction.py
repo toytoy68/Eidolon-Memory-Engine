@@ -54,11 +54,73 @@ def _extract_v1(record, original):
                 text_sha256=sha256(text.encode('utf-8')).hexdigest(), paragraphs=paragraphs)
 
 
+def _extract_docx_v2(record, original):
+    """Keep one alternate branch and do not aggregate nested paragraph text."""
+    try:
+        with ZipFile(BytesIO(original)) as archive:
+            if len(archive.infolist()) > 2000:
+                raise ValueError('DOCX contains too many entries')
+            matching = [i for i in archive.infolist() if i.filename == 'word/document.xml']
+            if len(matching) != 1 or matching[0].file_size > MAX_TEXT_BYTES:
+                raise ValueError('DOCX document XML is missing, duplicated or oversized')
+            raw = archive.read(matching[0])
+            if len(raw) > MAX_TEXT_BYTES:
+                raise ValueError('DOCX document XML is oversized')
+        xml = raw.decode('utf-8-sig')
+        if '<!DOCTYPE' in xml.upper() or '<!ENTITY' in xml.upper():
+            raise ValueError('document XML declarations are not supported')
+        document = ElementTree.fromstring(xml)
+    except (BadZipFile, KeyError, ElementTree.ParseError, RuntimeError) as exc:
+        raise ValueError('DOCX text extraction unavailable') from exc
+    mc = '{http://schemas.openxmlformats.org/markup-compatibility/2006}'
+    for element in document.iter():
+        if element.tag == mc + 'AlternateContent':
+            choices = [child for child in element if child.tag == mc + 'Choice']
+            fallback = next((child for child in element if child.tag == mc + 'Fallback'), None)
+            chosen = choices[0] if choices else fallback
+            element[:] = list(chosen) if chosen is not None else []
+    paragraphs = []
+    for paragraph in document.iter(W + 'p'):
+        parts, stack = [], [paragraph]
+        while stack:
+            element = stack.pop()
+            if element is not paragraph and element.tag == W + 'p':
+                continue
+            if element.tag == W + 't':
+                parts.append(element.text or '')
+            elif element.tag == W + 'tab':
+                parts.append('\t')
+            elif element.tag in {W + 'br', W + 'cr'}:
+                parts.append('\n')
+            stack.extend(reversed(list(element)))
+        paragraphs.append(''.join(parts))
+    text = '\n'.join(paragraphs)
+    if not text.strip() or len(text.encode('utf-8')) > MAX_TEXT_BYTES or '\x00' in text:
+        raise ValueError('source text is empty, invalid or oversized')
+    return dict(format_version=1, extractor='docx-paragraph-v2', source_sha256=record['sha256'],
+                text_sha256=sha256(text.encode('utf-8')).hexdigest(), paragraphs=paragraphs)
+
+
+def _extract_utf8_v2(record, original):
+    """Count CRLF/CR/LF lines without treating page and Unicode separators as lines."""
+    raw = original.decode('utf-8-sig')
+    paragraphs = raw.replace('\r\n', '\n').replace('\r', '\n').split('\n')
+    if raw.endswith(('\r', '\n')):
+        paragraphs.pop()
+    text = '\n'.join(paragraphs)
+    if not text.strip() or len(text.encode('utf-8')) > MAX_TEXT_BYTES or '\x00' in text:
+        raise ValueError('source text is empty, invalid or oversized')
+    return dict(format_version=1, extractor='utf8-lines-v2', source_sha256=record['sha256'],
+                text_sha256=sha256(text.encode('utf-8')).hexdigest(), paragraphs=paragraphs)
+
+
 _EXTRACTORS = {
     'utf8-lines-v1': ({'.txt', '.md'}, _extract_v1),
     'docx-paragraph-v1': ({'.docx'}, _extract_v1),
+    'docx-paragraph-v2': ({'.docx'}, _extract_docx_v2),
+    'utf8-lines-v2': ({'.txt', '.md'}, _extract_utf8_v2),
 }
-_DEFAULT_EXTRACTORS = {'.txt': 'utf8-lines-v1', '.md': 'utf8-lines-v1', '.docx': 'docx-paragraph-v1'}
+_DEFAULT_EXTRACTORS = {'.txt': 'utf8-lines-v2', '.md': 'utf8-lines-v2', '.docx': 'docx-paragraph-v2'}
 
 
 def reproduce_extraction(record, original, *, extractor):

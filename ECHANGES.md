@@ -2272,3 +2272,15 @@ Validation intégrée sur `be8eed7` : **1742 réussis en 38,51 s**, 15 MCP exclu
 GET / et /sources live : 200 ; Basic Unicode erroné : 401 ; audit réel des
 sources : 1, aucune anomalie. Aucun original du roman ni souvenir modifié par
 cette recette. [Journal et limites](docs/validation/2026-10-03-source-review/README.md).
+
+
+### T-051 — Drivers v2, D4/D11 — 3 octobre 2026 — Codex/GPT
+
+Après D5, nouveaux pilotes seulement : DOCX v2 retient un AlternateContent
+Choice (sinon Fallback) et exclut le texte des paragraphes imbriqués de leur
+porteur ; UTF8 v2 utilise LF/CRLF/CR, pas form-feed/U+2028. Pilotes v1 et lecture
+par version conservés. Aucun snapshot publié réécrit, aucun changement du roman.
+Quatre cas rouges avant lot ; **73 ciblés verts en 0,78 s**, ancienne extraction
+DOCX avec doublons et ancienne numérotation TXT encore vérifiées exactes et
+readiness valide après changement de défaut. Contrat explicite : XML principal,
+pas rendu Word ni sélection selon capacités graphiques du lecteur.

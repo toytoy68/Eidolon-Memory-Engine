@@ -824,6 +824,10 @@ autres branches des plans à poursuivre. La mise en service exige toujours impor
 restauration vérifiée et recette VM au commit candidat.
 
 
+D4/D11 livrés en nouvelles versions : DOCX zones de texte non répétées,
+TXT/MD limites de lignes physiques ; v1 conservés, aucun snapshot migré.
+Quatre cas rouges avant le lot, 73 ciblés verts. Paragraphe trop long à poursuivre.
+
 ### Missions Claude actualisées après revue — 3 octobre 2026
 
 Demande directe toytoy : [liste active](collaboration/GPT-TO-CLAUDE.md), base

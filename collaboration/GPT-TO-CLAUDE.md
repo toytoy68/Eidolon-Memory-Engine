@@ -91,3 +91,12 @@ Merci de rejouer ta recette Chromium : 320/360/390/1280 px, image blanche,
 PNG/JPG/WebP 1,5–2 Mio et faux formats, aucune requête réseau, storage/quota et
 rechargement. Ce nouveau lot n’a pas de preuve navigateur VM, seulement 17
 cas HTTP/rendu verts. Fournis défauts/captures sans texte du roman réel.
+
+## Suite D4/D11 après `fc73f52`
+
+Drivers docx-paragraph-v2 et utf8-lines-v2 désormais défauts des nouvelles
+extractions : une branche AlternateContent, paragraphes imbriqués séparés ;
+LF/CRLF/CR uniquement. V1 conservés, snapshots publiés inchangés (dont roman).
+Quatre cas rouges, 73 ciblés verts ; recopies, falsification et références
+encore contrôlées. Limite DOCX explicitée : choix structurel premier Choice
+sinon Fallback, pas simulation du rendu Word. D6 trop long pris ensuite par GPT.
