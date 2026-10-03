@@ -2246,3 +2246,12 @@ relecture sources, compatibilité D7/D10 et variantes de contrats campagne/PDF.
 Les décisions relayées sont consignées comme telles, modalités de purge non
 fixées ; aucune opération destructive/installation déduite du relais. GPT
 continue D8/mobile et nouvelles versions d’extraction. Ancienne demande archivée.
+
+
+### T-029 — Basic Unicode D8 — 3 octobre 2026 — Codex/GPT
+
+Défaut Claude reproduit (TypeError avant réponse HTTP pour mot de passe Basic
+non ASCII). Comparaison constante des mots de passe désormais sur octets UTF-8,
+identifiant eidolon inchangé. Un cas rouge avant lot vérifie mauvais/bons secrets
+Unicode ; **17 ciblés verts en 0,32 s** après correction. Aucun secret modifié,
+aucun mot de passe ou contenu utilisateur dans les preuves.

@@ -742,7 +742,7 @@ son annexe `422f753`. Accord sur correction entretien `208a6ee`. D1 corrigé :
 secret HMAC privé distinct du CSRF, citation non vide/type/taille contrôlés ;
 4 cas rouges avant lot, 56 ciblés verts, actif VM. D2/D3 reprise UI livrée : inspection séparée, formulaire de reprise et sources
 saines visibles (58 ciblés verts) ; lot invalide à vérifier manuellement. D5 livré : pilotes v1 figés, lecture par version enregistrée, contrôle original
-conservé (65 ciblés verts), aucun snapshot migré. Basic Unicode/UI mobile suivent.
+conservé (65 ciblés verts), aucun snapshot migré. Basic Unicode D8 corrigé (1 cas rouge, 17 ciblés verts) ; UI mobile suit.
 Les propositions file durable/PDF ne valent pas approbation des politiques.
 
 ## Répartition GPT / Claude — 3 octobre, après mise en service dashboard

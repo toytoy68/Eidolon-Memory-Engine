@@ -64,3 +64,9 @@ def test_upload_dashboard_refuses_missing_dependency_before_binding(tmp_path, mo
     assert error.value.code == 2
     assert '.venv' in capsys.readouterr().err
     assert hashes(tmp_path) == before
+
+
+def test_unicode_credentials_do_not_crash_authentication():
+    assert not authorized(basic('eidolon:mauvais-é'), 'secret')
+    assert not authorized(basic('eidolon:secret'), 'sécure')
+    assert authorized(basic('eidolon:sécure'), 'sécure')

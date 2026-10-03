@@ -35,7 +35,7 @@ def authorized(header: str | None, token: str) -> bool:
     except (binascii.Error, UnicodeError, ValueError):
         return False
     username, separator, password = credentials.partition(":")
-    return bool(separator and username == "eidolon" and compare_digest(password, token))
+    return bool(separator and username == "eidolon" and compare_digest(password.encode('utf-8'), token.encode('utf-8')))
 
 
 def _size(value: int) -> str:
