@@ -23,6 +23,8 @@ réelles et le déploiement restent à valider.
   scan partagé, arrêt au conflit et reprise par rejeu des commandes stables.
 - [Écritures Information et compaction v1](docs/INFORMATION-WRITES.md) : API, CLI,
   reprise et audit ; livré en local, essais VM encore requis.
+- [Mesure du rendu complet sur VM](docs/VM-RECALL-PAYLOAD-2026-10-03.md) :
+  81 rendus conformes, neuf corpus indépendants et métadonnées comptées.
 - [Édition des notes humaines](docs/DOSSIER-HUMAN-NOTES.md) : snapshot SHA256,
   remplacement explicite et refus des éditions concurrentes périmées.
 - [Budget du rappel complet](docs/RECALL-PAYLOAD.md) : JSON, métadonnées et

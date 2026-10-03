@@ -574,6 +574,15 @@ rendu entier, budgets d’extraits distincts, résultat vide/erreur explicites.
 36 nouveaux cas, 24 rouges renderer puis sept rouges raccordement ;
 113 ciblés verts, deux substitutions négatives. [Contrat](docs/RECALL-PAYLOAD.md).
 
+Mesure du 03/10, base `e7ecfc6` vérifiée sur GitHub : neuf corpus indépendants
+(3 × tailles de preuve 200/2000/10000), trois rappels chauds par corpus,
+81 rendus sous trois budgets, sources/métadonnées/réserves vérifiées exactes.
+95 caractères d’extraits donnent jusqu’à 14453 caractères JSON/cadrage ;
+plafond 8000 → 3657 caractères/quatre sources complètes avec preuve 10000.
+Rendu seul médiane 0,269 ms dans ce cas, sans tokenizer ni latence production.
+Empreintes stables/readiness vraie, substitution de budget refusée ; code
+métier inchangé. [Mesures et limites](docs/VM-RECALL-PAYLOAD-2026-10-03.md).
+
 Restant : qualité/latence sur corpus représentatif, politiques plus fines,
 catalogue/recherche sémantique, clients réels et recette VM sur corpus réel. Le mode historique ne restaure
 pas les révisions textuelles remplacées. Les budgets du rappel simple couvrent les extraits ; recall_payload couvre
