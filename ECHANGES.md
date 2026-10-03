@@ -2105,3 +2105,12 @@ non tronqués. Quatre nouveaux cas rouges avant correction, **45 ciblés verts
 en 0,50 s** ; tests HTTP de poursuite sans écritures sur corpus indépendants.
 Contrat complété dans docs/SOURCE-LIBRARY.md. File durable et traitement global
 restent dans la proposition Claude ; aucun original utilisateur modifié.
+
+
+### T-029 — Taille des fichiers lisible — 3 octobre 2026 — Codex/GPT
+
+Suite des tâches dashboard : format de taille adapté à l’ordre de grandeur
+(octets/KiB/MiB/GiB), évitant « 0.00 GiB » sur les données importées de petite
+taille. Vérification du rendu local : 648,18 KiB logiques au moment du contrôle,
+sans lecture du contenu dans le rapport ; deux tests dashboard existants verts.
+Changement de présentation uniquement, aucun nouveau test miroir ajouté.

@@ -38,7 +38,10 @@ def authorized(header: str | None, token: str) -> bool:
 
 
 def _size(value: int) -> str:
-    return f"{value / (1024 ** 3):.2f} GiB"
+    for divisor, unit in ((1024 ** 3, 'GiB'), (1024 ** 2, 'MiB'), (1024, 'KiB')):
+        if value >= divisor:
+            return f"{value / divisor:.2f} {unit}"
+    return f"{value} octets"
 
 
 def _measurement_time(value: str) -> str:
