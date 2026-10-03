@@ -44,7 +44,7 @@ def _size(value: int) -> str:
 def _measurement_time(value: str) -> str:
     local = datetime.fromisoformat(value).astimezone(ZoneInfo('Europe/Paris'))
     offset = local.strftime('%z')
-    return local.strftime('%d-%m-%Y T %H;%M:%S ') + offset[:3] + ':' + offset[3:]
+    return local.strftime('%d-%m-%Y T %H:%M:%S ') + offset[:3] + ':' + offset[3:]
 
 
 def render_dashboard(metrics: dict, state: dict) -> str:
