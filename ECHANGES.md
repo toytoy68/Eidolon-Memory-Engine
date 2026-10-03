@@ -1975,3 +1975,37 @@ aucun échec/saut/désélection. Corpus synthétiques isolés uniquement, aucune
 Contrat docs/MAINTENANCE-PASS.md. Limite des seules publications ; scans, reprise,
 catalogue et durée des verrous non bornés. Aucune latence production, récurrence,
 corpus réel ou coupure électrique validée. Estimation 45 % / 52,75 inchangée.
+
+
+### T-046 — Report explicite sur écrivain canonique occupé — 3 octobre 2026 — Codex/GPT
+
+Base `f8c565e` après annonce de coordination à Claude, développement isolé dans
+/tmp/em-if-idle-Qn9jwk/repo, branche codex/t046-if-idle. Dépôt partagé propre,
+références distantes revérifiées avant intégration. Sessions SSH observées ;
+aucun service, processus tiers ni donnée mémoire active modifié ou arrêté.
+
+MaintenancePass.run(if_idle=True) et CLI --if-idle tentent les verrous
+Persistent/Thread sans attente. Occupation → DEFERRED/CANONICAL_WRITER_BUSY
+avant scan readiness ou effet métier. Premier verrou libéré si second occupé,
+réentrance conservée, relance libre termine une seule fois. Sans option, attente
+existante conservée. Erreurs de chemin et readiness non résolue restent BLOCKED.
+
+12 nouveaux cas tests/test_maintenance_if_idle.py ; neuf rouges avant ajout
+des API/options (une fixture _path corrigée en path avant ce constat).
+74 ciblés verts en 3,07 s : contention deux processus, libération après report,
+rejeu, JSON CLI, aucun scan d’intention en cours, lien de verrou refusé,
+validation avant écriture et backlog dossiers PARTIAL conservé. Substitution
+en mémoire DEFERRED → COMPLETED : un échec comportemental, source intacte.
+
+Validation hors sandbox depuis le checkout isolé : **1665 réussis en 37,42 s**,
+Python 3.13.5, aucun échec/saut/désélection parmi les fichiers exécutés.
+Commande pytest -q --ignore=tests/test_collaboration_mcp.py avec basetemp unique.
+Les **15 cas MCP exclus** : processus VM 20208 exécutant déjà ce fichier lors
+du contrôle préalable ; laissé intact, sans attribution de résultat à Claude.
+Ce résultat n’est pas une suite complète. Log et empreintes conservés dans
+docs/validation/2026-10-03-if-idle/. Liens locaux/diff contrôlés.
+
+Contrat docs/MAINTENANCE-PASS.md : uniquement occupation de verrous coopératifs
+canoniques, pas CPU/SSH/inactivité humaine ; autres verrous et scans peuvent
+encore attendre. Aucun ordonnanceur, horaire, donnée réelle, branche Windows
+ou coupure électrique validé. Estimation 45 % / 52,75 points inchangée.

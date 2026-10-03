@@ -18,7 +18,7 @@ from core.lifecycle.service import LifecycleTriggers
 from core.operations.errors import OperationConflict, OperationRepositoryError
 from core.operations.readiness import check_readiness, recover_all
 from core.operations.read_phase import settled_read_phase
-from core.persistence import exclusive_write
+from core.persistence import RepositoryBusy, exclusive_write
 from core.threads.storage import ThreadStorageError
 from core.threads.manager import ThreadError
 
@@ -72,27 +72,38 @@ class MaintenancePass:
             report['error'] = dict(type=type(exc).__name__, reason=str(exc))
         return report
 
-    def run(self, *, at, query_scope=None, limit=100, dossier_limit=None):
-        """One explicit pass. Limit bounds due dispatch only, not recovery/scans."""
+    def run(self, *, at, query_scope=None, limit=100, dossier_limit=None, if_idle=False):
+        """One explicit pass; optionally defer on occupied canonical writer locks."""
         timestamp(at)
         if type(limit) is not int or limit < 1 or (query_scope is not None and not isinstance(query_scope, dict)):
             raise ValueError('positive limit and object query_scope required')
         if dossier_limit is not None and (type(dossier_limit) is not int or not 1 <= dossier_limit <= 100):
             raise ValueError('dossier limit must be an integer from 1 to 100')
+        if type(if_idle) is not bool:
+            raise ValueError('if_idle must be boolean')
         scope = deepcopy(query_scope) if query_scope is not None else {}
         report = dict(status='BLOCKED', at=at, stage='readiness', recovery=None,
                       triggers={}, dossiers=None, catalogue=None, verification=None)
         try:
-            state = check_readiness(self.root)
-            report['readiness'] = state
-            if any(not issue['resumable'] for issue in state['issues']):
-                return report
+            state = None
+            if not if_idle:
+                state = check_readiness(self.root)
+                report['readiness'] = state
+                if any(not issue['resumable'] for issue in state['issues']):
+                    return report
             if not self.backend.persistent_root.is_dir():
                 raise ValueError('existing engine Persistent directory required')
             with ExitStack() as locks:
-                locks.enter_context(exclusive_write(self.backend.persistent_root))
+                report['stage'] = 'locks'
+                locks.enter_context(exclusive_write(self.backend.persistent_root, blocking=not if_idle))
                 if self.storage.threads_root.is_dir():
-                    locks.enter_context(exclusive_write(self.storage.threads_root))
+                    locks.enter_context(exclusive_write(self.storage.threads_root, blocking=not if_idle))
+                if if_idle:
+                    report['stage'] = 'readiness'
+                    state = check_readiness(self.root)
+                    report['readiness'] = state
+                    if any(not issue['resumable'] for issue in state['issues']):
+                        return report
                 if state['ready'] and not self._deadlines(at)['due']:
                     with settled_read_phase(self.root):
                         idle = self.inspect(at=at)
@@ -134,6 +145,8 @@ class MaintenancePass:
                     raise OperationConflict('maintenance final verification failed')
                 report['status'] = 'PARTIAL' if final['deadlines']['due'] or dossier_backlog else 'COMPLETED'
                 report['stage'] = 'done'
+        except RepositoryBusy:
+            report.update(status='DEFERRED', reason='CANONICAL_WRITER_BUSY')
         except ERRORS as exc:
             report['error'] = dict(type=type(exc).__name__, reason=str(exc))
         return report

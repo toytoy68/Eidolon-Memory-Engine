@@ -141,3 +141,32 @@ catalogue, la mémoire ou la durée des verrous. Aucun ordonnanceur installé,
 aucune fenêtre ou politique d’occupation choisie. Les dérivés peuvent rester
 périmés entre passes ; ne pas interpréter PARTIAL comme une mise à jour complète.
 Preuves synthétiques : tests/test_dossier_batches.py ; résultats dans ECHANGES.md.
+
+## Report explicite si un écrivain canonique est occupé — T-046
+
+`MaintenancePass.run(…, if_idle=True)` et `run … --if-idle` tentent les verrous
+Persistent puis Thread sans attente. Sans l’option, les appels continuent
+d’attendre suivant le protocole existant. Si un autre thread/processus détient
+l’un de ces verrous, la passe rend `status=DEFERRED`,
+`reason=CANONICAL_WRITER_BUSY`, `stage=locks`, sans reprendre de journal,
+déclencher d’échéance ou publier de dérivé. Le CLI renvoie 0 : report volontaire,
+pas réussite de l’entretien. Relancer plus tard avec temps/contexte actualisés.
+
+Avec cette option, la readiness initiale est lue seulement après acquisition
+des deux verrous, pour éviter de diagnostiquer des journaux en cours d’écriture.
+Un état FAILED/corrompu découvert une fois les verrous libres reste BLOCKED.
+Une erreur de chemin/permission n’est pas assimilée à un écrivain occupé.
+Un verrou déjà détenu par le même thread reste réentrant. Si le second verrou
+est occupé, le premier est libéré avant de rendre DEFERRED.
+
+L’option ne lit ni charge CPU, ni sessions SSH, ni activité utilisateur. Elle
+ne choisit aucun horaire et ne programme aucune relance. Elle couvre seulement
+les écrivains coopératifs de ces racines : un écrivain legacy ignorant les
+verrous n’est pas détecté. Des verrous internes de journaux, dossiers ou
+catalogue peuvent encore faire attendre une passe ayant obtenu les verrous
+canoniques ; aucune limite globale de durée n’est promise. Un fichier de verrou
+technique peut être créé, mais aucun contenu métier n’est modifié par le report.
+
+Compatible avec `dossier_limit` et le backlog PARTIAL. Validation Linux par
+processus concurrents ; branche Windows du verrou non validée sur une VM Windows.
+Tests : tests/test_maintenance_if_idle.py ; preuves et limites dans ECHANGES.md.

@@ -1,0 +1,14 @@
+{
+  "base": "f8c565e",
+  "python": "3.13.5",
+  "command": "/opt/eidolon-memory-engine/.venv/bin/python -m pytest -q --ignore=tests/test_collaboration_mcp.py --basetemp=/tmp/em-if-idle-Qn9jwk/suite",
+  "result": "1665 passed in 37.42s",
+  "excluded": "15 tests in tests/test_collaboration_mcp.py; active VM process observed before suite",
+  "sha256": {
+    "core/persistence.py": "31b2e6b790368a18a7e4c7dc08a99ae47a20a94b9971fae45ee37d1e977251c2",
+    "core/maintenance/service.py": "b1e1e5d7b9bc58d01a26907768ebd6e7848f3b90f173e76e8a54ce41c6150d05",
+    "core/maintenance/cli.py": "fb59bb2a738f1d4b3c1c34bc299f86302c0510b6c3a72ad14200b8d8b6fedb46",
+    "tests/test_maintenance_if_idle.py": "5d10f3b40f3d7ddfcd6d2c650ca62e035011330b13c7001c33e8598516cea54c",
+    "docs/validation/2026-10-03-if-idle/pytest.log": "ac560a26130bb15460be4b4c7bb6bcb417359199a3acc20ec0685d94fe497286"
+  }
+}

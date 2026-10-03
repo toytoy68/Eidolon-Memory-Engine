@@ -5,11 +5,17 @@ must be stopped while the new repositories write to the same data.
 """
 from contextlib import contextmanager
 from functools import wraps
+import errno
 import os
 import time
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from threading import local
+
+
+class RepositoryBusy(BlockingIOError):
+    """The cooperative writer lock is held by another thread or process."""
+
 
 _held_locks = local()
 
@@ -21,7 +27,7 @@ def has_symlink_component(path: Path) -> bool:
 
 
 @contextmanager
-def _exclusive_write(root):
+def _exclusive_write(root, *, blocking=True):
     # Keep the lock file: unlinking it could split waiters across two inodes.
     lock_path = root / ".write.lock"
     if lock_path.is_symlink():
@@ -37,7 +43,11 @@ def _exclusive_write(root):
                 try:
                     msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
                     break
-                except OSError:
+                except OSError as exc:
+                    if not blocking:
+                        if exc.errno in {errno.EACCES, errno.EAGAIN, errno.EDEADLK}:
+                            raise RepositoryBusy('repository writer is busy') from exc
+                        raise
                     if time.monotonic() >= deadline:
                         raise TimeoutError("Timed out waiting for repository writer")
                     time.sleep(0.01)
@@ -48,7 +58,10 @@ def _exclusive_write(root):
                 msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
         else:
             import fcntl
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            try:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
+            except BlockingIOError as exc:
+                raise RepositoryBusy('repository writer is busy') from exc
             try:
                 yield
             finally:
@@ -56,8 +69,10 @@ def _exclusive_write(root):
 
 
 @contextmanager
-def exclusive_write(root):
+def exclusive_write(root, *, blocking=True):
     """Reentrant within a thread; other threads/processes still acquire the OS lock."""
+    if type(blocking) is not bool:
+        raise ValueError('blocking must be boolean')
     root = Path(root)
     if has_symlink_component(root) or (root / ".write.lock").is_symlink():
         raise ValueError("writer lock path contains a symlink")
@@ -68,7 +83,8 @@ def exclusive_write(root):
     if key in held:
         yield
         return
-    with _exclusive_write(root):
+    lock = _exclusive_write(root) if blocking else _exclusive_write(root, blocking=False)
+    with lock:
         held.add(key)
         try:
             yield

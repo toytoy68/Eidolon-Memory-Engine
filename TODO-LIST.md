@@ -67,6 +67,13 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Validation du lot T-046 if-idle, **03/10/2026** : **1665 réussis en 37,42 s**,
+12 nouveaux cas, 74 ciblés verts. Checkout et corpus /tmp distincts. Les 15
+cas MCP sont exclus car un processus les exécutait déjà sur la VM : **ce n’est
+pas une suite complète**. Log/empreintes dans docs/validation/2026-10-03-if-idle/.
+Suite complète précédente conservée ci-dessous ; estimation inchangée.
+
+
 Suite complète de reprise du **03/10/2026**, base `f11ae11` plus lot dossiers
 bornés : **1668 réussis en 37,63 s**, aucun échec/saut/désélection,
 corpus synthétiques isolés sous `/tmp/em-dossier-batches-suite`. 14 nouveaux
@@ -578,6 +585,12 @@ optionnels de 1 à 100 publications, API/CLI et entretien --dossier-limit.
 PARTIAL et backlog explicites, relance convergente, notes préservées ; contrôles
 globaux et catalogue restent complets. Aucun gain de scans ou borne de latence
 revendiqué. Voir [contrat](docs/MAINTENANCE-PASS.md).
+
+Ajout T-046 du 03/10 : --if-idle reporte explicitement la passe en DEFERRED
+si un verrou canonique Persistent/Thread est occupé ; reprise par relance avec
+temps/contexte explicites. Aucun critère CPU/SSH/utilisateur, horaire ni job
+installé ; autres verrous internes et scans toujours potentiellement longs.
+Preuves Linux sur corpus synthétiques isolés, voir le contrat d’entretien.
 
 Restant : récurrence/charge/fenêtre horaire, dérivés incrémentaux et consommateurs
 externes. Aucun ordonnanceur système ni job récurrent installé.

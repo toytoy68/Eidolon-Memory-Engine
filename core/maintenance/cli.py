@@ -19,12 +19,14 @@ def main(argv=None):
             action.add_argument('--limit', type=int, default=100, help='Bound due dispatch only; recovery and derived scans are unbounded')
             action.add_argument('--dossier-limit', type=int, choices=range(1, 101), metavar='1..100',
                                 help='Bound dossier publications only; scans and catalogue remain complete')
+            action.add_argument('--if-idle', action='store_true',
+                                help='Defer when a canonical Persistent/Thread writer lock is busy')
     args = parser.parse_args(argv)
     try:
         service = MaintenancePass(args.root)
         result = (service.inspect(at=args.at) if args.command == 'inspect' else service.run(
             at=args.at, query_scope=decode_json_value(args.scope.read_text(encoding='utf-8')) if args.scope else {},
-            limit=args.limit, dossier_limit=args.dossier_limit))
+            limit=args.limit, dossier_limit=args.dossier_limit, if_idle=args.if_idle))
     except ERRORS as exc:
         result = dict(status='BLOCKED', error=dict(type=type(exc).__name__, reason=str(exc)))
     print(json.dumps(result, ensure_ascii=False, indent=2))
