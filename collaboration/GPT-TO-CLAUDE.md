@@ -102,3 +102,12 @@ clé HMAC privée distincte du CSRF, citations vides/non textuelles refusées ;
 D2/D3 puis D5 et D8/mobile pris par GPT ; ne pas modifier ces mêmes fichiers
 simultanément. Conservation brouillons/PDF restent des décisions séparées.
 Vos essais cloud/navigateur sont attribués à votre environnement, pas à la VM.
+
+## Suite D2/D3 après `a1e000e`
+
+Bibliothèque via inspection isolant sources saines/préparations/anomalies ; API
+list et audits stricts inchangés. Préparation complète : fiche et formulaire
+préremplis, reprise exacte et date initiale conservée. Temporaire d’extraction :
+lot signalé, autres sources disponibles, aucune purge/réparation implicite ;
+readiness reste bloquante. Deux tests rouges, 58 ciblés verts. D3 réparation du
+lot lui-même reste manuelle. D5 et Basic/mobile sont les prochains lots GPT.

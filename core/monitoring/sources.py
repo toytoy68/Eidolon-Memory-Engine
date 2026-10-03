@@ -67,21 +67,43 @@ def render_ai_error(code, identity):
     return status, page
 
 
-def render_sources(records, *, csrf=None, result=None):
+def _source_form(csrf, record=None):
+    record = record or {}
+    title = escape(record.get('title', ''), quote=True)
+    author = escape(record.get('author', ''), quote=True)
+    button = 'Reprendre la conservation' if record else 'Conserver la source'
+    return (f'<form action="/sources" method="post" enctype="multipart/form-data">'
+            f'<input type="hidden" name="csrf" value="{escape(csrf, quote=True)}">'
+            '<label>Fichier DOCX, PDF, TXT ou Markdown · 10 Mio maximum '
+            '<input type="file" name="file" accept=".docx,.pdf,.txt,.md" required></label>'
+            f'<label>Titre <input name="title" maxlength="512" value="{title}" required></label>'
+            f'<label>Auteur <input name="author" maxlength="256" value="{author}"></label>'
+            f'<button type="submit">{button}</button></form>')
+
+
+def render_sources(records, *, csrf=None, result=None, pending=(), issues=()):
     body = ('<p>Les originaux sont conservés entiers. Ajouter une source ne transforme pas '
             'automatiquement son texte en souvenirs.</p>')
     if result:
         body += '<p role="status">' + ('Détail validé dans la mémoire, avec sa référence source.' if result == 'DETAIL_ACCEPTED' else 'Source ajoutée.' if result == 'ADDED' else 'Cette source est déjà conservée ; sa fiche reste inchangée.') + '</p>'
     if csrf is not None:
-        body += (f'<section><h2>Ajouter un fichier source</h2><form action="/sources" method="post" enctype="multipart/form-data">'
-                 f'<input type="hidden" name="csrf" value="{escape(csrf, quote=True)}">'
-                 '<label>Fichier DOCX, PDF, TXT ou Markdown · 10 Mio maximum '
-                 '<input type="file" name="file" accept=".docx,.pdf,.txt,.md" required></label>'
-                 '<label>Titre <input name="title" maxlength="512" required></label>'
-                 '<label>Auteur <input name="author" maxlength="256"></label>'
-                 '<button type="submit">Conserver la source</button></form></section>')
+        body += '<section><h2>Ajouter un fichier source</h2>' + _source_form(csrf) + '</section>'
     else:
         body += '<p>Ajout de sources désactivé sur ce tableau de bord.</p>'
+    if pending or issues:
+        body += '<p role="status">Une source demande une reprise ou une vérification. Les validations en mémoire restent bloquées tant que ces anomalies ne sont pas résolues.</p>'
+    for record in pending:
+        body += ('<section><h2>Conservation en attente</h2>'
+                 f'<p>{escape(record["title"])} · {escape(record["author"])}<br>'
+                 f'Fichier attendu : {escape(record["original_name"])} · {record["size"]} octets</p>'
+                 '<p>Reprendre avec le même fichier et les mêmes titre, auteur et nom. La date initiale sera conservée.</p>')
+        if csrf is not None:
+            body += _source_form(csrf, record)
+        body += '</section>'
+    for issue in issues:
+        body += ('<section><h2>Vérification nécessaire</h2>'
+                 '<p>Cette source ne peut pas être utilisée. Les autres sources valides restent consultables. Aucune suppression automatique n’est effectuée.</p>'
+                 f'<details><summary>Détails pour la vérification</summary><p>{escape(issue["path"])}<br>{escape(issue["reason"])}</p></details></section>')
     body += '<h2>Sources conservées</h2><ul>'
     for record in records:
         body += (f'<li><a href="/source?id={quote(record["source_id"])}">{escape(record["title"])}</a> '

@@ -268,3 +268,49 @@ def test_public_csrf_token_cannot_sign_an_invented_ai_review(tmp_path):
             body=urlencode(dict(csrf=csrf,review=token,detail='Invented model provenance')),
             content_type='application/x-www-form-urlencoded')
         assert status==400 and hashes(tmp_path)==before
+
+
+def test_pending_source_is_visible_and_can_be_resumed_from_library(tmp_path, monkeypatch):
+    import pytest
+    from core.sources.store import SourceStore
+    from tests.test_source_library import add
+    store=seed(tmp_path)
+    add(store,b'existing',original_name='existing.txt',title='Already published')
+    def stop(stage):
+        if stage=='after_staging':
+            raise RuntimeError('interrupted')
+    with monkeypatch.context() as patch:
+        patch.setattr(SourceStore,'_checkpoint',staticmethod(stop))
+        with pytest.raises(RuntimeError):
+            add(store,b'pending data',original_name='pending.txt',title='Pending title',author='Moi')
+    with server(tmp_path) as port:
+        before=hashes(tmp_path)
+        status,_,page=request(port,'/sources')
+        assert status==200 and b'Already published' in page and b'Pending title' in page
+        assert b'pending.txt' in page and b'Reprendre' in page
+        assert hashes(tmp_path)==before
+        csrf=re.search(b'name="csrf" value="([^"]+)"',page)[1].decode()
+        status,_,page=request(port,'/sources',method='POST',
+            body=multipart(csrf,data=b'pending data',name='pending.txt',title='Pending title'),
+            content_type='multipart/form-data; boundary=BOUNDARY')
+        assert status==200 and not list(store.directory.glob('.pending-*'))
+        assert len(store.list())==2
+        pending=next(r for r in store.list() if r['title']=='Pending title')
+        assert pending['added_at']=='2026-10-03T13:00:00Z'
+
+
+def test_invalid_extraction_stage_does_not_hide_other_published_sources(tmp_path):
+    from tests.test_source_library import add
+    from core.operations.readiness import check_readiness
+    store=seed(tmp_path)
+    first=add(store,b'healthy',original_name='healthy.txt',title='Healthy source')['source']
+    second=add(store,b'other',original_name='other.txt',title='Interrupted source')['source']
+    (store.directory/second['source_id']/'.extraction.json.abcd.tmp').write_text('{')
+    with server(tmp_path) as port:
+        before=hashes(tmp_path)
+        status,_,page=request(port,'/sources')
+        assert status==200 and b'Healthy source' in page
+        assert 'Vérification nécessaire'.encode() in page
+        assert request(port,'/source?id='+first['source_id'])[0]==200
+        assert hashes(tmp_path)==before
+        assert not check_readiness(tmp_path)['ready']

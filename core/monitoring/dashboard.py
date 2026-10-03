@@ -134,6 +134,12 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
     store = SourceStore(engine_root)
     csrf = token_urlsafe(32)
     review_secret = token_bytes(32)
+
+    def library_page(result=None):
+        inspection = store.inspect()
+        return render_sources(inspection['sources'], pending=inspection['pending'],
+                              issues=inspection['issues'], csrf=csrf if allow_source_upload else None,
+                              result=result)
     class DashboardHandler(BaseHTTPRequestHandler):
         def _page(self, page, status=200):
             body = decorate(page).encode('utf-8')
@@ -178,7 +184,7 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                             raise ValueError('incomplete detail validation')
                         review = unseal(fields['review'][0], review_secret)
                         result = accept_detail(engine_root, review, detail=fields['detail'][0], actor='dashboard-user')
-                        self._page(render_sources(store.list(), csrf=csrf, result='DETAIL_ACCEPTED'))
+                        self._page(library_page(result='DETAIL_ACCEPTED'))
                         return
                     if set(fields) != ({'csrf', 'id'} if self.path == '/source/extract' else {'csrf', 'id', 'start'}):
                         raise ValueError('incomplete source action')
@@ -200,7 +206,7 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                     return
                 upload = parse_upload(self.headers.get('Content-Type'), raw, csrf)
                 result = store.add(**upload, added_at=datetime.now(timezone.utc).isoformat())
-                self._page(render_sources(store.list(), csrf=csrf, result=result['status']))
+                self._page(library_page(result=result['status']))
             except LocalAIError as exc:
                 status, page = render_ai_error(exc.code, fields['id'][0])
                 self._page(page, status=status)
@@ -222,7 +228,7 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                 if url.path == "/" and not url.query:
                     page = render_dashboard(collect_metrics(engine_root), overview(engine_root))
                 elif url.path == '/sources' and not url.query:
-                    page = render_sources(store.list(), csrf=csrf if allow_source_upload else None)
+                    page = library_page()
                 elif url.path in {'/source', '/source/original', '/source/text'}:
                     query = parse_qs(url.query, keep_blank_values=True)
                     allowed = {'id', 'page'} if url.path == '/source/text' else {'id'}

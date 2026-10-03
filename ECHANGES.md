@@ -2210,3 +2210,16 @@ HTTP 200, aucune analyse ni acceptation sur le roman dans cette recette.
 D2/D3 reprise UI, D5 versions extracteur, D8 Basic Unicode et UI mobile restent
 à traiter. D7 normalisation et rétention/brouillons nécessitent compatibilité
 et choix explicités ; aucune nouvelle politique déduite de la revue.
+
+
+### T-051 — Bibliothèque après interruption, D2/D3 — 3 octobre 2026 — Codex/GPT
+
+Suite revue Claude : SourceStore.inspect séparé de list stricte, sources valides/
+préparations/anomalies. UI disponible avec les sources saines ; préparation
+complète visible et reprise via formulaire prérempli. Aucun temporaire ignoré
+par audit, purgé ou promu ; readiness reste bloquante sur lot invalide.
+Deux cas HTTP rouges avant lot, **58 ciblés verts en 0,64 s** : interruption
+post-staging puis reprise multipart avec date initiale ; temporaire d’extraction
+ne masque plus les autres sources et leur consultation est possible. D3 reprise
+technique du lot invalide reste manuelle : diagnostic UI seulement, aucune
+réparation/élimination de fichier implicite. Aucun corpus du roman modifié.

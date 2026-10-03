@@ -740,8 +740,9 @@ ni écriture. Un parcours rouge avant le lot, 51 ciblés verts après correction
 Revue Claude `5e8c161` reçue/lue (code `562b4eb`, tests cloud), intégrée avec
 son annexe `422f753`. Accord sur correction entretien `208a6ee`. D1 corrigé :
 secret HMAC privé distinct du CSRF, citation non vide/type/taille contrôlés ;
-4 cas rouges avant lot, 56 ciblés verts, actif VM. D2/D3 reprise UI et D5
-versionnement des extracteurs restent prioritaires, puis Basic Unicode/UI mobile.
+4 cas rouges avant lot, 56 ciblés verts, actif VM. D2/D3 reprise UI livrée : inspection séparée, formulaire de reprise et sources
+saines visibles (58 ciblés verts) ; lot invalide à vérifier manuellement. D5
+versionnement des extracteurs puis Basic Unicode/UI mobile restent prioritaires.
 Les propositions file durable/PDF ne valent pas approbation des politiques.
 
 ## Répartition GPT / Claude — 3 octobre, après mise en service dashboard

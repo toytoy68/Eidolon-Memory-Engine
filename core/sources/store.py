@@ -117,6 +117,25 @@ class SourceStore:
                 records.append(self.read(path.name)[0])
         return records
 
+    def inspect(self):
+        """Read-only library view; isolate invalid bundles without relaxing audits."""
+        self._paths()
+        report = dict(sources=[], pending=[], issues=[])
+        if not self.directory.exists():
+            return report
+        for path in sorted(self.directory.iterdir()):
+            try:
+                if path.name == '.write.lock' and path.is_file() and not path.is_symlink():
+                    continue
+                if path.name.startswith('.pending-'):
+                    record, _ = self._bundle(path, path.name.removeprefix('.pending-'))
+                    report['pending'].append(record)
+                else:
+                    report['sources'].append(self.read(path.name)[0])
+            except (OSError, ValueError, TypeError, KeyError) as exc:
+                report['issues'].append(dict(path=path.relative_to(self.root).as_posix(), reason=str(exc)))
+        return report
+
     def add(self, content, *, original_name, title, author, added_at):
         _fields(original_name, title, author, added_at)
         if not isinstance(content, bytes) or not 0 < len(content) <= MAX_BYTES:

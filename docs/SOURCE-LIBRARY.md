@@ -180,3 +180,20 @@ Défaut confirmé sur corpus factice : 4 cas rouges (formulaire forgé, citation
 vide et deux types non textuels), 1 cas espaces déjà rejeté. **56 ciblés verts**
 après correction. Signature privée et pagination activées sur la VM ; GET pages
 1 et 2 du roman répondent 200 sans analyse ni validation automatique.
+
+## Bibliothèque disponible après interruption (revue Claude D2/D3)
+
+L’interface utilise une inspection en lecture seule qui sépare sources valides,
+préparations complètes en attente et anomalies par lot. Une préparation ou un
+fichier temporaire laissé dans une autre source ne masque plus toute la page.
+Les audits/readiness et l’API list stricte conservent leurs refus ; une anomalie
+n’est pas rendue utilisable et peut toujours bloquer les écritures en mémoire.
+
+Une préparation complète expose sa fiche et un formulaire prérempli : sélectionner
+le même original avec les mêmes nom, titre et auteur reprend la publication et
+conserve la date initiale. La présence d’autres anomalies peut empêcher cette
+reprise ; elles doivent être vérifiées séparément. Un lot incomplet ou un temporaire
+d’extraction est signalé pour vérification, sans lecture de contenu invalide,
+suppression/purge ou réparation implicite. Deux parcours HTTP rouges avant le lot,
+**58 ciblés verts**, reprise réelle et conservation de date testées sur corpus
+factice ; source valide accessible et readiness toujours bloquante en cas d’anomalie.
