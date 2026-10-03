@@ -146,3 +146,27 @@ sur tmpfs. Le lot seul reste inférieur à 0,22 s. Construire l’index avant le
 premier lot coûte suffisamment pour dépasser le lot strict dans ces points.
 Ces mesures orientent le prochain lot vers la compaction bornée et ses scans ;
 elles ne livrent pas encore cette réduction.
+
+## Compaction bornée livrée — base 797c432 plus le lot avant commit
+
+Trois corpus indépendants par variante, avec contrôles identiques et code core
+testé (1483 réussis). Comparaison single contre lots de 100 ; préparation neuve
+avant chaque variante. [Outil/contrat](INFORMATION-COMPACTION-BATCHES.md).
+
+| Support | Objets | Mode | Compaction médiane | Étendue | Seeding + compaction | Scans | JSON ouverts |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| tmpfs | 1000 | single | 160.661712 s | 159.621689–163.883362 s | 162.883535 s | 1000 | 1003000 |
+| tmpfs | 1000 | batch | 2.392723 s | 2.360977–2.408368 s | 4.662694 s | 10 | 13010 |
+| ext4 | 300 | single | 19.238256 s | 19.142575–19.421676 s | 22.107289 s | 300 | 90900 |
+| ext4 | 300 | batch | 1.387558 s | 1.380230–1.399964 s | 4.377346 s | 3 | 1803 |
+
+Sur tmpfs/1000, compaction seule environ ×67 plus rapide ; préparation entière
+environ ×35. Sur ext4/300, compaction seule environ ×14 ; préparation entière
+environ ×5. Les reçus et 1000/300 objets sont vérifiés à chaque point ; aucun
+journal complet restant, aucun problème d’audit, rejeu exact sans scan global.
+Les rapports/code-outil et hashes sont dans [le manifeste](benchmarks/vm-2026-10-03/compaction-summary.json).
+
+Le lot évite les scans répétés par opération, sans éliminer le scan par lot.
+À borne fixe de 100, le coût d’une suite croissante reste quadratique réduit.
+Ni politique de rétention ni latence maximale ni validation de corpus réel
+ou de coupure électrique ne découle de ces mesures.

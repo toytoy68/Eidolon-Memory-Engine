@@ -240,6 +240,11 @@ class FilesystemInformationWrites:
                 results[opid] = {'status': 'BLOCKED', 'error': type(exc).__name__}
         return results
 
+    def compact_batch(self, operation_ids):
+        """Explicitly compact 1–100 identities; retain the ordered list for retry."""
+        from core.information.compaction import compact_batch
+        return compact_batch(self, operation_ids)
+
     def compact(self, operation_id):
         from core.information.compaction import compact_locked
         with exclusive_write(self.backend.persistent_root), exclusive_write(self.operations.root), exclusive_write(self.events.events_root):

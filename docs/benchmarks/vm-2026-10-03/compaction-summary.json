@@ -1,0 +1,89 @@
+{
+  "source_commit": "797c4321630ac48930615035c244d1e55a3ddb25",
+  "runtime_core_sha256": "f694e11e21371934eefa8176b8bff0519da2491628a06bf9a7452d217fd261c6",
+  "benchmark_tool_sha256": "eba65ff5a2f08b304585520c5e3feec9c04ac057118abec52803fdd120ebcb59",
+  "reports": [
+    {
+      "file": "compaction-tmpfs.json",
+      "sha256": "6d6ee00fed460381d7bf6f3801e933e080d1d705d2768176a6fa6d9453e2aa6c"
+    },
+    {
+      "file": "compaction-tmpfs.log",
+      "sha256": "2ec08c75b34b6058e58cb862d46f0dd6b740f30a9d577f294b881e1bef7b07f4"
+    },
+    {
+      "file": "compaction-ext4.json",
+      "sha256": "07de9afcd4c0d78816e766c551b3a3e698899fce441aa1421d462a29dba13d8d"
+    },
+    {
+      "file": "compaction-ext4.log",
+      "sha256": "b5b838604ad61c321c40259200366b7a4b684daea57bff76523971872e7b8382"
+    }
+  ],
+  "rows": [
+    {
+      "storage": "tmpfs",
+      "mode": "single",
+      "records": 1000,
+      "independent_runs": 3,
+      "median_seconds": 160.661712,
+      "min_seconds": 159.621689,
+      "max_seconds": 163.883362,
+      "median_preparation_seconds": 162.883535,
+      "journal_scans": [
+        1000
+      ],
+      "journal_json_opens": [
+        1003000
+      ]
+    },
+    {
+      "storage": "tmpfs",
+      "mode": "batch",
+      "records": 1000,
+      "independent_runs": 3,
+      "median_seconds": 2.392723,
+      "min_seconds": 2.360977,
+      "max_seconds": 2.408368,
+      "median_preparation_seconds": 4.662694,
+      "journal_scans": [
+        10
+      ],
+      "journal_json_opens": [
+        13010
+      ]
+    },
+    {
+      "storage": "ext4",
+      "mode": "single",
+      "records": 300,
+      "independent_runs": 3,
+      "median_seconds": 19.238256,
+      "min_seconds": 19.142575,
+      "max_seconds": 19.421676,
+      "median_preparation_seconds": 22.107289,
+      "journal_scans": [
+        300
+      ],
+      "journal_json_opens": [
+        90900
+      ]
+    },
+    {
+      "storage": "ext4",
+      "mode": "batch",
+      "records": 300,
+      "independent_runs": 3,
+      "median_seconds": 1.387558,
+      "min_seconds": 1.38023,
+      "max_seconds": 1.399964,
+      "median_preparation_seconds": 4.377346,
+      "journal_scans": [
+        3
+      ],
+      "journal_json_opens": [
+        1803
+      ]
+    }
+  ]
+}

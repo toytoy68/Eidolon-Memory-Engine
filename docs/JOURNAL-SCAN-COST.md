@@ -122,3 +122,13 @@ Extension sur base `08f0284` : 24 mesures supplémentaires, trois répétitions,
 À 300 ext4/live, lot strict 0,302016 s contre 0,251664 s indexé hors construction.
 [Tableaux, protocole et manifeste](VM-PERFORMANCE-2026-10-03.md).
 La compaction individuelle constitue un coût à réduire dans un lot distinct.
+
+## Compaction bornée — 03/10
+
+Le lot suivant réduit le coût de préparation observé : 1–100 identités par appel,
+scan partagé sous verrous, contrôle exact de chaque reçu avant retrait du journal.
+[Contrat](INFORMATION-COMPACTION-BATCHES.md). Mesures sur trois corpus indépendants :
+1000 tmpfs, médiane compaction 160,661712 → 2,392723 s, 1000 → 10 scans ;
+300 ext4, environ 19,2 → 1,4 s. Préparation entière, variations et données
+conservées dans [le rapport VM](VM-PERFORMANCE-2026-10-03.md).
+Le coût par lot reste linéaire sur les antécédents ; aucune rétention automatique.

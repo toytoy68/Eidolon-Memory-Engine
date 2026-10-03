@@ -26,6 +26,8 @@ def main(argv=None):
     batch.add_argument('--input', type=Path, required=True, help='JSON array of 1–100 stable CREATE/UPDATE commands')
     commands.add_parser('index-rebuild', help='Activate or fully rebuild the optional reservation index')
     commands.add_parser('index-status', help='Read-only freshness report; run on a stopped copy')
+    compact_batch = commands.add_parser('compact-batch')
+    compact_batch.add_argument('--input', type=Path, required=True, help='JSON array of 1–100 distinct operation IDs')
     commands.add_parser('recover')
     compact = commands.add_parser('compact')
     compact.add_argument('operation_id')
@@ -55,6 +57,14 @@ def main(argv=None):
         from core.storage_format import decode_json_value
         try:
             result = writer.execute_batch(decode_json_value(args.input.read_text(encoding='utf-8')))
+        except ERRORS as exc:
+            result = dict(status='BLOCKED', error=dict(type=type(exc).__name__, reason=str(exc)))
+        status = int(result['status'] == 'BLOCKED')
+    elif args.command == 'compact-batch':
+        from core.information.batch import ERRORS
+        from core.storage_format import decode_json_value
+        try:
+            result = writer.compact_batch(decode_json_value(args.input.read_text(encoding='utf-8')))
         except ERRORS as exc:
             result = dict(status='BLOCKED', error=dict(type=type(exc).__name__, reason=str(exc)))
         status = int(result['status'] == 'BLOCKED')

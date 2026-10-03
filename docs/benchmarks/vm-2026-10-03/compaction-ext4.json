@@ -1,0 +1,133 @@
+{
+  "source_commit": "797c4321630ac48930615035c244d1e55a3ddb25",
+  "runtime_core_sha256": "f694e11e21371934eefa8176b8bff0519da2491628a06bf9a7452d217fd261c6",
+  "python": "3.13.5",
+  "hostname": "Eidolon-Memory",
+  "scope": "synthetic warmed filesystem; successful read opens, not physical disk I/O or a production guarantee",
+  "temporary_parent": "/opt/eidolon-memory-engine/tmp/em-compaction-GLC1gq",
+  "repeats": 3,
+  "batch_limit": 100,
+  "rows": [
+    {
+      "records": 300,
+      "mode": "single",
+      "seed_seconds": 3.002798,
+      "seconds": 19.421676,
+      "total_preparation_seconds": 22.424474,
+      "journal_reads": 90600,
+      "journal_scans": 300,
+      "journal_json_opens": 90900,
+      "replay_seconds": 0.109774,
+      "replay_counts": {
+        "journal_reads": 600,
+        "journal_scans": 0,
+        "journal_json_opens": 600
+      },
+      "canonical_verified": 300,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 1
+    },
+    {
+      "records": 300,
+      "mode": "batch",
+      "seed_seconds": 2.989788,
+      "seconds": 1.387558,
+      "total_preparation_seconds": 4.377346,
+      "journal_reads": 1503,
+      "journal_scans": 3,
+      "journal_json_opens": 1803,
+      "replay_seconds": 0.109251,
+      "replay_counts": {
+        "journal_reads": 600,
+        "journal_scans": 0,
+        "journal_json_opens": 600
+      },
+      "canonical_verified": 300,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 1
+    },
+    {
+      "records": 300,
+      "mode": "single",
+      "seed_seconds": 2.869034,
+      "seconds": 19.238256,
+      "total_preparation_seconds": 22.107289,
+      "journal_reads": 90600,
+      "journal_scans": 300,
+      "journal_json_opens": 90900,
+      "replay_seconds": 0.109516,
+      "replay_counts": {
+        "journal_reads": 600,
+        "journal_scans": 0,
+        "journal_json_opens": 600
+      },
+      "canonical_verified": 300,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 2
+    },
+    {
+      "records": 300,
+      "mode": "batch",
+      "seed_seconds": 3.032942,
+      "seconds": 1.38023,
+      "total_preparation_seconds": 4.413172,
+      "journal_reads": 1503,
+      "journal_scans": 3,
+      "journal_json_opens": 1803,
+      "replay_seconds": 0.110537,
+      "replay_counts": {
+        "journal_reads": 600,
+        "journal_scans": 0,
+        "journal_json_opens": 600
+      },
+      "canonical_verified": 300,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 2
+    },
+    {
+      "records": 300,
+      "mode": "single",
+      "seed_seconds": 2.963677,
+      "seconds": 19.142575,
+      "total_preparation_seconds": 22.106252,
+      "journal_reads": 90600,
+      "journal_scans": 300,
+      "journal_json_opens": 90900,
+      "replay_seconds": 0.10866,
+      "replay_counts": {
+        "journal_reads": 600,
+        "journal_scans": 0,
+        "journal_json_opens": 600
+      },
+      "canonical_verified": 300,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 3
+    },
+    {
+      "records": 300,
+      "mode": "batch",
+      "seed_seconds": 2.948888,
+      "seconds": 1.399964,
+      "total_preparation_seconds": 4.348852,
+      "journal_reads": 1503,
+      "journal_scans": 3,
+      "journal_json_opens": 1803,
+      "replay_seconds": 0.108951,
+      "replay_counts": {
+        "journal_reads": 600,
+        "journal_scans": 0,
+        "journal_json_opens": 600
+      },
+      "canonical_verified": 300,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 3
+    }
+  ],
+  "completed": true
+}

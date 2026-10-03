@@ -49,6 +49,8 @@ réelles et le déploiement restent à valider.
   [cycle de vie/suppressions Information](docs/LIFECYCLE.md)
 - [Première interface d'assemblage de contexte](docs/RETRIEVAL.md)
 - [Manifeste de source pour un index dérivé](docs/INDEXING.md)
+- [Compaction par lots bornés](docs/INFORMATION-COMPACTION-BATCHES.md) :
+  reçus/audits conservés, un scan par lot de 100 au plus, reprise du préfixe.
 - [Mesures VM synthétiques](docs/VM-PERFORMANCE-2026-10-03.md) : écritures,
   index/entretien sur tmpfs, lots sur ext4 et 1000 antécédents ;
   trois répétitions, latence physique du disque non mesurée.
@@ -80,10 +82,10 @@ MEMORY_ENGINE_ROOT="$(mktemp -d)" PYTHONDONTWRITEBYTECODE=1 python -m pytest -q 
 
 ## État vérifié et reprise
 
-Dernière suite complète directe sur VM le **03/10/2026** : **1457 réussis en
-36,29 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
-Base `e17bec3` plus les résultats client NONE/REVIEW ;
-28 nouveaux cas, 106 ciblés réussis. Données synthétiques isolées, aucun service
+Dernière suite complète directe sur VM le **03/10/2026** : **1483 réussis en
+37,03 s**, Python `.venv` 3.13.5/pytest 9.1.1, aucun échec, saut ou désélection.
+Base `797c432` plus la compaction bornée ;
+26 nouveaux cas, 124 ciblés réussis. Données synthétiques isolées, aucun service
 installé ni journal réel résolu. [Preuve](docs/VM-TESTS-2026-10-02.md).
 
 Suite complète exécutée par toytoy sur la VM `Eidolon-Memory` le 02/10/2026,

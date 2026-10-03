@@ -1,0 +1,133 @@
+{
+  "source_commit": "797c4321630ac48930615035c244d1e55a3ddb25",
+  "runtime_core_sha256": "f694e11e21371934eefa8176b8bff0519da2491628a06bf9a7452d217fd261c6",
+  "python": "3.13.5",
+  "hostname": "Eidolon-Memory",
+  "scope": "synthetic warmed filesystem; successful read opens, not physical disk I/O or a production guarantee",
+  "temporary_parent": "/tmp",
+  "repeats": 3,
+  "batch_limit": 100,
+  "rows": [
+    {
+      "records": 1000,
+      "mode": "single",
+      "seed_seconds": 2.29855,
+      "seconds": 163.883362,
+      "total_preparation_seconds": 166.181912,
+      "journal_reads": 1002000,
+      "journal_scans": 1000,
+      "journal_json_opens": 1003000,
+      "replay_seconds": 0.299635,
+      "replay_counts": {
+        "journal_reads": 2000,
+        "journal_scans": 0,
+        "journal_json_opens": 2000
+      },
+      "canonical_verified": 1000,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 1
+    },
+    {
+      "records": 1000,
+      "mode": "batch",
+      "seed_seconds": 2.275698,
+      "seconds": 2.392723,
+      "total_preparation_seconds": 4.668422,
+      "journal_reads": 12010,
+      "journal_scans": 10,
+      "journal_json_opens": 13010,
+      "replay_seconds": 0.296238,
+      "replay_counts": {
+        "journal_reads": 2000,
+        "journal_scans": 0,
+        "journal_json_opens": 2000
+      },
+      "canonical_verified": 1000,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 1
+    },
+    {
+      "records": 1000,
+      "mode": "single",
+      "seed_seconds": 2.221823,
+      "seconds": 160.661712,
+      "total_preparation_seconds": 162.883535,
+      "journal_reads": 1002000,
+      "journal_scans": 1000,
+      "journal_json_opens": 1003000,
+      "replay_seconds": 0.302084,
+      "replay_counts": {
+        "journal_reads": 2000,
+        "journal_scans": 0,
+        "journal_json_opens": 2000
+      },
+      "canonical_verified": 1000,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 2
+    },
+    {
+      "records": 1000,
+      "mode": "batch",
+      "seed_seconds": 2.244212,
+      "seconds": 2.360977,
+      "total_preparation_seconds": 4.605189,
+      "journal_reads": 12010,
+      "journal_scans": 10,
+      "journal_json_opens": 13010,
+      "replay_seconds": 0.292344,
+      "replay_counts": {
+        "journal_reads": 2000,
+        "journal_scans": 0,
+        "journal_json_opens": 2000
+      },
+      "canonical_verified": 1000,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 2
+    },
+    {
+      "records": 1000,
+      "mode": "single",
+      "seed_seconds": 2.238265,
+      "seconds": 159.621689,
+      "total_preparation_seconds": 161.859954,
+      "journal_reads": 1002000,
+      "journal_scans": 1000,
+      "journal_json_opens": 1003000,
+      "replay_seconds": 0.291935,
+      "replay_counts": {
+        "journal_reads": 2000,
+        "journal_scans": 0,
+        "journal_json_opens": 2000
+      },
+      "canonical_verified": 1000,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 3
+    },
+    {
+      "records": 1000,
+      "mode": "batch",
+      "seed_seconds": 2.254326,
+      "seconds": 2.408368,
+      "total_preparation_seconds": 4.662694,
+      "journal_reads": 12010,
+      "journal_scans": 10,
+      "journal_json_opens": 13010,
+      "replay_seconds": 0.291206,
+      "replay_counts": {
+        "journal_reads": 2000,
+        "journal_scans": 0,
+        "journal_json_opens": 2000
+      },
+      "canonical_verified": 1000,
+      "final_audit_issues": 0,
+      "full_snapshots_remaining": 0,
+      "independent_repetition": 3
+    }
+  ],
+  "completed": true
+}

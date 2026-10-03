@@ -34,9 +34,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après résultats client NONE/REVIEW T-043 : **1457 réussis en 36,29 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `e17bec3` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-u79j7C`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après compaction bornée T-049 : **1483 réussis en 37,03 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `797c432` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-GthGBD`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -441,6 +441,15 @@ indexé 0,062659 s hors construction ; toujours 1050 ouvertures JSON.
 Manifeste, logs et cleanup vérifiés, aucun code core changé. La compaction
 individuelle devient un prochain coût à réduire ; pas de garantie de latence
 physique, charge réelle, coupure ou ingestion intensive.
+
+Ajout compaction bornée du 03/10, base `797c432` confirmée sur GitHub :
+1–100 identités, verrous maintenus, scan partagé, reçu relu avant retrait de chaque
+snapshot et audit humain conservé. Préfixe durable, relance par liste exacte ;
+aucune rétention automatique. 26 nouveaux cas, 124 ciblés verts, suite VM 1483
+réussis en 37,03 s. Trois répétitions avant/après : 1000 tmpfs, compaction
+160,661712 → 2,392723 s et 1000 → 10 scans ; 300 ext4 ≈19,2 → 1,4 s.
+Outil reproductible, rapports/logs et hashes ; toujours un scan par lot et coût
+croissant quadratique réduit. [Contrat](docs/INFORMATION-COMPACTION-BATCHES.md).
 
 Restant : suppression de l’énumération et des lectures linéaires par lot,
 protocole d’invalidation couvrant tous les écrivains, autres familles, dérivés, corpus et
