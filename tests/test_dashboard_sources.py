@@ -228,3 +228,26 @@ def test_busy_ai_has_readable_retryable_error_without_writes(tmp_path):
             _inference.release()
         assert status==409 and 'analyse est déjà en cours'.encode() in page
         assert b'Revenir au texte' in page and hashes(tmp_path)==before
+
+
+def test_extracted_text_pages_keep_original_numbers_and_put_analysis_first(tmp_path):
+    from tests.test_source_library import add
+    store = seed(tmp_path)
+    content = '\n'.join(value for number in range(1,81) for value in [f'Paragraphe {number:03}', ''])
+    record = add(store, content.encode(), original_name='pages.txt')['source']
+    store.extract(record['source_id'])
+    with server(tmp_path, ai=object()) as port:
+        before = hashes(tmp_path)
+        base='/source/text?id='+record['source_id']
+        status,_,first=request(port,base)
+        assert status==200 and first.count(b'<li value=')==40
+        assert b'Paragraphe 001' in first and b'Paragraphe 041' not in first
+        assert first.index(b'Proposer des d') < first.index(b'<ol>')
+        status,_,second=request(port,base+'&page=2')
+        assert status==200 and second.count(b'<li value=')==40
+        assert b'<li value="81">' in second and b'Paragraphe 041' in second
+        assert b'Paragraphe 001' not in second and b'Paragraphe 080' in second
+        assert b'name="start" min="1"' in second and b'value="81"' in second
+        for suffix in ['&page=0','&page=3','&page=2&page=2','&page=abc']:
+            assert request(port,base+suffix)[0]==404
+        assert hashes(tmp_path)==before

@@ -733,6 +733,10 @@ Ajout T-051/T-029 : erreurs IA classées et pages de reprise françaises,
 occupé/indisponible/citation rejetée distingués, aucune réponse brute exposée.
 Deux nouveaux parcours rouges avant lot, 32 ciblés verts après correction.
 
+Ajout T-051/T-029 : texte paginé (40 paragraphes non vides), formulaire IA en
+haut et départ adapté à la page ; références inchangées, navigation sans analyse
+ni écriture. Un parcours rouge avant le lot, 51 ciblés verts après correction.
+
 ## Répartition GPT / Claude — 3 octobre, après mise en service dashboard
 
 Missions Claude publiées dans [GPT-TO-CLAUDE.md](collaboration/GPT-TO-CLAUDE.md)

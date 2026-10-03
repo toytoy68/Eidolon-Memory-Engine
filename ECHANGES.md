@@ -2178,3 +2178,14 @@ Documentation complétée, aucune mesure de gain de latence nouvelle revendiqué
 Validation finale du lot échéances (rapport figé après copie défensive) :
 **1732 réussis en 38,36 s**, 15 MCP exclus ;
 [journal et limites](docs/validation/2026-10-03-maintenance-deadlines/README.md).
+
+
+### T-051/T-029 — Texte paginé et analyse en haut — 3 octobre 2026 — Codex/GPT
+
+Suite après `add49bb` : pages de 40 paragraphes non vides, navigation haut/bas,
+formulaire avant le texte et premier paragraphe visible comme départ par défaut.
+Numérotation/extraction/citations originales inchangées ; référence technique
+dans un volet. Lecture seule, aucune analyse sur navigation. Un parcours HTTP
+rouge avant lot, **51 ciblés verts en 0,55 s**, deux pages et refus des numéros
+invalides/paramètres répétés ; hashes identiques avant/après. L’analyse demeure
+20 paragraphes/6000 caractères et brouillons temporaires, pas une file durable.

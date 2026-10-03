@@ -150,3 +150,18 @@ Les erreurs de formulaire restent distinctes (400). LocalAIError reste une
 sous-classe de ValueError pour les appelants existants. Deux parcours HTTP rouges
 avant le lot, 32 tests dashboard/IA ciblés verts après correction, sans appel
 au modèle réel ni écriture du corpus utilisateur pendant ces tests.
+
+## Lecture paginée du texte
+
+Le texte extrait est présenté par pages de 40 paragraphes non vides. Les liens
+précédent/suivant sont disponibles avant et après la page. Le formulaire IA est
+placé avant le texte et commence par défaut au premier paragraphe visible de la
+page choisie ; son numéro reste modifiable. Les références originales ne sont
+jamais renumérotées. Version et empreinte sont disponibles dans un volet séparé.
+
+Une page de lecture n’est pas un lot d’analyse : l’IA conserve sa limite de
+20 paragraphes/6000 caractères, puis indique le passage suivant. Naviguer dans
+le texte ne lance aucune IA et n’écrit aucune donnée. Aucun texte non vide est
+signalé explicitement. Un test HTTP rouge avant le lot couvre deux pages,
+numéros source avec vides intercalés, formulaire en haut, pages invalides/refus
+des paramètres dupliqués et absence d’écriture. **51 tests ciblés verts**.

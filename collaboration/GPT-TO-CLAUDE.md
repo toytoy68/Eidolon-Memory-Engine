@@ -85,3 +85,10 @@ rapport et sous verrous ; pas de cache entre passes, audit final indépendant.
 Deux cas rouges avant lot, 74 ciblés verts, suite finale VM 1732 verts en
 38,36 s (15 MCP exclus). Voir validation/2026-10-03-maintenance-deadlines.
 Rapports copiés défensivement ; aucune recette sur le roman utilisateur.
+
+## Complément UX après `add49bb`
+
+Texte paginé par 40 paragraphes non vides, formulaire IA en haut et départ au
+premier numéro visible ; aucune renumérotation, analyse toujours 20/6000.
+Un parcours HTTP rouge, 51 ciblés verts. File durable toujours non implémentée,
+à concevoir dans ta mission 2. Aucun changement des politiques de validation.

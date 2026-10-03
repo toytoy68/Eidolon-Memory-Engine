@@ -223,8 +223,9 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                 elif url.path == '/sources' and not url.query:
                     page = render_sources(store.list(), csrf=csrf if allow_source_upload else None)
                 elif url.path in {'/source', '/source/original', '/source/text'}:
-                    query = parse_qs(url.query)
-                    if set(query) != {'id'} or len(query['id']) != 1:
+                    query = parse_qs(url.query, keep_blank_values=True)
+                    allowed = {'id', 'page'} if url.path == '/source/text' else {'id'}
+                    if 'id' not in query or not set(query) <= allowed or any(len(values) != 1 for values in query.values()):
                         raise ValueError('one source identity required')
                     record, original = store.read(query['id'][0])
                     if url.path == '/source/original':
@@ -239,7 +240,8 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                         return
                     if url.path == '/source/text':
                         page = render_extraction(record, store.extraction(record['source_id']),
-                                                 csrf=csrf if allow_source_upload else None, ai_enabled=local_ai is not None)
+                                                 csrf=csrf if allow_source_upload else None, ai_enabled=local_ai is not None,
+                                                 page=int(query.get('page', ['1'])[0]))
                     else:
                         page = render_source(record, csrf=csrf if allow_source_upload else None,
                                              has_extraction=(store.directory / record['source_id'] / 'extraction.json').exists())

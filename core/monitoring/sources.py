@@ -110,23 +110,36 @@ def render_source(record, *, csrf=None, has_extraction=False):
     return shell(record['title'], body)
 
 
-def render_extraction(record, extraction, *, csrf=None, ai_enabled=False):
+def render_extraction(record, extraction, *, csrf=None, ai_enabled=False, page=1):
+    visible = [(index, text) for index, text in enumerate(extraction['paragraphs'], 1) if text.strip()]
+    total_pages = max(1, (len(visible) + 39) // 40)
+    if type(page) is not int or not 1 <= page <= total_pages:
+        raise ValueError('invalid extraction page')
+    selected = visible[(page-1)*40:page*40]
     paragraphs = ''.join(f'<li value="{index}"><pre>{escape(text)}</pre></li>'
-                         for index, text in enumerate(extraction['paragraphs'], 1) if text.strip())
+                         for index, text in selected)
     body = (f'<a href="/source?id={record["source_id"]}">Retour à la source</a>'
             '<p>Texte extrait : aucun souvenir créé. Les propositions IA devront être validées.</p>'
             '<p>Les paragraphes vides sont masqués ; les numéros de référence sont conservés.</p>'
-            f'<p>Version : {escape(extraction["extractor"])} · Empreinte : {extraction["text_sha256"]}</p>'
-            f'<ol>{paragraphs}</ol>')
-    if csrf is not None and ai_enabled:
+            f'<p>Page {page} / {total_pages} · {len(visible)} paragraphes non vides</p>')
+    if csrf is not None and ai_enabled and selected:
         body += (f'<form action="/source/propose" method="post">'
                  f'<input type="hidden" name="csrf" value="{escape(csrf, quote=True)}">'
                  f'<input type="hidden" name="id" value="{record["source_id"]}">'
-                 '<label>Commencer au paragraphe <input type="number" name="start" min="1" value="1" required></label>'
+                 f'<label>Commencer au paragraphe <input type="number" name="start" min="1" max="{len(extraction["paragraphs"])}" value="{selected[0][0]}" required></label>'
                  '<p>L’IA analyse un passage à la fois. Les propositions restent à valider.</p>'
                  '<button>Proposer des détails avec l’IA locale</button></form>')
-    elif csrf is not None:
+    elif csrf is not None and not ai_enabled:
         body += '<p>Analyse IA locale non configurée pour ce tableau de bord.</p>'
+    links = []
+    if page > 1:
+        links.append(f'<a href="/source/text?id={record["source_id"]}&amp;page={page-1}">Page précédente</a>')
+    if page < total_pages:
+        links.append(f'<a href="/source/text?id={record["source_id"]}&amp;page={page+1}">Page suivante</a>')
+    navigation = '<nav aria-label="Pages du texte"><p>'+' · '.join(links)+'</p></nav>' if links else ''
+    body += navigation + (f'<ol>{paragraphs}</ol>' if selected else '<p>Aucun texte non vide à afficher.</p>') + navigation
+    body += (f'<details><summary>Références de l’extraction</summary><p>Version : {escape(extraction["extractor"])} '
+             f'· Empreinte : {extraction["text_sha256"]}</p></details>')
     return shell(record['title'] + ' — texte extrait', body)
 
 
