@@ -123,6 +123,10 @@ class RoutingExecutor:
             'format_version': 2 if include_lifecycle else 1, 'memory': asdict(memory), 'context': asdict(context), 'policy': policy,
             'project_before': self._project_text(project), 'information_before': self._information_text(current)}))
 
+    def preview_information(self, memory, context):
+        from core.routing.information_execution import preview
+        return preview(self, memory, context)
+
     def preview_link(self, memory, context, *, project_revision):
         """Version 4: NONE links an exact stored source to a chosen project."""
         self.backend._serialize_checked(memory)
@@ -158,6 +162,9 @@ class RoutingExecutor:
         return prepared
 
     def _inputs(self, prepared):
+        if isinstance(prepared, dict) and prepared.get('format_version') == 5:
+            from core.routing.information_execution import inputs
+            return inputs(self, prepared), None
         fields = {'format_version', 'memory', 'context', 'policy', 'project_before', 'information_before'}
         if isinstance(prepared, dict) and prepared.get('format_version') == 3:
             fields.add('project_create')
@@ -217,6 +224,9 @@ class RoutingExecutor:
             apply_command(project, {'kind': 'LINK', 'information_id': memory.information_id}, project.updated_at)
 
     def execute(self, prepared, *, intent_id, actor, timestamp):
+        if isinstance(prepared, dict) and prepared.get('format_version') == 5:
+            from core.routing.information_execution import execute
+            return execute(self, prepared, intent_id=intent_id, actor=actor, timestamp=timestamp)
         self.journal.path(intent_id)
         if not isinstance(actor, str) or not actor or not isinstance(timestamp, str) or not timestamp:
             raise ValueError('actor and timestamp required')
@@ -266,6 +276,9 @@ class RoutingExecutor:
             return self._resume(record)
 
     def _resume(self, record):
+        if record['format_version'] == 5:
+            from core.routing.information_execution import resume
+            return resume(self, record)
         command = record['command']
         prepared = command['prepared']
         memory, before_project = self._inputs(prepared)
@@ -341,7 +354,8 @@ class RoutingExecutor:
         results = {}
         for identity in self.journal.ids():
             try:
-                with exclusive_write(self.backend.persistent_root), exclusive_write(self.storage.threads_root), exclusive_write(self.journal.root):
+                from core.routing.information_execution import locks
+                with locks(self):
                     record = self.journal.read(identity)
                     if record['status'] == 'COMMITTED':
                         continue

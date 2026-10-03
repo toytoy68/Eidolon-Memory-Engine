@@ -161,3 +161,8 @@ aucune réécriture Information ni changement de disponibilité/échéance. Le l
 Thread est récupérable, les notes conservées et le parent devient un reçu compact.
 [Contrat et limites](ROUTING-EXISTING-INFORMATION.md). Les formats 1/2/3 restent
 compatibles ; l’assessment propose désormais PREVIEW_LINK_EXISTING si résolu.
+
+Le format 5 ajoute STORE/UPDATE qualifié sans dossier : aperçu explicite,
+disponibilité et échéance journalisées, reprise sans Thread, reçu sans projet.
+`assess` propose PREVIEW_INFORMATION. Les branches lieu/thème restent ouvertes.
+[Contrat et limites](ROUTING-INFORMATION-ONLY.md).

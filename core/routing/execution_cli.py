@@ -30,6 +30,9 @@ def main(argv=None):
     project.add_argument('--new-project', type=Path, help='Explicit new Thread JSON template; version 3 includes lifecycle')
     preview.add_argument('--with-lifecycle', action='store_true', help='Version 2: persist availability and register proposed deadline')
     preview.add_argument('--link-only', action='store_true', help='Version 4: link exact already-stored Information without writing it')
+    information = sub.add_parser('preview-information', help='Version 5: qualified Information without dossier')
+    information.add_argument('--memory', type=Path, required=True)
+    information.add_argument('--context', type=Path, required=True)
     execute = sub.add_parser('execute')
     execute.add_argument('--plan', type=Path, required=True)
     execute.add_argument('--intent-id', required=True)
@@ -54,6 +57,10 @@ def main(argv=None):
             memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
             context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
             result = executor.assess(memory, context)
+        elif args.action == 'preview-information':
+            memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
+            context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
+            result = executor.preview_information(memory, context)
         elif args.action == 'preview':
             memory = Memory(**decode_json_value(args.memory.read_text(encoding='utf-8')))
             context = restore_context(decode_json_value(args.context.read_text(encoding='utf-8')))
@@ -75,7 +82,7 @@ def main(argv=None):
                             at=args.at, mode=args.mode, project_id=args.project_id, max_chars=args.max_chars))
         else:
             prepared = decode_json_value(args.plan.read_text(encoding='utf-8'))
-            if isinstance(prepared, dict) and prepared.get('format_version') == 3:
+            if isinstance(prepared, dict) and prepared.get('format_version') in {3, 5}:
                 backend = FilesystemBackend(backend.persistent_root, backend.history_root)
                 executor = RoutingExecutor(backend)
             result = executor.execute(prepared, intent_id=args.intent_id, actor=args.actor, timestamp=args.timestamp)

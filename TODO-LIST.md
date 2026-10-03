@@ -34,9 +34,9 @@ archivage en conversion clarifiés dans MIGRATION.md. Voir
 
 ## Dernière vérification
 
-Suite complète directe sur VM du **03/10/2026** après rattachement source existante T-043 : **1516 réussis en 37,84 s**, Python 3.13.5/pytest 9.1.1,
-aucun échec, saut ou désélection. Base `2a50395` plus le lot documenté ci-dessous ;
-racine `/tmp/em-suite-R0r3S8`, corpus synthétique isolé, journal conservé.
+Suite complète directe sur VM du **03/10/2026** après parcours Information sans dossier T-043 : **1545 réussis en 38,70 s**, Python 3.13.5/pytest 9.1.1,
+aucun échec, saut ou désélection. Base `3eda522` plus le lot documenté ci-dessous ;
+racine `/tmp/em-suite-fR5fDp`, corpus synthétique isolé, journal conservé.
 
 Recette directe Codex du **03/10/2026**, commit `9780473` : **neuf étapes OK**,
 **5 tests concurrents réussis en 0,82 s**, 40 désélections du filtre ciblé,
@@ -330,6 +330,12 @@ Thread si absent, dossier et notes conservés. Intention/reçu/recovery/inventai
 et copie core raccordés. 33 nouveaux cas, 29 rouges sur squelette et un rouge
 dédié de conflit avant réservation ; 182 ciblés verts, suite VM 1516 réussis
 en 37,84 s. [Contrat](docs/ROUTING-EXISTING-INFORMATION.md).
+
+Ajout du 03/10, base `3eda522` vérifiée sur GitHub : format 5 sans dossier,
+STORE/UPDATE qualifié avec disponibilité/échéance et reprise sans Thread.
+30 nouveaux tests ; 25 rouges sur squelette ; deux sorties de processus,
+concurrence, copie/rejeu, source divergente, reçus corrompus et suppression.
+Deux substitutions négatives observées. [Contrat](docs/ROUTING-INFORMATION-ONLY.md).
 
 Restant : résolution/file de revue durable, lieu/thème, autres politiques et
 qualification automatique.

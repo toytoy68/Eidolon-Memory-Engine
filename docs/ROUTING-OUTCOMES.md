@@ -50,3 +50,8 @@ Client factice qualification → assessment → aperçu/exécution → rappel av
 incertitude conservée, NONE sur mémoire existante, arbres absents/bloqués
 inchangés, associations explicites et valeurs sans alias. Preuves et suite VM
 complète : [rapport daté](VM-TESTS-2026-10-02.md).
+
+Le format 5 ajoute STORE/UPDATE qualifié sans dossier : aperçu explicite,
+disponibilité et échéance journalisées, reprise sans Thread, reçu sans projet.
+`assess` propose PREVIEW_INFORMATION. Les branches lieu/thème restent ouvertes.
+[Contrat et limites](ROUTING-INFORMATION-ONLY.md).

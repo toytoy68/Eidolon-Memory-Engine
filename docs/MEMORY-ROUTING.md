@@ -115,3 +115,8 @@ Le format 4 ajouté le 03/10 traite explicitement NONE avec association à un
 projet choisi : source canonique exacte → lien Thread → dossier, sans nouvelle
 révision Information ni échéance. [Contrat](ROUTING-EXISTING-INFORMATION.md).
 Le planner pur conserve ses décisions ; NONE ne signifie toujours pas DELETE.
+
+Le format 5 ajoute STORE/UPDATE qualifié sans dossier : aperçu explicite,
+disponibilité et échéance journalisées, reprise sans Thread, reçu sans projet.
+`assess` propose PREVIEW_INFORMATION. Les branches lieu/thème restent ouvertes.
+[Contrat et limites](ROUTING-INFORMATION-ONLY.md).

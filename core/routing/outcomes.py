@@ -37,7 +37,9 @@ def assess(memory, context):
             status, next_step = 'NO_ACTION', 'DO_NOT_PERSIST'
     else:
         subject = policy['dossier_subject']
-        if (not isinstance(subject, dict) or subject.get('kind') != 'project'
+        if subject is None and policy['dossier'] == 'NONE' and context.existing_dossier is None:
+            status, next_step = 'PREVIEW_REQUIRED', 'PREVIEW_INFORMATION'
+        elif (not isinstance(subject, dict) or subject.get('kind') != 'project'
                 or policy['dossier'] not in {'LINK', 'CREATE_OR_LINK'}):
             status, next_step = 'CAPABILITY_REQUIRED', 'UNSUPPORTED_ROUTE'
         else:

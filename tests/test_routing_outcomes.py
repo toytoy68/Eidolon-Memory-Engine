@@ -58,7 +58,7 @@ def test_project_candidate_still_requires_preview_and_explicit_execution(existin
     assert result['policy']['epistemic_status']=='UNVERIFIED'
 
 
-@pytest.mark.parametrize('context',[{'place_id':'lab'},{'topic_id':'efficiency'},{}])
+@pytest.mark.parametrize('context',[{'place_id':'lab'},{'topic_id':'efficiency'}])
 def test_other_routes_are_identified_without_claiming_execution(context):
     result=assess(qualified(**context),RoutingContext())
     assert result['status']=='CAPABILITY_REQUIRED' and result['next_step']=='UNSUPPORTED_ROUTE'
