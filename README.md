@@ -56,6 +56,8 @@ réelles et le déploiement restent à valider.
 - [Mesures VM synthétiques](docs/VM-PERFORMANCE-2026-10-03.md) : écritures,
   index/entretien sur tmpfs, lots sur ext4 et 1000 antécédents ;
   trois répétitions, latence physique du disque non mesurée.
+- [Mesures VM du rappel](docs/VM-RECALL-2026-10-03.md) : 144 requêtes
+  vérifiées sur corpus synthétiques jusqu’à 3000 objets ; scans encore linéaires.
 - [Catalogue reconstructible](docs/INFORMATION-CATALOGUE.md) : découverte par
   métadonnées, filtres projet/disponibilité et refus d'une projection périmée.
 - [Disponibilité et échéances durables](docs/LIFECYCLE-TRIGGERS.md) : changements

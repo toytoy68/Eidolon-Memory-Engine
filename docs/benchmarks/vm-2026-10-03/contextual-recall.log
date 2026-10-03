@@ -1,0 +1,12 @@
+{"status": "START", "records": 300, "history": "live"}
+{"records": 300, "history": "live", "verified": 300, "cases": {"operational": 0.114793, "historical": 0.117342, "high": 0.115019, "project-current": 0.170076, "project-historical": 0.168587, "budget": 0.11311, "unknown-scope": 0.113562, "project-stale": 0.173687}}
+{"status": "START", "records": 1000, "history": "live"}
+{"records": 1000, "history": "live", "verified": 1000, "cases": {"operational": 0.378667, "historical": 0.375854, "high": 0.367965, "project-current": 0.552519, "project-historical": 0.550342, "budget": 0.370106, "unknown-scope": 0.369588, "project-stale": 0.558893}}
+{"status": "START", "records": 3000, "history": "live"}
+{"records": 3000, "history": "live", "verified": 3000, "cases": {"operational": 1.121332, "historical": 1.113498, "high": 1.110756, "project-current": 1.639999, "project-historical": 1.642279, "budget": 1.094551, "unknown-scope": 1.09017, "project-stale": 1.632965}}
+{"status": "START", "records": 300, "history": "compact"}
+{"records": 300, "history": "compact", "verified": 300, "cases": {"operational": 0.092579, "historical": 0.093572, "high": 0.093089, "project-current": 0.133207, "project-historical": 0.136139, "budget": 0.093004, "unknown-scope": 0.095045, "project-stale": 0.133326}}
+{"status": "START", "records": 1000, "history": "compact"}
+{"records": 1000, "history": "compact", "verified": 1000, "cases": {"operational": 0.303978, "historical": 0.304155, "high": 0.302047, "project-current": 0.433724, "project-historical": 0.438601, "budget": 0.306913, "unknown-scope": 0.304766, "project-stale": 0.436469}}
+{"status": "START", "records": 3000, "history": "compact"}
+{"records": 3000, "history": "compact", "verified": 3000, "cases": {"operational": 0.921177, "historical": 0.918568, "high": 0.913808, "project-current": 1.300742, "project-historical": 1.305624, "budget": 0.910802, "unknown-scope": 0.903876, "project-stale": 1.310231}}

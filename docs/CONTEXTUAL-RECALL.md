@@ -107,3 +107,12 @@ Le filtre optionnel `availability` accepte HIGH/INTERMEDIATE/LOW avant budget.
 Le résultat expose le niveau déclaré. Un `recheck_required` impose needs_review
 et une raison explicite, même pour CONFIRMED/MATCH. Ces champs ne remplacent
 ni contexte ni temporalité. Voir [LIFECYCLE-TRIGGERS.md](LIFECYCLE-TRIGGERS.md).
+
+## Mesures VM synthétiques du 03/10
+
+Le commit `ecd83d1` est mesuré sur six corpus neufs 300/1000/3000 × live/compact,
+huit scénarios avec réponses connues et trois requêtes par corpus chaud :
+144 requêtes conformes, objets/révisions/review flags/hash/readiness vérifiés.
+[Protocole, chiffres et limites](VM-RECALL-2026-10-03.md). `/tmp` tmpfs ; aucune
+pertinence/latence sur corpus réel, production ou client externe n’est validée.
+Le coût des scans globaux reste visible malgré le petit nombre de résultats.

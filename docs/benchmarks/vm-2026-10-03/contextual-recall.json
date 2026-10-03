@@ -1,0 +1,2576 @@
+{
+  "source_commit": "ecd83d1119fc828ab51388a4510c8fe6fb02f261",
+  "runtime_core_sha256": "a666765e0ae66edfdbb44f7bd04a57a057d4b5574b87fc019609e3e4f1e809ea",
+  "tool_sha256": "8d79254f17b6beda2628b62a9955bd4672b2a50dfc385fc1df8ac5e6795a3a97",
+  "python": "3.13.5",
+  "hostname": "Eidolon-Memory",
+  "scope": "synthetic warm tempfile filesystem, no real-corpus quality or physical disk latency guarantee",
+  "temporary_parent": "/tmp",
+  "instrumentation": "successful file read opens, including Events; excludes setup and final semantic/hash checks",
+  "repetitions": "same warmed corpus per query; separate new corpus for each size/history",
+  "workloads": [
+    {
+      "records": 300,
+      "history": "live",
+      "query_repeats": 3,
+      "seed_seconds": 0.632379,
+      "canonical_verified": 300,
+      "final_ready": true,
+      "read_only_hashes_verified": true,
+      "rows": [
+        {
+          "case": "operational",
+          "median_seconds": 0.114793,
+          "min_seconds": 0.114502,
+          "max_seconds": 0.118896,
+          "samples": [
+            {
+              "seconds": 0.118896,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.114793,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.114502,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "used_chars": 552,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "historical",
+          "median_seconds": 0.117342,
+          "min_seconds": 0.115381,
+          "max_seconds": 0.118716,
+          "samples": [
+            {
+              "seconds": 0.118716,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.115381,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.117342,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "used_chars": 1242,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "high",
+          "median_seconds": 0.115019,
+          "min_seconds": 0.11396,
+          "max_seconds": 0.116895,
+          "samples": [
+            {
+              "seconds": 0.115019,
+              "read_opens": {
+                "canonical_markdown": 606,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.116895,
+              "read_opens": {
+                "canonical_markdown": 606,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.11396,
+              "read_opens": {
+                "canonical_markdown": 606,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-d-conflict"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "OTHER_AVAILABILITY": 5,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-current",
+          "median_seconds": 0.170076,
+          "min_seconds": 0.169687,
+          "max_seconds": 0.17297,
+          "samples": [
+            {
+              "seconds": 0.17297,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.170076,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.169687,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-historical",
+          "median_seconds": 0.168587,
+          "min_seconds": 0.168471,
+          "max_seconds": 0.170793,
+          "samples": [
+            {
+              "seconds": 0.170793,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.168471,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.168587,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "used_chars": 414,
+            "excluded_counts": {
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "budget",
+          "median_seconds": 0.11311,
+          "min_seconds": 0.112763,
+          "max_seconds": 0.114219,
+          "samples": [
+            {
+              "seconds": 0.11311,
+              "read_opens": {
+                "canonical_markdown": 603,
+                "history_markdown": 600,
+                "history_json": 602
+              }
+            },
+            {
+              "seconds": 0.114219,
+              "read_opens": {
+                "canonical_markdown": 603,
+                "history_markdown": 600,
+                "history_json": 602
+              }
+            },
+            {
+              "seconds": 0.112763,
+              "read_opens": {
+                "canonical_markdown": 603,
+                "history_markdown": 600,
+                "history_json": 602
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid"
+            ],
+            "review_ids": [],
+            "used_chars": 7,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "unknown-scope",
+          "median_seconds": 0.113562,
+          "min_seconds": 0.1129,
+          "max_seconds": 0.117648,
+          "samples": [
+            {
+              "seconds": 0.1129,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.117648,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.113562,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "review_ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "used_chars": 690,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-stale",
+          "median_seconds": 0.173687,
+          "min_seconds": 0.17117,
+          "max_seconds": 0.173758,
+          "samples": [
+            {
+              "seconds": 0.173687,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 602,
+                "history_json": 905,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.17117,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 602,
+                "history_json": 905,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.173758,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 602,
+                "history_json": 905,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 286,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "STALE"
+          },
+          "expected_verified": true
+        }
+      ]
+    },
+    {
+      "records": 1000,
+      "history": "live",
+      "query_repeats": 3,
+      "seed_seconds": 2.724658,
+      "canonical_verified": 1000,
+      "final_ready": true,
+      "read_only_hashes_verified": true,
+      "rows": [
+        {
+          "case": "operational",
+          "median_seconds": 0.378667,
+          "min_seconds": 0.37649,
+          "max_seconds": 0.379097,
+          "samples": [
+            {
+              "seconds": 0.379097,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.37649,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.378667,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "used_chars": 552,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "historical",
+          "median_seconds": 0.375854,
+          "min_seconds": 0.373315,
+          "max_seconds": 0.378472,
+          "samples": [
+            {
+              "seconds": 0.378472,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.375854,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.373315,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "used_chars": 1242,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "high",
+          "median_seconds": 0.367965,
+          "min_seconds": 0.366895,
+          "max_seconds": 0.380769,
+          "samples": [
+            {
+              "seconds": 0.366895,
+              "read_opens": {
+                "canonical_markdown": 2006,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.367965,
+              "read_opens": {
+                "canonical_markdown": 2006,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.380769,
+              "read_opens": {
+                "canonical_markdown": 2006,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-d-conflict"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "OTHER_AVAILABILITY": 5,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-current",
+          "median_seconds": 0.552519,
+          "min_seconds": 0.549945,
+          "max_seconds": 0.553051,
+          "samples": [
+            {
+              "seconds": 0.553051,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.552519,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.549945,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-historical",
+          "median_seconds": 0.550342,
+          "min_seconds": 0.546773,
+          "max_seconds": 0.550511,
+          "samples": [
+            {
+              "seconds": 0.546773,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.550511,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.550342,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "used_chars": 414,
+            "excluded_counts": {
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "budget",
+          "median_seconds": 0.370106,
+          "min_seconds": 0.364971,
+          "max_seconds": 0.370454,
+          "samples": [
+            {
+              "seconds": 0.364971,
+              "read_opens": {
+                "canonical_markdown": 2003,
+                "history_markdown": 2000,
+                "history_json": 2002
+              }
+            },
+            {
+              "seconds": 0.370454,
+              "read_opens": {
+                "canonical_markdown": 2003,
+                "history_markdown": 2000,
+                "history_json": 2002
+              }
+            },
+            {
+              "seconds": 0.370106,
+              "read_opens": {
+                "canonical_markdown": 2003,
+                "history_markdown": 2000,
+                "history_json": 2002
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid"
+            ],
+            "review_ids": [],
+            "used_chars": 7,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "unknown-scope",
+          "median_seconds": 0.369588,
+          "min_seconds": 0.360681,
+          "max_seconds": 0.37041,
+          "samples": [
+            {
+              "seconds": 0.37041,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.369588,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.360681,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "review_ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "used_chars": 690,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-stale",
+          "median_seconds": 0.558893,
+          "min_seconds": 0.548369,
+          "max_seconds": 0.561366,
+          "samples": [
+            {
+              "seconds": 0.548369,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2002,
+                "history_json": 3005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.561366,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2002,
+                "history_json": 3005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.558893,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2002,
+                "history_json": 3005,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 286,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "STALE"
+          },
+          "expected_verified": true
+        }
+      ]
+    },
+    {
+      "records": 3000,
+      "history": "live",
+      "query_repeats": 3,
+      "seed_seconds": 13.304208,
+      "canonical_verified": 3000,
+      "final_ready": true,
+      "read_only_hashes_verified": true,
+      "rows": [
+        {
+          "case": "operational",
+          "median_seconds": 1.121332,
+          "min_seconds": 1.118726,
+          "max_seconds": 1.128264,
+          "samples": [
+            {
+              "seconds": 1.118726,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.121332,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.128264,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "used_chars": 552,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "historical",
+          "median_seconds": 1.113498,
+          "min_seconds": 1.113446,
+          "max_seconds": 1.11727,
+          "samples": [
+            {
+              "seconds": 1.113446,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.113498,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.11727,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "used_chars": 1242,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "high",
+          "median_seconds": 1.110756,
+          "min_seconds": 1.106211,
+          "max_seconds": 1.139674,
+          "samples": [
+            {
+              "seconds": 1.139674,
+              "read_opens": {
+                "canonical_markdown": 6006,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.106211,
+              "read_opens": {
+                "canonical_markdown": 6006,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.110756,
+              "read_opens": {
+                "canonical_markdown": 6006,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-d-conflict"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "OTHER_AVAILABILITY": 5,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-current",
+          "median_seconds": 1.639999,
+          "min_seconds": 1.634262,
+          "max_seconds": 1.65469,
+          "samples": [
+            {
+              "seconds": 1.639999,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.634262,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.65469,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-historical",
+          "median_seconds": 1.642279,
+          "min_seconds": 1.627666,
+          "max_seconds": 1.647409,
+          "samples": [
+            {
+              "seconds": 1.642279,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.647409,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.627666,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "used_chars": 414,
+            "excluded_counts": {
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "budget",
+          "median_seconds": 1.094551,
+          "min_seconds": 1.094421,
+          "max_seconds": 1.096213,
+          "samples": [
+            {
+              "seconds": 1.094551,
+              "read_opens": {
+                "canonical_markdown": 6003,
+                "history_markdown": 6000,
+                "history_json": 6002
+              }
+            },
+            {
+              "seconds": 1.094421,
+              "read_opens": {
+                "canonical_markdown": 6003,
+                "history_markdown": 6000,
+                "history_json": 6002
+              }
+            },
+            {
+              "seconds": 1.096213,
+              "read_opens": {
+                "canonical_markdown": 6003,
+                "history_markdown": 6000,
+                "history_json": 6002
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid"
+            ],
+            "review_ids": [],
+            "used_chars": 7,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "unknown-scope",
+          "median_seconds": 1.09017,
+          "min_seconds": 1.088487,
+          "max_seconds": 1.091662,
+          "samples": [
+            {
+              "seconds": 1.088487,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.09017,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 1.091662,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "review_ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "used_chars": 690,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-stale",
+          "median_seconds": 1.632965,
+          "min_seconds": 1.622874,
+          "max_seconds": 1.670632,
+          "samples": [
+            {
+              "seconds": 1.670632,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6002,
+                "history_json": 9005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.632965,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6002,
+                "history_json": 9005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.622874,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6002,
+                "history_json": 9005,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 286,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "STALE"
+          },
+          "expected_verified": true
+        }
+      ]
+    },
+    {
+      "records": 300,
+      "history": "compact",
+      "query_repeats": 3,
+      "seed_seconds": 0.959171,
+      "canonical_verified": 300,
+      "final_ready": true,
+      "read_only_hashes_verified": true,
+      "rows": [
+        {
+          "case": "operational",
+          "median_seconds": 0.092579,
+          "min_seconds": 0.092066,
+          "max_seconds": 0.094728,
+          "samples": [
+            {
+              "seconds": 0.092066,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.092579,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.094728,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "used_chars": 552,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "historical",
+          "median_seconds": 0.093572,
+          "min_seconds": 0.093266,
+          "max_seconds": 0.093655,
+          "samples": [
+            {
+              "seconds": 0.093572,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.093266,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.093655,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "used_chars": 1242,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "high",
+          "median_seconds": 0.093089,
+          "min_seconds": 0.093028,
+          "max_seconds": 0.093856,
+          "samples": [
+            {
+              "seconds": 0.093028,
+              "read_opens": {
+                "canonical_markdown": 606,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.093856,
+              "read_opens": {
+                "canonical_markdown": 606,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.093089,
+              "read_opens": {
+                "canonical_markdown": 606,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-d-conflict"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "OTHER_AVAILABILITY": 5,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-current",
+          "median_seconds": 0.133207,
+          "min_seconds": 0.132548,
+          "max_seconds": 0.13679,
+          "samples": [
+            {
+              "seconds": 0.132548,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.133207,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.13679,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-historical",
+          "median_seconds": 0.136139,
+          "min_seconds": 0.13248,
+          "max_seconds": 0.137806,
+          "samples": [
+            {
+              "seconds": 0.137806,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.136139,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.13248,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 600,
+                "history_json": 902,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "used_chars": 414,
+            "excluded_counts": {
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "budget",
+          "median_seconds": 0.093004,
+          "min_seconds": 0.09287,
+          "max_seconds": 0.093344,
+          "samples": [
+            {
+              "seconds": 0.09287,
+              "read_opens": {
+                "canonical_markdown": 603,
+                "history_markdown": 600,
+                "history_json": 602
+              }
+            },
+            {
+              "seconds": 0.093004,
+              "read_opens": {
+                "canonical_markdown": 603,
+                "history_markdown": 600,
+                "history_json": 602
+              }
+            },
+            {
+              "seconds": 0.093344,
+              "read_opens": {
+                "canonical_markdown": 603,
+                "history_markdown": 600,
+                "history_json": 602
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid"
+            ],
+            "review_ids": [],
+            "used_chars": 7,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "unknown-scope",
+          "median_seconds": 0.095045,
+          "min_seconds": 0.094999,
+          "max_seconds": 0.098655,
+          "samples": [
+            {
+              "seconds": 0.095045,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.098655,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            },
+            {
+              "seconds": 0.094999,
+              "read_opens": {
+                "canonical_markdown": 611,
+                "history_markdown": 600,
+                "history_json": 603
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "review_ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "used_chars": 690,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-stale",
+          "median_seconds": 0.133326,
+          "min_seconds": 0.132996,
+          "max_seconds": 0.133733,
+          "samples": [
+            {
+              "seconds": 0.132996,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 602,
+                "history_json": 905,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.133733,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 602,
+                "history_json": 905,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.133326,
+              "read_opens": {
+                "canonical_markdown": 614,
+                "history_markdown": 602,
+                "history_json": 905,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 286,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "STALE"
+          },
+          "expected_verified": true
+        }
+      ]
+    },
+    {
+      "records": 1000,
+      "history": "compact",
+      "query_repeats": 3,
+      "seed_seconds": 4.96455,
+      "canonical_verified": 1000,
+      "final_ready": true,
+      "read_only_hashes_verified": true,
+      "rows": [
+        {
+          "case": "operational",
+          "median_seconds": 0.303978,
+          "min_seconds": 0.303608,
+          "max_seconds": 0.304839,
+          "samples": [
+            {
+              "seconds": 0.303978,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.303608,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.304839,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "used_chars": 552,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "historical",
+          "median_seconds": 0.304155,
+          "min_seconds": 0.300179,
+          "max_seconds": 0.308156,
+          "samples": [
+            {
+              "seconds": 0.300179,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.304155,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.308156,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "used_chars": 1242,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "high",
+          "median_seconds": 0.302047,
+          "min_seconds": 0.301517,
+          "max_seconds": 0.304084,
+          "samples": [
+            {
+              "seconds": 0.302047,
+              "read_opens": {
+                "canonical_markdown": 2006,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.301517,
+              "read_opens": {
+                "canonical_markdown": 2006,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.304084,
+              "read_opens": {
+                "canonical_markdown": 2006,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-d-conflict"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "OTHER_AVAILABILITY": 5,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-current",
+          "median_seconds": 0.433724,
+          "min_seconds": 0.433466,
+          "max_seconds": 0.43904,
+          "samples": [
+            {
+              "seconds": 0.433466,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.433724,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.43904,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-historical",
+          "median_seconds": 0.438601,
+          "min_seconds": 0.437473,
+          "max_seconds": 0.440211,
+          "samples": [
+            {
+              "seconds": 0.440211,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.437473,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.438601,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2000,
+                "history_json": 3002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "used_chars": 414,
+            "excluded_counts": {
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "budget",
+          "median_seconds": 0.306913,
+          "min_seconds": 0.303756,
+          "max_seconds": 0.308678,
+          "samples": [
+            {
+              "seconds": 0.306913,
+              "read_opens": {
+                "canonical_markdown": 2003,
+                "history_markdown": 2000,
+                "history_json": 2002
+              }
+            },
+            {
+              "seconds": 0.308678,
+              "read_opens": {
+                "canonical_markdown": 2003,
+                "history_markdown": 2000,
+                "history_json": 2002
+              }
+            },
+            {
+              "seconds": 0.303756,
+              "read_opens": {
+                "canonical_markdown": 2003,
+                "history_markdown": 2000,
+                "history_json": 2002
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid"
+            ],
+            "review_ids": [],
+            "used_chars": 7,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "unknown-scope",
+          "median_seconds": 0.304766,
+          "min_seconds": 0.302193,
+          "max_seconds": 0.306032,
+          "samples": [
+            {
+              "seconds": 0.306032,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.302193,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            },
+            {
+              "seconds": 0.304766,
+              "read_opens": {
+                "canonical_markdown": 2011,
+                "history_markdown": 2000,
+                "history_json": 2003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "review_ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "used_chars": 690,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-stale",
+          "median_seconds": 0.436469,
+          "min_seconds": 0.432496,
+          "max_seconds": 0.439007,
+          "samples": [
+            {
+              "seconds": 0.439007,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2002,
+                "history_json": 3005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.432496,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2002,
+                "history_json": 3005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 0.436469,
+              "read_opens": {
+                "canonical_markdown": 2014,
+                "history_markdown": 2002,
+                "history_json": 3005,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 286,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "STALE"
+          },
+          "expected_verified": true
+        }
+      ]
+    },
+    {
+      "records": 3000,
+      "history": "compact",
+      "query_repeats": 3,
+      "seed_seconds": 29.742175,
+      "canonical_verified": 3000,
+      "final_ready": true,
+      "read_only_hashes_verified": true,
+      "rows": [
+        {
+          "case": "operational",
+          "median_seconds": 0.921177,
+          "min_seconds": 0.914871,
+          "max_seconds": 0.92486,
+          "samples": [
+            {
+              "seconds": 0.921177,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.914871,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.92486,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict"
+            ],
+            "used_chars": 552,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "historical",
+          "median_seconds": 0.918568,
+          "min_seconds": 0.918452,
+          "max_seconds": 0.920416,
+          "samples": [
+            {
+              "seconds": 0.920416,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.918452,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.918568,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-e-expired",
+              "probe-f-other",
+              "probe-g-refuted",
+              "probe-h-superseded",
+              "probe-i-pending"
+            ],
+            "used_chars": 1242,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "high",
+          "median_seconds": 0.913808,
+          "min_seconds": 0.910773,
+          "max_seconds": 0.917,
+          "samples": [
+            {
+              "seconds": 0.913808,
+              "read_opens": {
+                "canonical_markdown": 6006,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.917,
+              "read_opens": {
+                "canonical_markdown": 6006,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.910773,
+              "read_opens": {
+                "canonical_markdown": 6006,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-d-conflict"
+            ],
+            "review_ids": [
+              "probe-d-conflict"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "OTHER_AVAILABILITY": 5,
+              "OUT_OF_SCOPE": 1,
+              "PENDING_DELETE": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-current",
+          "median_seconds": 1.300742,
+          "min_seconds": 1.300157,
+          "max_seconds": 1.306253,
+          "samples": [
+            {
+              "seconds": 1.300157,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.300742,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.306253,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 276,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-historical",
+          "median_seconds": 1.305624,
+          "min_seconds": 1.303786,
+          "max_seconds": 1.306011,
+          "samples": [
+            {
+              "seconds": 1.303786,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.306011,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.305624,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6000,
+                "history_json": 9002,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "review_ids": [
+              "probe-b-review",
+              "probe-e-expired"
+            ],
+            "used_chars": 414,
+            "excluded_counts": {
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "CURRENT"
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "budget",
+          "median_seconds": 0.910802,
+          "min_seconds": 0.908223,
+          "max_seconds": 0.914828,
+          "samples": [
+            {
+              "seconds": 0.914828,
+              "read_opens": {
+                "canonical_markdown": 6003,
+                "history_markdown": 6000,
+                "history_json": 6002
+              }
+            },
+            {
+              "seconds": 0.908223,
+              "read_opens": {
+                "canonical_markdown": 6003,
+                "history_markdown": 6000,
+                "history_json": 6002
+              }
+            },
+            {
+              "seconds": 0.910802,
+              "read_opens": {
+                "canonical_markdown": 6003,
+                "history_markdown": 6000,
+                "history_json": 6002
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid"
+            ],
+            "review_ids": [],
+            "used_chars": 7,
+            "excluded_counts": {},
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "unknown-scope",
+          "median_seconds": 0.903876,
+          "min_seconds": 0.899628,
+          "max_seconds": 0.910862,
+          "samples": [
+            {
+              "seconds": 0.910862,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.899628,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            },
+            {
+              "seconds": 0.903876,
+              "read_opens": {
+                "canonical_markdown": 6011,
+                "history_markdown": 6000,
+                "history_json": 6003
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "review_ids": [
+              "probe-a-valid",
+              "probe-b-review",
+              "probe-c-unknown",
+              "probe-d-conflict",
+              "probe-f-other"
+            ],
+            "used_chars": 690,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "PENDING_DELETE": 1,
+              "REFUTED": 1,
+              "SUPERSEDED": 1
+            },
+            "dossier_status": null
+          },
+          "expected_verified": true
+        },
+        {
+          "case": "project-stale",
+          "median_seconds": 1.310231,
+          "min_seconds": 1.310181,
+          "max_seconds": 1.313999,
+          "samples": [
+            {
+              "seconds": 1.313999,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6002,
+                "history_json": 9005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.310181,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6002,
+                "history_json": 9005,
+                "dossier": 1
+              }
+            },
+            {
+              "seconds": 1.310231,
+              "read_opens": {
+                "canonical_markdown": 6014,
+                "history_markdown": 6002,
+                "history_json": 9005,
+                "dossier": 1
+              }
+            }
+          ],
+          "response": {
+            "ids": [
+              "probe-a-valid",
+              "probe-b-review"
+            ],
+            "review_ids": [
+              "probe-b-review"
+            ],
+            "used_chars": 286,
+            "excluded_counts": {
+              "EXPIRED": 1,
+              "OUTSIDE_PROJECT": 6
+            },
+            "dossier_status": "STALE"
+          },
+          "expected_verified": true
+        }
+      ]
+    }
+  ],
+  "completed": true
+}

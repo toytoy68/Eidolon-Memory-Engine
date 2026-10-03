@@ -1610,3 +1610,33 @@ réservation. Aucune qualification/confirmation/échéance/rétention implicite,
 aucun client/service/corpus réel ou coupure validés. Données synthétiques isolées,
 données actives/sauvegarde intactes. Estimations 45 % / 52,75 points inchangées.
 Contrat : docs/ROUTING-EXISTING-INFORMATION.md.
+
+## T-047/T-049 — Mesures du rappel contextualisé sur VM, 3 octobre 2026
+
+Base `ecd83d1` confirmée sur GitHub avant démarrage. Outil
+benchmark_contextual_recall, précontrôle à neuf objets live/compact réussi,
+puis six corpus neufs 300/1000/3000 × live/compact. Huit scénarios × trois
+requêtes sur le même corpus chaud : 144 mesures. Sources attendues, révisions,
+contenu canonique, statut, niveau, applicability, needs_review, provenance et
+vérification contrôlés. Operational/historical/HIGH/projet actuel/historique,
+budget 7 caractères, scope absent et projet STALE après correction explicite.
+Tous les résultats conformes, empreintes de fichiers avant/après requêtes
+identiques hors verrous, 4300 objets par historique revérifiés/readiness vraie.
+Les Threads de fixture sont créés directement, hors mesure.
+
+1000 operational : médianes 0,378667 s live / 0,303978 s compact ; 3000 compact
+0,921177 s, projet current 1,300742 s / stale 1,310231 s. Chiffres exacts,
+variations et ouvertures JSON/Markdown canonique/Events dans le rapport brut.
+Le coût suit le corpus malgré quatre sources sélectionnées ; pas de seuil
+arbitraire. /tmp tmpfs ; lectures réussies comptées, pas I/O physique. Trois
+requêtes sur un corpus chaud ne sont pas trois corpus indépendants.
+
+Substitution en mémoire needs_review supprimé → RuntimeError du vérificateur,
+mesure incorrecte refusée, code du dépôt inchangé. Rapport/log/manifeste et
+hashes code core/outils vérifiés. Aucun code métier changé : suite précédente
+1516 conservée sans répétition inutile ; outils exercés par leurs contrôles
+réels. Corpus temporaires supprimés, données actives/sauvegarde intactes.
+Aucune qualité sur langue utilisateur/corpus représentatif, recherche sémantique,
+client externe, latence de production ou coupure électrique validée. Budgets
+hors métadonnées/prompt final. Estimations 45 % / 52,75 points inchangées.
+Protocole : docs/VM-RECALL-2026-10-03.md.

@@ -528,8 +528,18 @@ façade RoutingExecutor et CLI. Contrat : [CONTEXTUAL-RECALL.md](docs/CONTEXTUAL
 15 nouveaux cas, groupe ciblé 65 réussis. Retirer filtre/readiness/needs_review
 produit 1 + 1 + 3 échecs comportementaux ; code restauré.
 
+Ajout du 03/10, base `ecd83d1` vérifiée sur GitHub : outil de mesure du rappel
+sur six corpus neufs 300/1000/3000 × live/compact, huit scénarios à réponses
+connues, trois requêtes sur chaque corpus chaud. 144 réponses conformes, flags
+contexte/incertitude/expired/pending, budgets et dossier CURRENT/STALE contrôlés ;
+empreintes avant/après identiques et tous les objets/readiness revérifiés.
+1000 operational : médianes 0,378667 s live / 0,303978 s compact ; le coût reste
+linéaire sur le corpus malgré quatre résultats. Rapports/logs/code-outil hashés.
+Aucun code métier changé ; suite 1516 précédente applicable, pas réexécutée.
+[Mesures et limites](docs/VM-RECALL-2026-10-03.md).
+
 Restant : qualité/latence sur corpus représentatif, politiques plus fines,
-catalogue/recherche sémantique, clients réels et VM. Le mode historique ne restaure
+catalogue/recherche sémantique, clients réels et recette VM sur corpus réel. Le mode historique ne restaure
 pas les révisions textuelles remplacées. Les budgets ne couvrent pas les
 métadonnées ni le prompt final ; verrou/scans à mesurer sous T-049.
 
@@ -587,8 +597,9 @@ Le parcours qualifié vers un projet existant ou explicitement nouveau et son ra
 livré en local ; le rapprochement global des dossiers hors parcours est maintenant
 disponible à la demande, comme le catalogue reconstructible T-045. T-049 réduit
 les validations par commande ; l’index facultatif est livré, mais la suppression
-des lectures complètes et la mesure VM restent
-nécessaires avant ingestion intensive. Disponibilité et échéances raccordées
+des lectures complètes et la mesure sur corpus réel restent
+nécessaires avant ingestion intensive. Les premières mesures VM synthétiques
+d’écriture/compaction/entretien/rappel sont désormais conservées. Disponibilité et échéances raccordées
 au routage ; entretien explicite assemblé. Récurrence, coût des scans et
 autres branches des plans à poursuivre. La mise en service exige toujours import/migration décidée,
 restauration vérifiée et recette VM au commit candidat.

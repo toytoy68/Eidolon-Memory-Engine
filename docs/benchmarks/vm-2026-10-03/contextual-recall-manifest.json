@@ -1,0 +1,22 @@
+{
+  "source_commit": "ecd83d1119fc828ab51388a4510c8fe6fb02f261",
+  "runtime_core_sha256": "a666765e0ae66edfdbb44f7bd04a57a057d4b5574b87fc019609e3e4f1e809ea",
+  "tool_sha256": "8d79254f17b6beda2628b62a9955bd4672b2a50dfc385fc1df8ac5e6795a3a97",
+  "hostname": "Eidolon-Memory",
+  "python": "3.13.5",
+  "temporary_parent": "/tmp",
+  "scope": "synthetic warm tempfile filesystem, no real-corpus quality or physical disk latency guarantee",
+  "repetitions": "same warmed corpus per query; separate new corpus for each size/history",
+  "reports": [
+    {
+      "file": "contextual-recall.json",
+      "sha256": "ead606c49c4d2642121335af4d8314c415c171e9b06d1026e6fdc315306d6e8a"
+    },
+    {
+      "file": "contextual-recall.log",
+      "sha256": "9831d44e1c30bbb8c5cd53555decb1592a5918e6a682e4f12f8ee7e089a71c52"
+    }
+  ],
+  "verified_requests": 144,
+  "new_corpora": 6
+}
