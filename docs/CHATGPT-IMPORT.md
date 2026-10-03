@@ -12,8 +12,12 @@ ne crée pas de Threads et ne fournit pas de campagne IA durable. Le rappel sél
 termes, puis une fenêtre exacte maximisant les termes présents dans le budget caractères,
 avec préférence pour les termes rapprochés (politique v2). excerpt_reference
 porte conversation/message/nœud/parent/auteur/date et offsets caractères.
-Le classement entre archives reste lexical_v1 sur le contenu complet : pas de
-reclassement global par passage ni de recherche sémantique. La date du message
+Le rappel classe les archives selon le passage borné avant pagination
+(lexical_passage_v1), sans les métadonnées JSON dans les signaux lexicaux.
+La recherche backend sans option passage_chars conserve lexical_v1 historique.
+Les objets ordinaires gardent leur classement existant. Le budget utilisé pour
+ce classement est min(max_item_chars,max_chars), avant consommation par les
+autres résultats et avant réduction par budget tokens. Pas de recherche sémantique. La date du message
 est une valeur Unix UTC conservée ; les dates absentes restent explicites.
 Un budget très court peut couper le mot recherché. Les réserves et la provenance
 restent transportées séparément et le budget payload couvre ces références. Les dates sont des dates d'archives, pas des dates de validité des
@@ -78,3 +82,23 @@ encore réduire la couverture finale.
 Résultat VM communiqué par toytoy sur 88050bc (04/10) : quatre régressions vertes,
 20/20 extraits contenant le terme avec références présentes ; 1,381–1,548 s.
 Ce contrôle VM n'incluait pas la comparaison exacte de toutes les références.
+
+## Recette VM en attente — nuit du 04/10
+
+Toytoy n'a plus accès à la VM et a demandé de reporter les tests. La dernière
+base effectivement vérifiée sur VM est 88050bc. b3ae58e (fenêtres v2) et les
+correctifs suivants doivent être synchronisés et testés demain :
+
+```bash
+cd /opt/eidolon-memory-engine
+git status --short
+git pull --ff-only origin refactor/architecture-v1
+.venv/bin/python -m pytest -q tests/test_chatgpt_passages.py tests/test_chatgpt_import.py
+.venv/bin/python -m tools.check_chatgpt_recall \
+  --root /home/toytoy/eidolon-corpus-gpt-test
+```
+
+Ne pas réimporter les données pour les corrections de rappel. Ne pas attribuer
+les mesures cloud à la VM. Résultat attendu de la recette : status PASS,
+unchanged et references_exact vrais. La couverture partielle de certains
+résultats est explicitement affichée ; elle n'est pas une erreur de référence.

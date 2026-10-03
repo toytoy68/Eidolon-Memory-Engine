@@ -89,6 +89,9 @@ class ContextAssembler:
             options = {"limit": page_size, "offset": offset}
             if ranking is not None:
                 options["ranking"] = ranking
+                if (ranking == "lexical_v1"
+                        and getattr(self.backend, 'supports_archive_passage_ranking', False)):
+                    options['passage_chars'] = min(max_item_chars, max_chars)
             candidates = self.backend.search(query, options)
             page_ids = tuple(result.memory.information_id for result in candidates)
             if page_ids in seen_pages:

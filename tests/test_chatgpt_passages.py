@@ -64,3 +64,41 @@ def test_window_quality_beats_whole_message_term_coverage(tmp_path):
 def test_fully_visible_term_required_by_character_budget(tmp_path):
     _,bundle=recall(tmp_path,'Eidolon',[message('Eidolon')],max_chars=3,max_item_chars=3)
     assert not bundle.items
+
+
+def test_full_passage_coverage_ranks_above_scattered_terms(tmp_path):
+    backend=FilesystemBackend(tmp_path/'memory/persistent',tmp_path/'memory/history')
+    for identity,text in [('a-spread','mémoire mémoire mémoire '+('ancien '*200)+'robot robot robot'),
+                          ('z-tight','mémoire du robot')]:
+        backend.store(Memory(identity,content=json.dumps({'conversation_id':identity,'messages':[message(text)]},ensure_ascii=False),
+            metadata={'archive_kind':'conversation','epistemic_status':'UNVERIFIED'},
+            provenance={'importer':'chatgpt-archive-v1'}))
+    # The first archive has high whole-text frequency, but no useful two-term window at its start.
+    result=ContextualRecall(backend).recall('mémoire robot',max_items=1,max_chars=30,max_item_chars=30)
+    assert result.items[0].information_id=='z-tight'
+    assert result.items[0].ranking['policy']=='lexical_passage_v1'
+
+
+def test_phrase_match_wins_over_reversed_terms(tmp_path):
+    backend=FilesystemBackend(tmp_path/'memory/persistent',tmp_path/'memory/history')
+    for identity,text in [('a-reversed','robot mémoire'),('z-phrase','mémoire robot')]:
+        backend.store(Memory(identity,content=json.dumps({'conversation_id':identity,'messages':[message(text)]},ensure_ascii=False),
+            metadata={'archive_kind':'conversation','epistemic_status':'UNVERIFIED'},
+            provenance={'importer':'chatgpt-archive-v1'}))
+    result=ContextualRecall(backend).recall('mémoire robot',max_items=1)
+    assert result.items[0].information_id=='z-phrase'
+
+
+def test_metadata_only_archive_is_absent_from_passage_search(tmp_path):
+    backend,_=recall(tmp_path,'messages',[message('unrelated')])
+    assert not backend.search('messages',{'ranking':'lexical_v1','passage_chars':80})
+
+
+def test_passage_options_are_explicit_and_validated(tmp_path):
+    import pytest
+    backend=FilesystemBackend(tmp_path/'memory/persistent',tmp_path/'memory/history')
+    for options in ({'ranking':'lexical_v1','passage_chars':0},
+                    {'ranking':'lexical_v1','passage_chars':True},
+                    {'passage_chars':80}):
+        with pytest.raises(ValueError):
+            backend.search('',options)

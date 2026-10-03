@@ -33,6 +33,8 @@ from .models import DeleteResult, Memory, SearchResult, StoreResult, UpdateResul
 class FilesystemBackend(MemoryBackend):
     """Canonical Markdown-based filesystem backend."""
 
+    supports_archive_passage_ranking = True
+
     def __init__(
         self,
         persistent_root: Path | None = None,
@@ -635,7 +637,7 @@ class FilesystemBackend(MemoryBackend):
         if not isinstance(query, str):
             raise ValueError("query must be text")
         if options is not None and (not isinstance(options, dict)
-                                    or options.keys() - {"limit", "offset", "ranking"}):
+                                    or options.keys() - {"limit", "offset", "ranking", "passage_chars"}):
             raise ValueError("invalid search options")
 
         limit = 100
@@ -643,6 +645,11 @@ class FilesystemBackend(MemoryBackend):
         ranking = options.get("ranking", "legacy") if options else "legacy"
         if not isinstance(ranking, str) or ranking not in {"legacy", "lexical_v1"}:
             raise ValueError("unknown search ranking")
+
+        passage_chars = options.get("passage_chars") if options else None
+        if options and "passage_chars" in options:
+            if ranking != "lexical_v1" or type(passage_chars) is not int or passage_chars < 1:
+                raise ValueError("passage_chars requires lexical_v1 and a positive integer")
 
         if options and "limit" in options:
             limit = options["limit"]
@@ -669,14 +676,25 @@ class FilesystemBackend(MemoryBackend):
         if ranking == "lexical_v1":
             from core.retrieval.ranking import lexical_ranking
             for memory in self._iter_valid_memories():
-                ranked = lexical_ranking(query, memory.content,
-                                         memory.information_id, memory.metadata,
-                                         (memory.provenance, memory.temporal,
-                                          memory.verification, memory.relations))
+                passage_ranked = (passage_chars is not None
+                    and memory.metadata.get('archive_kind') == 'conversation'
+                    and memory.provenance.get('importer') == 'chatgpt-archive-v1')
+                if passage_ranked:
+                    from core.retrieval.chatgpt_passages import select_passage
+                    passage = select_passage(memory.content, query, passage_chars)
+                    if passage is None:
+                        continue
+                    ranked = lexical_ranking(query, passage[0][:passage_chars], '', {})
+                else:
+                    ranked = lexical_ranking(query, memory.content,
+                                             memory.information_id, memory.metadata,
+                                             (memory.provenance, memory.temporal,
+                                              memory.verification, memory.relations))
                 if ranked.coverage:
                     results.append(SearchResult(
                         memory=memory, score=ranked.score,
-                        metadata={"ranking": ranked.explanation()},
+                        metadata={"ranking": dict(ranked.explanation(),
+                            policy="lexical_passage_v1" if passage_ranked else "lexical_v1")},
                     ))
             results.sort(key=lambda result: (-result.score, result.memory.information_id))
             return results[offset:offset + limit]

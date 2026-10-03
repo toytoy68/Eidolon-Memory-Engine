@@ -67,6 +67,19 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+**VM EN ATTENTE (04/10, toytoy au repos, accès VM indisponible)** : après la
+base VM vérifiée 88050bc, synchroniser fenêtres v2 b3ae58e et les lots suivants,
+relancer tests_chatgpt_passages/import puis tools.check_chatgpt_recall.
+[Commandes et critères](docs/CHATGPT-IMPORT.md#recette-vm-en-attente--nuit-du-0410).
+Aucune relance/déploiement VM effectué en autonomie.
+
+Classement global des passages : option backend passage_chars explicite pour
+lexical_v1, sélection avant pagination ; objets ordinaires inchangés.
+2 reproductions rouges, 101 ciblés verts ; suite cloud 1770 verts et 5 erreurs
+sockets Manager, 15 MCP verts. Après réduction du coût de tokenisation :
+97 tests rappel verts, recette réelle PASS, 1,744–1,849 s. Les deux extraits
+2/2 de « mémoire robot » précèdent désormais les 1/2 ; pas d'évaluation sémantique.
+
 04/10 — Fenêtres GPT v2 : couverture calculée dans le budget caractères,
 préférence pour termes rapprochés ; 3 régressions rouges puis 97 ciblés verts.
 Recette tools.check_chatgpt_recall : citations/rôles/dates/offsets exacts,

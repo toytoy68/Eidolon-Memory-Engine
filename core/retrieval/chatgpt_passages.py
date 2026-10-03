@@ -2,6 +2,7 @@
 from collections import Counter
 import json
 import re
+import unicodedata
 from core.retrieval.ranking import terms
 
 
@@ -19,9 +20,9 @@ def select_passage(content, query, max_chars):
                 continue
             matched=[]
             for match in re.finditer(r'\w+',text):
-                word=terms(match.group())
-                if word and word[0] in wanted:
-                    matched.append((word[0],match.start(),match.end()))
+                word=unicodedata.normalize('NFC',match.group().casefold())
+                if word in wanted:
+                    matched.append((word,match.start(),match.end()))
             counts=Counter();right=0
             for left,(_,start,_) in enumerate(matched):
                 while right<len(matched) and matched[right][2]<=start+max_chars:
