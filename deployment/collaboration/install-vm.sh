@@ -42,6 +42,10 @@ if [[ ! -x "$app_root/venv/bin/python" ]]; then
 fi
 "$app_root/venv/bin/python" -m pip install -r "$release_dir/requirements-collaboration.txt"
 "$app_root/venv/bin/python" -m pip check
+# umask 077 also applies to venv/pip: the service must be able to read and execute
+# this root-owned, secret-free runtime. Keep write access restricted to root.
+chown -R root:root "$app_root/venv"
+chmod -R u=rwX,go=rX "$app_root/venv"
 if [[ -e "$app_root/app" && ! -L "$app_root/app" ]]; then
     echo "$app_root/app existe et n'est pas un lien de release ; examiner manuellement." >&2
     exit 1

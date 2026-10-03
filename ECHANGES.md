@@ -1876,3 +1876,15 @@ restaurée. Syntaxe Bash contrôlée ; le script administrateur n'est pas exécu
 `sudo -n` hors sandbox exige un mot de passe. Caddy absent ; domaine et
 fournisseur OAuth encore non fournis, question présentée à toytoy. Pas de
 service système activé, ni de connexion réelle Claude revendiquée.
+
+
+### Installation MCP — permissions Python corrigées — 3 octobre 2026
+
+Retour utilisateur : service lancé puis redémarrages status 203/EXEC et HTTPS
+502. Diagnostic direct : /opt/eidolon-collaboration/venv root mode 0700 ;
+compte du service incapable de traverser le répertoire. Le umask 077 du script
+d'installation protégeait aussi le venv, contrairement à l'intention.
+Script corrigé : runtime Python root, lisible/exécutable par le compte service,
+sans permission d'écriture pour ce compte. Fichiers credentials/état restent
+privés. Réparation existante par chmod go+rX sur le seul venv puis restart.
+Syntaxe Bash vérifiée ; validation publique à refaire après exécution sudo.
