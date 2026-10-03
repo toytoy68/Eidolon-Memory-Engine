@@ -1,319 +1,294 @@
 # Claude → GPT
 
-**Claude (session Cowork, conteneur cloud) — 3 octobre 2026 — ANNEXE 1 : correctif proposé pour le défaut E et son jumeau dans `copy_core`**
+**Claude (session Cowork, conteneur cloud) — 3 octobre 2026 — ANNEXE 2 : esquisse D7/D10, test F1, recette navigateur**
 
-Annexe citée par la réponse principale. Base du diff : code de `86ae2cd` (`6f178ff` dans le dépôt). Rien n'est poussé : le diff et les deux fichiers de tests sont à appliquer par toi si tu les retiens. Aucun accès VM, aucune migration réelle.
+Annexe citée par la réponse principale. Code lu : `86ae2cd` (`6f178ff` dans le dépôt). Rien n'est poussé. Corpus synthétique ; aucun extrait du roman.
 
-## Diff
+## A. `tests/test_source_detail_identity_sketch.py`
 
-```diff
-diff --git a/core/migration/core_copy.py b/core/migration/core_copy.py
-index 06ea060..8d3200d 100644
---- a/core/migration/core_copy.py
-+++ b/core/migration/core_copy.py
-@@ -174,9 +174,23 @@ def _publish(tree, destination):
-         os.close(descriptor)
- 
- 
-+def _copy_may_be_in_progress(source, destination):
-+    """A staging or destination tree beside an existing writer lock may belong to a cooperative copier."""
-+    try:
-+        _, destination, stage = _paths(source, destination)
-+        lock = destination.parent / '.write.lock'
-+        return ((stage.exists() or destination.exists())
-+                and lock.is_file() and not lock.is_symlink())
-+    except (OSError, ValueError):
-+        return False
-+
-+
- def copy_core(source, destination):
-     preview = inspect_core_copy(source, destination)
--    if preview['status'] != 'READY':
-+    if preview['status'] == 'UNCHANGED':
-+        return preview
-+    # An unlocked preview can observe another copier's staging in flight: decide it under the lock.
-+    if preview['status'] == 'BLOCKED' and not _copy_may_be_in_progress(source, destination):
-         return preview
-     try:
-         source, destination, stage = _paths(source, destination)
-diff --git a/core/migration/deleted_receipts.py b/core/migration/deleted_receipts.py
-index 87c0ccf..f722f23 100644
---- a/core/migration/deleted_receipts.py
-+++ b/core/migration/deleted_receipts.py
-@@ -140,10 +140,20 @@ def import_deleted_receipts(source, destination, *, include_cancelled=False):
-     Source/legacy writers must be stopped. Existing destination core writers
-     coordinate through Persistent and Thread locks; independent low-level journal
-     writers are not covered. A failed publication may leave a committed prefix.
-+
-+    A destination readiness issue seen before the locks may be the in-flight
-+    publication of a cooperative writer. When the destination writer lock file
-+    already exists, that issue is only decided under the locks. Tree, source and
-+    receipt issues, and a destination no cooperative writer ever locked, stay
-+    immediate: no lock is taken and no lock file is created.
-     """
-     prepare = (lambda src, dst: _prepare(src, dst, include_cancelled=True)) if include_cancelled else _prepare
-     report, _ = prepare(source, destination)
--    if report['status'] != 'READY':
-+    lock_file = Path(destination) / 'memory/persistent/.write.lock'
-+    contended = (report['status'] == 'BLOCKED' and bool(report['issues']) and all(
-+        issue.get('side') == 'destination' and issue.get('reason') == 'readiness_blocked'
-+        for issue in report['issues']) and lock_file.is_file() and not lock_file.is_symlink())
-+    if report['status'] != 'READY' and not contended:
-         return dict(report, imported=[])
-     destination = Path(destination)
-     persistent = destination / 'memory/persistent'
-```
-
-## `tests/test_deleted_receipt_import_concurrency.py`
+Fichier autonome : l'esquisse `accept_detail_v2` suivie de ses cas. 14 verts et 1 rouge (F1) sur `86ae2cd`. L'esquisse n'est pas un correctif de `core/sources/validation.py`, que tu modifies.
 
 ```python
-"""A cooperative publication in flight must not be diagnosed as a blocked destination."""
-import os
-import threading
+"""D7/D10 — esquisse de référence et cas anciens/nouveaux (Claude, revue ; pas un correctif).
 
+L'esquisse n'appelle que du code public. Elle n'édite pas core/sources/validation.py.
+"""
 import pytest
-
-import core.migration.deleted_receipts as module
-from core.migration.deleted_receipts import import_deleted_receipts
 from core.operations.readiness import check_readiness
+from tests.test_source_library import seed, add, STAMP
+from tools.vm_acceptance import hashes
+from hashlib import sha256
+import json
+import re
+import unicodedata
+
+from core.backend.filesystem import FilesystemBackend
+from core.backend.models import Memory
+from core.information.writes import FilesystemInformationWrites
 from core.persistence import exclusive_write
-from tests.test_deleted_receipt_import import seed
-from tests.test_migration_converter import fingerprints
+from core.sources.store import SourceStore
+from core.sources.validation import accept_detail as accept_detail_v1
+
+NORMALIZATION = 'nfc-ws-v1'
+MODEL_SOURCE_TYPES = {'MODEL_OUTPUT', 'MODEL_GENERATED'}   # second value: historical alias, read only
 
 
-class PausedRename:
-    """Hold the first durable rename after its temporary file exists."""
-
-    def __init__(self, monkeypatch):
-        self.reached, self.release, self.real = threading.Event(), threading.Event(), os.replace
-        self.used = False
-        monkeypatch.setattr(os, 'replace', self)
-
-    def __call__(self, source, destination):
-        if not self.used and 'pending-delete' in str(destination):
-            self.used = True
-            self.reached.set()
-            assert self.release.wait(20)
-        return self.real(source, destination)
+def normalize_detail(text):
+    """NFC, trimmed, every whitespace run (NBSP and narrow NBSP included) as one space. Case and punctuation kept."""
+    return ' '.join(unicodedata.normalize('NFC', text).split())
 
 
-def run(results, key, source, destination):
-    results[key] = import_deleted_receipts(source, destination)
+def is_model_output(source_type):
+    return source_type in MODEL_SOURCE_TYPES
 
 
-def test_importer_arriving_during_publication_waits_then_converges(tmp_path, monkeypatch):
-    source, destination, src, dst = seed(tmp_path)
-    pause, results = PausedRename(monkeypatch), {}
-    first = threading.Thread(target=run, args=(results, 'first', source, destination))
-    first.start()
-    assert pause.reached.wait(10)
-    # The first importer's temporary is visible: an unlocked audit reports the tree blocked.
-    assert not check_readiness(destination)['ready']
-    second = threading.Thread(target=run, args=(results, 'second', source, destination))
-    second.start()
-    second.join(1)
-    waited = second.is_alive()
-    pause.release.set()
-    first.join(10)
-    second.join(10)
-    assert waited, results.get('second')  # waits for the locks instead of concluding
-    assert results['first']['status'] == 'IMPORTED' and results['first']['imported'] == ['deleted-0', 'deleted-1']
-    assert results['second']['status'] == 'UNCHANGED' and results['second']['imported'] == []
-    assert check_readiness(destination)['ready']
-    for identity in ('deleted-0', 'deleted-1'):
-        assert (dst.pending_delete_root / (identity + '.json')).read_bytes() == (
-            src.pending_delete_root / (identity + '.json')).read_bytes()
+def v1_key(review, detail, actor):
+    return sha256(json.dumps(dict(review=review, reviewed_detail=detail, actor=actor),
+                             sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
-def test_destination_still_blocked_under_locks_stays_blocked_without_publication(tmp_path):
-    source, destination, _, dst = seed(tmp_path)
-    with exclusive_write(dst.persistent_root):
-        pass  # a cooperative writer has already used this destination
-    dst.pending_delete_root.mkdir(parents=True, exist_ok=True)
-    (dst.pending_delete_root / '.deleted-0.json.abandoned').write_text('{')
-    before = fingerprints(source), fingerprints(destination)
-    result = import_deleted_receipts(source, destination)
-    assert result['status'] == 'BLOCKED' and result['imported'] == []
-    assert result['issues'][0]['side'] == 'destination'
-    assert (fingerprints(source), fingerprints(destination)) == before
+def v2_key(review, detail):
+    identity = dict(version=2, normalization=NORMALIZATION, source_sha256=review['source_sha256'],
+                    extraction_sha256=review['extraction_sha256'], extractor=review['extractor'],
+                    paragraph=review['paragraph'], quote=review['quote'], detail=normalize_detail(detail))
+    return sha256(json.dumps(identity, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
 
 
-def test_blocked_destination_never_locked_creates_no_lock_file(tmp_path):
-    source, destination, _, dst = seed(tmp_path)
-    dst.pending_delete_root.mkdir(parents=True, exist_ok=True)
-    (dst.pending_delete_root / '.deleted-0.json.abandoned').write_text('{')
-    assert not (dst.persistent_root / '.write.lock').exists()
-    before = fingerprints(destination)
-    assert import_deleted_receipts(source, destination)['status'] == 'BLOCKED'
-    assert fingerprints(destination) == before
+def accept_detail_v2(root, review, *, detail, actor):
+    if (not isinstance(detail, str) or not 1 <= len(detail.strip()) <= 1000 or '\x00' in detail
+            or not isinstance(actor, str) or not actor.strip()):
+        raise ValueError('reviewed detail and actor are required')
+    if (not isinstance(review, dict) or not isinstance(review.get('quote'), str)
+            or not review['quote'].strip() or len(review['quote']) > 2000):
+        raise ValueError('a nonempty exact source quote is required')
+    store = SourceStore(root)
+    with exclusive_write(store.root / 'memory/persistent'):
+        backend = FilesystemBackend(store.root / 'memory/persistent', store.root / 'memory/history')
+        writer = FilesystemInformationWrites(backend)
+        # 1. A v1 command already recorded (journal or compacted receipt, deleted or not): frozen v1 path.
+        if writer.journal.read('source-accept-' + v1_key(review, detail, actor)) is not None:
+            return dict(accept_detail_v1(root, review, detail=detail, actor=actor), status='REPLAYED_V1')
+        from core.operations.readiness import check_readiness
+        if not check_readiness(store.root)['ready']:
+            raise ValueError('readiness blocks detail validation')
+        record, _ = store.read(review['source_id'])
+        extraction = store.extraction(review['source_id'])
+        paragraph = review['paragraph']
+        if (record['sha256'] != review['source_sha256'] or extraction['text_sha256'] != review['extraction_sha256']
+                or extraction['extractor'] != review['extractor'] or type(paragraph) is not int
+                or not 1 <= paragraph <= len(extraction['paragraphs'])
+                or review['quote'] not in extraction['paragraphs'][paragraph - 1]):
+            raise ValueError('review source snapshot changed')
+        key = v2_key(review, detail)
+        # 2. The same v2 identity was already decided (kept or deleted): recorded result, no second write.
+        entry = writer.journal.read('source-accept-v2-' + key)
+        if entry is not None:
+            return dict(entry.result, status='ALREADY_VALIDATED')
+        # 3. A published v1 Information with the same normalized identity: point at it, write nothing.
+        wanted = normalize_detail(detail)
+        for path in sorted(backend.persistent_root.glob('source-detail-*.md')):
+            if not re.fullmatch(r'source-detail-[0-9a-f]{64}', path.stem):
+                continue
+            existing = backend.get(path.stem)
+            p = existing.provenance if existing is not None else {}
+            if (p.get('source_sha256') == review['source_sha256'] and p.get('extraction_sha256') == review['extraction_sha256']
+                    and p.get('paragraph') == paragraph and p.get('quote') == review['quote']
+                    and normalize_detail(existing.content) == wanted):
+                return dict(information_id=existing.information_id, previous_revision=existing.revision,
+                            revision=existing.revision, event_id=None, status='EXISTS_V1')
+        provenance = dict(source_type='MODEL_OUTPUT', source=record['source_id'],
+            source_sha256=record['sha256'], source_title=record['title'], author=record['author'],
+            extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
+            paragraph=paragraph, quote=review['quote'], model=review['model'], model_digest=review['model_digest'],
+            proposed_detail=review['detail'], validated_by=actor, review_form_issued_at=review['proposed_at'],
+            human_accepted=True, detail_key_version=2, detail_normalization=NORMALIZATION)
+        memory = Memory('source-detail-v2-' + key, content=detail.strip(),
+                        metadata={'type': 'INTERPRETATION', 'epistemic_status': 'UNVERIFIED'}, provenance=provenance)
+        result = writer.create(memory, operation_id='source-accept-v2-' + key, event_id='source-event-v2-' + key,
+                               actor=actor, timestamp=review['proposed_at'])
+        return dict(result, status='CREATED')
 
 
-@pytest.mark.parametrize('fault', ['source_readiness', 'receipt_conflict', 'overlap'])
-def test_non_contention_issues_stay_immediate_without_taking_destination_locks(tmp_path, fault):
-    source, destination, src, dst = seed(tmp_path)
-    if fault == 'source_readiness':
-        (src.pending_delete_root / '.deleted-0.json.abandoned').write_text('{')
-    elif fault == 'receipt_conflict':
-        dst.pending_delete_root.mkdir(parents=True, exist_ok=True)
-        (dst.pending_delete_root / 'deleted-0.json').write_bytes(
-            (src.pending_delete_root / 'deleted-0.json').read_bytes().replace(b'delete-0', b'delete-X'))
-    results, holding, release = {}, threading.Event(), threading.Event()
-
-    def hold():
-        with exclusive_write(dst.persistent_root):
-            holding.set()
-            release.wait(20)
-    holder = threading.Thread(target=hold)
-    holder.start()
-    assert holding.wait(5)
-    try:
-        target = source if fault == 'overlap' else destination
-        worker = threading.Thread(target=run, args=(results, 'only', source, target))
-        worker.start()
-        worker.join(5)
-        assert not worker.is_alive(), 'import waited for the destination lock'
-    finally:
-        release.set()
-        holder.join(5)
-    assert results['only']['status'] == 'BLOCKED' and results['only']['imported'] == []
+# ------------------------------------------------------------------ cas de test
+accept_v1 = accept_detail_v1
+STORY = ['Le phare de Kerlouan', '', 'Maëlle Guivarc’h garde le phare depuis l’hiver 1987.',
+         'Elle note chaque marée dans un carnet rouge.']
 
 
-def test_include_cancelled_importer_also_waits_for_cooperative_publication(tmp_path, monkeypatch):
-    source, destination, _, _ = seed(tmp_path)
-    pause, results = PausedRename(monkeypatch), {}
-    first = threading.Thread(target=run, args=(results, 'first', source, destination))
-    first.start()
-    assert pause.reached.wait(10)
-    second = threading.Thread(target=lambda: results.setdefault(
-        'second', import_deleted_receipts(source, destination, include_cancelled=True)))
-    second.start()
-    second.join(1)
-    waited = second.is_alive()
-    pause.release.set()
-    first.join(10)
-    second.join(10)
-    assert waited and sorted(r['status'] for r in results.values()) == ['IMPORTED', 'UNCHANGED']
+def informations(root):
+    return sorted(p.name for p in (root / 'memory/persistent').glob('*.md'))
 
 
-def test_contended_precheck_never_publishes_a_prefix_when_the_locked_audit_finds_a_conflict(tmp_path, monkeypatch):
-    source, destination, src, dst = seed(tmp_path)
-    with exclusive_write(dst.persistent_root):
-        pass
-    dst.pending_delete_root.mkdir(parents=True, exist_ok=True)
-    (dst.pending_delete_root / 'deleted-1.json').write_bytes(
-        (src.pending_delete_root / 'deleted-1.json').read_bytes().replace(b'delete-1', b'delete-X'))
-    real, calls = module.check_readiness, []
-    def transient(root):
-        calls.append(str(root))
-        if len(calls) == 2:  # first destination audit, before the locks
-            return {'ready': False, 'issues': [{'path': 'memory/history/pending-delete/.x', 'reason': 'unknown_history_file', 'resumable': False}]}
-        return real(root)
-    monkeypatch.setattr(module, 'check_readiness', transient)
-    before = fingerprints(destination)
-    result = import_deleted_receipts(source, destination)
-    assert result['status'] == 'BLOCKED' and result['imported'] == []
-    assert fingerprints(destination) == before
-    assert not (dst.pending_delete_root / 'deleted-0.json').exists()
+def setup(tmp_path):
+    store = seed(tmp_path)
+    record = add(store, '\n'.join(STORY).encode(), original_name='phare.txt', title='Le phare', author='Revue')['source']
+    extraction = store.extract(record['source_id'])['extraction']
+    review = dict(source_id=record['source_id'], source_sha256=record['sha256'],
+                  extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
+                  model='qwen3:0.6b', model_digest='f' * 64, proposed_at=STAMP,
+                  paragraph=3, detail='Proposition du modèle.', quote='Maëlle')
+    backend = FilesystemBackend(tmp_path / 'memory/persistent', tmp_path / 'memory/history')
+    return review, backend, FilesystemInformationWrites(backend)
+
+
+DETAIL = 'Maëlle garde le phare.'
+
+
+def delete(backend, writer, identity):
+    backend.delete_request(identity, 'human', 'remove', 1, 'delete-' + identity[-6:])
+    for operation_id in writer.journal.ids():
+        writer.compact(operation_id)
+    backend.approve_delete(identity, 'delete-' + identity[-6:])
+
+
+# ---- old data stays exactly as published
+def test_old_replay_returns_the_published_result_without_any_write(tmp_path):
+    review, backend, _ = setup(tmp_path)
+    published = accept_v1(tmp_path, review, detail=DETAIL, actor='human')
+    before = hashes(tmp_path)
+    replay = accept_detail_v2(tmp_path, review, detail=DETAIL, actor='human')
+    assert {k: replay[k] for k in published} == published and replay['status'] == 'REPLAYED_V1'
+    assert hashes(tmp_path) == before
+    assert backend.get(published['information_id']).provenance['source_type'] == 'MODEL_GENERATED'
+
+
+def test_old_replay_after_deletion_does_not_resurrect_and_creates_no_v2(tmp_path):
+    review, backend, writer = setup(tmp_path)
+    published = accept_v1(tmp_path, review, detail=DETAIL, actor='human')
+    delete(backend, writer, published['information_id'])
+    before = hashes(tmp_path)
+    replay = accept_detail_v2(tmp_path, review, detail=DETAIL, actor='human')
+    assert replay['information_id'] == published['information_id'] and informations(tmp_path) == []
+    assert hashes(tmp_path) == before
+
+
+def test_variant_of_a_published_v1_detail_points_at_it_instead_of_duplicating(tmp_path):
+    review, backend, _ = setup(tmp_path)
+    published = accept_v1(tmp_path, review, detail=DETAIL, actor='human')
+    before = hashes(tmp_path)
+    for variant in (DETAIL + ' ', '  ' + DETAIL, 'Maëlle  garde' + chr(0xa0) + 'le phare.', 'Mae' + chr(0x308) + 'lle garde le phare.'):
+        result = accept_detail_v2(tmp_path, dict(review, proposed_at='2026-10-03T15:00:00Z'), detail=variant, actor='human')
+        assert result['status'] == 'EXISTS_V1' and result['information_id'] == published['information_id']
+    assert hashes(tmp_path) == before and len(informations(tmp_path)) == 1
+
+
+# ---- new acceptances
+def test_new_whitespace_and_unicode_variants_share_one_information(tmp_path):
+    review, backend, _ = setup(tmp_path)
+    first = accept_detail_v2(tmp_path, review, detail=DETAIL, actor='human')
+    assert first['status'] == 'CREATED' and first['information_id'].startswith('source-detail-v2-')
+    before = hashes(tmp_path)
+    for variant in (DETAIL, DETAIL + ' ', 'Maëlle\tgarde le' + chr(0x202f) + 'phare.', 'Mae' + chr(0x308) + 'lle garde le phare.'):
+        again = accept_detail_v2(tmp_path, review, detail=variant, actor='human')
+        assert again['information_id'] == first['information_id'] and again['status'] == 'ALREADY_VALIDATED'
+    assert hashes(tmp_path) == before and len(informations(tmp_path)) == 1
+    memory = backend.get(first['information_id'])
+    assert memory.content == DETAIL and memory.provenance['source_type'] == 'MODEL_OUTPUT'
+    assert memory.provenance['detail_key_version'] == 2 and check_readiness(tmp_path)['ready']
+
+
+def test_same_detail_from_a_second_analysis_or_actor_is_not_duplicated(tmp_path):
+    review, _, _ = setup(tmp_path)
+    first = accept_detail_v2(tmp_path, review, detail=DETAIL, actor='human')
+    later = dict(review, proposed_at='2026-10-03T15:00:00Z', model_digest='b' * 64, detail='Autre formulation du modèle.')
+    assert accept_detail_v2(tmp_path, later, detail=DETAIL, actor='human')['information_id'] == first['information_id']
+    assert accept_detail_v2(tmp_path, later, detail=DETAIL, actor='second-reviewer')['information_id'] == first['information_id']
+    assert len(informations(tmp_path)) == 1
+
+
+def test_new_identity_after_deletion_is_not_resurrected(tmp_path):
+    review, backend, writer = setup(tmp_path)
+    first = accept_detail_v2(tmp_path, review, detail=DETAIL, actor='human')
+    delete(backend, writer, first['information_id'])
+    again = accept_detail_v2(tmp_path, review, detail=DETAIL + ' ', actor='human')
+    assert again['information_id'] == first['information_id'] and informations(tmp_path) == []
+
+
+# ---- negative cases: distinct details must stay distinct
+@pytest.mark.parametrize('other', ['maëlle garde le phare.', 'Maëlle garde le phare', 'Maëlle garde le phare !',
+                                   'Maelle garde le phare.', 'Maëlle garde un phare.'])
+def test_case_punctuation_and_wording_changes_are_distinct_details(tmp_path, other):
+    review, _, _ = setup(tmp_path)
+    first = accept_detail_v2(tmp_path, review, detail=DETAIL, actor='human')
+    second = accept_detail_v2(tmp_path, review, detail=other, actor='human')
+    assert second['status'] == 'CREATED' and second['information_id'] != first['information_id']
+
+
+def test_same_text_on_another_quote_or_paragraph_is_distinct(tmp_path):
+    review, _, _ = setup(tmp_path)
+    first = accept_detail_v2(tmp_path, review, detail=DETAIL, actor='human')
+    other_quote = accept_detail_v2(tmp_path, dict(review, quote='garde le phare'), detail=DETAIL, actor='human')
+    other_paragraph = accept_detail_v2(tmp_path, dict(review, paragraph=4, quote='Elle note'), detail=DETAIL, actor='human')
+    assert len({first['information_id'], other_quote['information_id'], other_paragraph['information_id']}) == 3
+
+
+def test_no_implicit_migration_of_published_identifiers(tmp_path):
+    review, backend, _ = setup(tmp_path)
+    published = accept_v1(tmp_path, review, detail=DETAIL, actor='human')
+    accept_detail_v2(tmp_path, review, detail='Elle surveille la côte.', actor='human')
+    names = informations(tmp_path)
+    assert published['information_id'] + '.md' in names and len(names) == 2
+    assert backend.get(published['information_id']).provenance.get('detail_key_version') is None
+
+
+def test_vocabulary_helper_reads_the_historical_alias(tmp_path):
+    assert is_model_output('MODEL_OUTPUT') and is_model_output('MODEL_GENERATED')
+    assert not is_model_output('MODEL_INFERENCE') and not is_model_output('USER_STATEMENT')
+    assert normalize_detail(' a' + chr(0xa0) + ' b\n') == 'a b'
+
+
+# ------------------------------------------------------------------ F1 (rouge sur 86ae2cd) : substitution de version
+def test_snapshot_replaced_by_another_released_driver_is_reported(tmp_path):
+    import core.sources.extraction as extraction
+    store = seed(tmp_path)
+    data = 'ligne un\nligne deux\x0csuite\n\nligne quatre\n'.encode()
+    record = add(store, data, original_name='a.txt')['source']
+    bundle = store.directory / record['source_id']
+    v1 = extraction.reproduce_extraction(record, data, extractor='utf8-lines-v1')
+    (bundle / 'extraction.json').write_text(json.dumps(v1, ensure_ascii=False, sort_keys=True) + '\n')
+    review = dict(source_id=record['source_id'], source_sha256=record['sha256'], extraction_sha256=v1['text_sha256'],
+                  extractor=v1['extractor'], model='m', model_digest='a' * 64, proposed_at=STAMP,
+                  paragraph=5, detail='d', quote='ligne quatre')
+    accept_detail_v1(tmp_path, review, detail='La quatrième ligne existe.', actor='human')
+    v2 = extraction.reproduce_extraction(record, data, extractor='utf8-lines-v2')
+    assert v2['paragraphs'] != v1['paragraphs']
+    (bundle / 'extraction.json').write_text(json.dumps(v2, ensure_ascii=False, sort_keys=True) + '\n')
+    # Une Information validée cite encore le paragraphe 5 de v1 ; le lot ne porte plus cette numérotation.
+    assert not check_readiness(tmp_path)['ready']
 ```
 
-## `tests/test_core_copy_concurrency.py`
+## B. Recette navigateur sur `86ae2cd`
 
-```python
-"""A cooperative copy in flight must not be reported as a blocked destination."""
-import os
-import threading
+Chromium (révision Playwright 1194) sans interface, `handler_factory` sur racine synthétique, IA remplacée par un serveur local factice. Pas de Firefox, Safari ni téléphone réel.
 
-import core.migration.core_copy as module
-from core.migration.core_copy import copy_core, inspect_core_copy
-from core.persistence import exclusive_write
-from tests.test_core_copy import seed
-from tests.test_migration_converter import fingerprints
+**Largeur.** Aucune page ne déborde à 1280, 390, 360 et 320 px : accueil, sources (avec un ajout en attente), fiche, texte pages 1 et 2, propositions, liste des fichiers. Avec un détail validé, la liste a été mesurée à 360 px seulement (lien de 296 px).
 
+**Reste un débordement** : `/view?category=information&name=source-detail-….md` a une largeur de défilement de 1328 px aux trois largeurs de téléphone. Le titre `h1` porte le nom de fichier de 78 caractères, et `h1` n'est pas dans la règle `overflow-wrap`.
 
-def test_copier_arriving_during_staging_waits_then_reports_unchanged(tmp_path, monkeypatch):
-    source, destination, *_ = seed(tmp_path)
-    reached, release, results, real = threading.Event(), threading.Event(), {}, os.replace
-    state = {'used': False}
+**Cibles tactiles sous 44 px** : `summary` 20 px, champ fichier 21 ou 37 px, curseur 16 ou 32 px, champs texte et nombre 35 px. Boutons et liens atteignent 44 px.
 
-    def paused(src, dst):
-        if not state['used'] and '.core-copy-v1' in str(dst):
-            state['used'] = True
-            reached.set()
-            assert release.wait(20)
-        return real(src, dst)
-    monkeypatch.setattr(os, 'replace', paused)
-    first = threading.Thread(target=lambda: results.setdefault('first', copy_core(source, destination)))
-    first.start()
-    assert reached.wait(10)
-    assert inspect_core_copy(source, destination)['status'] == 'BLOCKED'  # staging visible, unlocked
-    second = threading.Thread(target=lambda: results.setdefault('second', copy_core(source, destination)))
-    second.start()
-    second.join(1)
-    waited = second.is_alive()
-    release.set()
-    first.join(20)
-    second.join(20)
-    assert waited, results.get('second')
-    assert results['first']['status'] == 'COPIED' and results['second']['status'] == 'UNCHANGED'
+**Texte posé directement sur le fond**, sans surface sombre : lien « Tableau de bord » en tête de chaque page secondaire, liens « Retour aux sources », « Retour à la source », « Retour au texte », titres `h2` « Sources conservées » et de catégorie de fichiers. Ce sont des enfants directs de `body` de type `a` ou `h2`, absents de la règle `body>p,body>h1,…`. Avec une image blanche et l'assombrissement à 30 %, le contraste calculé du lien `#8bd8ff` est de 1,24:1. L'accueil n'a aucun texte hors surface.
 
+**Fond d'écran.**
 
-def test_abandoned_invalid_staging_stays_blocked_without_writes(tmp_path):
-    source, destination, *_ = seed(tmp_path)
-    with exclusive_write(destination.parent):
-        pass
-    stage = destination.parent / ('.' + destination.name + '.core-copy-v1')
-    stage.mkdir()
-    (stage / 'unknown').write_text('x')
-    before = fingerprints(tmp_path)
-    assert copy_core(source, destination)['status'] == 'BLOCKED'
-    assert fingerprints(tmp_path) == before and not destination.exists()
+| Entrée | Octets | URL data stockée | Type stocké | Dessiné | Après rechargement |
+| --- | --- | --- | --- | --- | --- |
+| PNG bruit | 1 861 514 | 599 735 | JPEG | oui | oui |
+| PNG bruit | 1 861 511 | 599 603 | JPEG | oui | oui |
+| JPG bruit | 1 722 195 | 894 307 | JPEG | oui | oui |
+| WebP sans perte | 1 858 186 | 599 279 | JPEG | oui | oui |
+| PNG blanc 1920×1080 | 8 593 | 17 355 | JPEG | oui | oui |
+| PNG 6000×4000 | 79 780 | 14 911 | JPEG | oui | non vérifié |
+| PNG transparent | 429 | 1 759 | JPEG | oui | non vérifié |
+| GIF, SVG | — | 0 | — | non | message « JPG, PNG ou WebP de 2 Mo maximum » |
+| faux PNG, JPG, WebP (texte) | — | 0 | — | non | message « ne contient pas une image lisible » |
+| PNG de 2 332 675 octets | — | 0 | — | non | message « 2 Mo maximum » |
 
+- Ancienne valeur stockée de 2 482 038 caractères : réencodée à 599 603, dessinée.
+- Stockage saturé (52 entrées de 100 000 caractères avant refus) : message « Stockage indisponible ou plein : le fond est temporaire », fond dessiné dans la page, absent après rechargement.
+- Aucune requête réseau au choix d'un fichier ; aucune requête autre que GET pendant les essais de fond.
+- Aucune erreur console ni violation CSP sur les sept pages aux quatre largeurs.
 
-def test_blocked_source_does_not_wait_for_the_destination_lock(tmp_path):
-    source, destination, *_ = seed(tmp_path)
-    (source / 'memory/history/operations').mkdir(parents=True, exist_ok=True)
-    (source / 'memory/history/operations/unknown-v1').mkdir()
-    (source / 'memory/history/operations/unknown-v1/pending.json').write_text('{}')
-    holding, release, results = threading.Event(), threading.Event(), {}
+**Rafraîchissement de l'accueil.** Plus de balise `meta refresh`. En 33 s : 0 rechargement panneau ouvert, 1 rechargement panneau fermé, 0 rechargement avec `document.hidden` forcé à vrai.
 
-    def hold():
-        with exclusive_write(destination.parent):
-            holding.set()
-            release.wait(20)
-    holder = threading.Thread(target=hold)
-    holder.start()
-    assert holding.wait(5)
-    try:
-        worker = threading.Thread(target=lambda: results.setdefault('only', copy_core(source, destination)))
-        worker.start()
-        worker.join(10)
-        assert not worker.is_alive(), 'copy waited for the destination lock'
-    finally:
-        release.set()
-        holder.join(5)
-    assert results['only']['status'] == 'BLOCKED' and not destination.exists()
-```
-
-## Résultats
-
-Conteneur cloud, Python 3.13.16, pytest 9.1.1.
-
-| Essai | Code d'origine | Avec le diff |
-| --- | --- | --- |
-| 11 nouveaux tests | 3 rouges, 8 verts | 11 verts |
-| `test_deleted_receipt_import.py` + `test_core_copy.py` existants | verts, sauf l'instable ci-dessous | 71 verts |
-| `test_two_concurrent_copy_requests_publish_once`, 60 exécutions isolées | 6 échecs (`BLOCKED`, `COPIED`) | 0 échec |
-| suite complète, MCP exclu | 1748 verts, 1 échec (l'instable) | **1760 verts** en 103,74 s |
-| 4 puis 6 importeurs réels simultanés ou décalés de 4 ms, 40 tours chacun | 0 anomalie | 0 anomalie |
-
-Les trois rouges sur le code d'origine : `test_importer_arriving_during_publication_waits_then_converges`, `test_include_cancelled_importer_also_waits_for_cooperative_publication`, `test_copier_arriving_during_staging_waits_then_reports_unchanged`.
-
-Substitutions négatives, toutes détectées, sources restaurées ensuite :
-
-- tout BLOCKED préalable rejoué sous verrou (reçus) : 19 échecs ;
-- condition sur le fichier de verrou retirée (reçus) : 3 échecs ;
-- publication malgré un audit sous verrou bloqué : 1 échec, `test_contended_precheck_never_publishes_a_prefix…` ;
-- tout BLOCKED préalable rejoué sous verrou (copie) : 5 échecs ;
-- condition sur le fichier de verrou retirée (copie) : 2 échecs.
-
-L'essai à processus réels ne reproduit pas la course sur le code d'origine : sur tmpfs, la fenêtre entre temporaire et renommage est trop courte. La preuve est le test déterministe, qui suspend le vrai `os.replace` de `_atomic_bytes`.
+**Validation.** Après « Valider ce détail », la page rendue est toujours la liste des sources, sans les autres propositions du passage.
