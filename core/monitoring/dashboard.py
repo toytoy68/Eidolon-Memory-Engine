@@ -44,6 +44,15 @@ def render_dashboard(metrics: dict, state: dict) -> str:
     volume = metrics["volume_bytes"]
     data = metrics["engine_data"]
 
+    def chart(used, total, available, label):
+        percent = max(0, min(100, used / total * 100)) if total > 0 else 0
+        color = '#fb7185' if percent >= 90 else '#fbbf24' if percent >= 75 else '#8bd8ff'
+        return (f'<div class="donut" role="img" aria-label="{escape(label)} : {percent:.1f} % utilisés" '
+                f'style="background:conic-gradient({color} 0% {percent:.2f}%,#3b5369 {percent:.2f}% 100%)">'
+                f'<div class="donut-center"><b>{percent:.1f} %</b><span>{_size(used)}</span>'
+                '<small>utilisés</small></div></div>'
+                f'<p class="capacity">Sur {_size(total)} au total<br><small>{_size(available)} disponibles</small></p>')
+
     def rows(counts):
         return "".join(f"<tr><td>{escape(str(name))}</td><td>{int(number)}</td></tr>"
                        for name, number in sorted(counts.items())) or "<tr><td colspan=2>Aucun</td></tr>"
@@ -55,14 +64,15 @@ def render_dashboard(metrics: dict, state: dict) -> str:
 h1{{color:#8bd8ff}}main{{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}}
 section{{background:#1d2b3e;border:1px solid #3b5369;border-radius:12px;padding:1rem}}
 table{{width:100%;border-collapse:collapse}}td{{padding:.4rem;border-bottom:1px solid #3b5369}}
-td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}</style></head>
+td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}
+.donut{{width:190px;height:190px;border-radius:50%;margin:1.5rem auto;display:grid;place-items:center}}
+.donut-center{{width:148px;height:148px;border-radius:50%;background:#1d2b3e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem}}
+.donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
 <body><h1>Eidolon Memory Engine</h1><p><a href="/files">Parcourir les fichiers Markdown</a> · <a href="/sources">Sources</a></p>
 <p>Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(str(metrics['measured_at']))} UTC · rafraîchissement 30 s</small></p>
-<main><section><h2>RAM hôte</h2><p>Utilisée : {_size(ram['used'])}<br>Disponible : {_size(ram['available'])}<br>
-Total : {_size(ram['total'])}</p></section>
-<section><h2>Volume des données</h2><p>Utilisé : {_size(volume['used'])}<br>Libre : {_size(volume['free'])}<br>
-Total : {_size(volume['total'])}</p><small>{escape(str(metrics['data_path']))}</small></section>
+<main><section><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
+<section><h2>Espace disque</h2>{chart(volume['used'], volume['total'], volume['free'], 'Espace disque')}<small>{escape(str(metrics['data_path']))}</small></section>
 <section><h2>Fichiers du moteur</h2><p>{int(data['files'])} fichiers · {_size(data['bytes'])} logiques<br>
 Liens ignorés : {int(data['symlinks_skipped'])}</p></section>
 <section><h2>Threads</h2><table>{rows(state['threads']['statuses'])}</table>
