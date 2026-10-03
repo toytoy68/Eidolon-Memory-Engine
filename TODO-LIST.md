@@ -832,3 +832,7 @@ Claude, code réservé) ; revue D1/D2/D3/D5 ; compatibilité D7/D10 ; contrats d
 campagnes/purge/PDF, avec modalités non fixées séparées. GPT continue D8 et UI
 mobile puis versions d’extraction D4/D11 ; pas de doublon sur ces fichiers.
 Ancienne demande archivée, aucune mission donnée comme déjà exécutée.
+
+Validation intégrée post-revue sources/UI, code `be8eed7` : 1742 tests VM verts
+en 38,51 s, 15 MCP exclus ; [preuves](docs/validation/2026-10-03-source-review/README.md).
+UI mobile/fonds attend sa nouvelle recette navigateur indépendante.

@@ -2267,3 +2267,8 @@ inchangé et aucune transmission VM. Rafraîchissement suspendu pendant réglage
 et onglet masqué, script CSP hashé conservé. **17 ciblés verts en 0,33 s**.
 Pas de navigateur installé/automatisé ici ; recette Chromium cloud explicitement
 demandée à Claude. Aucun gain de contraste mesuré sur une nouvelle capture VM.
+
+Validation intégrée sur `be8eed7` : **1742 réussis en 38,51 s**, 15 MCP exclus.
+GET / et /sources live : 200 ; Basic Unicode erroné : 401 ; audit réel des
+sources : 1, aucune anomalie. Aucun original du roman ni souvenir modifié par
+cette recette. [Journal et limites](docs/validation/2026-10-03-source-review/README.md).
