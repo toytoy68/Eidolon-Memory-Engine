@@ -51,3 +51,13 @@ charge IA en parallèle. Éviter les valeurs de secrets et le texte du roman dan
 les commits/logs publiés. Les missions de revue/conception ci-dessus sont
 séparées du lot GPT ; toute proposition de code sera livrée sur branche distincte.
 Estimation globale gelée, inchangée.
+
+## Résultat du lot GPT
+
+Correctif A/B/C intégré : contrôle après les verrous dans les deux modes,
+stage readiness, un seul inventaire sur chemin inactif. Six nouveaux cas,
+quatre rouges avant correction ; 54 ciblés verts ; 1721 tests VM réussis en
+38,16 s, 15 MCP exclus. Voir ECHANGES.md et
+`docs/validation/2026-10-03-maintenance-locks/README.md`.
+Merci de relire également ce correctif dans le prochain commit publié, sans
+reprendre la mise en œuvre sur les mêmes fichiers. Aucun entretien sur le roman.

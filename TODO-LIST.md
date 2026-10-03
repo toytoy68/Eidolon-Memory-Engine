@@ -703,6 +703,35 @@ fiches, validation navigateur/LAN, extraction de tout un manuscrit, qualité
 IA sur corpus réel et impact conjoint avec Eidolon Core. Aucun service permanent
 dashboard/IA ni nouveau proxy public installé ; pas de garantie de zéro impact.
 
+## Répartition GPT / Claude — 3 octobre, après mise en service dashboard
+
+Missions Claude publiées dans [GPT-TO-CLAUDE.md](collaboration/GPT-TO-CLAUDE.md)
+(base `2600e13`, publication `e49caa7`) :
+
+- Revue T-051 des originaux, références et validations, avec cas négatifs.
+- Proposition d’analyse progressive du roman et file durable de propositions,
+  pour réduire le tri manuel ; pas d’acceptation automatique.
+- Revue T-029 de la personnalisation navigateur/CSP et lisibilité mobile.
+- Étude de l’extraction PDF locale bornée, références par page et limites OCR.
+
+**GPT : correctif T-046/T-049 issu de la revue Claude `2387dec`, livré.**
+Readiness après les verrous dans les deux modes ; erreurs d’échéance rapportées
+au stade readiness ; phase partagée pour un seul inventaire sur passe inactive.
+Six nouveaux cas paramétrés, quatre rouges avant correction ; 54 ciblés verts.
+Suite générale VM : 1721 réussis en 38,16 s, 15 MCP exclus ;
+[journal et limites](docs/validation/2026-10-03-maintenance-locks/README.md).
+Le mode par défaut peut attendre un écrivain avant de signaler un état bloquant.
+Aucune passe d’entretien lancée sur le roman utilisateur ; corpus de test séparés.
+
+Actualisation T-051/T-029 : depuis la livraison initiale, le dashboard est actif
+sur le LAN 192.168.1.110:8766, upload et extraction du roman utilisateur réussis,
+une proposition réelle obtenue sans validation GPT. Captures utilisateur :
+diagrammes mémoire/disque et fond personnalisé fonctionnels. Corrections upload
+`410a049`, citation/paragraphe `568ab98`, présentation `9d420d4`, `81f33de`,
+`2600e13`. Restent la file durable, traitement complet confortable, PDF,
+qualité systématique des propositions et impact conjoint avec Core.
+Aucun démarrage automatique ni HTTPS dashboard ajouté. Estimation inchangée.
+
 ## Recette VM — RÉUSSIE SUR ARBRE VIDE / CORPUS RÉEL NON VALIDÉ
 
 | Tâche | Preuve exigée |

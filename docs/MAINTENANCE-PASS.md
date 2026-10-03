@@ -152,8 +152,14 @@ l’un de ces verrous, la passe rend `status=DEFERRED`,
 déclencher d’échéance ou publier de dérivé. Le CLI renvoie 0 : report volontaire,
 pas réussite de l’entretien. Relancer plus tard avec temps/contexte actualisés.
 
-Avec cette option, la readiness initiale est lue seulement après acquisition
+Dans les deux modes, la readiness initiale est lue seulement après acquisition
 des deux verrous, pour éviter de diagnostiquer des journaux en cours d’écriture.
+Le mode par défaut attend donc les écrivains coopératifs même avant de signaler
+un état réellement bloquant ; `--if-idle` conserve son report immédiat.
+Une même phase de lecture protégée couvre l’audit initial et l’inspection sans
+travail : un seul inventaire complet est nécessaire sur ce chemin. Les phases
+de récupération, d’écriture et de vérification finale restent distinctes.
+Les erreurs de lecture des échéances après acquisition portent `stage=readiness`.
 Un état FAILED/corrompu découvert une fois les verrous libres reste BLOCKED.
 Une erreur de chemin/permission n’est pas assimilée à un écrivain occupé.
 Un verrou déjà détenu par le même thread reste réentrant. Si le second verrou

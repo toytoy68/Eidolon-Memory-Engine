@@ -135,3 +135,54 @@ def test_idle_option_retains_partial_dossier_backlog(tmp_path):
     assert result['status'] == 'PARTIAL'
     assert result['dossiers']['remaining_count'] == 2
     assert backend.get('info-1').revision == 1
+
+
+@pytest.mark.parametrize('if_idle', [False, True])
+def test_readiness_runs_only_after_canonical_locks(tmp_path, monkeypatch, if_idle):
+    from core.persistence import write_lock_held
+    import core.maintenance.service as module
+    backend, service, _ = seed(tmp_path)
+    original = module.check_readiness
+    checks = []
+
+    def checked(root):
+        assert write_lock_held(backend.persistent_root)
+        assert write_lock_held(service.storage.threads_root)
+        checks.append(root)
+        return original(root)
+
+    monkeypatch.setattr(module, 'check_readiness', checked)
+    assert service.run(at=DUE, query_scope=SCOPE, if_idle=if_idle)['status'] == 'COMPLETED'
+    assert checks
+
+
+@pytest.mark.parametrize('if_idle', [False, True])
+def test_deadline_read_failure_reports_readiness_stage(tmp_path, monkeypatch, if_idle):
+    _, service, _ = seed(tmp_path)
+
+    def broken(at):
+        raise ValueError('deadline read failed')
+
+    monkeypatch.setattr(service, '_deadlines', broken)
+    result = service.run(at=DUE, if_idle=if_idle)
+    assert result['status'] == 'BLOCKED'
+    assert result['stage'] == 'readiness'
+
+
+@pytest.mark.parametrize('if_idle', [False, True])
+def test_idle_pass_reuses_one_full_inventory(tmp_path, monkeypatch, if_idle):
+    import core.operations.readiness as module
+    _, service, _ = seed(tmp_path)
+    assert service.run(at=DUE, query_scope=SCOPE)['status'] == 'COMPLETED'
+    original = module.inventory
+    scans = []
+
+    def counted(root, *args, **kwargs):
+        scans.append(root)
+        return original(root, *args, **kwargs)
+
+    monkeypatch.setattr(module, 'inventory', counted)
+    result = service.run(at=DUE, query_scope=SCOPE, if_idle=if_idle)
+    assert result['status'] == 'COMPLETED'
+    assert result['recovery'] is None
+    assert len(scans) == 1

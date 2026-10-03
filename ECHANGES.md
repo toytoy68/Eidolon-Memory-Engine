@@ -2068,3 +2068,28 @@ monitoring et TODO actualisées. Manuscrit réel non fourni/importé ; aucun
 service permanent dashboard/IA, accès LAN/navigateur ou HTTPS nouveau installé.
 Extraction PDF, file durable, traitement intégral du manuscrit, qualité IA et
 coupure électrique ouverts. Estimation 45 % / 52,75 points inchangée.
+
+
+### Répartition Claude et correctif entretien T-046/T-049 — 3 octobre 2026 — Codex/GPT
+
+Demande directe toytoy après personnalisation du dashboard : missions Claude
+publiées dans le canal à `e49caa7`, ancienne demande archivée byte-exact.
+Revue sources/validation, proposition analyse progressive du roman, revue UI
+et étude PDF ; aucun assistant réveillé ni résultat Claude supposé reçu.
+GPT prend séparément les observations A/B/C de sa revue `2387dec`.
+
+Readiness déplacée après les verrous dans les deux modes et partagée avec
+l’inspection inactive via settled_read_phase ; stage corrigé. Le mode par défaut
+attend désormais les verrous même pour rapporter un état vraiment bloquant.
+Les chemins d’écriture/reprise et audit final restent distincts. Six nouveaux
+cas paramétrés, quatre rouges avant correction, 54 ciblés verts ensuite.
+Suite VM **1721 réussis en 38,16 s**, 15 MCP exclus ; aucun entretien lancé
+sur le roman. [Journal et limites](docs/validation/2026-10-03-maintenance-locks/README.md).
+Aucune nouvelle reproduction de course chronométrée, aucun essai Windows ni
+coupure électrique revendiqués. Revue indépendante du nouveau correctif attendue.
+
+T-051/T-029 : accès LAN et upload réel désormais observés, extraction et première
+proposition réelle réussies ; captures utilisateur valident diagrammes et fond
+personnalisé. Aucun souvenir accepté par GPT. Pas de service automatique/HTTPS.
+Le tri portion par portion reste lourd : proposition de file progressive demandée
+à Claude. Estimation gelée inchangée.

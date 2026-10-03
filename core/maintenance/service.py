@@ -85,12 +85,6 @@ class MaintenancePass:
         report = dict(status='BLOCKED', at=at, stage='readiness', recovery=None,
                       triggers={}, dossiers=None, catalogue=None, verification=None)
         try:
-            state = None
-            if not if_idle:
-                state = check_readiness(self.root)
-                report['readiness'] = state
-                if any(not issue['resumable'] for issue in state['issues']):
-                    return report
             if not self.backend.persistent_root.is_dir():
                 raise ValueError('existing engine Persistent directory required')
             with ExitStack() as locks:
@@ -98,20 +92,19 @@ class MaintenancePass:
                 locks.enter_context(exclusive_write(self.backend.persistent_root, blocking=not if_idle))
                 if self.storage.threads_root.is_dir():
                     locks.enter_context(exclusive_write(self.storage.threads_root, blocking=not if_idle))
-                if if_idle:
-                    report['stage'] = 'readiness'
+                report['stage'] = 'readiness'
+                with settled_read_phase(self.root):
                     state = check_readiness(self.root)
                     report['readiness'] = state
                     if any(not issue['resumable'] for issue in state['issues']):
                         return report
-                if state['ready'] and not self._deadlines(at)['due']:
-                    with settled_read_phase(self.root):
+                    if state['ready'] and not self._deadlines(at)['due']:
                         idle = self.inspect(at=at)
-                    if idle['status'] == 'READY' and not idle['work_pending']:
-                        report.update(status='COMPLETED', stage='done', verification=idle,
-                                      dossiers=dict(idle['dossiers'], actions=[]),
-                                      catalogue=dict(idle['catalogue'], status='UNCHANGED'))
-                        return report
+                        if idle['status'] == 'READY' and not idle['work_pending']:
+                            report.update(status='COMPLETED', stage='done', verification=idle,
+                                          dossiers=dict(idle['dossiers'], actions=[]),
+                                          catalogue=dict(idle['catalogue'], status='UNCHANGED'))
+                            return report
                 report['stage'] = 'recovery'
                 report['recovery'] = recover_all(self.root)
                 if not report['recovery']['readiness']['ready']:
