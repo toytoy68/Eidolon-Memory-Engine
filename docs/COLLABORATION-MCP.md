@@ -174,3 +174,27 @@ fait échouer les tests correspondants. `pip check` cohérent. Syntaxe systemd
 validée sur une copie dont ExecStart pointe vers le Python existant ; le chemin
 de déploiement du modèle n'existe pas encore. Caddy n'est pas installé, son
 modèle n'a pas pu être validé avec l'exécutable. Aucun service permanent activé.
+
+## Paquet d'installation préparé
+
+Le générateur `tools.prepare_collaboration_deployment` prépare une copie du
+code du serveur, les modèles, un manifeste SHA256 et `install-vm.sh`. Le script
+est à examiner puis exécuter comme administrateur sur la VM : compte système,
+code root séparé du checkout Git, environnement Python, clé de déploiement
+dédiée créée sur la VM, unité installée **sans démarrage**. Il ne remplace pas
+la configuration Caddy existante, ne provisionne pas le fournisseur OAuth et
+n'ajoute pas la clé publique dans GitHub. Aucun secret dans le paquet.
+
+```bash
+.venv/bin/python -m tools.prepare_collaboration_deployment --output tmp/collaboration-deployment
+```
+
+Avec les quatre paramètres connus, fournir également `--domain`, `--issuer`,
+`--jwks` et `--subject` : le paquet inclut alors environment et Caddyfile
+renseignés. Sans ces paramètres, seuls les modèles sont fournis. La destination
+ne doit pas exister ; un paquet existant n'est jamais écrasé. Le fichier
+`NEXT-STEPS.md` du paquet détaille la configuration et l'activation finales.
+
+Sur cette session, `sudo -n` confirme qu'un mot de passe administrateur est
+nécessaire. Le paquet peut être préparé et testé ici ; installation système
+et activation nécessitent ce droit et les paramètres encore manquants.

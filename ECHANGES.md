@@ -1859,3 +1859,20 @@ clé GitHub dédiée non provisionnée, aucun service permanent/HTTPS installé 
 aucune session Claude Web testée. La question de configuration a été présentée
 à toytoy. Le canal ne réveille aucun assistant. Données mémoire et estimation
 globale 45 % / 52,75 points intactes.
+
+
+### Préparation de l'installation — 3 octobre 2026 — Codex/GPT
+
+À la demande « ok prépare ça », ajout d'un générateur de paquet autonome et
+d'un script VM : compte dédié, copie root du serveur, venv, clé GitHub dédiée
+créée sur place, modèles et unité systemd installables sans démarrer le MCP.
+Manifeste SHA256 ; aucun secret copié dans le paquet, configuration optionnelle
+domaine/issuer/JWKS/subject validée avant toute écriture, destination préservée.
+
+**11 nouveaux tests réussis en 0,03 s** : contenu et hashes, source identique,
+configuration/permissions, refus des paramètres invalides et non-écrasement.
+Neutraliser la validation URL fait échouer les cas correspondants ; source
+restaurée. Syntaxe Bash contrôlée ; le script administrateur n'est pas exécuté.
+`sudo -n` hors sandbox exige un mot de passe. Caddy absent ; domaine et
+fournisseur OAuth encore non fournis, question présentée à toytoy. Pas de
+service système activé, ni de connexion réelle Claude revendiquée.

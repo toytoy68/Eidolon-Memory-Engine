@@ -51,6 +51,9 @@ Historique ECHANGES.md conservé. Suite finale directe VM : **1643 réussis en
 local/Git bare réussi, preuves négatives publication/authentification réussies.
 Aucun test sur données mémoire actives.
 
+Paquet reproductible et script d’installation sans activation préparés ensuite ;
+11 tests supplémentaires réussis. Droit administrateur : mot de passe requis.
+
 **À FAIRE** : domaine public/DNS/HTTPS, fournisseur OAuth et identité autorisée,
 clé GitHub dédiée, installation permanente et recette Claude Web réelle.
 Caddy absent sur la VM ; modèle non validé par Caddy. Syntaxe systemd vérifiée
