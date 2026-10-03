@@ -2164,3 +2164,17 @@ Aucune validation implicite, même barrière citation/référence ; les erreurs 
 formulaire restent 400. Deux cas HTTP rouges avant le lot, **32 ciblés verts
 en 0,40 s**, absence d’écriture après rejet et libération de la place d’inférence
 contrôlées. Aucun appel IA réel ni donnée utilisateur modifiée pendant la recette.
+
+
+### T-046/T-049 — Échéances pass-local — 3 octobre 2026 — Codex/GPT
+
+Suite sur `0b02f31` : éviter le deuxième appel _deadlines sur sortie inactive,
+réutilisation limitée au rapport de la passe sous les verrous. Aucun cache sur
+l’instance ; les passes d’écriture/audit final et inspect public relisent leurs
+sources. Deux cas paramétrés rouges avant correction, **74 ciblés verts en
+3,63 s** ; passage à une échéance devenue due vérifié, aucun entretien du roman.
+Documentation complétée, aucune mesure de gain de latence nouvelle revendiquée.
+
+Validation finale du lot échéances (rapport figé après copie défensive) :
+**1732 réussis en 38,36 s**, 15 MCP exclus ;
+[journal et limites](docs/validation/2026-10-03-maintenance-deadlines/README.md).

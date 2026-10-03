@@ -186,3 +186,26 @@ def test_idle_pass_reuses_one_full_inventory(tmp_path, monkeypatch, if_idle):
     assert result['status'] == 'COMPLETED'
     assert result['recovery'] is None
     assert len(scans) == 1
+
+
+@pytest.mark.parametrize('if_idle', [False, True])
+def test_idle_deadlines_are_read_once_per_pass_without_cross_pass_cache(tmp_path, monkeypatch, if_idle):
+    from tests.test_maintenance_pass import STAMP
+    _, service, _ = seed(tmp_path)
+    assert service.run(at=STAMP, query_scope=SCOPE)['status'] == 'COMPLETED'
+    original = service._deadlines
+    calls = []
+
+    def counted(at):
+        calls.append(at)
+        return original(at)
+
+    monkeypatch.setattr(service, '_deadlines', counted)
+    first = service.run(at=STAMP, query_scope=SCOPE, if_idle=if_idle)
+    assert first['status'] == 'COMPLETED' and first['recovery'] is None
+    assert calls == [STAMP]
+    assert first['verification']['deadlines']['future_count'] == 1
+    # A later pass must observe the same scheduled trigger becoming due.
+    later = service.run(at=DUE, query_scope=SCOPE, if_idle=if_idle)
+    assert later['status'] == 'COMPLETED' and later['triggers']
+    assert DUE in calls

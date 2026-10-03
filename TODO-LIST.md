@@ -612,6 +612,11 @@ temps/contexte explicites. Aucun critère CPU/SSH/utilisateur, horaire ni job
 installé ; autres verrous internes et scans toujours potentiellement longs.
 Preuves Linux sur corpus synthétiques isolés, voir le contrat d’entretien.
 
+Ajout T-049 : échéances lues une seule fois sur passe inactive, réutilisées
+uniquement pour son rapport ; aucune conservation entre passes, nouvelle
+échéance due relue/appliquée. Deux cas rouges avant lot, 74 ciblés verts ; suite finale VM 1732 réussis
+en 38,36 s, 15 MCP exclus. [Preuve](docs/validation/2026-10-03-maintenance-deadlines/README.md).
+
 Restant : récurrence/charge/fenêtre horaire, dérivés incrémentaux et consommateurs
 externes. Aucun ordonnanceur système ni job récurrent installé.
 

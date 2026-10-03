@@ -55,13 +55,16 @@ class MaintenancePass:
     def inspect(self, *, at):
         """No writes, not even repository/lock initialization; stopped-copy view."""
         timestamp(at)
-        readiness = check_readiness(self.root)
-        report = dict(status='BLOCKED', at=at, readiness=readiness,
+        return self._inspect(at=at, readiness=check_readiness(self.root))
+
+    def _inspect(self, *, at, readiness, deadlines=None):
+        """Build a report from fresh pass-local reads; retain no cross-pass cache."""
+        report = dict(status='BLOCKED', at=at, readiness=deepcopy(readiness),
                       deadlines=None, dossiers=None, catalogue=None)
         if not readiness['ready']:
             return report
         try:
-            report['deadlines'] = self._deadlines(at)
+            report['deadlines'] = self._deadlines(at) if deadlines is None else deepcopy(deadlines)
             report['dossiers'] = self.dossiers.inspect()
             report['catalogue'] = self.catalogue.status()
             if report['dossiers']['status'] != 'BLOCKED':
@@ -98,13 +101,15 @@ class MaintenancePass:
                     report['readiness'] = state
                     if any(not issue['resumable'] for issue in state['issues']):
                         return report
-                    if state['ready'] and not self._deadlines(at)['due']:
-                        idle = self.inspect(at=at)
-                        if idle['status'] == 'READY' and not idle['work_pending']:
-                            report.update(status='COMPLETED', stage='done', verification=idle,
-                                          dossiers=dict(idle['dossiers'], actions=[]),
-                                          catalogue=dict(idle['catalogue'], status='UNCHANGED'))
-                            return report
+                    if state['ready']:
+                        deadlines = self._deadlines(at)
+                        if not deadlines['due']:
+                            idle = self._inspect(at=at, readiness=state, deadlines=deadlines)
+                            if idle['status'] == 'READY' and not idle['work_pending']:
+                                report.update(status='COMPLETED', stage='done', verification=idle,
+                                              dossiers=dict(idle['dossiers'], actions=[]),
+                                              catalogue=dict(idle['catalogue'], status='UNCHANGED'))
+                                return report
                 report['stage'] = 'recovery'
                 report['recovery'] = recover_all(self.root)
                 if not report['recovery']['readiness']['ready']:

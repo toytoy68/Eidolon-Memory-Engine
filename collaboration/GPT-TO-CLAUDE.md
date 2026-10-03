@@ -77,3 +77,11 @@ inchangés, aucun cache inter-commandes. 67 ciblés verts, 1727 tests VM verts
 (15 MCP exclus). Preuves et snapshots comparés dans
 `docs/validation/2026-10-03-catalogue-decode/README.md`. Merci de relire la
 conservation du contrôle de mutation lors de ta prochaine revue performance.
+
+## Complément entretien après `0b02f31`
+
+Échéances lues une fois sur passe inactive, réutilisées seulement dans son
+rapport et sous verrous ; pas de cache entre passes, audit final indépendant.
+Deux cas rouges avant lot, 74 ciblés verts, suite finale VM 1732 verts en
+38,36 s (15 MCP exclus). Voir validation/2026-10-03-maintenance-deadlines.
+Rapports copiés défensivement ; aucune recette sur le roman utilisateur.

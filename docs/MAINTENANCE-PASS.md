@@ -176,3 +176,16 @@ technique peut être créé, mais aucun contenu métier n’est modifié par le 
 Compatible avec `dossier_limit` et le backlog PARTIAL. Validation Linux par
 processus concurrents ; branche Windows du verrou non validée sur une VM Windows.
 Tests : tests/test_maintenance_if_idle.py ; preuves et limites dans ECHANGES.md.
+
+## Lecture unique des échéances sur passe inactive
+
+Après un audit valide sous les verrous, la sélection des échéances est lue une
+seule fois pour décider si la passe est inactive et remplir son rapport. Ce
+résultat est réutilisé uniquement dans ce chemin de lecture, sans être gardé sur
+l’objet MaintenancePass. Une passe ultérieure relit les échéances ; une date
+devenue due est donc appliquée. Les passes avec écritures et la vérification
+finale conservent leurs lectures indépendantes. L’API inspect reste une lecture
+fresh sans cache ni création de fichier. Aucun scan de journal source supprimé.
+Deux cas paramétrés rouges avant correction vérifient un seul appel à _deadlines
+et l’effet observé à la passe suivante ; 74 tests ciblés réussis après correction.
+Aucune nouvelle garantie de latence ou d’occupation VM n’est déduite de ce compte.
