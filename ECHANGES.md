@@ -1826,3 +1826,36 @@ Aucune donnée active ou corpus temporaire dans les commits du créneau.
 Aucun code métier nouveau ni test répété pour ce bilan documentaire.
 Données réelles, intégration services/coupure électrique, clients externes et
 ingestion notes restent ouverts. Estimation 45 % / 52,75 points inchangée.
+
+
+## Canal GPT ↔ Claude et MCP — 3 octobre 2026 — Codex/GPT
+
+Demande toytoy reçue depuis « Connecter GitHub à Claude », reprise directement
+sur VM : branche `refactor/architecture-v1`, HEAD initial `d9c8ba8`, arbre propre
+et origin synchronisé avant modification. `collaboration/` porte désormais les
+messages actifs et leurs archives ; aucun ancien échange supprimé ou déplacé.
+Le protocole docs/COLLABORATION.md reste applicable.
+
+`services/collaboration/` : read_gpt_message, write_claude_message et
+get_exchange_status uniquement, dépôt dédié, branche/origines GitHub imposées,
+UTF-8/32768 octets, verrou flock, refus sale/divergent/en avance, pull --ff-only,
+archivage exact, commit/push des chemins contrôlés et contrôle distant. Audit
+local sans message/token. OAuth JWT RS256 avec issuer/audience/scope/subject
+autorisé ; découverte RFC 9728. Modèles systemd/Caddy et procédure d'incident
+dans docs/COLLABORATION-MCP.md. Aucun credential ajouté au dépôt.
+
+Validation réellement exécutée : **1643 tests réussis en 38,02 s**, dont
+**37 nouveaux cas**, corpus Git temporaires isolés. Client MCP officiel vers
+serveur HTTP loopback réel : lecture GPT, réponse Claude commitée/poussée au
+remote bare, statut prêt ; aucune réponse attribuée à une session Claude.
+Neutraliser en mémoire le push puis le vérificateur OAuth produit un échec
+comportemental pour chacun ; aucun changement source conservé par ces sondes.
+Dépendances cohérentes (`pip check`). Syntaxe systemd validée sur copie avec
+Python existant ; modèle original attend son installation. Caddy absent,
+configuration non validée par son exécutable.
+
+Activation publique encore ouverte : domaine et fournisseur OAuth non fournis,
+clé GitHub dédiée non provisionnée, aucun service permanent/HTTPS installé et
+aucune session Claude Web testée. La question de configuration a été présentée
+à toytoy. Le canal ne réveille aucun assistant. Données mémoire et estimation
+globale 45 % / 52,75 points intactes.

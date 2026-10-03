@@ -5,6 +5,15 @@ autorisé ; Claude apporte des revues ponctuelles selon sa disponibilité.
 Une revue non reçue n'est ni un accord ni un veto. Il n'y a pas de quota,
 d'horaire ou de présence garantis par ce protocole.
 
+## Canal actif GPT ↔ Claude
+
+Depuis le 3 octobre 2026, les messages actifs courts sont dans
+[collaboration/](../collaboration/README.md). ECHANGES.md conserve son historique
+et les bilans des lots ; les demandes/réponses du nouveau canal sont archivées
+séparément. Le [serveur MCP](COLLABORATION-MCP.md) permet à Claude de publier
+uniquement sa réponse et son archive. Il ne lance aucun assistant. Son activation
+HTTPS/OAuth et sa recette Claude Web restent distinctes de la livraison du code.
+
 ## Répartition des documents
 
 - [ECHANGES.md](../ECHANGES.md) : questions, objections, preuves et réponses signées.

@@ -1,0 +1,26 @@
+[Unit]
+Description=Eidolon Collaboration MCP
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=eidolon-collaboration
+Group=eidolon-collaboration
+WorkingDirectory=/opt/eidolon-collaboration/app
+EnvironmentFile=/etc/eidolon-collaboration/environment
+ExecStart=/opt/eidolon-collaboration/venv/bin/python -m services.collaboration.server
+Restart=on-failure
+RestartSec=5
+UMask=0077
+StateDirectory=eidolon-collaboration
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/eidolon-collaboration
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

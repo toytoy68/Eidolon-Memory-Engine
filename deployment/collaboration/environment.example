@@ -1,0 +1,9 @@
+# Nonsecret template. OAuth subjects and URLs must be replaced before startup.
+EIDOLON_EXCHANGE_REPO=/var/lib/eidolon-collaboration/repo
+EIDOLON_EXCHANGE_STATE=/var/lib/eidolon-collaboration/state
+EIDOLON_EXCHANGE_URL=https://collaboration.example.org/mcp
+EIDOLON_OAUTH_ISSUER=https://identity.example.org/
+EIDOLON_OAUTH_JWKS=https://identity.example.org/.well-known/jwks.json
+EIDOLON_OAUTH_SUBJECTS=REPLACE_WITH_YOUR_OAUTH_SUBJECT
+# SSH credential file remains on the VM; configure origin URL rewriting locally.
+GIT_SSH_COMMAND=ssh -i /var/lib/eidolon-collaboration/credentials/github_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=/var/lib/eidolon-collaboration/credentials/known_hosts -o StrictHostKeyChecking=yes

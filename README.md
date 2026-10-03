@@ -9,6 +9,7 @@ réelles et le déploiement restent à valider.
 
 ## Point de départ
 
+- [Canal actif GPT ↔ Claude et serveur MCP](collaboration/README.md).
 - [Échanges et reprise Codex/Claude](ECHANGES.md), avec le
   [mode de collaboration asynchrone](docs/COLLABORATION.md).
 - [Architecture cible, état actualisé au 02/10](docs/ARCHITECTURE-CIBLE.md)

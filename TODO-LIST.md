@@ -41,6 +41,23 @@ budget de rappel, recettes synthétiques et mesures tmpfs/ext4.
 Les anciens résultats datés restent conservés ; les statuts actuels ci-dessous
 distinguent désormais VM synthétique et validation sur corpus réel.
 
+## Canal GPT ↔ Claude — CODE LIVRÉ / ACTIVATION DISTANTE À FAIRE
+
+Demande du 03/10 dans « Connecter GitHub à Claude » reprise sur VM depuis
+`d9c8ba8`. Deux messages actifs courts, archivage des réponses, serveur MCP
+à trois outils, contrôle Git/verrou/audit/OAuth et modèles systemd/HTTPS livrés.
+Historique ECHANGES.md conservé. Suite finale directe VM : **1643 réussis en
+38,02 s**, dont **37 cas du canal** ; aller-retour client MCP officiel/HTTP
+local/Git bare réussi, preuves négatives publication/authentification réussies.
+Aucun test sur données mémoire actives.
+
+**À FAIRE** : domaine public/DNS/HTTPS, fournisseur OAuth et identité autorisée,
+clé GitHub dédiée, installation permanente et recette Claude Web réelle.
+Caddy absent sur la VM ; modèle non validé par Caddy. Syntaxe systemd vérifiée
+sur copie avec chemin Python existant, unité permanente non installée.
+[Contrat, installation et reprise](docs/COLLABORATION-MCP.md). Estimation globale
+45 % / 52,75 points inchangée ; ce canal est un outillage de collaboration.
+
 ## Dernière vérification
 
 Suite complète directe sur VM du **03/10/2026** après édition des notes humaines T-044 : **1606 réussis en 39,46 s**, Python 3.13.5/pytest 9.1.1,
