@@ -14,21 +14,26 @@ from core.operations.readiness import check_readiness
 from core.retrieval.contextual import ContextualRecall
 from core.retrieval.payload import render
 from tools.vm_acceptance import hashes
+from core.persistence import has_symlink_component
 
 SCOPE = {'goal': 'payload-benchmark'}
 PREFIX = 'Sources synthétiques, réserves à respecter :\n'
 SUFFIX = '\nNe pas convertir une hypothèse en fait.'
 
 
-def run(*, metadata_sizes=(200, 2000, 10000), replicas=3, queries=3, budgets=(2000, 8000, 20000)):
+def run(*, metadata_sizes=(200, 2000, 10000), replicas=3, queries=3, budgets=(2000, 8000, 20000), temp_parent=None):
     if (type(replicas) is not int or replicas < 1 or type(queries) is not int or queries < 1
             or any(type(value) is not int or value < 1 for value in [*metadata_sizes, *budgets])):
         raise ValueError('positive sizes, budgets and repetitions required')
+    if temp_parent is not None:
+        temp_parent = Path(temp_parent).absolute()
+        if not temp_parent.is_dir() or has_symlink_component(temp_parent):
+            raise ValueError('temporary parent must be an existing real directory')
     points = []
     corpora = []
     for size in metadata_sizes:
         for replica in range(replicas):
-            with tempfile.TemporaryDirectory(prefix='em-payload-bench-') as folder:
+            with tempfile.TemporaryDirectory(prefix='em-payload-bench-', dir=temp_parent) as folder:
                 root = Path(folder)
                 backend = FilesystemBackend(root / 'memory/persistent', root / 'memory/history')
                 for index in range(8):
@@ -87,21 +92,23 @@ def run(*, metadata_sizes=(200, 2000, 10000), replicas=3, queries=3, budgets=(20
                 unbounded_payload_chars=sorted(set(point['unbounded_payload_chars'] for point in group)),
                 payload_chars=sorted(set(point['payload_chars'] for point in group)),
                 included_counts=sorted(set(len(point['included_ids']) for point in group))))
-    return dict(status='OK', synthetic=True, corpus_replicas=replicas, queries_per_warm_corpus=queries,
+    return dict(status='OK', synthetic=True, temporary_parent=str(temp_parent) if temp_parent is not None else tempfile.gettempdir(),
+                corpus_replicas=replicas, queries_per_warm_corpus=queries,
                 points=points, summaries=summaries, corpora=corpora,
                 tool_sha256=sha256(Path(__file__).read_bytes()).hexdigest(),
                 limitations=['character budgets only, no real tokenizer', 'render time excludes recall and network',
-                             'tmpfs disposable corpus; no physical disk latency', 'synthetic metadata, no real user corpus',
+                             'storage filesystem must be identified separately; no isolated physical disk latency', 'synthetic metadata, no real user corpus',
                              'adapter only considers the already selected five items'])
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--temp-parent', type=Path, help='Existing real parent for disposable corpora')
     args = parser.parse_args(argv)
     if args.output.exists():
         parser.error('output must be a new file')
-    report = run()
+    report = run(temp_parent=args.temp_parent)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + '\n')
     print(json.dumps({'status': report['status'], 'corpora': len(report['corpora']), 'render_points': len(report['points'])}))
     for summary in report['summaries']:

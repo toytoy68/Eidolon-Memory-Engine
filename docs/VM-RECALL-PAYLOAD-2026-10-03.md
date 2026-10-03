@@ -73,3 +73,38 @@ corpus indépendants ; ces derniers sont explicitement au nombre de neuf.
 Pas de seuil de production revendiqué ni de coupure électrique. Les mesures
 volumiques 300/1000/3000 du rappel restent distinctes : voir
 [VM-RECALL-2026-10-03.md](VM-RECALL-2026-10-03.md).
+
+## Extension sur ext4 — même code métier
+
+Base `858f02b` confirmée sur GitHub avant extension. L’outil accepte désormais
+un `--temp-parent` explicite ; il crée/supprime seulement ses corpus neufs dans
+ce parent. Neuf autres corpus indépendants, 27 rappels mesurés et 81 rendus,
+même protocole. Parent unique sous /opt/eidolon-memory-engine/tmp, volume invité
+ext4 /dev/sda2 identifié par findmnt. Parent et corpus supprimés après mesure.
+
+**Les 81 textes/hashes de payload correspondent exactement à tmpfs**, ainsi que
+identités, omissions, totaux d’extraits et taille UTF-8. Empreintes des corpus
+stables et readiness vraie. Code core SHA256 identique ; outil tmpfs historique
+retrouvé dans `858f02b` et son SHA256 conforme au manifeste précédent.
+
+| Preuve première source | Budget | Médiane rendu seul ext4 | Médiane rappel seul ext4 |
+| --- | --- | --- | --- |
+| 200 | 2000 | 0,247 ms | 3,254 ms |
+| 200 | 8000 | 0,073 ms | 3,254 ms |
+| 200 | 20000 | 0,074 ms | 3,254 ms |
+| 2000 | 2000 | 0,269 ms | 3,324 ms |
+| 2000 | 8000 | 0,077 ms | 3,324 ms |
+| 2000 | 20000 | 0,073 ms | 3,324 ms |
+| 10000 | 2000 | 0,291 ms | 3,336 ms |
+| 10000 | 8000 | 0,279 ms | 3,336 ms |
+| 10000 | 20000 | 0,085 ms | 3,336 ms |
+
+Ce second volume utilise toujours des lectures chaudes après warmup ; il ne
+mesure pas le disque physique isolé, le réseau ou la production. Ne pas
+additionner neuf fois les durées de rappel partagées par plusieurs rendus.
+Aucun tokenizer réel/corpus utilisateur/coupure électrique validé. Suite core
+1606 précédente conservée sans répétition, aucune commande métier changée.
+
+[Rapport ext4](benchmarks/vm-2026-10-03/recall-payload-ext4.json),
+[log ext4](benchmarks/vm-2026-10-03/recall-payload-ext4.log),
+[manifeste ext4](benchmarks/vm-2026-10-03/recall-payload-ext4-manifest.json).

@@ -583,6 +583,12 @@ Rendu seul médiane 0,269 ms dans ce cas, sans tokenizer ni latence production.
 Empreintes stables/readiness vraie, substitution de budget refusée ; code
 métier inchangé. [Mesures et limites](docs/VM-RECALL-PAYLOAD-2026-10-03.md).
 
+Extension ext4 du 03/10, base `858f02b` vérifiée sur GitHub : neuf corpus
+indépendants supplémentaires, 27 rappels chauds, 81 rendus dont les hashes
+correspondent exactement à tmpfs. Preuve 10000/budget 8000 : rendu seul
+0,279 ms et rappel seul 3,336 ms médians ; pas de disque physique isolé.
+Core inchangé, rapports/logs hashés, parent/corpus temporaires supprimés.
+
 Restant : qualité/latence sur corpus représentatif, politiques plus fines,
 catalogue/recherche sémantique, clients réels et recette VM sur corpus réel. Le mode historique ne restaure
 pas les révisions textuelles remplacées. Les budgets du rappel simple couvrent les extraits ; recall_payload couvre
