@@ -53,6 +53,20 @@ def shell(title, body):
             '<a href="/">Tableau de bord</a>' + f'<h1>{escape(title)}</h1>' + body + '</body></html>')
 
 
+def render_ai_error(code, identity):
+    status, message = {
+        'BUSY': (409, 'Une analyse est déjà en cours. Attendez sa fin puis réessayez.'),
+        'UNAVAILABLE': (503, 'Le moteur IA local ne répond pas. Réessayez plus tard ou demandez sa vérification.'),
+        'MODEL_MISSING': (503, 'Le modèle choisi est absent du moteur local. Demandez sa vérification.'),
+        'SOURCE_SUPPORT': (422, 'La proposition ne contient pas de citation exacte et identifiable dans le passage. Elle a été écartée. Vous pouvez réessayer ou passer à un autre paragraphe.'),
+        'PASSAGE_TOO_LONG': (422, 'Ce paragraphe dépasse la taille autorisée pour une analyse. Choisissez un autre numéro de départ.'),
+    }.get(code, (422, 'La réponse du modèle est incomplète ou illisible. Vous pouvez relancer l’analyse.'))
+    page = shell('Analyse non terminée', '<p role="alert">'+escape(message)+'</p>'
+                 '<p>Votre source est conservée. Aucun souvenir n’a été créé par cette analyse.</p>'
+                 f'<p><a href="/source/text?id={quote(identity)}">Revenir au texte pour reprendre</a></p>')
+    return status, page
+
+
 def render_sources(records, *, csrf=None, result=None):
     body = ('<p>Les originaux sont conservés entiers. Ajouter une source ne transforme pas '
             'automatiquement son texte en souvenirs.</p>')

@@ -12,6 +12,13 @@ from core.storage_format import decode_json_value
 _inference = Lock()
 
 
+class LocalAIError(ValueError):
+    """Stable user-facing category without exposing model output or source text."""
+    def __init__(self, code, reason):
+        self.code = code
+        super().__init__(reason)
+
+
 class NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
@@ -40,7 +47,9 @@ class LocalDetailAI:
                     raise ValueError('local AI response rejected')
                 return result
         except (OSError, URLError) as exc:
-            raise ValueError('local AI unavailable; install/start the configured local model') from exc
+            raise LocalAIError('UNAVAILABLE', 'local AI unavailable; install/start the configured local model') from exc
+        except (ValueError, UnicodeError) as exc:
+            raise LocalAIError('RESPONSE', 'local AI response rejected') from exc
 
     def _digest(self):
         tags = self._request('/api/tags')
@@ -49,7 +58,7 @@ class LocalDetailAI:
                 digest = model.get('digest')
                 if isinstance(digest, str) and re.fullmatch('[a-f0-9]{64}', digest):
                     return digest
-        raise ValueError('configured local model is not installed')
+        raise LocalAIError('MODEL_MISSING', 'configured local model is not installed')
 
     def propose(self, record, extraction, *, start=1):
         if type(start) is not int or not 1 <= start <= len(extraction['paragraphs']):
@@ -64,13 +73,13 @@ class LocalDetailAI:
             length += len(text)
         if not selected:
             if any(text.strip() for text in extraction['paragraphs'][start-1:]):
-                raise ValueError('selected paragraph is too long; select another starting paragraph')
+                raise LocalAIError('PASSAGE_TOO_LONG', 'selected paragraph is too long; select another starting paragraph')
             return dict(source_id=record['source_id'], source_sha256=record['sha256'],
                         extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
                         model=self.model, model_digest=None, details=[], first_paragraph=start,
                         last_paragraph=len(extraction['paragraphs']), next_paragraph=None)
         if not _inference.acquire(blocking=False):
-            raise ValueError('another local detail analysis is in progress; retry later')
+            raise LocalAIError('BUSY', 'another local detail analysis is in progress; retry later')
         try:
             digest = self._digest()
             system = ('Tu proposes au maximum cinq détails utiles, explicites et courts depuis un document. '
@@ -88,12 +97,15 @@ class LocalDetailAI:
                 prompt=json.dumps(selected, ensure_ascii=False), format=schema, stream=False,
                 think=False, keep_alive=0, options={'temperature': 0, 'num_ctx': 4096, 'num_predict': 512, 'num_thread': 1}))
             if response.get('done') is not True or response.get('model') != self.model:
-                raise ValueError('incomplete or unexpected local model response')
+                raise LocalAIError('RESPONSE', 'incomplete or unexpected local model response')
             if self._digest() != digest:
-                raise ValueError('local model changed during analysis')
-            payload = decode_json_value(response['response'])
+                raise LocalAIError('RESPONSE', 'local model changed during analysis')
+            try:
+                payload = decode_json_value(response['response'])
+            except (KeyError, TypeError, ValueError) as exc:
+                raise LocalAIError('RESPONSE', 'invalid detail proposals') from exc
             if not isinstance(payload, dict) or set(payload) != {'details'} or not isinstance(payload['details'], list) or len(payload['details']) > 5:
-                raise ValueError('invalid detail proposals')
+                raise LocalAIError('RESPONSE', 'invalid detail proposals')
             passages = {p['paragraph']: p['text'] for p in selected}
             details = []
             for item in payload['details']:
@@ -103,12 +115,12 @@ class LocalDetailAI:
                         or not isinstance(item['quote'], str) or not item['quote'].strip()
                         or len(item['quote']) > 2000
                         or '\x00' in item['detail']):
-                    raise ValueError('proposal has no exact source support; no memories created')
+                    raise LocalAIError('SOURCE_SUPPORT', 'proposal has no exact source support; no memories created')
                 supported = dict(item)
                 if item['quote'] not in passages[item['paragraph']]:
                     matches = [number for number, text in passages.items() if item['quote'] in text]
                     if len(matches) != 1:
-                        raise ValueError('proposal has no unique exact source support; no memories created')
+                        raise LocalAIError('SOURCE_SUPPORT', 'proposal has no unique exact source support; no memories created')
                     supported['paragraph'] = matches[0]
                 details.append(supported)
             last = selected[-1]['paragraph']

@@ -20,10 +20,11 @@ from core.monitoring.overview import overview
 from core.monitoring.appearance import decorate, SCRIPT_HASH
 from core.sources.store import SourceStore
 from core.sources.validation import seal, unseal, accept_detail
-from core.sources.local_ai import LocalDetailAI
+from core.sources.local_ai import LocalDetailAI, LocalAIError
 from core.backend.errors import BackendError
 from core.operations.errors import OperationRepositoryError
 from core.monitoring.sources import MAX_REQUEST, parse_upload, render_sources, render_source, render_extraction, render_proposals
+from core.monitoring.sources import render_ai_error
 
 
 def authorized(header: str | None, token: str) -> bool:
@@ -199,6 +200,9 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                 upload = parse_upload(self.headers.get('Content-Type'), raw, csrf)
                 result = store.add(**upload, added_at=datetime.now(timezone.utc).isoformat())
                 self._page(render_sources(store.list(), csrf=csrf, result=result['status']))
+            except LocalAIError as exc:
+                status, page = render_ai_error(exc.code, fields['id'][0])
+                self._page(page, status=status)
             except ImportError:
                 self.log_error('Missing runtime dependency; launch using the project virtual environment')
                 self.send_error(500, 'Dependance serveur manquante; contacter l administrateur.')

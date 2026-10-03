@@ -724,6 +724,10 @@ Ajout T-012/T-029 : lanceur dashboard via .venv, précontrôle des imports uploa
 avant ouverture du port ; un cas rouge avant le lot, dix ciblés verts et relance
 VM / et /sources HTTP 200. Toujours manuel, aucun ordonnanceur installé.
 
+Ajout T-051/T-029 : erreurs IA classées et pages de reprise françaises,
+occupé/indisponible/citation rejetée distingués, aucune réponse brute exposée.
+Deux nouveaux parcours rouges avant lot, 32 ciblés verts après correction.
+
 ## Répartition GPT / Claude — 3 octobre, après mise en service dashboard
 
 Missions Claude publiées dans [GPT-TO-CLAUDE.md](collaboration/GPT-TO-CLAUDE.md)

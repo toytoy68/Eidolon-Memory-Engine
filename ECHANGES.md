@@ -2153,3 +2153,14 @@ nouveau, aucun arrêt d’un autre intervenant. Test rouge avant lot, dix tests
 ciblés verts (0,34 s), lanceur réellement utilisé sur VM et GET /, /sources 200.
 Les tailles adaptées du lot `4dfc617` sont désormais actives. Ollama/Core/MCP
 laissés intacts ; aucun nouveau souvenir ni appel IA effectués.
+
+
+### T-051/T-029 — Erreurs IA lisibles — 3 octobre 2026 — Codex/GPT
+
+Suite UX : catégories LocalAIError et pages françaises avec lien de reprise,
+409 occupé, 503 moteur/modèle indisponible, 422 réponse/citation rejetée ou
+paragraphe trop long. Aucun texte rejeté ni sortie brute du modèle affichés.
+Aucune validation implicite, même barrière citation/référence ; les erreurs de
+formulaire restent 400. Deux cas HTTP rouges avant le lot, **32 ciblés verts
+en 0,40 s**, absence d’écriture après rejet et libération de la place d’inférence
+contrôlées. Aucun appel IA réel ni donnée utilisateur modifiée pendant la recette.

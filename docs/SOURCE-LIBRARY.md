@@ -138,3 +138,15 @@ quitter leur page. Ce bouton ne valide rien, ne traite pas tout le manuscrit et
 n’installe aucune analyse automatique. La file durable fait l’objet d’une
 proposition séparée demandée à Claude. Quatre nouveaux cas rouges avant le lot,
 45 tests sources/IA/HTTP réussis après correction.
+
+## Erreurs d’analyse lisibles
+
+Les erreurs attendues du modèle sont maintenant distinguées : analyse occupée
+(HTTP 409), moteur indisponible ou modèle absent (503), réponse inexploitable,
+citation non appuyée ou paragraphe trop long (422). Une page française conserve
+le lien vers le texte pour reprendre. Elle n’affiche ni la réponse brute du
+modèle ni le contenu fautif ; aucune proposition rejetée n’est enregistrée.
+Les erreurs de formulaire restent distinctes (400). LocalAIError reste une
+sous-classe de ValueError pour les appelants existants. Deux parcours HTTP rouges
+avant le lot, 32 tests dashboard/IA ciblés verts après correction, sans appel
+au modèle réel ni écriture du corpus utilisateur pendant ces tests.

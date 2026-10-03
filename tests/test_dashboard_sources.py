@@ -185,3 +185,46 @@ def test_empty_paragraphs_hidden_but_source_numbers_preserved(tmp_path):
         paragraphs=['', 'Lina.', '   ', 'Plume.']),csrf='secret',ai_enabled=True)
     assert '<li value="1">' not in page and '<li value="3">' not in page
     assert '<li value="2">' in page and '<li value="4">' in page
+
+
+def test_unsupported_ai_quote_has_readable_error_and_retry_link(tmp_path):
+    import json
+    from tests.test_source_ai import setup
+    from core.sources.local_ai import LocalDetailAI
+    _, record, _ = setup(tmp_path)
+    class UnsupportedAI(LocalDetailAI):
+        def _request(self, path, payload=None):
+            if path == '/api/tags':
+                return dict(models=[dict(name=self.model,digest='a'*64)])
+            return dict(model=self.model,done=True,response=json.dumps(dict(details=[
+                dict(detail='Invented detail',paragraph=1,quote='Invented quote') ])))
+    with server(tmp_path, ai=UnsupportedAI(model='qwen3:0.6b')) as port:
+        page=request(port,'/source/text?id='+record['source_id'])[2]
+        csrf=re.search(b'name="csrf" value="([^"]+)"',page)[1].decode()
+        before=hashes(tmp_path)
+        status,_,page=request(port,'/source/propose',method='POST',
+            body=urlencode(dict(id=record['source_id'],csrf=csrf,start=1)),
+            content_type='application/x-www-form-urlencoded')
+        assert status == 422
+        assert 'citation exacte'.encode() in page and b'Revenir au texte' in page
+        assert b'Invented quote' not in page and b'Invented detail' not in page
+        assert hashes(tmp_path)==before
+
+
+def test_busy_ai_has_readable_retryable_error_without_writes(tmp_path):
+    from tests.test_source_ai import setup
+    from core.sources.local_ai import LocalDetailAI, _inference
+    _, record, _ = setup(tmp_path)
+    with server(tmp_path, ai=LocalDetailAI(model='qwen3:0.6b')) as port:
+        page=request(port,'/source/text?id='+record['source_id'])[2]
+        csrf=re.search(b'name="csrf" value="([^"]+)"',page)[1].decode()
+        before=hashes(tmp_path)
+        assert _inference.acquire(blocking=False)
+        try:
+            status,_,page=request(port,'/source/propose',method='POST',
+                body=urlencode(dict(id=record['source_id'],csrf=csrf,start=1)),
+                content_type='application/x-www-form-urlencoded')
+        finally:
+            _inference.release()
+        assert status==409 and 'analyse est déjà en cours'.encode() in page
+        assert b'Revenir au texte' in page and hashes(tmp_path)==before
