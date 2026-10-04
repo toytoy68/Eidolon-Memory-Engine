@@ -67,6 +67,11 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Tableau de bord compact demandé le 04/10 : densité réduite à largeur ≤640 px
+ou hauteur ≤540 px, mémoire/disque côte à côte, autres cartes par défilement.
+19 tests existants verts. Rendu navigateur/VM NON VÉRIFIÉ, installation
+Chromium indisponible ici ; [recette](docs/MONITORING.md#tableau-de-bord-compact--4-octobre-2026).
+
 **VM EN ATTENTE (04/10, toytoy au repos, accès VM indisponible)** : après la
 base VM vérifiée 88050bc, synchroniser fenêtres v2 b3ae58e et les lots suivants,
 relancer les tests de rappel/import, de concurrence des reçus et de frontière

@@ -145,3 +145,21 @@ Vérification de rendu en navigateur réel de ce nouveau lot demandée à Claude
 aucun Chromium/Playwright disponible sur cette VM, aucun résultat navigateur
 précédent attribué à cette modification. Les mesures de contraste et le défaut
 de grande URL data proviennent de sa revue cloud `5e8c161`.
+
+## Tableau de bord compact — 4 octobre 2026
+
+À la demande de toytoy, la page principale se compacte automatiquement quand
+la fenêtre fait au plus 640 px de large **ou** 540 px de haut. Les cartes mémoire
+et espace disque restent côte à côte, avec cercles, titres et marges réduits.
+Les informations secondaires restent sous les jauges, accessibles par défilement ;
+elles ne sont pas supprimées. La ligne machine/date est masquée dans cette vue.
+La navigation et le réglage de fond restent accessibles. Les autres pages ne
+changent pas de densité ; la vue large conserve ses cartes ordinaires.
+
+19 tests dashboard/sources verts. Vérification visuelle réelle **en attente** :
+Playwright présent mais aucun navigateur installé ; téléchargement Chromium
+inutilisable dans cet environnement. Recette sur VM : mettre la branche à jour,
+relancer le dashboard, recharger `/`, puis réduire la fenêtre à environ 400×300,
+320×320 et 600×400 pixels ; vérifier jauges côte à côte, valeurs lisibles,
+absence de défilement horizontal, accès aux autres cartes par défilement vertical,
+puis agrandir à 1000×800. Tester aussi le fond personnalisé et le zoom 200 %.

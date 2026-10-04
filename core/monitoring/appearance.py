@@ -87,6 +87,27 @@ main{grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
 button{min-height:44px}a{display:inline-block;max-width:100%;min-height:44px;align-content:center}
 body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(16,24,39,var(--shade)),rgba(16,24,39,var(--shade))),var(--wallpaper);background-size:cover;background-position:center}
 .wallpaper-settings{margin:1.5rem 0;padding:1rem;background:#1d2b3e;border:1px solid #3b5369;border-radius:12px;color:#eef3fa}
+/* Resource cards remain together when the window becomes a small monitor. */
+.dashboard-grid>section{min-width:0}
+.dashboard .resource-card .donut{width:clamp(96px,24vw,190px);height:auto;aspect-ratio:1}
+.dashboard .resource-card .donut-center{width:78%;height:78%}
+@media(max-width:640px),(max-height:540px){
+ body.dashboard{padding:.5rem!important;font-size:13px}
+ .dashboard>h1{font-size:1.1rem;margin:0 0 .35rem;padding:.4rem .6rem}
+ .dashboard>.dashboard-nav{margin:0 0 .5rem;padding:0 .5rem;font-size:12px}
+ .dashboard-nav a{min-height:32px}
+ .dashboard>.dashboard-measurement{display:none}
+ .dashboard main.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+ .dashboard-grid>section{padding:.5rem;border-radius:8px}
+ .dashboard-grid h2{font-size:clamp(.8rem,2.5vw,1rem);margin:0 0 .35rem}
+ .dashboard .resource-card .donut{width:clamp(88px,23vw,128px);margin:.4rem auto}
+ .dashboard .donut-center b{font-size:clamp(1rem,3vw,1.4rem)}
+ .dashboard .donut-center span,.dashboard .donut-center small{font-size:11px}
+ .dashboard .donut-center{gap:.1rem}
+ .dashboard .capacity{font-size:12px;line-height:1.35;margin:.4rem 0 0}
+ .dashboard-grid>section:not(.resource-card){grid-column:1/-1}
+ .dashboard>.wallpaper-settings{margin:.5rem 0;padding:.5rem}
+}
 .wallpaper-settings summary{cursor:pointer}.wallpaper-settings label{display:block;margin:1rem 0}.wallpaper-settings input{max-width:100%}.wallpaper-settings button{padding:.6rem;cursor:pointer}.wallpaper-settings p{line-height:1.5}
 </style>"""
 CONTROLS = """<details class="wallpaper-settings"><summary>Personnaliser le fond d’écran</summary>

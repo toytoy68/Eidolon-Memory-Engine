@@ -80,11 +80,11 @@ td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}
 .donut{{width:190px;height:190px;border-radius:50%;margin:1.5rem auto;display:grid;place-items:center}}
 .donut-center{{width:148px;height:148px;border-radius:50%;background:#1d2b3e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem}}
 .donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
-<body data-refresh="30"><h1>Eidolon Memory Engine</h1><p><a href="/files">Parcourir les fichiers Markdown</a> · <a href="/sources">Sources</a></p>
-<p>Machine : <strong>{escape(str(metrics['host']))}</strong><br>
+<body class="dashboard" data-refresh="30"><h1>Eidolon Memory Engine</h1><p class="dashboard-nav"><a href="/files">Fichiers Markdown</a> · <a href="/sources">Sources</a></p>
+<p class="dashboard-measurement">Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(_measurement_time(str(metrics['measured_at'])))} (Europe/Paris) · rafraîchissement 30 s</small></p>
-<main><section><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
-<section><h2>Espace disque</h2>{chart(volume['used'], volume['total'], volume['free'], 'Espace disque')}<small>{escape(str(metrics['data_path']))}</small></section>
+<main class="dashboard-grid"><section class="resource-card"><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
+<section class="resource-card"><h2>Espace disque</h2>{chart(volume['used'], volume['total'], volume['free'], 'Espace disque')}<small>{escape(str(metrics['data_path']))}</small></section>
 <section><h2>Fichiers du moteur</h2><p>{int(data['files'])} fichiers · {_size(data['bytes'])} logiques<br>
 Liens ignorés : {int(data['symlinks_skipped'])}</p></section>
 <section><h2>Threads</h2><table>{rows(state['threads']['statuses'])}</table>
