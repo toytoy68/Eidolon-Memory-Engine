@@ -141,6 +141,14 @@ les premières versions transportées étaient mal échappées.
 Pas de migration/réimport réelle ; 153 messages techniques du corpus v1 restent
 présents selon comptage Claude. C2/C3 et limites de versions/doublons ouvertes.
 
+### Préparation T-046 : créneau explicite
+
+Preview pur fenêtre/inactivité livré : paramètres explicites, fuseau IANA,
+créneau [début,fin), traversée de minuit, durée écoulée UTC aux transitions DST.
+21 cas du module, 43 ciblés avec entretien verts. Pas de job, observation CPU,
+écriture mémoire ou garde readiness affirmée. [Contrat](docs/MAINTENANCE-WINDOW.md).
+Raccordement réel et définition de l’activité/charge/boot restent à décider.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,

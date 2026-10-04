@@ -29,3 +29,13 @@ Les benchmarks et la sous-recette de restauration restent utilisables séparéme
 Validation globale locale C1 : 1887 réussis, cinq cas Manager désélectionnés
 (sockets indisponibles ici), 73,85 s ; 15 MCP inclus sans proxies.
 Aucune validation VM de ce nouveau lot revendiquée.
+
+
+## Préparation suivante GPT : fenêtre d'entretien
+
+core/maintenance/window.py et tools.preview_maintenance_window : preview sans
+lecture/écriture mémoire ni job installé, horaire local explicite et durée UTC
+écoulée, inactivité fournie par l'appelant. 21 cas du module et 43 ciblés verts.
+Contrat MAINTENANCE-WINDOW.md. Ni ELIGIBLE ni un horaire ne prouvent readiness ou
+absence d'écrivain. Définition activité/charge et politique boot non engagées.
+Revue ultérieure possible après C2/C3 ; ne pas déployer de timer pour ce preview.
