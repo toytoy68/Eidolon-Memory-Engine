@@ -1101,3 +1101,14 @@ n'est créée pour le passage omis. Trois cas rouges avant correctif ;
 Validation globale locale C1 : 1887 réussis, cinq cas Manager désélectionnés
 (sockets indisponibles ici), 73,85 s ; 15 MCP inclus sans proxies.
 Aucune validation VM de ce nouveau lot revendiquée.
+
+### Reprise du 4 octobre — F1a livré, revue Claude demandée
+
+- GPT : avertissements source_reference_mismatch séparés des issues,
+  readiness conservée, Sources/fiche/compteur accueil, tests synthétiques.
+- Claude : revue négative F1a puis contrat/tests adaptés F1/F1b (interruption,
+  reprise, compatibilité, copie/restauration), sans engager le corpus réel.
+- VM /tmp (rapport Claude 5a5eea7) : 31 dossiers archivés/vérifiés puis retirés
+  après accords toytoy ; 1233 inodes occupés. Archives privées sous
+  /home/toytoy/eidolon-validation/tmp-archive-20261004, conservées jusqu'à recette finale.
+- Avancement global reste gelé à 45 %. Engagement durable non livré.

@@ -81,7 +81,7 @@ def _source_form(csrf, record=None):
             f'<button type="submit">{button}</button></form>')
 
 
-def render_sources(records, *, csrf=None, result=None, pending=(), issues=()):
+def render_sources(records, *, csrf=None, result=None, pending=(), issues=(), warnings=()):
     body = ('<p>Les originaux sont conservés entiers. Ajouter une source ne transforme pas '
             'automatiquement son texte en souvenirs.</p>')
     if result:
@@ -104,6 +104,7 @@ def render_sources(records, *, csrf=None, result=None, pending=(), issues=()):
         body += ('<section><h2>Vérification nécessaire</h2>'
                  '<p>Cette source ne peut pas être utilisée. Les autres sources valides restent consultables. Aucune suppression automatique n’est effectuée.</p>'
                  f'<details><summary>Détails pour la vérification</summary><p>{escape(issue["path"])}<br>{escape(issue["reason"])}</p></details></section>')
+    body += render_reference_warnings(warnings)
     body += '<h2>Sources conservées</h2><ul>'
     for record in records:
         body += (f'<li><a href="/source?id={quote(record["source_id"])}">{escape(record["title"])}</a> '
@@ -112,7 +113,7 @@ def render_sources(records, *, csrf=None, result=None, pending=(), issues=()):
     return shell('Sources', body)
 
 
-def render_source(record, *, csrf=None, has_extraction=False):
+def render_source(record, *, csrf=None, has_extraction=False, warnings=()):
     identity = record['source_id']
     body = ('<a href="/sources">Retour aux sources</a><section>'
             f'<p>Auteur : {escape(record["author"])}<br>Fichier : {escape(record["original_name"])}'
@@ -129,6 +130,7 @@ def render_source(record, *, csrf=None, has_extraction=False):
                  f'<input type="hidden" name="csrf" value="{escape(csrf, quote=True)}">'
                  f'<input type="hidden" name="id" value="{identity}">'
                  '<button>Extraire le texte pour préparer les détails à valider</button></form>')
+    body += render_reference_warnings(warnings)
     return shell(record['title'], body)
 
 
@@ -198,3 +200,14 @@ def render_proposals(record, proposals, tokens, csrf):
         body += '<p>Fin du document : aucun passage suivant à analyser.</p>'
     body += '<p>Pour refuser une proposition, ne pas la valider et revenir au texte.</p>'
     return shell('Détails à valider', body)
+
+
+def render_reference_warnings(warnings):
+    if not warnings:
+        return ''
+    body = '<section><h2>Références à vérifier</h2><p>Ces avertissements ne bloquent pas la mémoire. Aucun détail n’est modifié automatiquement.</p><ul>'
+    for item in warnings:
+        body += (f'<li><code>{escape(item["information_id"])}</code> · source : '
+                 f'{escape(str(item["source_id"]))} · paragraphe : {escape(str(item["paragraph"]))}'
+                 f'<br>source_reference_mismatch : {escape(", ".join(item["mismatches"]))}</li>')
+    return body + '</ul></section>'

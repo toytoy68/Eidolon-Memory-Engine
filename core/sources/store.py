@@ -190,22 +190,26 @@ class SourceStore:
 
 def audit_sources(root):
     store = SourceStore(root)
-    report = dict(count=0, issues=[])
+    report = dict(count=0, issues=[], warnings=[])
+    snapshots = {}
     try:
         store._paths()
-        if not store.directory.exists():
-            return report
-        for path in sorted(store.directory.iterdir()):
+        paths = sorted(store.directory.iterdir()) if store.directory.exists() else []
+        for path in paths:
             try:
                 if path.name == '.write.lock' and path.is_file() and not path.is_symlink():
                     continue
                 if path.name.startswith('.pending-'):
                     store._bundle(path, path.name.removeprefix('.pending-'))
                     raise ValueError('pending_source_publication')
-                store.read(path.name)
+                record, _ = store.read(path.name)
+                if (path / 'extraction.json').exists():
+                    snapshots[path.name] = (record, store._extraction(path, path.name))
                 report['count'] += 1
             except (OSError, ValueError, TypeError, KeyError) as exc:
                 report['issues'].append(dict(path=path.relative_to(store.root).as_posix(), reason=str(exc)))
     except (OSError, ValueError) as exc:
         report['issues'].append(dict(path='memory/sources', reason=str(exc)))
+    from core.sources.reference_audit import audit_references
+    report['warnings'] = audit_references(store.root, snapshots)
     return report

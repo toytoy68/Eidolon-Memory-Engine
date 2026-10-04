@@ -85,7 +85,7 @@ def check_readiness(engine_root: Path) -> dict:
     for item in deletions["issues"]:
         issues.append({"path": item["request"], "reason": item["reason"],
                        "resumable": item["reason"] == "deletion_requires_resume"})
-    report = {"ready": not issues, "issues": issues, "records": records,
+    report = {"ready": not issues, "issues": issues, "warnings": formats["sources"]["warnings"], "records": records,
               "information_deletions": deletions,
               "scope": "stopped_tree_point_in_time_no_concurrent_writers"}
     remember_readiness(root, report)

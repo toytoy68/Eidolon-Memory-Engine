@@ -18,7 +18,7 @@ from core.monitoring.files import DIRECTORIES, PAGE_SIZE, list_documents, read_d
 from core.monitoring.metrics import collect_metrics
 from core.monitoring.overview import overview
 from core.monitoring.appearance import decorate, SCRIPT_HASH
-from core.sources.store import SourceStore
+from core.sources.store import SourceStore, audit_sources
 from core.sources.validation import seal, unseal, accept_detail
 from core.sources.local_ai import LocalDetailAI, LocalAIError
 from core.backend.errors import BackendError
@@ -51,7 +51,7 @@ def _measurement_time(value: str) -> str:
     return local.strftime('%d-%m-%Y T %H:%M:%S ') + offset[:3] + ':' + offset[3:]
 
 
-def render_dashboard(metrics: dict, state: dict) -> str:
+def render_dashboard(metrics: dict, state: dict, *, warnings=()) -> str:
     ram = metrics["ram_bytes"]
     volume = metrics["volume_bytes"]
     data = metrics["engine_data"]
@@ -82,7 +82,7 @@ td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}
 .donut{{width:190px;height:190px;border-radius:50%;margin:1.5rem auto;display:grid;place-items:center}}
 .donut-center{{width:148px;height:148px;border-radius:50%;background:#1d2b3e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem}}
 .resource-text{{display:none}}.donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
-<body class="dashboard" data-refresh="30"><h1>Eidolon Memory Engine</h1><p class="dashboard-nav"><a href="/files">Fichiers Markdown</a> · <a href="/sources">Sources</a></p>
+<body class="dashboard" data-refresh="30"><h1>Eidolon Memory Engine</h1><p class="dashboard-nav"><a href="/files">Fichiers Markdown</a> · <a href="/sources">Sources</a> · Références à vérifier : {len(warnings)}</p>
 <p class="dashboard-measurement">Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(_measurement_time(str(metrics['measured_at'])))} (Europe/Paris) · rafraîchissement 30 s</small></p>
 <main class="dashboard-grid"><section class="resource-card"><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
@@ -140,7 +140,7 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
     def library_page(result=None):
         inspection = store.inspect()
         return render_sources(inspection['sources'], pending=inspection['pending'],
-                              issues=inspection['issues'], csrf=csrf if allow_source_upload else None,
+                              issues=inspection['issues'], warnings=audit_sources(engine_root)['warnings'], csrf=csrf if allow_source_upload else None,
                               result=result)
     class DashboardHandler(BaseHTTPRequestHandler):
         def _page(self, page, status=200):
@@ -228,7 +228,7 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
             try:
                 url = urlsplit(self.path)
                 if url.path == "/" and not url.query:
-                    page = render_dashboard(collect_metrics(engine_root), overview(engine_root))
+                    page = render_dashboard(collect_metrics(engine_root), overview(engine_root), warnings=audit_sources(engine_root)['warnings'])
                 elif url.path == '/sources' and not url.query:
                     page = library_page()
                 elif url.path in {'/source', '/source/original', '/source/text'}:
@@ -253,7 +253,8 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
                                                  page=int(query.get('page', ['1'])[0]))
                     else:
                         page = render_source(record, csrf=csrf if allow_source_upload else None,
-                                             has_extraction=(store.directory / record['source_id'] / 'extraction.json').exists())
+                                             has_extraction=(store.directory / record['source_id'] / 'extraction.json').exists(),
+                                             warnings=[w for w in audit_sources(engine_root)['warnings'] if w['source_id'] == record['source_id']])
                 elif url.path == "/files":
                     query = parse_qs(url.query)
                     category = query.get("category", [None])[0]
