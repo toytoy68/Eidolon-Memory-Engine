@@ -4,11 +4,17 @@ Moteur de mémoire en fichiers pour Eidolon. Les Informations et Threads sous
 `memory/` sont la source de vérité ; un port d’index reconstructible et sa
 référence sans dépendance externe existent. Le connecteur Qdrant reste différé.
 La branche `refactor/architecture-v1` est en cours de
-développement. Sa suite de tests passe sur la VM ; la recette sur données
-réelles et le déploiement restent à valider.
+développement. Sa suite de tests passe sur la VM. Un corpus ChatGPT réel a été importé et
+rappelé avec références exactes le 04/10 ; la pertinence sémantique, la recette
+complète sur données réelles et le déploiement restent à valider.
 
 ## Point de départ
 
+- [Import d'archives ChatGPT](docs/CHATGPT-IMPORT.md) et
+  [validation VM du 04/10](docs/VM-VALIDATION-2026-10-04.md) : rappel sur corpus
+  réel PASS, références exactes, corpus inchangé avant/après. Rapport Claude
+  Code non revérifié par GPT ; pertinence sémantique non évaluée. Suite prévue :
+  [décisions J-01 à J-05](docs/JARVIS-DECISIONS-2026-10-04.md).
 - [Canal actif GPT ↔ Claude et serveur MCP](collaboration/README.md).
 - [Échanges et reprise Codex/Claude](ECHANGES.md), avec le
   [mode de collaboration asynchrone](docs/COLLABORATION.md).
