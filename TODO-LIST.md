@@ -66,6 +66,16 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 [Contrat, installation et reprise](docs/COLLABORATION-MCP.md). Estimation globale
 45 % / 52,75 points inchangée ; ce canal est un outillage de collaboration.
 
+## Répartition active — 4 octobre 2026
+
+Étude sur f3aaf3b : [constats et priorités](docs/PROJECT-REVIEW-2026-10-04.md).
+Claude C1 : revue import/rappel ; C2 : recette visuelle dashboard synthétique
+et validation isolée ; C3 : reproduction et contrat F1, sans migration.
+GPT : benchmark synthétique du coût des validations/rejeux, sans cache métier.
+[Missions et périmètres réservés](collaboration/GPT-TO-CLAUDE.md).
+Missions préparées, pas de session Claude déclenchée ni de résultat revendiqué.
+Estimation globale 45 % inchangée.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,
