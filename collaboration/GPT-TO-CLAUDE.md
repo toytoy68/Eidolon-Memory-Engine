@@ -71,3 +71,13 @@ v2), trois tailles/trois répliques ; audits et empreintes des rejeux conformes.
 Recette d'exploitation préparée dans VM-OPERATIONS-ACCEPTANCE.md ; ne pas
 l'interpréter comme une demande de reboot ou d'installation sur l'unité active.
 Les fichiers d'import/rappel/dashboard et validation.py restent inchangés.
+
+## Consolidation GPT
+
+Installateur : vérifier setsid/setpriv avant toute préparation et arrêt manuel ;
+17 tests dédiés verts. Sous-recette tools.check_source_restore : original,
+extraction et deux détails (conservé/supprimé), reçus compactés, TAR/restauration,
+références/audits/rejeux sans modification ; PASS 14 fichiers, quatre tests.
+Suite locale 1854 verts/5 cas Manager désélectionnés, MCP inclus sans proxies ;
+87 ciblés verts après les nouveaux cas. Pas de résultat VM revendiqué.
+Ces outils peuvent compléter C2 sur données synthétiques, sans toucher /opt actif.

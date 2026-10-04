@@ -204,7 +204,7 @@ l’ancien environnement par export, puis lance setsid/setpriv, sans variables
 secrètes dans les arguments. check_http exige 401 sans authentification, 200
 avec et resource-text ; les échecs contrôlés après restart/SIGKILL déclenchent
 le repli. SHA-256 du script :
-`a047d257c5e403317f84eb2abd6e991801e2aa2fbb50a9b22753fd45365dbe75` (après contrôle supplémentaire de l’échec du SIGKILL).
+`12d5a343f43051909d7c350ef42aeeffbc42e5c63d9b3854a0cb45e461d45a26` (après contrôle supplémentaire de l’échec du SIGKILL).
 Il refuse une unité déjà existante : ne pas le relancer sur cette VM installée.
 L’unité installée est inchangée.
 
@@ -214,8 +214,9 @@ MCP exclu : 1822 réussis. Le vrai setpriv sous root n’a pas été exécuté ;
 commandes sont remplacées dans les tests, sans réseau ni systemd. Les chemins
 d’échec après restart/SIGKILL sont désormais testés localement par exécution
 du bloc shell réel avec commandes factices : neuf cas couvrent refus restart,
-absence/changement de PID, contrôle HTTP, refus SIGKILL et succès. **13 tests
-installateur verts**. Le cas SIGKILL refusé était rouge avant l’ajout de
+absence/changement de PID, contrôle HTTP, refus SIGKILL et succès. **17 tests
+installateur verts**, dont quatre contrôles des dépendances de repli avant
+toute préparation ou arrêt du processus. Le cas SIGKILL refusé était rouge avant l’ajout de
 `|| rollback` : sans cela, set -e quittait le script sans repli. Aucun vrai
 systemd/setpriv root n’est exercé par ces tests.
 
@@ -240,3 +241,9 @@ Recette préparée pour les lacunes opérationnelles :
 [restauration, upload cloisonné et reboot différé](VM-OPERATIONS-ACCEPTANCE.md).
 Elle n'a pas été exécutée ; les missions Claude actuelles excluent le reboot
 et les modifications du service actif.
+
+
+Avant toute installation ou arrêt manuel, l'installateur exige désormais
+setsid et setpriv. Une dépendance manquante bloque sans modifier le service,
+au lieu de découvrir l'impossibilité du repli après avoir arrêté le dashboard.
+Le service existant n'est pas concerné ; ne pas réinstaller son unité.

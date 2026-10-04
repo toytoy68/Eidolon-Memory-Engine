@@ -151,3 +151,33 @@ printf 'completed\\n' >> "$TRACE"
         assert 'rollback' not in events
         assert 'kill -KILL 202' in events
         assert 'http restart' in events and 'http plantage' in events
+
+
+@pytest.mark.parametrize('available', [('setsid',), ('setpriv',), (), ('setsid', 'setpriv')])
+def test_missing_relaunch_tool_blocks_before_preparation(tmp_path, available):
+    """Execute the real initial guards, before any installation/termination command."""
+    bin_dir = tmp_path/'bin'; bin_dir.mkdir()
+    for name in available:
+        stub(bin_dir, name, 'exit 0')
+    stub(bin_dir, 'id', 'printf 0')
+    stub(bin_dir, 'systemctl', 'exit 1')  # Unit does not exist yet.
+    source = tmp_path/'unit'; source.write_text('synthetic unit')
+    script = SCRIPT.read_text()
+    guards = script[script.index('[ "$(id -u)"'):script.index('OTHERS_BEFORE=')]
+    harness = f'''
+set -euo pipefail
+{functions('say', 'die', 'require_relaunch_tools')}
+SRC_UNIT={source} UNIT=eidolon-dashboard
+{guards}
+printf 'prepared\\n'
+'''
+    result = subprocess.run([shutil.which('bash'), '-c', harness],
+                            env=dict(os.environ, PATH=str(bin_dir)),
+                            capture_output=True, text=True, timeout=10)
+    if len(available) == 2:
+        assert result.returncode == 0
+        assert result.stdout.strip() == 'prepared'
+    else:
+        assert result.returncode == 1
+        assert 'prepared' not in result.stdout
+        assert 'absent' in result.stdout

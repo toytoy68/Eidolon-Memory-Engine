@@ -87,6 +87,16 @@ Benchmark détails : extension live/compact, index/non index et v1 présente,
 restauration synthétique, upload sous cloisonnement, reboot réel différé.
 Rendu navigateur et opérations root toujours non déduits des tests simulés.
 
+### Consolidation autonome GPT
+
+Suite générale locale après fd8b6d0 : **1854 réussis, cinq cas Manager
+explicitement désélectionnés** (sockets indisponibles dans cet environnement),
+72,01 s ; proxies retirés pour les 15 tests MCP inclus. Aucun résultat VM déduit.
+Après ajout des contrôles préalables setsid/setpriv et de la sous-recette
+restauration, **87 ciblés verts**. Sous-recette TAR synthétique : 14 fichiers,
+référence/extraction/reçus/suppression/rejeu préservés ; trois archives incomplètes
+refusées. Pas de reprise interrompue/restauration privée/reboot validés ici.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,

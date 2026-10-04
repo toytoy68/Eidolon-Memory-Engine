@@ -46,6 +46,26 @@ aucune résurrection de l'Information supprimée. La recette peut créer des
 artefacts de travail dans workdir : comparer la source avant/après et ne pas
 confondre son état avec celui de la copie dérivée par les exercices.
 
+### Sous-recette synthétique exécutable
+
+`tools.check_source_restore` réalise un contrôle plus étroit sans accepter de
+racine utilisateur : original TXT, extraction figée, détail conservé, détail
+supprimé, reçus compactés, archive TAR et restauration dans un dossier neuf.
+Il vérifie manifeste complet, original/extraction, référence exacte, audits et
+rejeu des deux commandes sans écriture ni résurrection. Les corpus et l'archive
+sont jetables ; seul le rapport statistique est conservé.
+
+```bash
+.venv/bin/python -m tools.check_source_restore \
+  --output /tmp/source-restore-new-report.json
+```
+
+Exécuté ici : PASS, 14 fichiers ; [rapport](benchmarks/source-restore-2026-10-04.json).
+Quatre tests passent, dont trois archives volontairement incomplètes (extraction,
+original ou reçus manquants), rejetées avant le rejeu. Cela ne valide pas encore
+l'opération reprise interrompue, une restauration privée, le sandbox systemd
+ou le reboot. Cette sous-recette complète les étapes ci-dessus, sans les remplacer.
+
 Une restauration réelle de sauvegarde utilisateur reste une étape distincte :
 utiliser une copie arrêtée, privée, sans publier son contenu ni son manifeste
 détaillé ; seuls comptes et empreinte globale dans le compte rendu.

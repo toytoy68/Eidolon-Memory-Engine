@@ -26,6 +26,10 @@ LOG=/home/toytoy/eidolon-dashboard.log
 
 say() { printf '%s\n' "$*"; }
 die() { say "ERREUR: $*"; exit 1; }
+require_relaunch_tools() {
+  command -v setsid >/dev/null 2>&1 || die "setsid absent ; rien n’est modifié"
+  command -v setpriv >/dev/null 2>&1 || die "setpriv absent ; rien n’est modifié"
+}
 listener_pid() { ss -ltnpH "( sport = :$PORT )" 2>/dev/null | grep -F "$ADDR:$PORT" | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2; }
 wait_listener() { local p; for _ in $(seq 1 75); do p=$(listener_pid || true); [ -n "$p" ] && { echo "$p"; return 0; }; sleep 0.2; done; return 1; }
 wait_gone() { for _ in $(seq 1 75); do kill -0 "$1" 2>/dev/null || return 0; sleep 0.2; done; return 1; }
@@ -52,6 +56,7 @@ others() { printf 'collab=%s cloudflared=%s ollama=%s mcp8765=%s' \
 [ "$(id -u)" = 0 ] || die "lancer avec sudo"
 [ -f "$SRC_UNIT" ] || die "modèle $SRC_UNIT absent"
 systemctl cat "$UNIT" >/dev/null 2>&1 && die "l'unité $UNIT existe déjà ; rien n'est modifié"
+require_relaunch_tools
 OTHERS_BEFORE=$(others)
 say "Autres services avant : $OTHERS_BEFORE"
 
