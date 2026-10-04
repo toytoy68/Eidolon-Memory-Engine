@@ -259,3 +259,9 @@ Preuves Chromium émulé avant/après reçues de Claude ; 36 tests existants ver
 ici. Pas d'assertion artificielle sur le texte CSS. Téléphone physique, Safari,
 Firefox et cibles tactiles de 44 px restent à vérifier. Sources n'est pas
 concernée par les règles propres au dashboard.
+
+Le mode texte minimal affiche un petit voyant à gauche des deux lignes de
+ressources : vert si aucune référence source n'est à vérifier, rouge sinon.
+Le voyant est un lien vers Sources, avec un libellé accessible et une infobulle
+indiquant le nombre de références. Il reflète les avertissements de références,
+pas la santé globale de la VM ou la readiness. Le rafraîchissement reste à 30 s.

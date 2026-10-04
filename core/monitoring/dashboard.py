@@ -55,6 +55,12 @@ def render_dashboard(metrics: dict, state: dict, *, warnings=()) -> str:
     ram = metrics["ram_bytes"]
     volume = metrics["volume_bytes"]
     data = metrics["engine_data"]
+    reference_label = (f"{len(warnings)} référence(s) à vérifier" if warnings
+                       else "Aucune référence à vérifier")
+    reference_color = '#fb7185' if warnings else '#4ade80'
+    reference_indicator = (f'<a class="reference-status" href="/sources" '
+                           f'aria-label="{reference_label}" title="{reference_label}" '
+                           f'style="background:{reference_color}"></a>')
 
     def chart(used, total, available, label):
         percent = max(0, min(100, used / total * 100)) if total > 0 else 0
@@ -81,11 +87,11 @@ table{{width:100%;border-collapse:collapse}}td{{padding:.4rem;border-bottom:1px 
 td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}
 .donut{{width:190px;height:190px;border-radius:50%;margin:1.5rem auto;display:grid;place-items:center}}
 .donut-center{{width:148px;height:148px;border-radius:50%;background:#1d2b3e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem}}
-.resource-text{{display:none}}.donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
+.reference-status{{display:none}}.resource-text{{display:none}}.donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
 <body class="dashboard" data-refresh="30"><h1>Eidolon Memory Engine</h1><p class="dashboard-nav"><a href="/files">Fichiers Markdown</a> · <a href="/sources">Sources · Références à vérifier : {len(warnings)}</a></p>
 <p class="dashboard-measurement">Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(_measurement_time(str(metrics['measured_at'])))} (Europe/Paris) · rafraîchissement 30 s</small></p>
-<main class="dashboard-grid"><section class="resource-card"><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
+<main class="dashboard-grid">{reference_indicator}<section class="resource-card"><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
 <section class="resource-card"><h2>Espace disque</h2>{chart(volume['used'], volume['total'], volume['free'], 'Espace disque')}<small>{escape(str(metrics['data_path']))}</small></section>
 <section><h2>Fichiers du moteur</h2><p>{int(data['files'])} fichiers · {_size(data['bytes'])} logiques<br>
 Liens ignorés : {int(data['symlinks_skipped'])}</p></section>

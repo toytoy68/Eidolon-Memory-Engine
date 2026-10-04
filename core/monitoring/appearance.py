@@ -113,7 +113,10 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;ba
  body.dashboard{font-size:13px;padding:.4rem!important}
  body.dashboard::before{background:#101827;background-image:none}
  .dashboard>:not(main){display:none}
- .dashboard main.dashboard-grid{grid-template-columns:minmax(0,1fr);gap:0}
+ .dashboard main.dashboard-grid{grid-template-columns:14px minmax(0,1fr);column-gap:.35rem;row-gap:0}
+ .dashboard .reference-status{display:block;width:10px;height:10px;border-radius:50%;grid-column:1;grid-row:1/span 2;align-self:center;justify-self:center}
+ .dashboard .reference-status:focus-visible{outline:2px solid #eef3fa;outline-offset:3px}
+ .dashboard .resource-card{grid-column:2}
  .dashboard-grid>section:not(.resource-card){display:none}
  .dashboard .resource-card{padding:0;border:0;background:transparent}
  .dashboard .resource-card>:not(.resource-text){display:none}
