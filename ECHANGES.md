@@ -2293,3 +2293,26 @@ analysé, sans troncature ni appel au modèle. Le bouton suivant permet de
 poursuivre au prochain paragraphe non vide ; aucune proposition ni mémoire
 n'est créée pour le passage omis. Trois cas rouges avant correctif ;
 76 tests sources/dashboard verts en 0,84 s sur corpus temporaires.
+
+
+## Décisions Jarvis validées — 4 octobre 2026, 18 h 01 — Codex/GPT
+
+Autorisation explicite de toytoy (« oui je valide ! ») après analyse Jarvis,
+retours Claude relayés et correction de l'ordre des priorités.
+[Contrat J-01 à J-05](docs/JARVIS-DECISIONS-2026-10-04.md) ; pistes Core en
+[G-016](EIDOLON-GLOBAL-CONCEPTS.md#g-016--retours-jarvis--4-octobre-2026),
+travaux futurs rattachés aux lots existants dans TODO-LIST.md.
+
+Décisions : gel Core maintenu ; propositions sans décision sans expiration
+automatique dans la future file durable, avec tri/filtres ; petit corpus ciblé,
+références par message et fuseau/hypothèse explicite pour les dates relatives.
+Le corpus précis reste à sélectionner ; les formulaires actuels demeurent
+temporaires. Les imports/rappels réels déjà documentés ne sont pas invalidés :
+la nouvelle campagne porte sur la qualité sémantique des cas retenus.
+
+Base documentaire 5a5eea7, fichiers courants relus. Constats de Claude sur
+chatgpt_import.py attribués à sa lecture, non revérifiés dans ce lot.
+Documentation seule, aucune analyse/import/migration ou recette VM ; pas de
+test artificiel, aucune évolution du 45 % / 52,75 points. Pas de session Claude
+déclenchée ni de nouvelle demande publiée dans le canal actif.
+

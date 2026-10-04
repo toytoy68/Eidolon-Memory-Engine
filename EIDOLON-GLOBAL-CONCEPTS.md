@@ -1,6 +1,6 @@
 # Eidolon Global — concepts, idées et architecture future
 
-Dernière mise à jour : 2026-09-29.
+Dernière mise à jour : 2026-10-04.
 
 Ce document rassemble les concepts qui concernent **Eidolon dans son ensemble**
 et non le développement interne du Memory Engine. Il sert de parking architectural
@@ -347,6 +347,30 @@ Pistes à étudier pour Wall-E :
 Ces interactions doivent rester des signaux d'interface et de comportement :
 elles ne doivent pas contourner le Policy/Safety Engine ni déclencher directement
 des actions physiques sensibles sans validation appropriée.
+
+
+## G-016 — Retours Jarvis — 4 octobre 2026
+
+**Pistes différées validées pour consignation par toytoy, pas pour
+implémentation Core.** [Décisions et limites](docs/JARVIS-DECISIONS-2026-10-04.md).
+Source : documentation Jarvis fournie en ZIP ; aucun code/test Jarvis audité.
+
+| Piste | Rattachement | Limites à conserver |
+| --- | --- | --- |
+| Routage règles → domaine → outil | G-001/G-002/G-005 | Correspondance positive seulement ; doute → chemin complet. Mesurer un appel contre deux. |
+| Cache de plans (outil + arguments) | G-002/G-005 | Réexécuter l'outil ; lectures d'abord, invalidation par version/contexte/identité ; dates relatives et références ambiguës exclues tant que non résolues. |
+| Résultats structurés et réponse directe | G-005/G-006 | Distinguer demandé/lancé/réussi/échoué ; aucune narration ne doit inventer un succès. |
+| Rôles classification/outils/narration séparés | G-002/G-011 | Interfaces d'abord ; plusieurs modèles résidents seulement après mesures qualité/latence/VRAM sur le matériel réel. |
+| Tâches longues bornées, persistantes et annulables | G-003/G-008 | Identité, budgets, états, reprise et autorisations ; lecture seule ne garantit pas l'indépendance de deux appels. |
+| File vocale commune et proactivité maîtrisée | G-007/G-008/G-015 | Priorité, expiration des notifications, tour de parole et report ; silence ≠ engagement terminé. |
+| Pipeline commun voix/texte/distant | G-005/G-006/G-007 | Identité, permissions et canal de restitution conservés ; appairage explicite du client distant. |
+| Dashboard et journal d'exécution | G-007/G-011 | Montrer événements, outils, durée et résultats réels, pas une progression simulée. |
+| Analyses de projets successives | G-003/G-008 | Sources/révisions et provenance générée ; chercher les changements sans transformer une synthèse en preuve indépendante. |
+| Confidentialité de bout en bout | G-006 | Inclure dictée, synthèse vocale, caches et tâches de fond ; modèle local seul ≠ chaîne entièrement locale. |
+
+Memory conserve état, provenance et historique ; Core décide de l'interaction
+et exécute les outils. Les pistes ci-dessus n'ajoutent aucun runtime d'agent,
+ordonnanceur ou connecteur métier au Memory Engine.
 
 ## Statut du document
 

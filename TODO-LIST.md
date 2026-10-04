@@ -32,6 +32,32 @@ sorties CLI FAILED encore à relire. Périmètre de l’index dérivé et
 archivage en conversion clarifiés dans MIGRATION.md. Voir
 [la contre-revue](docs/REVUE-CLAUDE-2026-10-01.md). Une revue ne vaut pas validation VM.
 
+
+## Décisions Jarvis validées — 4 octobre 2026, 18 h 01
+
+Toytoy valide le [cadrage J-01 à J-05](docs/JARVIS-DECISIONS-2026-10-04.md).
+Consignation documentaire uniquement ; estimation **45 % / 52,75 inchangée**,
+ordre prioritaire et gel Eidolon Core/Hermes/Qdrant conservés.
+
+- **T-051/T-029, à implémenter :** future file durable, propositions sans
+  décision maintenues en attente sans expiration automatique ; ancienneté,
+  tri et filtres source/ancienneté/type. Les formulaires actuels restent
+  temporaires : aucune persistance nouvelle n'est revendiquée.
+- **T-047/T-051, campagne à préparer :** petit corpus de conversations sur un
+  projet depuis les sources existantes, références et attentes manuelles.
+  Tester dates relatives/fuseau, ambiguïté, correction, engagement sans fin
+  et proposition sans décision. Sous-ensemble exact non sélectionné.
+  Cette campagne sémantique complète les preuves d'import/rappel réel déjà
+  obtenues ; elle ne les remplace pas.
+- **Dates, contrat validé / résolution à implémenter :** référence par message,
+  fuseau IANA ; Europe/Paris seulement comme hypothèse explicite si absent.
+  Pas de calcul à partir de la date d'import ni de réécriture des originaux.
+- **Core différé :** pistes rangées dans
+  [G-016](EIDOLON-GLOBAL-CONCEPTS.md#g-016--retours-jarvis--4-octobre-2026).
+
+Aucune nouvelle politique de purge des propositions sans décision, aucun import,
+appel IA, test VM, migration ni changement de code dans cette consignation.
+
 ## Bilan du créneau de trois heures du 03/10
 
 18 lots publiés et vérifiés séquentiellement sur GitHub : reprise FAILED,
