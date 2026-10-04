@@ -135,3 +135,21 @@ selon son inventaire e9f8442 ; aucune suppression ancienne effectuée par GPT.
 Ces résultats sont reçus de Claude, non exécutés par GPT sur la VM.
 Les prochaines recettes doivent isoler leurs basetemp et nettoyer leur propre
 corpus temporaire après conservation des logs, jamais purger /tmp globalement.
+
+## F1/F1b et D-F1-1 — rapport Claude 4bef177
+
+Clone VM isolé propre à 7cb1f9a, données synthétiques uniquement :
+**1975 tests réussis, 15 MCP exclus**, aucun échec. 88 tests ciblés verts,
+trois répétitions. La reprise séquentielle de deux attentes est validée ;
+source neuve refusée pendant attente, anomalie distincte toujours bloquante,
+engagement et committed_at conservés. Annexes intégrées sans changement métier.
+
+Procédure manuelle de résidu testée : mort réelle pendant écriture, readiness
+bloquée, copie privée hors memory/ vérifiée par empreinte, retrait du seul
+résidu, audit prêt puis extraction explicite terminée. Aucune purge automatique.
+
+Preuves rapportées par Claude, pas revérifiées VM par GPT. Journaux conservés
+sous /tmp/eme-claude-20261004-OXyYeC/c7/. /tmp à 1 % d'inodes après essais.
+/opt, services et corpus privés non touchés : validation du clone ≠ déploiement.
+ext4/coupure électrique, boot réel, upload cloisonné, téléphone physique et
+setpriv root restent non testés. Avancement global toujours gelé à 45 %.

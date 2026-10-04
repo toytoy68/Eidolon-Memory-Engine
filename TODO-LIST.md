@@ -1137,3 +1137,11 @@ la collecte de la suite complète. Recette VM F1/F1b encore attendue.
 
 Validation locale D-F1-1 : 77 tests ciblés verts ; suite complète 1985 réussis,
 5 cas sockets exclus, MCP inclus. Aucun essai VM exécuté par GPT.
+
+### Réception 4bef177 — F1/F1b et D-F1-1 validés sur clone VM
+
+- Claude : 1975 tests réussis sur 7cb1f9a, 15 MCP exclus ; 88 ciblés verts
+  trois fois ; attentes multiples et procédure manuelle de résidu validées.
+- Revue et recette synthétique de cette tranche terminées. Preuves rapportées,
+  non revérifiées VM par GPT ; pas de mise à jour /opt ou restart de service.
+- Déploiement et preuves opérationnelles restantes distincts ; global 45 % gelé.
