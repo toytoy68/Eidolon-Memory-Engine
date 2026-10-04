@@ -85,3 +85,15 @@ originaux de 873487a et b18dad0 sont rouges comportementalement sur leurs
 parents ; D10 a un cas comportemental rouge et trois erreurs d’absence de
 module/attribut. Les limites v1 révisée, normalisation, coût sont conservées.
 Ces constats sont reçus, non réexécutés par GPT sur la VM.
+
+## Suite complète VM — rapport toytoy du 4 octobre 2026 à 16 h 59
+
+Checkout /opt/eidolon-memory-engine propre avant pull, fast-forward
+42831d7 → d7426c8. Commande .venv/bin/python -m pytest -q :
+**1873 réussis en 46,15 s**, sans exclusion ou test sauté signalé.
+Résultat fourni par toytoy, non exécuté indépendamment par GPT sur la VM.
+Les cinq cas Manager exclus ici sont donc couverts par cette suite VM.
+Ce résultat ne valide pas le rendu navigateur, le reboot, le vrai repli root
+ou un benchmark de performance VM ; les outils synthétiques passent leurs tests.
+Aucun restart de dashboard, import ou migration demandé pour cette mise à jour.
+Estimation globale gelée à 45 %.

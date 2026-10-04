@@ -116,6 +116,19 @@ refus d'une reprise sans effet. Groupe ciblé avant ce dernier cas : 92 verts.
 Pas d'interruption de la restauration elle-même, coupure disque ou sauvegarde
 privée ; recette systemd/VM toujours séparée. Code de production inchangé.
 
+
+## Suite complète VM — rapport toytoy du 4 octobre 2026 à 16 h 59
+
+Checkout /opt/eidolon-memory-engine propre avant pull, fast-forward
+42831d7 → d7426c8. Commande .venv/bin/python -m pytest -q :
+**1873 réussis en 46,15 s**, sans exclusion ou test sauté signalé.
+Résultat fourni par toytoy, non exécuté indépendamment par GPT sur la VM.
+Les cinq cas Manager exclus ici sont donc couverts par cette suite VM.
+Ce résultat ne valide pas le rendu navigateur, le reboot, le vrai repli root
+ou un benchmark de performance VM ; les outils synthétiques passent leurs tests.
+Aucun restart de dashboard, import ou migration demandé pour cette mise à jour.
+Estimation globale gelée à 45 %.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,
