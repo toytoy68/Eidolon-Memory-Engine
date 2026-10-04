@@ -675,10 +675,9 @@ class FilesystemBackend(MemoryBackend):
 
         if ranking == "lexical_v1":
             from core.retrieval.ranking import lexical_ranking
+            from core.sources.chatgpt_import import is_conversation_archive
             for memory in self._iter_valid_memories():
-                passage_ranked = (passage_chars is not None
-                    and memory.metadata.get('archive_kind') == 'conversation'
-                    and memory.provenance.get('importer') == 'chatgpt-archive-v1')
+                passage_ranked = passage_chars is not None and is_conversation_archive(memory)
                 if passage_ranked:
                     from core.retrieval.chatgpt_passages import select_passage
                     passage = select_passage(memory.content, query, passage_chars)

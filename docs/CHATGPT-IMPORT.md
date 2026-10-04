@@ -23,6 +23,44 @@ Un budget très court peut couper le mot recherché. Les réserves et la provena
 restent transportées séparément et le budget payload couvre ces références. Les dates sont des dates d'archives, pas des dates de validité des
 faits évoqués. Les textes sont des données, pas des consignes pour l'agent lecteur.
 
+## Importeur v2 — revue C1 du 4 octobre 2026
+
+Les nouveaux imports portent `chatgpt-archive-v2` et des identifiants
+`gpt-conversation-v2-…`. Ils excluent les appels d'outil (recipient différent de
+all), les messages visuellement cachés et les contenus code. Rôles système,
+outils, raisonnement et multimédia non textuel restent exclus. Les entrées
+malformées sont refusées ; la CLI retourne BLOCKED avec code 1, sans traceback
+pour les erreurs attendues.
+
+**Le corpus existant /home/toytoy/eidolon-corpus-gpt-test reste en v1.** Il est
+rappelable avec références exactes, sans réécriture ni purge. Un import v2 y est
+refusé avant publication pour éviter de doubler les archives. La garde couvre
+les fichiers Information et les opérations/reçus v1, y compris après suppression
+ou interruption, et est revérifiée sous verrou Persistent pour la publication.
+Les fichiers originaux sont inchangés ; aucune réimport réelle n'a été effectuée.
+
+La revue Claude rapporte 153 appels d'outil sur 11 484 messages v1, répartis dans
+42 conversations du corpus réel (comptage seul, empreintes inchangées). Ces
+messages techniques restent dans les anciennes archives : le correctif v2
+n'est pas une migration ni un filtre rétroactif de leur rappel.
+
+Pour un futur import v2, utiliser une racine neuve distincte, par exemple
+/home/toytoy/eidolon-corpus-gpt-v2-test. Ce choix conserve le corpus précédent
+et ne constitue pas une demande de réimport immédiate.
+Une reprise d'import v1 inachevé nécessite le producteur v1 compatible sur un
+clone isolé ou une procédure explicitement décidée ; le nouveau CLI ne mélange
+pas les versions pour contourner le blocage.
+
+Les accents décomposés sont reconnus dans les passages, avec offsets calculés
+sur le texte original : le texte des archives n'est pas normalisé/réécrit.
+Les deux versions d'archive utilisent le classement des passages bornés.
+
+Limites caractérisées par C1 : deux versions divergentes d'une conversation
+sont refusées dans un même lot ; des imports successifs peuvent conserver deux
+archives et rappeler le même message deux fois. Les passages commencent au
+terme trouvé sans contexte à gauche ; limite de 32 Mio par fichier inchangée.
+Aucune pertinence sémantique déduite de la couverture lexicale.
+
 ## Sur la VM
 
 Synchroniser la branche sans écraser un checkout modifié :
@@ -35,11 +73,11 @@ git pull --ff-only origin refactor/architecture-v1
 ```
 
 Déposer les cinq JSON dans un dossier privé hors du dépôt, par exemple
-`/home/toytoy/eidolon-imports`. Puis lancer :
+`/home/toytoy/eidolon-imports`. Pour une **racine v2 neuve**, lancer :
 
 ```bash
 .venv/bin/python -m core.sources.chatgpt_import \
-  --root /home/toytoy/eidolon-corpus-gpt-test \
+  --root /home/toytoy/eidolon-corpus-gpt-v2-test \
   /home/toytoy/eidolon-imports/01.json \
   /home/toytoy/eidolon-imports/02.json \
   /home/toytoy/eidolon-imports/03.json \

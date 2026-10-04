@@ -115,9 +115,8 @@ class ContextAssembler:
                 content = memory.content
                 content_format = "text"
                 excerpt_reference = None
-                if (memory.metadata.get('archive_kind') == 'conversation'
-                        and memory.provenance.get('importer') == 'chatgpt-archive-v1'
-                        and isinstance(content, str)):
+                from core.sources.chatgpt_import import is_conversation_archive
+                if is_conversation_archive(memory) and isinstance(content, str):
                     from core.retrieval.chatgpt_passages import select_passage
                     passage = select_passage(content, query, min(max_item_chars, remaining))
                     if passage is None:

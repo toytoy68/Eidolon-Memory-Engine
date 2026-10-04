@@ -6,6 +6,12 @@ import unicodedata
 from core.retrieval.ranking import terms
 
 
+# Combining marks continue a word, without changing offsets in original text.
+_COMBINING = ''.join(f'{chr(a)}-{chr(b)}' for a, b in (
+    (0x0300, 0x036f), (0x1ab0, 0x1aff), (0x1dc0, 0x1dff), (0x20d0, 0x20ff), (0xfe20, 0xfe2f)))
+_WORD = re.compile(r'\w+(?:[' + _COMBINING + r']+\w*)*')
+
+
 def select_passage(content, query, max_chars):
     try:
         archive=json.loads(content)
@@ -19,7 +25,7 @@ def select_passage(content, query, max_chars):
             if not isinstance(text,str):
                 continue
             matched=[]
-            for match in re.finditer(r'\w+',text):
+            for match in _WORD.finditer(text):
                 word=unicodedata.normalize('NFC',match.group().casefold())
                 if word in wanted:
                     matched.append((word,match.start(),match.end()))

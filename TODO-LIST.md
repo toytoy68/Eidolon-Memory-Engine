@@ -129,6 +129,18 @@ ou un benchmark de performance VM ; les outils synthétiques passent leurs tests
 Aucun restart de dashboard, import ou migration demandé pour cette mise à jour.
 Estimation globale gelée à 45 %.
 
+### Revue C1 et import ChatGPT v2
+
+Rapport Claude final 2c2ff26 reçu : appels d'outil/cachés importés par v1,
+author/content null mal refusés, accents décomposés non retrouvés. Six rouges
+reproduits ici. Nouveau producteur v2, lecture/rappel v1 conservés, refus de
+mélange couvrant snapshots/opérations/reçus v1 et vérification sous verrou.
+CLI BLOCKED pour erreurs attendues ; 49 ciblés verts, concurrence répétée cinq
+fois verte. Annexe finale chr() adoptée, empreintes patch/tests vérifiées ;
+les premières versions transportées étaient mal échappées.
+Pas de migration/réimport réelle ; 153 messages techniques du corpus v1 restent
+présents selon comptage Claude. C2/C3 et limites de versions/doublons ouvertes.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,
@@ -1031,3 +1043,7 @@ analysé, sans troncature ni appel au modèle. Le bouton suivant permet de
 poursuivre au prochain paragraphe non vide ; aucune proposition ni mémoire
 n'est créée pour le passage omis. Trois cas rouges avant correctif ;
 76 tests sources/dashboard verts en 0,84 s sur corpus temporaires.
+
+Validation globale locale C1 : 1887 réussis, cinq cas Manager désélectionnés
+(sockets indisponibles ici), 73,85 s ; 15 MCP inclus sans proxies.
+Aucune validation VM de ce nouveau lot revendiquée.

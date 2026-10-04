@@ -10,9 +10,23 @@ from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
+from core.backend.errors import BackendError
+from core.operations.errors import OperationRepositoryError
+from core.persistence import exclusive_write
 from core.information.writes import FilesystemInformationWrites
 from core.migration.converter import _atomic_bytes
 from core.storage_format import decode_json_value
+
+
+IMPORTER = 'chatgpt-archive-v2'
+# v1 kept tool calls (recipient other than 'all') and hidden context messages.
+# Its archives stay readable and recallable; they are never rewritten.
+ARCHIVE_IMPORTERS = frozenset({'chatgpt-archive-v1', IMPORTER})
+
+
+def is_conversation_archive(memory):
+    return (memory.metadata.get('archive_kind') == 'conversation'
+            and memory.provenance.get('importer') in ARCHIVE_IMPORTERS)
 
 
 def plan_conversation(conversation, source_hash):
@@ -34,11 +48,18 @@ def plan_conversation(conversation, source_hash):
         message = node.get('message')
         if not isinstance(message, dict):
             continue
-        author = message.get('author', {}).get('role')
-        content = message.get('content', {})
-        if author not in {'user', 'assistant'} or content.get('content_type') not in {'text', 'multimodal_text', 'code'}:
+        author, content = message.get('author'), message.get('content')
+        if not isinstance(author, dict) or not isinstance(content, dict):
+            raise ValueError('invalid conversation message')
+        author = author.get('role')
+        if author not in {'user', 'assistant'} or content.get('content_type') not in {'text', 'multimodal_text'}:
             continue
         if message.get('channel') not in {None, 'final', 'commentary'}:
+            continue
+        # Tool calls and hidden context are technical messages, not dialogue.
+        metadata = message.get('metadata')
+        if (message.get('recipient', 'all') != 'all'
+                or (isinstance(metadata, dict) and metadata.get('is_visually_hidden_from_conversation') is True)):
             continue
         parts = content.get('parts', [])
         text = '\n'.join(p for p in parts if isinstance(p, str))
@@ -50,7 +71,7 @@ def plan_conversation(conversation, source_hash):
         return None, at
     canonical = json.dumps(conversation, ensure_ascii=False, sort_keys=True, allow_nan=False).encode()
     digest = sha256(canonical).hexdigest()
-    identity = 'gpt-conversation-v1-' + digest
+    identity = 'gpt-conversation-v2-' + digest
     content = json.dumps(dict(title=conversation.get('title', ''), conversation_id=cid,
         current_node=conversation.get('current_node'), messages=messages), ensure_ascii=False, indent=2)
     memory = Memory(identity, content=content,
@@ -58,9 +79,18 @@ def plan_conversation(conversation, source_hash):
             archive_kind='conversation', message_count=len(messages)),
         temporal=dict(observed_at=at),
         provenance=dict(source_type='USER_EXPORT', source_sha256=source_hash,
-            conversation_id=cid, conversation_sha256=digest, importer='chatgpt-archive-v1',
+            conversation_id=cid, conversation_sha256=digest, importer=IMPORTER,
             historical_archive=True, semantic_facts_extracted=False))
     return memory, at
+
+
+def _check_import_version(root):
+    persistent = root / 'memory/persistent'
+    history = root / 'memory/history'
+    if (any(persistent.glob('gpt-conversation-v1-*.md'))
+            or any(any((history / family / 'information-write-v1').glob('import-gpt-conversation-v1-*.json'))
+                   for family in ('operations', 'operation-receipts'))):
+        raise ValueError('existing v1 ChatGPT corpus: import v2 archives into a new root')
 
 
 def import_exports(root, files):
@@ -92,34 +122,46 @@ def import_exports(root, files):
     marker = root / 'CHATGPT-TEST-CORPUS'
     if root.exists() and any(root.iterdir()) and not marker.is_file():
         raise ValueError('nonempty destination must be an existing ChatGPT test corpus')
+    _check_import_version(root)
     root.mkdir(parents=True, exist_ok=True)
-    marker.write_text('Isolated conversation archives; not confirmed personal facts.\n')
+    try:
+        with marker.open('x', encoding='utf-8') as handle:
+            handle.write('Isolated conversation archives; not confirmed personal facts.\n')
+    except FileExistsError:
+        pass
     backend = FilesystemBackend(root / 'memory/persistent', root / 'memory/history')
     writer = FilesystemInformationWrites(backend)
-    directory = root / 'import-originals'
-    directory.mkdir(exist_ok=True)
-    for digest, raw in originals:
-        target = directory / (digest + '.json')
-        if target.exists():
-            if target.read_bytes() != raw:
-                raise ValueError('original export differs from hash')
-        else:
-            _atomic_bytes(target, raw)
-    for memory, at in plans:
-        identity = memory.information_id
-        writer.create(memory, operation_id='import-' + identity, event_id='event-' + identity,
-            actor='chatgpt-export-importer', timestamp=at)
+    with exclusive_write(root / 'memory/persistent'):
+        _check_import_version(root)
+        directory = root / 'import-originals'
+        directory.mkdir(exist_ok=True)
+        for digest, raw in originals:
+            target = directory / (digest + '.json')
+            if target.exists():
+                if target.read_bytes() != raw:
+                    raise ValueError('original export differs from hash')
+            else:
+                _atomic_bytes(target, raw)
+        for memory, at in plans:
+            identity = memory.information_id
+            writer.create(memory, operation_id='import-' + identity, event_id='event-' + identity,
+                actor='chatgpt-export-importer', timestamp=at)
     return dict(conversations=len(plans), messages=sum(m.metadata['message_count'] for m, _ in plans),
         originals=len(originals), status='IMPORTED', semantic_facts_extracted=False)
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('files', nargs='+', type=Path)
-    args = parser.parse_args()
-    print(json.dumps(import_exports(args.root, args.files)))
+    args = parser.parse_args(argv)
+    try:
+        result = import_exports(args.root, args.files)
+    except (ValueError, OSError, TypeError, BackendError, OperationRepositoryError) as exc:
+        result = dict(status='BLOCKED', reason=str(exc))
+    print(json.dumps(result))
+    return int(result['status'] == 'BLOCKED')
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
