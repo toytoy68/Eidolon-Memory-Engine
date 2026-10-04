@@ -57,8 +57,9 @@ Paquet reproductible et script d’installation sans activation préparés ensui
 **ACTIVÉ le 03/10** : domaine mcp.eidolon.re via Cloudflare Tunnel, Auth0,
 clé GitHub dédiée et service systemd. HTTPS 401 sans token / découverte 200
 vérifiés directement ; réponse réelle Claude Web publiée dans `f2a4119`,
-commit distant et archivage vérifiés par Codex. Reconnexion après expiration,
-redémarrage VM et restauration du service restent à vérifier.
+commit distant et archivage vérifiés par Codex. Reconnexion après expiration non automatique, constatée par Claude le 04/10 :
+reconnexion manuelle par toytoy nécessaire. Redémarrage VM et restauration
+du service restent à vérifier.
 Caddy absent sur la VM ; son modèle alternatif n’est pas celui déployé.
 Unité permanente systemd installée, services MCP/cloudflared actifs revérifiés
 à la reprise ; découverte Auth0 conforme et accès sans token 401 confirmés.
@@ -72,8 +73,9 @@ empreinte de l’annexe vérifiée, garde fork ajoutée ; 32 tests ciblés verts
 (dont neuf nouveaux), syntaxe bash vérifiée ; modèles systemd conservés
 avec leurs empreintes exactes. /opt fc675a4, service dashboard installé et
 restart/plantage vérifiés selon rapport ; reboot/upload cloisonné non testés.
-Revue ed56415 reçue. Installateur de référence : repli exposant l’environnement
-par arguments, à corriger avant réutilisation (voir MONITORING). Aucune commande
+Revue ed56415 et correctif Claude cb1f7d8 reçus. Installateur corrigé :
+environnement hors argv, contrôle 401 obligatoire, repli après échec des
+contrôles restart/plantage ; quatre tests dédiés ajoutés (voir MONITORING). Aucune commande
 VM ni modification de validation.py dans ce lot ; estimation gelée inchangée.
 
 

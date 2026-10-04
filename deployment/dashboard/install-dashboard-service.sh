@@ -4,7 +4,8 @@
 #
 # - The token is copied from the running manual dashboard's environment into
 #   /etc/eidolon-dashboard/environment (root:root 0600). It is never printed,
-#   passed as an argument or written anywhere else.
+#   passed as an argument or written anywhere else (the rollback relaunch
+#   transports the former environment as environment, never as argv).
 # - Only the process listening on 192.168.1.110:8766 is stopped. MCP (8765),
 #   cloudflared and Ollama are not touched; their state is compared at the end.
 # - If the unit does not come up, it is disabled and the manual process is
@@ -35,13 +36,14 @@ auth_get() {  # $1 = output file; Authorization header given on stdin, never on 
   printf 'Authorization: Basic %s\n' "$auth" | curl -s -m 15 -o "$1" -w '%{http_code}' -H @- "$URL"
 }
 check_http() {  # label
-  local body code n
+  local body code n anon
   body=$(mktemp)
-  say "  [$1] sans authentification : HTTP $(http_code)"
-  code=$(auth_get "$body"); n=$(grep -o 'resource-text' "$body" | wc -l)
+  anon=$(http_code || true)
+  say "  [$1] sans authentification : HTTP $anon"
+  code=$(auth_get "$body" || true); n=$(grep -o 'resource-text' "$body" | wc -l)
   say "  [$1] avec authentification : HTTP $code, $(wc -c < "$body") octets, resource-text x$n"
   rm -f "$body"
-  [ "$code" = 200 ] && [ "$n" -gt 0 ]
+  [ "$anon" = 401 ] && [ "$code" = 200 ] && [ "$n" -gt 0 ]
 }
 others() { printf 'collab=%s cloudflared=%s ollama=%s mcp8765=%s' \
   "$(systemctl show -p MainPID --value eidolon-collaboration)" "$(systemctl show -p MainPID --value cloudflared)" \
@@ -93,11 +95,24 @@ systemctl enable "$UNIT" >/dev/null
 kill -TERM "$OLD"
 wait_gone "$OLD" || die "PID $OLD toujours actif après 15 s ; arrêt forcé non effectué (unité installée, non démarrée)"
 say "Processus manuel $OLD arrêté"
+relaunch_manual() {
+  # The former environment holds the token: it is exported, never passed as
+  # arguments (argv is world-readable in /proc). setpriv execs the dashboard
+  # directly, so no parent process keeps the environment on its command line.
+  local setsid_bin setpriv_bin
+  setsid_bin=$(command -v setsid); setpriv_bin=$(command -v setpriv)
+  (
+    cd "$OLD_CWD" || exit 1
+    while IFS= read -r name; do unset "$name" 2>/dev/null || true; done < <(compgen -e)
+    for kv in "${OLD_ENV[@]}"; do export "$kv" 2>/dev/null || true; done
+    exec "$setsid_bin" "$setpriv_bin" --reuid=toytoy --regid=toytoy --init-groups -- "${OLD_ARGS[@]}" >> "$LOG" 2>&1 < /dev/null
+  ) &
+}
 rollback() {
   say "ÉCHEC du service : retour au processus manuel"
   systemctl disable --now "$UNIT" >/dev/null 2>&1 || true
   tail -n 20 "$LOG" | cut -c1-200
-  ( cd "$OLD_CWD" && setsid runuser -u toytoy -- env -i "${OLD_ENV[@]}" "${OLD_ARGS[@]}" >> "$LOG" 2>&1 < /dev/null & )
+  relaunch_manual
   sleep 3; say "Processus manuel relancé : PID $(listener_pid || echo aucun)"
   exit 1
 }
@@ -111,20 +126,20 @@ cmp -s <(tr '\0' '\n' < /proc/"$NEW"/environ | grep '^EIDOLON_DASHBOARD_TOKEN=')
 check_http initial || rollback
 
 # 5. Restart test (systemctl restart).
-systemctl restart "$UNIT"
-R=$(wait_listener) || die "pas de reprise après systemctl restart"
-[ "$R" != "$NEW" ] || die "même PID après systemctl restart"
+systemctl restart "$UNIT" || rollback
+R=$(wait_listener) || rollback
+[ "$R" != "$NEW" ] || rollback
 say "systemctl restart : PID $NEW -> $R"
-check_http restart || die "contrôle HTTP après redémarrage en échec"
+check_http restart || rollback
 
 # 6. Crash test (SIGKILL -> Restart=on-failure).
 kill -KILL "$R"
 say "SIGKILL envoyé au PID $R ; attente de la reprise automatique (RestartSec=5)"
 sleep 1
-C=$(wait_listener) || { sleep 5; C=$(wait_listener) || die "pas de reprise après plantage simulé"; }
-[ "$C" != "$R" ] || die "même PID après SIGKILL"
+C=$(wait_listener) || { sleep 5; C=$(wait_listener) || rollback; }
+[ "$C" != "$R" ] || rollback
 say "Reprise après plantage : PID $R -> $C, NRestarts=$(systemctl show -p NRestarts --value "$UNIT")"
-check_http plantage || die "contrôle HTTP après plantage en échec"
+check_http plantage || rollback
 
 OTHERS_AFTER=$(others)
 say "Autres services après : $OTHERS_AFTER"

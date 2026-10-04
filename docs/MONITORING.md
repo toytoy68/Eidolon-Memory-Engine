@@ -199,17 +199,25 @@ La commande d’installation fournie est :
 sudo bash deployment/dashboard/install-dashboard-service.sh
 ```
 
-**Installateur de référence, à corriger avant réutilisation.** Il est conservé
-octet pour octet (SHA-256 ffa2cd4a9d12996a631f6eb083b7f6377efd7af78f25a1b82f6571ccc806a16d).
+**Installateur corrigé après revue Claude cb1f7d8.** Le repli transmet désormais
+l’ancien environnement par export, puis lance setsid/setpriv, sans variables
+secrètes dans les arguments. check_http exige 401 sans authentification, 200
+avec et resource-text ; les échecs contrôlés après restart/SIGKILL déclenchent
+le repli. SHA-256 du script :
+`b99eb75b3e0a7bd29c7c9e52ba865da75e5c124cc550eeecfc3e5513160303db`.
 Il refuse une unité déjà existante : ne pas le relancer sur cette VM installée.
-Son repli désactive le service et relance le processus manuel avec l’environnement
-ancien, mais le passage de cet environnement à `env` par arguments peut exposer
-le token dans la liste des processus. Il faut remplacer ce transport avant une
-nouvelle installation. Autre limite : check_http affiche le code sans auth
-mais n’impose pas 401 ; les erreurs après restart/SIGKILL ne déclenchent pas
-le même rollback. Les essais rapportés ont réussi ; ce n’est pas une garantie
-pour tous les chemins d’échec. Aucun changement de ces fichiers de référence
-n’a été fait par GPT, aucune commande d’installation exécutée ici.
+L’unité installée est inchangée.
+
+Preuves rapportées sur clone VM isolé : ancien script, trois rouges sur quatre
+répétés cinq fois ; correctif, quatre verts répétés trente fois ; suite complète
+MCP exclu : 1822 réussis. Le vrai setpriv sous root n’a pas été exécuté ; les
+commandes sont remplacées dans les tests, sans réseau ni systemd. Les chemins
+d’échec après restart/SIGKILL sont relus, sans test dédié.
+
+Historique rapporté : le repli défectueux n’a jamais été exécuté. La relance
+manuelle du 04/10 à 09 h 54 utilisait env avec le token en argument pendant
+quelques millisecondes ; cette méthode n’est plus utilisée. Aucune commande
+VM ni réinstallation n’a été exécutée par GPT pour ce correctif.
 
 Règle sudo rapportée, /etc/sudoers.d/eidolon-dashboard, root 0640 :
 
