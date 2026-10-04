@@ -176,3 +176,48 @@ réglages. Aucun changement de données ou de préférences enregistrées.
 sur le navigateur VM, notamment à 600×220 et 320×320 pixels utiles.
 La capture de toytoy à 09 h 47 confirme la vue compacte précédente : deux
 jauges lisibles côte à côte après reprise du processus, et non ce mode texte.
+
+
+## Service systemd — installation rapportée le 04/10 à 10 h 18
+
+Toytoy rapporte l’installation de `eidolon-dashboard` sur la VM avec le modèle
+`deployment/dashboard/eidolon-dashboard.service`, exécuté sous toytoy, depuis
+/opt sur fc675a4. Démarrage au boot configuré, `Restart=on-failure`, délai 5 s.
+Le token vit dans `/etc/eidolon-dashboard/environment`, root:root 0600,
+dossier 0700 ; aucune valeur n’est stockée dans Git. Le journal applicatif
+reste `/home/toytoy/eidolon-dashboard.log`. scripts/run-dashboard.sh reste
+le lanceur manuel. Le redémarrage complet de la VM n’a pas été essayé.
+
+Contrôles rapportés par toytoy/Claude : 401 sans authentification et 200 avec,
+à l’installation, après restart du service et après SIGKILL avec reprise à 5 s.
+MCP, Cloudflare et Ollama inchangés ; Ollama inactif. Dépôt de source sous
+le cloisonnement du service non testé. Ces constats ne sont pas des essais GPT.
+
+La commande d’installation fournie est :
+
+```bash
+sudo bash deployment/dashboard/install-dashboard-service.sh
+```
+
+**Installateur de référence, à corriger avant réutilisation.** Il est conservé
+octet pour octet (SHA-256 ffa2cd4a9d12996a631f6eb083b7f6377efd7af78f25a1b82f6571ccc806a16d).
+Il refuse une unité déjà existante : ne pas le relancer sur cette VM installée.
+Son repli désactive le service et relance le processus manuel avec l’environnement
+ancien, mais le passage de cet environnement à `env` par arguments peut exposer
+le token dans la liste des processus. Il faut remplacer ce transport avant une
+nouvelle installation. Autre limite : check_http affiche le code sans auth
+mais n’impose pas 401 ; les erreurs après restart/SIGKILL ne déclenchent pas
+le même rollback. Les essais rapportés ont réussi ; ce n’est pas une garantie
+pour tous les chemins d’échec. Aucun changement de ces fichiers de référence
+n’a été fait par GPT, aucune commande d’installation exécutée ici.
+
+Règle sudo rapportée, /etc/sudoers.d/eidolon-dashboard, root 0640 :
+
+```sudoers
+toytoy ALL=(root) NOPASSWD: /usr/bin/systemctl restart eidolon-dashboard, /usr/bin/systemctl --no-pager status eidolon-dashboard, /usr/bin/journalctl --no-pager -u eidolon-dashboard -n 200
+```
+
+Elle n’est pas créée par l’installateur versionné. Tests exacts rapportés : ces
+trois commandes passent ; variantes/autres services demandent un mot de passe.
+Conserver `--no-pager` : un paginateur interactif lancé comme root peut ouvrir
+un shell. Les commandes usuelles autorisées sont donc celles ci-dessus.

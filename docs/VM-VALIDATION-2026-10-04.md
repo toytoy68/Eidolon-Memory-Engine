@@ -29,8 +29,9 @@ n’a pas été mesuré ; les durées indiquées sont celles des requêtes.
 
 ## État opérationnel et limites
 
-Le checkout actif `/opt/eidolon-memory-engine` et le tableau de bord restent
-sur `88050bc`. Les nouvelles corrections sont testées dans le clone mais
+Au moment de la première recette, le checkout actif était `88050bc` ;
+l’état courant est donné dans la reprise ci-dessous. La version chargée du
+processus ancien n’a pas été établie. Les nouvelles corrections sont testées dans le clone mais
 ne sont pas encore déployées. La vue compacte et la visite mobile restent
 à vérifier après mise à jour/reprise du dashboard, ou sur instance isolée.
 Ollama est signalé inactif et rien n’écoute sur 11435 ; aucun appel réel au
@@ -66,3 +67,21 @@ Le code du checkout /opt est donc à jour sur 9819d6b. Aucune preuve de
 redémarrage du processus dashboard n’est fournie : sa reprise et le rendu
 compact restent à vérifier. Les journaux VM ne sont pas directement accessibles
 à GPT ; cette validation repose sur la sortie terminal fournie par toytoy.
+
+
+## Reprise et service — état reçu à 10 h 35
+
+/opt sur fc675a4 depuis 09 h 52. Dashboard relancé, puis installé en service
+systemd eidolon-dashboard à 10 h 18, sous toytoy ; token protégé dans /etc,
+journal applicatif dans /home/toytoy/eidolon-dashboard.log. Démarrage au boot
+configuré, restart et reprise après SIGKILL vérifiés (401/200), reboot non testé.
+MCP/Cloudflare/Ollama non modifiés ; upload sous cloisonnement non testé.
+La capture toytoy de 09 h 47 valide les deux jauges compactes côte à côte ;
+elle ne valide pas le mode texte fc675a4 ni toutes les tailles mobiles.
+
+Revue Claude reçue au commit ed56415 : accord sur b18dad0/873487a/9819d6b,
+73 tests de revue rapportés, neuf cas nouveaux répétés dix fois. Les tests
+originaux de 873487a et b18dad0 sont rouges comportementalement sur leurs
+parents ; D10 a un cas comportemental rouge et trois erreurs d’absence de
+module/attribut. Les limites v1 révisée, normalisation, coût sont conservées.
+Ces constats sont reçus, non réexécutés par GPT sur la VM.

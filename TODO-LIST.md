@@ -67,6 +67,16 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,
+empreinte de l’annexe vérifiée, garde fork ajoutée ; 32 tests ciblés verts
+(dont neuf nouveaux), syntaxe bash vérifiée ; modèles systemd conservés
+avec leurs empreintes exactes. /opt fc675a4, service dashboard installé et
+restart/plantage vérifiés selon rapport ; reboot/upload cloisonné non testés.
+Revue ed56415 reçue. Installateur de référence : repli exposant l’environnement
+par arguments, à corriger avant réutilisation (voir MONITORING). Aucune commande
+VM ni modification de validation.py dans ce lot ; estimation gelée inchangée.
+
+
 Dashboard : capture toytoy du 04/10 09 h 47 confirme les jauges compactes
 côte à côte sur VM après relance. Nouveau mode texte demandé ensuite :
 largeur ≤360 px ou hauteur utile ≤260 px, deux lignes mémoire/disque ;
@@ -91,9 +101,9 @@ Rappel réel deux fois PASS, références exactes, empreintes corpus inchangées
 les journaux VM ; résultats rapportés, non revérifiés indépendamment.
 Les mentions NON TESTÉ VM ci-dessous sont les états historiques avant ce
 rapport et sont remplacées pour les cas couverts par cette recette.
-**Service /opt toujours 88050bc** : déploiement dashboard et recette visuelle
-non effectués. IA locale réelle non validée (Ollama inactif). Revue du code
-proposée par Claude, non reçue. F1 reste ouvert ; estimation 45 % inchangée.
+**État courant /opt : fc675a4 ; dashboard en service systemd depuis 10 h 18**.
+Jauges compactes confirmées par capture ; vue texte et recette mobile complète
+restent à vérifier. IA locale réelle non validée (Ollama inactif). Revue Claude reçue dans ed56415 (trois commits approuvés). F1 reste ouvert ; estimation 45 % inchangée.
 
 
 D10 — 04/10 : nouvelles sorties IA relues en MODEL_OUTPUT, alias historique

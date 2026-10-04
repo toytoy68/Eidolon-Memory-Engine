@@ -1,0 +1,36 @@
+# Eidolon dashboard (LAN, Basic auth). Template without secret.
+# Token: /etc/eidolon-dashboard/environment, root:root 0600, one line
+#   EIDOLON_DASHBOARD_TOKEN=<value>
+# Install: deployment/dashboard/install-dashboard-service.sh (run as root).
+[Unit]
+Description=Eidolon Memory Engine dashboard (LAN 192.168.1.110:8766)
+Wants=network-online.target
+After=network-online.target
+# Never give up retrying (boot without LAN address, repeated crashes).
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=toytoy
+Group=toytoy
+WorkingDirectory=/opt/eidolon-memory-engine
+EnvironmentFile=/etc/eidolon-dashboard/environment
+Environment=LANG=fr_FR.UTF-8 LC_ALL=C.UTF-8
+ExecStart=/opt/eidolon-memory-engine/.venv/bin/python -B -m core.monitoring.dashboard --root /opt/eidolon-memory-engine --host 192.168.1.110 --port 8766 --allow-source-upload --local-ai-model qwen3:0.6b --local-ai-url http://127.0.0.1:11435
+# Same file mode as the former manual process (umask 0002).
+UMask=0002
+# Crash recovery; also retries while the LAN address is not yet configured at boot.
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+StandardOutput=append:/home/toytoy/eidolon-dashboard.log
+StandardError=append:/home/toytoy/eidolon-dashboard.log
+
+[Install]
+WantedBy=multi-user.target

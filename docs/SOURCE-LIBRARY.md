@@ -292,3 +292,26 @@ v1 historiques, v2 historiques avec et sans compaction, conservation des
 empreintes et absence de réécriture. La suite complète précédente (1816 verts,
 5 blocages environnement) précède D10 ; aucune nouvelle suite complète ni
 validation VM n’est revendiquée pour ce lot. F1 reste ouvert.
+
+
+## Limites de l’identité — revue Claude ed56415
+
+La revue reçue ne trouve pas de défaut bloquant sur b18dad0, 873487a et 9819d6b.
+Neuf tests de garde (interruption par mort réelle de processus, concurrence,
+v1 inachevée, v1 révisée) sont intégrés sous tests/test_source_detail_interruptions.py,
+avec garde POSIX fork. Ils caractérisent le comportement, sans nouveau correctif.
+La readiness doit continuer à bloquer une acceptation tant qu’une opération
+v1/v2 est inachevée ; une reprise explicite permet ensuite son rejeu.
+
+Trois limites restent à décider, sans changement de validation.py dans ce lot :
+
+- Une v1 révisée est reconnue par son texte courant, mais rend le résultat de
+  création (révision 1). Le texte original peut créer une v2 de même sens.
+- Les retours à la ligne saisis deviennent des espaces dans le détail publié,
+  sans aperçu avant validation. Piste proposée : montrer le texte normalisé
+  avant acceptation ; aucune modification de l’interface dans ce lot.
+- Le scan de toutes les Informations à chaque nouvelle acceptation n’est pas
+  mesuré à l’échelle.
+
+Cas Claude exécutés dix fois sur VM/tmpfs selon son rapport. Ni ext4 ni coupure
+électrique testés dans cette revue. F1 reste ouvert ; campagne/purge hors périmètre.
