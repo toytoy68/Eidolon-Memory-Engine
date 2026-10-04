@@ -97,3 +97,28 @@ Ce résultat ne valide pas le rendu navigateur, le reboot, le vrai repli root
 ou un benchmark de performance VM ; les outils synthétiques passent leurs tests.
 Aucun restart de dashboard, import ou migration demandé pour cette mise à jour.
 Estimation globale gelée à 45 %.
+
+## Revue Claude C2/C3 — reçue le 4 octobre 2026
+
+Compte rendu 4a85b81, archive claude-fc44d09093464297a029747893a61d41.md,
+SHA 494aa46d3c536126597e752bc9514713ded02829dbf695ec9be2f615728d5c9d vérifié.
+Sur clone c0f1f53 : 1877 tests VM réussis, MCP exclus ; 34 ChatGPT verts,
+trois répétitions ; rappel réel PASS, unchanged/references_exact vrais,
+1,354 à 1,448 s par requête, couverture identique et corpus v1 inchangé.
+Ces preuves sont reçues de Claude, pas des exécutions GPT sur VM.
+
+Recette visuelle sur instance synthétique temporaire à 127.0.0.1:18767,
+clone 2c2ff26, Chromium émulé. Dashboard actif non modifié. Mode texte
+correct à 350x220/800x220 et retour normal sans reload ; mais 360x740/320x640
+perdaient aussi toute navigation. Correctif CSS testé par Claude : mode texte
+si hauteur <=260, ou largeur <=360 ET hauteur <=540. Téléphones portrait
+retrouvent la navigation sans défilement horizontal ; petites fenêtres restent
+texte seul. Patch exact intégré ici, 36 tests dashboard/sources/installateur
+locaux verts ; pas de nouvelle mesure visuelle GPT ou téléphone physique.
+Cibles tactiles 32 px en compact et vrai setpriv root restent non validés.
+
+C3 reproduit F1a (référence d'un détail déplacée), F1 (substitution sans détail)
+et F1b (extraction supprimée puis autre pilote) sur sources synthétiques.
+Contrat d'engagement durable proposé, pas implémenté. Décisions toytoy transmises
+par Claude : référence discordante = avertissement visible/non bloquant ;
+manuscrit existant libre/sans engagement ; aucun commit-extraction implicite.

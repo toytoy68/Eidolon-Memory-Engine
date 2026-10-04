@@ -247,3 +247,15 @@ Avant toute installation ou arrêt manuel, l'installateur exige désormais
 setsid et setpriv. Une dépendance manquante bloque sans modifier le service,
 au lieu de découvrir l'impossibilité du repli après avoir arrêté le dashboard.
 Le service existant n'est pas concerné ; ne pas réinstaller son unité.
+
+
+## Téléphone portrait et petite fenêtre — revue C2
+
+Le mode texte est désormais déclenché par hauteur <=260 px, ou par largeur
+<=360 px ET hauteur <=540 px. Un téléphone 320x640 ou 360x740 conserve ainsi
+la navigation et les autres sections. Une fenêtre 350x220, 800x220 ou 300x400
+reste un moniteur texte. Agrandir restitue contrôles et fond sans rechargement.
+Preuves Chromium émulé avant/après reçues de Claude ; 36 tests existants verts
+ici. Pas d'assertion artificielle sur le texte CSS. Téléphone physique, Safari,
+Firefox et cibles tactiles de 44 px restent à vérifier. Sources n'est pas
+concernée par les règles propres au dashboard.

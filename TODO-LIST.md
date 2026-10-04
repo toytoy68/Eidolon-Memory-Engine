@@ -149,6 +149,17 @@ créneau [début,fin), traversée de minuit, durée écoulée UTC aux transition
 écriture mémoire ou garde readiness affirmée. [Contrat](docs/MAINTENANCE-WINDOW.md).
 Raccordement réel et définition de l’activité/charge/boot restent à décider.
 
+### C2/C3 reçus et suite
+
+Claude valide c0f1f53 sur clone VM : 1877 réussis MCP exclus, rappel réel PASS
+et corpus v1 inchangé. C2 : navigation perdue sur téléphones <=360 portrait,
+patch CSS exact intégré, 36 tests locaux verts ; mesure Chromium émulée
+avant/après reçue. Pas de téléphone réel ou vrai setpriv root validés.
+C3/complément : avertissement F1a visible/non bloquant, manuscrit libre sans
+engagement implicite. [Contrats et prochaines tranches](docs/SOURCE-REFERENCE-AUDIT-PLAN.md).
+F1a/UI et engagement durable pas encore implémentés ; les critères bloquants
+F1/F1b doivent porter sur des lots engagés pour respecter la compatibilité.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,

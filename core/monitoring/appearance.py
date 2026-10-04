@@ -108,8 +108,8 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;ba
  .dashboard-grid>section:not(.resource-card){grid-column:1/-1}
  .dashboard>.wallpaper-settings{margin:.5rem 0;padding:.5rem}
 }
-/* Tiny windows are a text-only resource monitor; enlarge to restore controls. */
-@media(max-width:360px),(max-height:260px){
+/* Tiny windows (not phones held upright) are a text-only resource monitor; enlarge to restore controls. */
+@media(max-height:260px),(max-width:360px) and (max-height:540px){
  body.dashboard{font-size:13px;padding:.4rem!important}
  body.dashboard::before{background:#101827;background-image:none}
  .dashboard>:not(main){display:none}
