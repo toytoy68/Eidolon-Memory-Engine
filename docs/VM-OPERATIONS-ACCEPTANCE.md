@@ -66,6 +66,28 @@ original ou reçus manquants), rejetées avant le rejeu. Cela ne valide pas enco
 l'opération reprise interrompue, une restauration privée, le sandbox systemd
 ou le reboot. Cette sous-recette complète les étapes ci-dessus, sans les remplacer.
 
+### Variante avec opération interrompue
+
+Option `--pending` (POSIX fork) : un processus meurt réellement avec os._exit(9)
+après l'intention durable, avant le fichier Information. La source ainsi bloquée
+est archivée sans récupération implicite. Après restauration, le manifeste est
+exact, readiness reste fausse et toute acceptation est refusée sans écrire.
+La reprise explicite s'applique uniquement à la copie restaurée : ensuite le
+détail existe une fois, les variantes rejouent sans écriture, les deux reçus
+compactés et la suppression restent valides. La source originale reste intacte.
+
+```bash
+.venv/bin/python -m tools.check_source_restore --pending \
+  --output /tmp/source-restore-pending-new-report.json
+```
+
+Exécuté ici : PASS, 15 fichiers avant reprise, six tests de l'outil verts.
+[Rapport](benchmarks/source-restore-pending-2026-10-04.json). Un test supplémentaire
+remplace recover par une absence d'effet : le contrôle refuse de déclarer la
+reprise réussie. L'archive/restauration elle-même n'est pas interrompue, aucune
+coupure disque ou sauvegarde privée n'est testée. Le champ readiness du rapport
+concerne la copie restaurée après reprise, pas la source intentionnellement bloquée.
+
 Une restauration réelle de sauvegarde utilisateur reste une étape distincte :
 utiliser une copie arrêtée, privée, sans publier son contenu ni son manifeste
 détaillé ; seuls comptes et empreinte globale dans le compte rendu.

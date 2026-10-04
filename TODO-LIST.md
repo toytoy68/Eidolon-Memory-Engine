@@ -106,6 +106,16 @@ revendiqué. Source/Informations préexistantes et audits préservés. Quatre te
 de l'outil verts, groupe outils/installation/restauration : 38 verts.
 Voir [protocole et mesures](docs/SOURCE-DETAIL-COST.md).
 
+### Reprise après restauration GPT
+
+Sous-recette enrichie --pending : mort réelle du processus avant Information,
+archive intacte de l'état bloqué, refus d'acceptation après restauration, reprise
+explicite sur copie uniquement puis rejeux sans modification ni doublon.
+PASS local, 15 fichiers avant reprise ; six tests de l'outil verts, y compris
+refus d'une reprise sans effet. Groupe ciblé avant ce dernier cas : 92 verts.
+Pas d'interruption de la restauration elle-même, coupure disque ou sauvegarde
+privée ; recette systemd/VM toujours séparée. Code de production inchangé.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,

@@ -90,3 +90,13 @@ ni modification des sources et Informations antérieures, audits/readiness verts
 Quatre tests de l'outil et 38 ciblés outils/installation/restauration verts.
 Le chronométrage des appels inclut leur attente de verrou ; pas de promesse
 de débit. Même gel des fichiers réservés à ta revue et aucune commande VM.
+
+## Restauration d'une opération interrompue GPT
+
+check_source_restore --pending : os._exit(9) après intention durable, archive
+avec opération inachevée, restauration byte-exacte encore bloquée, acceptation
+refusée sans écriture, recover explicite sur copie puis variantes rejouées sans
+doublon/résurrection. Source arrêtée conservée intacte. PASS local 15 fichiers
+avant reprise, six tests de l'outil verts ; pas d'interruption de l'extraction
+TAR ni de vrai disque/VM. Cela complète la sous-recette initiale, sans modifier
+les écrivains de production ou la readiness.
