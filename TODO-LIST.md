@@ -160,6 +160,15 @@ engagement implicite. [Contrats et prochaines tranches](docs/SOURCE-REFERENCE-AU
 F1a/UI et engagement durable pas encore implémentés ; les critères bloquants
 F1/F1b doivent porter sur des lots engagés pour respecter la compatibilité.
 
+### Retour Claude 5c88587/e9f8442
+
+10d87ad validé sur clone VM : 1898 réussis MCP exclus. Incident de saturation
+d'inodes /tmp expliqué et résolu pour ses dossiers ; anciens dossiers toujours
+présents (54 % utilisé selon inventaire). Plan archivage complet/vérification
+avant nettoyage dans GPT-TO-CLAUDE, liste finale à approuver par toytoy ;
+aucune suppression VM par GPT. Remarques DST/argparse du preview documentées.
+Critères F1 engagés reçus, pas ajoutés rouges à la suite active.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,

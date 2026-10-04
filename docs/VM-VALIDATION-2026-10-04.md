@@ -122,3 +122,16 @@ et F1b (extraction supprimée puis autre pilote) sur sources synthétiques.
 Contrat d'engagement durable proposé, pas implémenté. Décisions toytoy transmises
 par Claude : référence discordante = avertissement visible/non bloquant ;
 manuscrit existant libre/sans engagement ; aucun commit-extraction implicite.
+
+
+## Vérification 10d87ad et incident tmpfs — rapport Claude 5c88587
+
+Suite complète sur clone VM isolé : **1898 réussis, MCP exclus**. Premier essai
+invalide : 4 échecs/302 erreurs de création de dossiers, inodes /tmp épuisés,
+pas une régression de code. Après retrait des propres basetemp de Claude,
+relance verte ; dashboard/MCP sans authentification 401 et aucun défaut signalé
+dans le journal du dashboard. Environ 565140 inodes utilisés (54 %) restent
+selon son inventaire e9f8442 ; aucune suppression ancienne effectuée par GPT.
+Ces résultats sont reçus de Claude, non exécutés par GPT sur la VM.
+Les prochaines recettes doivent isoler leurs basetemp et nettoyer leur propre
+corpus temporaire après conservation des logs, jamais purger /tmp globalement.

@@ -35,3 +35,16 @@ charge, la reprise au boot et son interaction avec le créneau, le contexte rée
 d'exécution, la gestion des erreurs et la fréquence. La règle --if-idle existante
 ne mesure que certains verrous canoniques, pas l'inactivité de la machine.
 Le preview n'observe pas CPU/SSH et ne simule pas ces critères.
+
+
+## Horaires locaux aux changements d'heure — revue Claude
+
+Un créneau 02:00–03:00 en Europe/Paris n'existe pas la nuit du passage à
+l'heure d'été ; au passage à l'heure d'hiver, il s'ouvre deux fois (120 minutes
+écoulées). C'est le comportement du créneau en heure locale, distinct de la
+durée d'inactivité calculée en UTC. Préférer un créneau évitant cette heure
+ambiguë ; l'exemple 04:00–08:00 n'est pas affecté par ce problème.
+Les paramètres syntaxiquement invalides (par exemple --minimum-idle-minutes abc)
+relèvent d'argparse : erreur d'usage sur stderr, code 2. Les valeurs parsées mais
+invalides pour la politique donnent BLOCKED/code 1. Ce sont deux catégories
+d'erreur distinctes ; aucun JSON n'est garanti pour une erreur de syntaxe CLI.
