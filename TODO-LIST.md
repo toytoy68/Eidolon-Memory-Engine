@@ -67,6 +67,15 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+**Validation directe toytoy sur /opt, 04/10 09 h 38, commit 9819d6b** :
+pull ff-only effectué, suite complète **1824 tests réussis en 44,25 s**,
+MCP inclus, aucune exclusion. Rappel réel PASS, références exactes, corpus
+inchangé ; 1,290–1,376 s par requête, pertinence sémantique non évaluée.
+[Sortie rapportée et limites](docs/VM-VALIDATION-2026-10-04.md#validation-directe-de-toytoy-sur-opt--09-h-38).
+Checkout /opt à jour ; redémarrage dashboard et rendu compact non confirmés.
+Cette validation remplace les états VM historiques ci-dessous pour le code testé.
+
+
 **Recette VM reçue de Claude Code le 04/10, commit 9819d6b** : clone isolé,
 1809 tests verts en 47,61 s, 15 MCP explicitement exclus ; 136 ciblés verts.
 Rappel réel deux fois PASS, références exactes, empreintes corpus inchangées,

@@ -48,3 +48,21 @@ Conserver le dossier de validation tant que la revue est en cours. L’intégrat
 sur `/opt` se fait après contrôle Git, par pull ff-only ; les tests documentaires
 n’exigent aucune réimportation du corpus. Mettre à jour le code ne relance pas
 un processus Python existant : la reprise du dashboard est une étape distincte.
+
+
+## Validation directe de toytoy sur /opt — 09 h 38
+
+Sortie terminal transmise par toytoy : pull ff-only de 88050bc vers 9819d6b
+sur `/opt/eidolon-memory-engine`, puis suite **entière : 1824 tests réussis
+en 44,25 s**, aucune exclusion ni échec indiqué. Les 15 tests MCP sont inclus.
+Cette preuve complète le rapport Claude (1809 + 15 = 1824).
+
+Rappel sur `/home/toytoy/eidolon-corpus-gpt-test` : **PASS**, unchanged et
+references_exact vrais ; pertinence sémantique non évaluée. Eidolon : 1,327 s,
+roman : 1,344 s, mémoire robot : 1,328 s, Dans les bras : 1,376 s,
+requête inexistante : 1,290 s. Couverture identique au rapport Claude.
+
+Le code du checkout /opt est donc à jour sur 9819d6b. Aucune preuve de
+redémarrage du processus dashboard n’est fournie : sa reprise et le rendu
+compact restent à vérifier. Les journaux VM ne sont pas directement accessibles
+à GPT ; cette validation repose sur la sortie terminal fournie par toytoy.

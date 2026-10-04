@@ -85,6 +85,13 @@ Ce contrôle VM n'incluait pas la comparaison exacte de toutes les références.
 
 ## Résultat VM reçu le 04/10
 
+Validation directe de toytoy sur /opt au commit 9819d6b : **1824 tests verts
+en 44,25 s, MCP inclus**. Rappel réel PASS, références exactes, corpus inchangé ;
+1,290–1,376 s par requête. Pertinence sémantique non évaluée. Le redémarrage
+et le rendu du dashboard restent à vérifier. Cette preuve complète le rapport
+Claude ci-dessous et remplace l’état ancien du checkout /opt.
+
+
 Claude Code rapporte sur 9819d6b : 1809 tests verts hors 15 MCP, 136 ciblés
 verts et deux rappels réels PASS, références exactes et corpus inchangé.
 Temps par requête : 1,298–1,381 s. [Rapport, provenance et limites](VM-VALIDATION-2026-10-04.md).
