@@ -1,0 +1,495 @@
+{
+  "status": "PASS",
+  "synthetic": true,
+  "python": "3.12.14",
+  "temp_parent": "/tmp",
+  "tool_sha256": "eb227e126be2e8e483ae07e15f9dbfb8caa73b4a365eded0abcc119fa022fb20",
+  "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+  "points": [
+    {
+      "history_records": 0,
+      "replica": 0,
+      "mode": "new",
+      "seconds": 0.009387974001583643,
+      "setup_seconds": 0.026989935999154113,
+      "markdown_read_opens": 0,
+      "backend_list_calls": 1,
+      "backend_list_items": 0,
+      "journal_reads": 3,
+      "journal_scans": 2,
+      "journal_json_opens": 2,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 1
+    },
+    {
+      "history_records": 0,
+      "replica": 0,
+      "mode": "replay_variant",
+      "seconds": 0.006296606006799266,
+      "setup_seconds": 0.026989935999154113,
+      "markdown_read_opens": 3,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 4,
+      "journal_scans": 1,
+      "journal_json_opens": 4,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 1
+    },
+    {
+      "history_records": 0,
+      "replica": 1,
+      "mode": "new",
+      "seconds": 0.010600160996546037,
+      "setup_seconds": 0.012011131999315694,
+      "markdown_read_opens": 0,
+      "backend_list_calls": 1,
+      "backend_list_items": 0,
+      "journal_reads": 3,
+      "journal_scans": 2,
+      "journal_json_opens": 2,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 1
+    },
+    {
+      "history_records": 0,
+      "replica": 1,
+      "mode": "replay_variant",
+      "seconds": 0.006989527988480404,
+      "setup_seconds": 0.012011131999315694,
+      "markdown_read_opens": 3,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 4,
+      "journal_scans": 1,
+      "journal_json_opens": 4,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 1
+    },
+    {
+      "history_records": 0,
+      "replica": 2,
+      "mode": "new",
+      "seconds": 0.007715920000919141,
+      "setup_seconds": 0.010370720992796123,
+      "markdown_read_opens": 0,
+      "backend_list_calls": 1,
+      "backend_list_items": 0,
+      "journal_reads": 3,
+      "journal_scans": 2,
+      "journal_json_opens": 2,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 1
+    },
+    {
+      "history_records": 0,
+      "replica": 2,
+      "mode": "replay_variant",
+      "seconds": 0.009713683000882156,
+      "setup_seconds": 0.010370720992796123,
+      "markdown_read_opens": 3,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 4,
+      "journal_scans": 1,
+      "journal_json_opens": 4,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 1
+    },
+    {
+      "history_records": 100,
+      "replica": 0,
+      "mode": "new",
+      "seconds": 0.07920213100442197,
+      "setup_seconds": 0.3600085969956126,
+      "markdown_read_opens": 400,
+      "backend_list_calls": 1,
+      "backend_list_items": 100,
+      "journal_reads": 203,
+      "journal_scans": 2,
+      "journal_json_opens": 302,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 101
+    },
+    {
+      "history_records": 100,
+      "replica": 0,
+      "mode": "replay_variant",
+      "seconds": 0.057248325989348814,
+      "setup_seconds": 0.3600085969956126,
+      "markdown_read_opens": 303,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 104,
+      "journal_scans": 1,
+      "journal_json_opens": 204,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 101
+    },
+    {
+      "history_records": 100,
+      "replica": 1,
+      "mode": "new",
+      "seconds": 0.09667960600927472,
+      "setup_seconds": 0.4089149159990484,
+      "markdown_read_opens": 400,
+      "backend_list_calls": 1,
+      "backend_list_items": 100,
+      "journal_reads": 203,
+      "journal_scans": 2,
+      "journal_json_opens": 302,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 101
+    },
+    {
+      "history_records": 100,
+      "replica": 1,
+      "mode": "replay_variant",
+      "seconds": 0.0596815430035349,
+      "setup_seconds": 0.4089149159990484,
+      "markdown_read_opens": 303,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 104,
+      "journal_scans": 1,
+      "journal_json_opens": 204,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 101
+    },
+    {
+      "history_records": 100,
+      "replica": 2,
+      "mode": "new",
+      "seconds": 0.09399462900182698,
+      "setup_seconds": 0.3895981209934689,
+      "markdown_read_opens": 400,
+      "backend_list_calls": 1,
+      "backend_list_items": 100,
+      "journal_reads": 203,
+      "journal_scans": 2,
+      "journal_json_opens": 302,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 101
+    },
+    {
+      "history_records": 100,
+      "replica": 2,
+      "mode": "replay_variant",
+      "seconds": 0.06085849300143309,
+      "setup_seconds": 0.3895981209934689,
+      "markdown_read_opens": 303,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 104,
+      "journal_scans": 1,
+      "journal_json_opens": 204,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 101
+    },
+    {
+      "history_records": 300,
+      "replica": 0,
+      "mode": "new",
+      "seconds": 0.24712309800088406,
+      "setup_seconds": 1.2561340370011749,
+      "markdown_read_opens": 1200,
+      "backend_list_calls": 1,
+      "backend_list_items": 300,
+      "journal_reads": 603,
+      "journal_scans": 2,
+      "journal_json_opens": 902,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 301
+    },
+    {
+      "history_records": 300,
+      "replica": 0,
+      "mode": "replay_variant",
+      "seconds": 0.14795089499966707,
+      "setup_seconds": 1.2561340370011749,
+      "markdown_read_opens": 903,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 304,
+      "journal_scans": 1,
+      "journal_json_opens": 604,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 301
+    },
+    {
+      "history_records": 300,
+      "replica": 1,
+      "mode": "new",
+      "seconds": 0.27496212800906505,
+      "setup_seconds": 1.243122587009566,
+      "markdown_read_opens": 1200,
+      "backend_list_calls": 1,
+      "backend_list_items": 300,
+      "journal_reads": 603,
+      "journal_scans": 2,
+      "journal_json_opens": 902,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 301
+    },
+    {
+      "history_records": 300,
+      "replica": 1,
+      "mode": "replay_variant",
+      "seconds": 0.16729361600300763,
+      "setup_seconds": 1.243122587009566,
+      "markdown_read_opens": 903,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 304,
+      "journal_scans": 1,
+      "journal_json_opens": 604,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 301
+    },
+    {
+      "history_records": 300,
+      "replica": 2,
+      "mode": "new",
+      "seconds": 0.25994117600203026,
+      "setup_seconds": 1.2861489259958034,
+      "markdown_read_opens": 1200,
+      "backend_list_calls": 1,
+      "backend_list_items": 300,
+      "journal_reads": 603,
+      "journal_scans": 2,
+      "journal_json_opens": 902,
+      "files_unchanged": false,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 301
+    },
+    {
+      "history_records": 300,
+      "replica": 2,
+      "mode": "replay_variant",
+      "seconds": 0.14662992898956873,
+      "setup_seconds": 1.2861489259958034,
+      "markdown_read_opens": 903,
+      "backend_list_calls": 0,
+      "backend_list_items": 0,
+      "journal_reads": 304,
+      "journal_scans": 1,
+      "journal_json_opens": 604,
+      "files_unchanged": true,
+      "audit_issues": 0,
+      "readiness": true,
+      "canonical_objects": 301
+    }
+  ],
+  "summaries": [
+    {
+      "history_records": 0,
+      "mode": "new",
+      "measurements": 3,
+      "median_seconds": 0.009387974001583643,
+      "min_seconds": 0.007715920000919141,
+      "max_seconds": 0.010600160996546037,
+      "counts": {
+        "markdown_read_opens": [
+          0
+        ],
+        "backend_list_calls": [
+          1
+        ],
+        "backend_list_items": [
+          0
+        ],
+        "journal_reads": [
+          3
+        ],
+        "journal_scans": [
+          2
+        ],
+        "journal_json_opens": [
+          2
+        ]
+      }
+    },
+    {
+      "history_records": 0,
+      "mode": "replay_variant",
+      "measurements": 3,
+      "median_seconds": 0.006989527988480404,
+      "min_seconds": 0.006296606006799266,
+      "max_seconds": 0.009713683000882156,
+      "counts": {
+        "markdown_read_opens": [
+          3
+        ],
+        "backend_list_calls": [
+          0
+        ],
+        "backend_list_items": [
+          0
+        ],
+        "journal_reads": [
+          4
+        ],
+        "journal_scans": [
+          1
+        ],
+        "journal_json_opens": [
+          4
+        ]
+      }
+    },
+    {
+      "history_records": 100,
+      "mode": "new",
+      "measurements": 3,
+      "median_seconds": 0.09399462900182698,
+      "min_seconds": 0.07920213100442197,
+      "max_seconds": 0.09667960600927472,
+      "counts": {
+        "markdown_read_opens": [
+          400
+        ],
+        "backend_list_calls": [
+          1
+        ],
+        "backend_list_items": [
+          100
+        ],
+        "journal_reads": [
+          203
+        ],
+        "journal_scans": [
+          2
+        ],
+        "journal_json_opens": [
+          302
+        ]
+      }
+    },
+    {
+      "history_records": 100,
+      "mode": "replay_variant",
+      "measurements": 3,
+      "median_seconds": 0.0596815430035349,
+      "min_seconds": 0.057248325989348814,
+      "max_seconds": 0.06085849300143309,
+      "counts": {
+        "markdown_read_opens": [
+          303
+        ],
+        "backend_list_calls": [
+          0
+        ],
+        "backend_list_items": [
+          0
+        ],
+        "journal_reads": [
+          104
+        ],
+        "journal_scans": [
+          1
+        ],
+        "journal_json_opens": [
+          204
+        ]
+      }
+    },
+    {
+      "history_records": 300,
+      "mode": "new",
+      "measurements": 3,
+      "median_seconds": 0.25994117600203026,
+      "min_seconds": 0.24712309800088406,
+      "max_seconds": 0.27496212800906505,
+      "counts": {
+        "markdown_read_opens": [
+          1200
+        ],
+        "backend_list_calls": [
+          1
+        ],
+        "backend_list_items": [
+          300
+        ],
+        "journal_reads": [
+          603
+        ],
+        "journal_scans": [
+          2
+        ],
+        "journal_json_opens": [
+          902
+        ]
+      }
+    },
+    {
+      "history_records": 300,
+      "mode": "replay_variant",
+      "measurements": 3,
+      "median_seconds": 0.14795089499966707,
+      "min_seconds": 0.14662992898956873,
+      "max_seconds": 0.16729361600300763,
+      "counts": {
+        "markdown_read_opens": [
+          903
+        ],
+        "backend_list_calls": [
+          0
+        ],
+        "backend_list_items": [
+          0
+        ],
+        "journal_reads": [
+          304
+        ],
+        "journal_scans": [
+          1
+        ],
+        "journal_json_opens": [
+          604
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "live unindexed histories; unrelated Information, no historical v1 match",
+    "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+    "warm synthetic filesystem, not VM or isolated disk latency",
+    "counts include readiness and writer work; opens are not unique files or bytes",
+    "setup, hashing, verification and final audits excluded from measured duration",
+    "no local AI call, real corpus, concurrency or throughput guarantee"
+  ],
+  "source_commit": "ae2f3cfd7b573ee406efc774ba2f6c63a2d13d9f"
+}

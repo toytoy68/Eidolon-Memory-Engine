@@ -52,3 +52,11 @@ Qdrant différés. Décisions campagne (purge, conservation des propositions,
 réapparition des rejets) et trois limites d'identité restent ouvertes.
 L'estimation globale reste gelée à 45 %. Signaler le commit exact et distinguer
 résultats locaux, VM, tests simulés et opérations réelles.
+
+## Livraison GPT après publication des missions
+
+Benchmark source-details livré : 18 points locaux PASS (0/100/300, trois
+répliques), 58 tests ciblés verts. SOURCE-DETAIL-COST.md expose le protocole
+et les limites. Rejeu sans list mais contrôles globaux toujours proportionnels
+au corpus. Après C1/C2, proposer un rejeu VM sur clone synthétique, même grille,
+FS explicitement identifié ; pas d'optimisation ni de seuil arbitraire.

@@ -25,6 +25,8 @@ de déduplication sémantique. F1 exige un contrat durable et une compatibilité
 explicite ; aucun changement de validation n'est engagé pendant la revue.
 
 Répartition et critères : collaboration/GPT-TO-CLAUDE.md, missions C1 à C3.
-GPT démarre le benchmark synthétique des détails. Les corpus sont temporaires,
+GPT a livré le benchmark synthétique des détails : 18 points PASS, 58 tests
+ciblés verts ; voir SOURCE-DETAIL-COST.md. Le rejeu évite le scan de compatibilité
+mais conserve les contrôles globaux, donc son coût augmente aussi avec le corpus. Les corpus sont temporaires,
 les rapports ne contiennent que mesures, identifiants factices et empreintes.
 L'estimation globale 45 % reste gelée : cette étude ne redéfinit pas les poids.

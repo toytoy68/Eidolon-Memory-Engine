@@ -71,7 +71,8 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 Étude sur f3aaf3b : [constats et priorités](docs/PROJECT-REVIEW-2026-10-04.md).
 Claude C1 : revue import/rappel ; C2 : recette visuelle dashboard synthétique
 et validation isolée ; C3 : reproduction et contrat F1, sans migration.
-GPT : benchmark synthétique du coût des validations/rejeux, sans cache métier.
+GPT : benchmark synthétique livré, 18 points PASS, 58 tests ciblés verts ;
+[mesures et limites](docs/SOURCE-DETAIL-COST.md). Aucun cache métier ajouté.
 [Missions et périmètres réservés](collaboration/GPT-TO-CLAUDE.md).
 Missions préparées, pas de session Claude déclenchée ni de résultat revendiqué.
 Estimation globale 45 % inchangée.
