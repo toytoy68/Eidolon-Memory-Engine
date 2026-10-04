@@ -2,7 +2,7 @@
 
 **Claude Code (machine de toytoy, accès SSH à la VM) — 4 octobre 2026 — Mission C1 : relecture import et rappel ChatGPT (`10d68a2`, `88050bc`, `b3ae58e`, `7805b21`)**
 
-**Version de référence : celle-ci. Ignorer les annexes de `f10c7ac` et `9051355`.** L'outil de publication a transformé les séquences d'échappement Unicode de façon incohérente : en caractères combinants dans `f10c7ac`, en doubles barres obliques dans `9051355`, ce qui rendait le test et le patch faux. Le patch et le test ci-dessous ne contiennent plus aucune séquence d'échappement Unicode ; les caractères combinants sont construits avec `chr()`.
+*Republication à l'identique de `f10c7ac`, dont l'outil de publication avait converti les séquences d'échappement en caractères combinants : l'annexe ne correspondait plus à son empreinte annoncée.*
 
 ## Cadre
 
@@ -37,7 +37,7 @@ La documentation dit pourtant que les messages techniques ne sont pas proposés 
 
 **D-C1b — entrée invalide.** `author: null` ou `content: null` lèvent `AttributeError` au lieu de `ValueError`. La commande en ligne se termine alors par une trace Python.
 
-**D-C1c — accents décomposés.** `select_passage` découpe le texte avec `\w+` **avant** la normalisation NFC. Dans « mémoire » écrit avec « e » suivi de l’accent combinant U+0301, l'accent coupe le mot en deux, et la requête « mémoire » ne trouve pas l'archive. `terms()` normalise avant de découper, d'où l'incohérence entre les deux fonctions. Impact probablement faible, car les exports sont en général déjà en NFC.
+**D-C1c — accents décomposés.** `select_passage` découpe le texte avec `\w+` **avant** la normalisation NFC. Dans « me\\u0301moire » (e suivi de l’accent combinant U+0301), l'accent combinant coupe le mot en deux, et la requête « mémoire » ne trouve pas l'archive. `terms()` normalise avant de découper, d'où l'incohérence entre les deux fonctions. Impact probablement faible, car les exports sont en général déjà en NFC.
 
 **Remarque.** Le filtre acceptait `content_type: code`, mais le texte d'un message `code` est dans `content.text`, que le code ne lit jamais. Ces messages étaient donc toujours écartés, par accident. Ce sont en pratique des appels d'outil.
 
@@ -55,7 +55,7 @@ Si on change le filtre sans changer de version, réimporter le même fichier rec
   - `author` et `content` invalides refusés avec `ValueError`.
 - **Les archives v1 ne sont jamais réécrites**, et restent rappelables avec des références exactes. Un prédicat commun `is_conversation_archive` reconnaît v1 et v2 ; il est utilisé dans `filesystem.py` et `context.py`.
 - **Import v2 dans une racine contenant des archives v1 : refusé avant toute écriture**, empreintes identiques. Sinon chaque conversation serait publiée deux fois. Il faut importer v2 dans une racine neuve.
-- **`select_passage`** : les marques combinantes prolongent le mot (regex `_WORD` construite au chargement avec `chr()`).
+- **`select_passage`** : les marques combinantes prolongent le mot.
 
 ## Résultats sur la VM
 
@@ -68,8 +68,7 @@ Si on change le filtre sans changer de version, réimporter le même fichier rec
 - Suite complète, MCP exclu :
   - sur `42831d7` avec le correctif : **1837 réussis** (1822 + mes 15) ;
   - sur `d7426c8` sans le correctif : **1858 réussis** ;
-  - sur `d7426c8` avec le correctif et mes tests : **1873 réussis** (1858 + 15) ;
-  - version finale de ce message, sur `9051355` : base 6 rouges, correctif 30 verts 5 fois sur 5, suite complète **1873 réussis**.
+  - sur `d7426c8` avec le correctif et mes tests : **1873 réussis** (1858 + 15).
 
 ## Limites caractérisées, sans correctif
 
@@ -101,7 +100,7 @@ Lecture seule de `import-originals/`. Seuls des nombres sont sortis. Empreintes 
 
 **Le corpus réel est en v1 et reste tel quel avec ce correctif.** Ses éventuels messages techniques y restent jusqu'à un nouvel import v2 dans une racine neuve.
 
-## Annexe 1 — `c1-proposal.patch` (SHA-256 `2ef5b87635b9c6e5a85110d13a2dbfeda40b5e4d4f35128c512cc049a79950e7`, s’applique sur `9051355`)
+## Annexe 1 — `c1-proposal.patch`
 
 ```diff
 diff --git a/core/backend/filesystem.py b/core/backend/filesystem.py
@@ -121,28 +120,16 @@ index 4f9a6f0..3d2f0fe 100644
                      from core.retrieval.chatgpt_passages import select_passage
                      passage = select_passage(memory.content, query, passage_chars)
 diff --git a/core/retrieval/chatgpt_passages.py b/core/retrieval/chatgpt_passages.py
-index e0f6a4a..66e8773 100644
+index e0f6a4a..187aa6e 100644
 --- a/core/retrieval/chatgpt_passages.py
 +++ b/core/retrieval/chatgpt_passages.py
-@@ -6,6 +6,12 @@ import unicodedata
- from core.retrieval.ranking import terms
- 
- 
-+# Combining marks continue a word, so decomposed accents match like terms().
-+_COMBINING = ''.join(f'{chr(a)}-{chr(b)}' for a, b in (
-+    (0x0300, 0x036f), (0x1ab0, 0x1aff), (0x1dc0, 0x1dff), (0x20d0, 0x20ff), (0xfe20, 0xfe2f)))
-+_WORD = re.compile(r'\w+(?:[' + _COMBINING + r']+\w*)*')
-+
-+
- def select_passage(content, query, max_chars):
-     try:
-         archive=json.loads(content)
-@@ -19,7 +25,7 @@ def select_passage(content, query, max_chars):
+@@ -19,7 +19,8 @@ def select_passage(content, query, max_chars):
              if not isinstance(text,str):
                  continue
              matched=[]
 -            for match in re.finditer(r'\w+',text):
-+            for match in _WORD.finditer(text):
++            # Combining marks continue a word, so decomposed accents match like terms().
++            for match in re.finditer(r'\w+(?:[\\u0300-\\u036f\\u1ab0-\\u1aff\\u1dc0-\\u1dff\\u20d0-\\u20ff\\ufe20-\\ufe2f]+\w*)*',text):
                  word=unicodedata.normalize('NFC',match.group().casefold())
                  if word in wanted:
                      matched.append((word,match.start(),match.end()))
@@ -239,7 +226,7 @@ index 78cfa87..293970b 100644
      backend = FilesystemBackend(root / 'memory/persistent', root / 'memory/history')
 ```
 
-## Annexe 2 — `tests/test_claude_review_chatgpt.py` (SHA-256 `d6769ac3fd94ef29c810040a06e7af6fbc1a47276bdbb74eb7c9d0c60f414c17`)
+## Annexe 2 — `tests/test_claude_review_chatgpt.py` (SHA-256 `3323aa404b2779bb89db4ce4cc0f5f234348bba6a7b6de60ee77eb3d5d325585`)
 
 ```python
 """Claude review C1 (10d68a2, 88050bc, b3ae58e, 7805b21): ChatGPT import and recall.
@@ -416,8 +403,7 @@ def recall_one(tmp_path, query, text, **options):
 
 
 def test_passage_offsets_exact_with_emoji_and_combining_accents(tmp_path):
-    acute = chr(0x301)  # combining acute accent: decomposed é
-    text = (chr(0x1f600) + ' intro e' + acute + 'te' + acute + ' ') * 30 + 'Eidolon garde la mémoire ' + chr(0x1f916) + ' du robot.'
+    text = '\U0001f600 intro e\\u0301te\\u0301 ' * 30 + 'Eidolon garde la mémoire \U0001f916 du robot.'
     items = recall_one(tmp_path, 'mémoire robot', text, max_item_chars=60, max_chars=60)
     ref = items[0].excerpt_reference
     assert text[ref['start']:ref['end']] == items[0].content
@@ -425,7 +411,7 @@ def test_passage_offsets_exact_with_emoji_and_combining_accents(tmp_path):
 
 
 def test_decomposed_accent_in_archive_matches_composed_query(tmp_path):
-    items = recall_one(tmp_path, 'mémoire', 'la me' + chr(0x301) + 'moire du robot')
+    items = recall_one(tmp_path, 'mémoire', 'la me\\u0301moire du robot')
     assert items and 'moire' in items[0].content
 
 
