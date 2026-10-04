@@ -1,6 +1,6 @@
 # Memory Engine — TODO active
 
-Mise à jour : **2026-10-03**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
+Mise à jour : **2026-10-04**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
 `refactor/architecture-v1`. **Estimation globale gelée : 45 %. Grille : 52,75
 points, inchangée.** Aucun avancement chiffré pour cet audit documentaire.
 
@@ -66,6 +66,19 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 45 % / 52,75 points inchangée ; ce canal est un outillage de collaboration.
 
 ## Dernière vérification
+
+**Recette VM reçue de Claude Code le 04/10, commit 9819d6b** : clone isolé,
+1809 tests verts en 47,61 s, 15 MCP explicitement exclus ; 136 ciblés verts.
+Rappel réel deux fois PASS, références exactes, empreintes corpus inchangées,
+1,298–1,381 s par requête. Aucun texte privé ni service modifié.
+[Rapport et limites](docs/VM-VALIDATION-2026-10-04.md). GPT n’a pas consulté
+les journaux VM ; résultats rapportés, non revérifiés indépendamment.
+Les mentions NON TESTÉ VM ci-dessous sont les états historiques avant ce
+rapport et sont remplacées pour les cas couverts par cette recette.
+**Service /opt toujours 88050bc** : déploiement dashboard et recette visuelle
+non effectués. IA locale réelle non validée (Ollama inactif). Revue du code
+proposée par Claude, non reçue. F1 reste ouvert ; estimation 45 % inchangée.
+
 
 D10 — 04/10 : nouvelles sorties IA relues en MODEL_OUTPUT, alias historique
 MODEL_GENERATED préservé ; MODEL_INFERENCE reste admis pour les inférences.

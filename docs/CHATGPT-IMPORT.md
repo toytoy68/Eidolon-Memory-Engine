@@ -83,6 +83,14 @@ Résultat VM communiqué par toytoy sur 88050bc (04/10) : quatre régressions ve
 20/20 extraits contenant le terme avec références présentes ; 1,381–1,548 s.
 Ce contrôle VM n'incluait pas la comparaison exacte de toutes les références.
 
+## Résultat VM reçu le 04/10
+
+Claude Code rapporte sur 9819d6b : 1809 tests verts hors 15 MCP, 136 ciblés
+verts et deux rappels réels PASS, références exactes et corpus inchangé.
+Temps par requête : 1,298–1,381 s. [Rapport, provenance et limites](VM-VALIDATION-2026-10-04.md).
+Le service actif reste 88050bc ; la recette navigateur reste à faire.
+Les indications de non-validation ci-dessous décrivent l’état avant ce rapport.
+
 ## Recette VM en attente — nuit du 04/10
 
 Toytoy n'a plus accès à la VM et a demandé de reporter les tests. La dernière
