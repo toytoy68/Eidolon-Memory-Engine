@@ -84,24 +84,74 @@ class SourceStore:
 
     def extraction(self, identity):
         self.read(identity)
-        return self._extraction(self.directory / identity, identity)
+        extraction = self._extraction(self.directory / identity, identity)
+        from core.sources.commitments import read, matches
+        committed = read(self.root, identity)
+        if committed is not None and not matches(committed, extraction):
+            raise ValueError('extraction_commitment_mismatch')
+        return extraction
+
+    def _publish_commitment(self, identity, extraction):
+        from core.sources.commitments import directory, prepare
+        family = directory(self.root)
+        if has_symlink_component(family) or (family.exists() and not family.is_dir()):
+            raise ValueError('unsafe extraction commitment directory')
+        if not family.parent.is_dir():
+            raise ValueError('initialized core history required')
+        family.mkdir(exist_ok=True)
+        if os.name != 'nt':
+            descriptor = os.open(family.parent, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+        atomic_write_text(family / (identity + '.json'),
+                          json.dumps(prepare(identity, extraction), sort_keys=True) + '\n')
+        self._checkpoint('after_extraction_commitment')
 
     def extract(self, identity):
         self._paths()
         with exclusive_write(self.root / 'memory/persistent'), exclusive_write(self.directory):
             from core.operations.readiness import check_readiness
-            if not check_readiness(self.root)['ready']:
+            from core.sources.commitments import read, matches, directory
+            # Only this exact pending extraction can be resumed by this command.
+            pending_path = (directory(self.root) / (str(identity) + '.json')).relative_to(self.root).as_posix()
+            state = check_readiness(self.root)
+            if any(issue['path'] != pending_path or issue['reason'] != 'pending_source_extraction'
+                   for issue in state['issues']):
                 raise ValueError('readiness blocks source extraction')
             record, data = self.read(identity)
+            committed = read(self.root, identity)
             path = self.directory / identity
             if (path / 'extraction.json').exists():
-                return dict(status='UNCHANGED', extraction=self._extraction(path, identity))
-            from core.sources.extraction import extract_paragraphs
-            result = extract_paragraphs(record, data)
+                # Legacy extraction replay stays free; no implicit commitment.
+                return dict(status='UNCHANGED', extraction=self.extraction(identity))
+            from core.sources.extraction import extract_paragraphs, reproduce_extraction
+            result = (reproduce_extraction(record, data, extractor=committed['extractor'])
+                      if committed is not None else extract_paragraphs(record, data))
+            if committed is not None and not matches(committed, result):
+                raise ValueError('extraction_commitment_mismatch')
             from core.operations.read_phase import invalidate_publication
             invalidate_publication(self.root / 'memory/persistent')
+            if committed is None:
+                self._publish_commitment(identity, result)
             atomic_write_text(path / 'extraction.json', json.dumps(result, ensure_ascii=False, sort_keys=True)+'\n')
-            return dict(status='EXTRACTED', extraction=self._extraction(path, identity))
+            self._checkpoint('after_extraction_publication')
+            return dict(status='EXTRACTED', extraction=self.extraction(identity))
+
+    def commit_extraction(self, identity):
+        """Explicitly engage one existing extraction; never migrate a library."""
+        self._paths()
+        with exclusive_write(self.root / 'memory/persistent'), exclusive_write(self.directory):
+            from core.operations.readiness import check_readiness
+            from core.sources.commitments import read
+            if not check_readiness(self.root)['ready']:
+                raise ValueError('readiness blocks extraction commitment')
+            extraction = self.extraction(identity)
+            if read(self.root, identity) is not None:
+                return dict(status='UNCHANGED')
+            self._publish_commitment(identity, extraction)
+            return dict(status='COMMITTED')
 
     def read(self, identity):
         if not isinstance(identity, str) or not re.fullmatch('[a-f0-9]{64}', identity):
@@ -190,7 +240,8 @@ class SourceStore:
 
 def audit_sources(root):
     store = SourceStore(root)
-    report = dict(count=0, issues=[], warnings=[])
+    report = dict(count=0, issues=[], warnings=[], information=[])
+    valid_sources = set()
     snapshots = {}
     try:
         store._paths()
@@ -203,6 +254,7 @@ def audit_sources(root):
                     store._bundle(path, path.name.removeprefix('.pending-'))
                     raise ValueError('pending_source_publication')
                 record, _ = store.read(path.name)
+                valid_sources.add(path.name)
                 if (path / 'extraction.json').exists():
                     snapshots[path.name] = (record, store._extraction(path, path.name))
                 report['count'] += 1
@@ -210,6 +262,9 @@ def audit_sources(root):
                 report['issues'].append(dict(path=path.relative_to(store.root).as_posix(), reason=str(exc)))
     except (OSError, ValueError) as exc:
         report['issues'].append(dict(path='memory/sources', reason=str(exc)))
+    from core.sources.commitments import audit
+    commitment_issues, report['information'] = audit(store.root, snapshots, valid_sources)
+    report['issues'].extend(commitment_issues)
     from core.sources.reference_audit import audit_references
     report['warnings'] = audit_references(store.root, snapshots)
     return report

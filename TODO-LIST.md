@@ -1112,3 +1112,16 @@ Aucune validation VM de ce nouveau lot revendiquée.
   après accords toytoy ; 1233 inodes occupés. Archives privées sous
   /home/toytoy/eidolon-validation/tmp-archive-20261004, conservées jusqu'à recette finale.
 - Avancement global reste gelé à 45 %. Engagement durable non livré.
+
+### F1/F1b — livraison locale pour revue Claude
+
+- Engagement durable des nouvelles extractions avant publication ; reprise
+  explicite limitée à la source en attente et au pilote engagé.
+- Anciens lots libres, diagnostic informatif ; aucun engagement du manuscrit.
+- Inventaire, garde legacy, copie core et restauration TAR raccordés.
+- Claude : revue négative et suite VM isolée/synthétique du nouveau lot.
+- Avancement global gelé 45 % ; validation VM F1/F1b encore attendue.
+
+Validation locale finale : 1947 tests réussis, 5 cas sockets exclus (MCP inclus).
+Les 18 gardes ciblées passent également, dont le test de cache ajouté après
+la collecte de la suite complète. Recette VM F1/F1b encore attendue.

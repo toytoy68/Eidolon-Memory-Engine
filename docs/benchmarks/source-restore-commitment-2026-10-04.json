@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "synthetic": true,
+  "python": "3.12.14",
+  "files": 15,
+  "manifest_sha256": "704781b93e5b258907d76272ddeaf2a4c1d5dbd5f15cd3b97e69c4f3a4b7049c",
+  "original_sha256": "d24705def5edd4f4dc05d8a47c5482a2d7218f0a6b52fc42ea5238369b18eaeb",
+  "extraction_preserved": true,
+  "extraction_commitment_preserved": true,
+  "exact_reference": true,
+  "active_objects": 1,
+  "restored_pending_operation": false,
+  "explicit_recovery_verified": false,
+  "compacted_write_receipts": 2,
+  "deletion_preserved": true,
+  "replay_unchanged": true,
+  "source_unchanged": true,
+  "audit_issues": 0,
+  "readiness": true,
+  "tool_sha256": "63c9b2849cfae6c9f1eeb66230853cf894a640a1912d0ba19e5264f44058e211",
+  "limitations": [
+    "synthetic corpus only; no running service or reboot",
+    "archive created and restored on one local filesystem",
+    "restore itself not interrupted; no disk failure or private backup tested"
+  ]
+}

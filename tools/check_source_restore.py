@@ -48,6 +48,8 @@ def run(*, temp_parent=None, pending=False):
         record = store.add(ORIGINAL, original_name='synthetic.txt', title='Synthetic restore',
                            author='benchmark', added_at=STAMP)['source']
         frozen = store.extract(record['source_id'])['extraction']
+        commitment_path = Path('memory/history/source-extractions-v1') / (record['source_id'] + '.json')
+        commitment_bytes = (source / commitment_path).read_bytes()
         draft = dict(source_id=record['source_id'], source_sha256=record['sha256'],
             extraction_sha256=frozen['text_sha256'], extractor=frozen['extractor'],
             paragraph=1, quote='Lina lives in Lyon.', detail='Lina lives in Lyon.',
@@ -84,6 +86,8 @@ def run(*, temp_parent=None, pending=False):
         target = restored/'corpus'
         if hashes(source) != before or hashes(target) != before:
             raise RuntimeError('restored file manifest differs')
+        if (target / commitment_path).read_bytes() != commitment_bytes:
+            raise RuntimeError('extraction commitment differs after restore')
         clone = FilesystemBackend(target/'memory/persistent', target/'memory/history')
         cloned_store = SourceStore(target)
         if cloned_store.read(record['source_id']) != (record, ORIGINAL) or cloned_store.extraction(record['source_id']) != frozen:
@@ -130,7 +134,7 @@ def run(*, temp_parent=None, pending=False):
         digest = sha256(json.dumps(before, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
         return dict(status='PASS', synthetic=True, python=platform.python_version(),
             files=len(before), manifest_sha256=digest, original_sha256=sha256(ORIGINAL).hexdigest(),
-            extraction_preserved=True, exact_reference=True, active_objects=1+int(pending),
+            extraction_preserved=True, extraction_commitment_preserved=True, exact_reference=True, active_objects=1+int(pending),
             restored_pending_operation=pending, explicit_recovery_verified=pending,
             compacted_write_receipts=sum(row['status']=='COMPACTED' for row in audits['information_writes']['records'].values()), deletion_preserved=True,
             replay_unchanged=True, source_unchanged=True, audit_issues=0, readiness=True,

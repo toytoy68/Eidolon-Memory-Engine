@@ -12,6 +12,7 @@ from core.storage_format import decode_json_value
 
 
 SOURCES = (
+    ("source_extractions", "memory/history/source-extractions-v1", "*.json"),
     ("lifecycle_triggers", "memory/history/operations/lifecycle-trigger-v1", "*.json"),
     ("routing_executions", "memory/history/operations/routing-execution-v1", "*.json"),
     ("working", "memory/working", "*.md"),
@@ -62,6 +63,10 @@ def classify(path: Path, category: str) -> str:
             data = decode_json_value(path.read_text(encoding="utf-8"))
             if not isinstance(data, dict):
                 return "unknown"
+            if category == "source_extractions":
+                from core.sources.commitments import validate
+                validate(data, path.stem)
+                return "core_source_extraction_v1"
             if category == "routing_executions":
                 version = data.get('format_version')
                 return f"routing_execution_v{version}" if type(version) is int and version in {1, 2, 3, 4, 5} else "unknown"

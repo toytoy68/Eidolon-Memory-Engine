@@ -34,7 +34,11 @@ def test_docx_extracts_stable_paragraphs_preserving_original_and_memory(tmp_path
     assert extraction['text_sha256'] == sha256('\n'.join(extraction['paragraphs']).encode()).hexdigest()
     assert store.extract(record['source_id'])['status'] == 'UNCHANGED'
     assert store.read(record['source_id']) == original
-    assert (hashes(tmp_path / 'memory/persistent'), hashes(tmp_path / 'memory/history')) == canonical
+    assert hashes(tmp_path / 'memory/persistent') == canonical[0]
+    history = hashes(tmp_path / 'memory/history')
+    commitment = 'source-extractions-v1/' + record['source_id'] + '.json'
+    assert set(history) == set(canonical[1]) | {commitment}
+    assert {k:v for k,v in history.items() if k != commitment} == canonical[1]
     assert check_readiness(tmp_path)['ready']
 
 

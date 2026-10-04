@@ -34,6 +34,7 @@ def require_legacy_persistent_only(persistent_root: Path, history_root: Path) ->
                    for category in ("operations", "events", "operation-receipts")
                    for name in families]
     directories.append(history / "pending-delete")
+    directories.append(history / "source-extractions-v1")
     for journal in directories:
         if has_symlink_component(journal):
             raise ValueError("legacy writer blocked: core history journal contains a symlink")

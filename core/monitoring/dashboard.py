@@ -82,7 +82,7 @@ td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}
 .donut{{width:190px;height:190px;border-radius:50%;margin:1.5rem auto;display:grid;place-items:center}}
 .donut-center{{width:148px;height:148px;border-radius:50%;background:#1d2b3e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem}}
 .resource-text{{display:none}}.donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
-<body class="dashboard" data-refresh="30"><h1>Eidolon Memory Engine</h1><p class="dashboard-nav"><a href="/files">Fichiers Markdown</a> · <a href="/sources">Sources</a> · Références à vérifier : {len(warnings)}</p>
+<body class="dashboard" data-refresh="30"><h1>Eidolon Memory Engine</h1><p class="dashboard-nav"><a href="/files">Fichiers Markdown</a> · <a href="/sources">Sources · Références à vérifier : {len(warnings)}</a></p>
 <p class="dashboard-measurement">Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(_measurement_time(str(metrics['measured_at'])))} (Europe/Paris) · rafraîchissement 30 s</small></p>
 <main class="dashboard-grid"><section class="resource-card"><h2>Mémoire de la VM</h2>{chart(ram['used'], ram['total'], ram['available'], 'Mémoire de la VM')}</section>
@@ -139,8 +139,9 @@ def handler_factory(engine_root: Path, token: str, *, allow_source_upload=False,
 
     def library_page(result=None):
         inspection = store.inspect()
+        audit = audit_sources(engine_root)
         return render_sources(inspection['sources'], pending=inspection['pending'],
-                              issues=inspection['issues'], warnings=audit_sources(engine_root)['warnings'], csrf=csrf if allow_source_upload else None,
+                              issues=audit['issues'], warnings=audit['warnings'], information=audit['information'], csrf=csrf if allow_source_upload else None,
                               result=result)
     class DashboardHandler(BaseHTTPRequestHandler):
         def _page(self, page, status=200):

@@ -87,6 +87,7 @@ def check_readiness(engine_root: Path) -> dict:
                        "resumable": item["reason"] == "deletion_requires_resume"})
     report = {"ready": not issues, "issues": issues, "warnings": formats["sources"]["warnings"], "records": records,
               "information_deletions": deletions,
+              "information": formats["sources"]["information"],
               "scope": "stopped_tree_point_in_time_no_concurrent_writers"}
     remember_readiness(root, report)
     return report

@@ -25,6 +25,8 @@ def test_valid_then_substituted_extraction_warns_without_writes(tmp_path, legacy
     assert audit_sources(tmp_path)['warnings'] == []
     assert check_readiness(tmp_path)['ready']
     assert hashes(tmp_path) == before
+    from core.sources.commitments import directory
+    (directory(tmp_path) / (record['source_id'] + '.json')).unlink()
     original = store.read(record['source_id'])[1]
     old = reproduce_extraction(record, original, extractor='utf8-lines-v1')
     (store.directory / record['source_id'] / 'extraction.json').write_text(json.dumps(old))

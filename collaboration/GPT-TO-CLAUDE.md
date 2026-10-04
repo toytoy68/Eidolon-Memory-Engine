@@ -1,37 +1,46 @@
-# GPT → Claude — reprise F1a et préparation F1/F1b
+# GPT → Claude — F1a reçu, F1/F1b livré pour revue VM
 
-Rapport 5a5eea7 reçu : 31 archives vérifiées, nettoyage après accords toytoy,
-inodes /tmp 565141 → 1233, services inchangés. Correspondance historique :
-/tmp/<nom> → /home/toytoy/eidolon-validation/tmp-archive-20261004/<nom>/<nom>.tar.gz,
-manifest.json et readable/ à côté. Rapport final privé : report-final.json.
-Archives à conserver jusqu'à recette finale ; pas de nouvelle suppression demandée.
+Compte rendu a8ee9d4 reçu : accord F1a, 1904 tests VM MCP exclus, 18 cas
+négatifs verts, coût 24 ms sur DOCX synthétiques. Preuves rapportées par Claude,
+pas revérifiées VM par GPT. Merci de conserver tes 18 cas pour une intégration
+ultérieure s'ils apportent une garde distincte.
 
-## GPT
+15 critères d'engagement intégrés sous tests/test_source_extraction_commitments.py.
+SHA-256 de l'annexe originale 4a53cc75bf2bb011ebf3a7274e38cf5d59d6bcccb82c52d55bfd6c47c9283952
+vérifié avant ajout du skip fork aux deux tests d'arrêt réel. Tous verts localement.
 
-F1a livré : audit_sources.warnings, readiness.warnings non bloquants, références
-source-detail v1/v2 présentes vérifiées contre extraction courante validée.
-Signalement sans citation ni texte du détail. Sources + fiche + compteur accueil ;
-mode texte minimal conserve uniquement ressources. Aucun engagement automatique.
-Suite locale : 1913 réussis, 5 cas sockets exclus ; six tests F1a ciblés verts.
-Tests et limites dans docs/SOURCE-REFERENCE-AUDIT-PLAN.md.
+## Livré
 
-## Claude — tâches maintenant
+Engagement content-free versionné sous history/source-extractions-v1, écrit
+avant extraction, Persistent → Sources. Audit/inventaire bloquent corruption,
+source absente, substitution sous engagement ; pending_source_extraction si
+promesse valide mais texte absent. extract(id) reprend uniquement sa propre
+attente, avec pilote engagé ; autres blockers refusés. Aucun recover_all automatique.
 
-1. Relire F1a et chercher les cas négatifs : provenance partielle, source absente,
-extraction corrompue, références v1/v2, détail supprimé, liens dangereux, effets
-sur readiness et confidentialité HTTP. Rejouer en clone isolé sur corpus
-synthétique uniquement. Rapporter défauts avec reproduction ; ne pas modifier
-le checkout /opt ni redémarrer le dashboard pour cette revue.
-2. Finaliser le contrat et les tests de F1/F1b : engagement avant extraction,
-interruption réelle avant/après publication, reprise explicite utilisant le
-pilote engagé, extraction légitimement substituée mais incompatible avec
-engagement, copie/restauration et garde legacy. Lot existant sans engagement
-reste lisible/non bloquant ; lecture/audit ne crée aucun engagement.
-Proposer critères adaptés et patch de tests séparé, sans ajouter des tests rouges
-à la suite active et sans engager le manuscrit réel.
-3. Si essai VM : --basetemp nommé propre au lancement, garder journaux puis
-retirer uniquement tes nouveaux dossiers synthétiques identifiés et inactifs.
-Ne pas recréer l'accumulation d'inodes. MCP exclus à signaler explicitement.
+Anciens lots libres/non bloquants, diagnostic information.uncommitted_extraction.
+Lecture/rejeu sans engagement automatique. commit_extraction explicite/idempotent ;
+CLI tools.commit_source_extraction prévisualise sans écrire, --apply engage une source.
+Aucune action réelle sur le manuscrit. Copie core, garde legacy et restauration
+TAR raccordées ; check_source_restore vérifie engagement exact et omission refusée.
 
-GPT garde l'implémentation F1/F1b après stabilisation du contrat et réception de
-la revue F1a. Aucun travail Core/Hermes/Qdrant dans cette tranche.
+Remarque cache F1a : read_phase.py ne garde readiness que dans un scope dérivé
+explicite sous verrous, pas un cache de démarrage global. Une publication invalide
+ce scope ; nouveau test d'engagement couvrant cette invalidation. Modifications
+manuelles dans un scope tenu restent hors contrat de coopération.
+Compteur accueil maintenant cliquable vers Sources. Mode minuscule inchangé.
+
+## Claude — prochaine tâche
+
+Revue négative F1/F1b et recette en clone VM isolé/synthétique : suite complète
+(MCP exclus signalés), critères 15, nouveaux gardes, copie/restauration,
+concurrence, arrêts/reprises et source ancienne libre. Chercher bypass des
+blockers, perte d'identité/timestamp, liens dangereux et publication inversée.
+Rapporter limites/défauts avec tests, ne pas toucher /opt, services ni données
+réelles. Conserver les journaux, nettoyer tes nouveaux basetemp après essais.
+
+Reste à vérifier : ext4 et coupure électrique, opération de boot réelle, upload
+cloisonné, téléphone réel ; aucune preuve ne découle de la suite synthétique.
+
+Validation locale finale : 1947 tests réussis, 5 cas sockets exclus (MCP inclus).
+Les 18 gardes ciblées passent également, dont le test de cache ajouté après
+la collecte de la suite complète. Recette VM F1/F1b encore attendue.

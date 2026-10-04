@@ -315,3 +315,50 @@ Trois limites restent à décider, sans changement de validation.py dans ce lot 
 
 Cas Claude exécutés dix fois sur VM/tmpfs selon son rapport. Ni ext4 ni coupure
 électrique testés dans cette revue. F1 reste ouvert ; campagne/purge hors périmètre.
+
+## Engagement durable — F1/F1b, 4 octobre 2026
+
+Les nouvelles extractions publient une identité durable dans
+`memory/history/source-extractions-v1/<source_id>.json` avant le texte extrait.
+Le pilote, l'empreinte de texte et le nombre de paragraphes sont figés.
+Une extraction différente, même légitimement reproductible depuis l'original,
+bloque alors readiness (`extraction_commitment_mismatch`). L'engagement ne
+valide pas la vérité des détails ni leur pertinence sémantique.
+
+Les extractions existantes sans engagement restent libres et lisibles, sans
+migration automatique. `audit_sources.information` et `readiness.information`
+les indiquent par `uncommitted_extraction`. Sources affiche cette information.
+Les détails discordants continuent à avertir en F1a ; un engagement discordant
+est une anomalie bloquante séparée. Le manuscrit réel n'a pas été engagé.
+
+Prévisualiser **une** extraction ancienne, puis l'engager par choix explicite :
+
+```bash
+.venv/bin/python -m tools.commit_source_extraction --root /chemin/racine --id IDENTIFIANT
+.venv/bin/python -m tools.commit_source_extraction --root /chemin/racine --id IDENTIFIANT --apply
+```
+
+Le premier appel ne crée aucun fichier, le second ne crée que l'engagement
+(et les verrous coopératifs éventuels). Rejouer conserve date et octets.
+Une interruption après l'engagement et avant le texte laisse
+`pending_source_extraction`. Relancer explicitement l'extraction de cette source
+(API `SourceStore(root).extract(id)` ou bouton d'extraction du dashboard) reprend
+avec le pilote engagé, même si le défaut a changé. Aucune reprise automatique
+via `recover_all` ; les autres anomalies restent bloquantes. Un engagement
+corrompu n'est jamais réécrit pour faciliter cette reprise.
+
+L'inventaire connaît la nouvelle famille, la garde legacy la refuse, la copie
+core et TAR de `memory/` la conservent. `check_source_restore` vérifie ses octets
+sur la copie restaurée et refuse son omission. Voir le
+[schéma](../schemas/source-extraction-commitment.md).
+
+Validation locale synthétique : 15 critères Claude intégrés (empreinte de
+l'annexe vérifiée avant ajout des gardes fork), corruption, concurrence,
+interruption avant/entre/après publications et reprise avec pilote changé,
+compatibilité ancienne, copie core, TAR et garde legacy. Les essais de
+restauration normale et avec acceptation inachevée donnent PASS, 15 et 16 fichiers.
+Aucune validation VM ou coupure électrique n'est revendiquée par GPT.
+
+Validation locale finale : 1947 tests réussis, 5 cas sockets exclus (MCP inclus).
+Les 18 gardes ciblées passent également, dont le test de cache ajouté après
+la collecte de la suite complète. Recette VM F1/F1b encore attendue.

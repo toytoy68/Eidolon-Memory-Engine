@@ -3,7 +3,9 @@
 Compte rendu C3 4a85b81 et complément a6d546c, reçus le 4 octobre 2026.
 F1a implémenté le 4 octobre : audit en lecture seule, warnings séparés des issues,
 readiness non bloquante et affichage Sources/fiche/compteur accueil.
-L'engagement durable F1/F1b reste à implémenter.
+F1/F1b implémenté ensuite : engagement durable des nouvelles extractions,
+reprise explicite et compatibilité des extractions existantes libres.
+Validation VM de cette seconde tranche demandée à Claude.
 
 ## Première tranche F1a : avertissement visible
 
@@ -27,14 +29,15 @@ rendu sans contenu privé. Les corruptions déjà bloquantes restent bloquantes.
 Mesurer le coût du parcours et réutiliser l'extraction d'une même source dans
 une inspection, sans cache entre inspections ni contournement de validation.
 
-## Seconde tranche F1/F1b : engagement durable
+## Seconde tranche F1/F1b : engagement durable livré localement
 
 Proposition Claude : memory/history/source-extractions-v1/<source_id>.json,
 identité figée source/pilote/empreinte/nombre de paragraphes/date. Écriture de
 l'engagement avant publication de l'extraction ; reprise explicite avec pilote
 engagé après interruption ; engagement discordant ou extraction manquante
 bloquants. Inventaire, garde legacy, copie core, backup/restore à raccorder.
-Cette proposition exige des tests d'arrêt réel et de compatibilité avant code.
+Implémentation avec tests d'arrêt réel, compatibilité, copie core et TAR.
+Voir SOURCE-LIBRARY.md et schemas/source-extraction-commitment.md.
 
 Lots existants sans engagement : restent lisibles, information non bloquante
 uncommitted_extraction. Aucun engagement automatique du manuscrit ni migration.

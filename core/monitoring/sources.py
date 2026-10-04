@@ -81,7 +81,7 @@ def _source_form(csrf, record=None):
             f'<button type="submit">{button}</button></form>')
 
 
-def render_sources(records, *, csrf=None, result=None, pending=(), issues=(), warnings=()):
+def render_sources(records, *, csrf=None, result=None, pending=(), issues=(), warnings=(), information=()):
     body = ('<p>Les originaux sont conservés entiers. Ajouter une source ne transforme pas '
             'automatiquement son texte en souvenirs.</p>')
     if result:
@@ -105,6 +105,11 @@ def render_sources(records, *, csrf=None, result=None, pending=(), issues=(), wa
                  '<p>Cette source ne peut pas être utilisée. Les autres sources valides restent consultables. Aucune suppression automatique n’est effectuée.</p>'
                  f'<details><summary>Détails pour la vérification</summary><p>{escape(issue["path"])}<br>{escape(issue["reason"])}</p></details></section>')
     body += render_reference_warnings(warnings)
+    if information:
+        body += '<p>Des extractions anciennes restent libres, sans engagement automatique :</p><ul>'
+        for item in information:
+            body += f'<li>uncommitted_extraction : <code>{escape(item["source_id"])}</code></li>'
+        body += '</ul>'
     body += '<h2>Sources conservées</h2><ul>'
     for record in records:
         body += (f'<li><a href="/source?id={quote(record["source_id"])}">{escape(record["title"])}</a> '
