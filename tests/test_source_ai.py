@@ -103,7 +103,7 @@ def test_acceptance_creates_only_reviewed_detail_with_provenance_and_idempotent_
     memory = backend.get(accepted['information_id'])
     assert memory.content == 'Dans le récit, Lina habite à Lyon.'
     assert memory.metadata['epistemic_status'] == 'UNVERIFIED'
-    assert memory.provenance['source_type'] == 'MODEL_GENERATED'
+    assert memory.provenance['source_type'] == 'MODEL_OUTPUT'
     assert memory.provenance['human_accepted'] is True
     assert memory.provenance['source_sha256'] == record['sha256']
     assert memory.provenance['paragraph'] == 1 and memory.provenance['quote'] == draft['quote']

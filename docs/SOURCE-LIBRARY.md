@@ -260,8 +260,8 @@ v2 : le reçu historique ne conserve pas son texte. Aucun fichier historique
 n’est migré. La comparaison avec les v1 présents nécessite un scan en lecture ;
 le coût sur de grands corpus reste à mesurer. Les synonymes ne sont pas fusionnés.
 
-D10 reste ouvert : ce lot conserve `MODEL_GENERATED` pour éviter de mélanger
-le changement d’identité avec le choix entre les vocabulaires de schéma.
+Le lot D7 conservait `MODEL_GENERATED` ; le lot D10 décrit ci-dessous
+adopte `MODEL_OUTPUT` pour les nouvelles écritures sans toucher les anciennes.
 F1 (substitution manuelle d’une extraction par une autre version légitime)
 reste ouvert et nécessite un engagement durable d’extraction distinct.
 
@@ -274,3 +274,21 @@ avec contrôles été/hiver et les deux occurrences de l’heure au changement D
 Suite complète locale Python 3.12.14/pytest 9.1.1, proxy neutralisé :
 **1816 réussis, 5 échecs** (sockets multiprocessing.Manager interdits,
 avant les scénarios métier), aucun saut. Les 15 tests MCP sont inclus et verts.
+
+
+## Vocabulaire de provenance — D10, 4 octobre 2026
+
+Les nouveaux détails v2 utilisent `MODEL_OUTPUT`, cohérent avec le schéma
+memory-provenance : le modèle a produit une proposition, relue par l’humain.
+`MODEL_GENERATED` reste un alias historique ; le chemin v1 exact et les
+snapshots v2 déjà journalisés le conservent au rejeu, y compris après compaction.
+`MODEL_INFERENCE` reste admis pour les inférences et n’est pas renommé.
+Le prédicat commun `is_model_source_type` reconnaît les trois valeurs ;
+il ne valide pas une assertion et n’attribue aucun statut épistémique.
+Les détails créés restent `INTERPRETATION` et `UNVERIFIED`.
+
+Un cas rouge avant modification, **90 tests ciblés verts**, dont rejeu des
+v1 historiques, v2 historiques avec et sans compaction, conservation des
+empreintes et absence de réécriture. La suite complète précédente (1816 verts,
+5 blocages environnement) précède D10 ; aucune nouvelle suite complète ni
+validation VM n’est revendiquée pour ce lot. F1 reste ouvert.

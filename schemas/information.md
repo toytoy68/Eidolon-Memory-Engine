@@ -210,9 +210,18 @@ Sources possibles :
 - FILE
 - DOCUMENTATION
 - EXTERNAL_SOURCE
+- MODEL_OUTPUT
 - MODEL_INFERENCE
 - SYSTEM_GENERATED
 - DERIVED
+
+Les nouveaux détails IA relus depuis une source utilisent `MODEL_OUTPUT`.
+`MODEL_GENERATED` est un alias historique conservé en lecture et au rejeu,
+jamais réécrit dans les objets existants. `MODEL_INFERENCE` reste une origine
+admise pour une inférence ; il n’est pas renommé en sortie de modèle.
+Le prédicat `core.sources.provenance.is_model_source_type` reconnaît ces trois
+origines. Aucune ne constitue une confirmation : les détails validés par
+l’humain restent `INTERPRETATION` / `UNVERIFIED`.
 
 La provenance indique l'origine.
 

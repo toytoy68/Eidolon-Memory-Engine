@@ -64,6 +64,13 @@ Les valeurs courantes peuvent inclure :
 - MODEL_OUTPUT
 - IMPORTED_DATA
 
+`MODEL_GENERATED` est un alias historique de sortie IA, conservé sans
+réécriture. `MODEL_INFERENCE` demeure admis par le schéma Information pour
+les inférences. Les nouveaux détails issus des sources écrivent `MODEL_OUTPUT` ;
+le rejeu d’une ancienne commande conserve son vocabulaire et son empreinte.
+Les trois origines sont reconnues par `is_model_source_type` ; aucune ne
+justifie automatiquement `CONFIRMED`.
+
 Cette liste peut évoluer.
 
 Une nouvelle source_type doit rester sémantiquement explicite.

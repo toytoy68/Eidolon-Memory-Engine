@@ -11,6 +11,7 @@ from core.backend.models import Memory
 from core.information.writes import FilesystemInformationWrites
 from core.persistence import exclusive_write
 from core.sources.store import SourceStore
+from core.sources.provenance import MODEL_OUTPUT
 from core.storage_format import decode_json_value
 
 
@@ -113,7 +114,7 @@ def accept_detail(root, review, *, detail, actor):
                 previous_entry = writer.journal.read(previous_opid)
                 if previous_entry is not None:
                     return _replay_detail(writer, previous_entry, previous_opid)
-        provenance.update(detail_key_version=2, detail_normalization='nfc-ws-v1')
+        provenance.update(source_type=MODEL_OUTPUT, detail_key_version=2, detail_normalization='nfc-ws-v1')
         memory = Memory('source-detail-v2-'+new_key, content=normalized_detail(detail),
             metadata={'type': 'INTERPRETATION', 'epistemic_status': 'UNVERIFIED'}, provenance=provenance)
         return writer.create(memory, operation_id=opid,

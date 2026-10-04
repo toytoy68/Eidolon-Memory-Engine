@@ -114,3 +114,28 @@ def test_concurrent_analyses_publish_one_information(tmp_path):
     with ThreadPoolExecutor(max_workers=2) as pool:results=list(pool.map(accept,range(2)))
     assert results[0]==results[1]
     assert len(backend(tmp_path).list())==1
+
+
+@pytest.mark.parametrize('compact',[False,True])
+def test_historical_v2_vocabulary_replays_without_rewrite(tmp_path,monkeypatch,compact):
+    import core.sources.validation as validation
+    from core.information.writes import FilesystemInformationWrites
+    _,record,extraction=setup(tmp_path);draft=review(record,extraction)
+    with monkeypatch.context() as patch:
+        patch.setattr(validation,'MODEL_OUTPUT','MODEL_GENERATED')
+        first=accept_detail(tmp_path,draft,detail=draft['detail'],actor='human')
+    store=backend(tmp_path);writer=FilesystemInformationWrites(store)
+    if compact:
+        for opid in writer.journal.ids():writer.compact(opid)
+    before=hashes(tmp_path)
+    assert accept_detail(tmp_path,draft,detail=draft['detail']+' ',actor='other')==first
+    assert store.get(first['information_id']).provenance['source_type']=='MODEL_GENERATED'
+    assert hashes(tmp_path)==before
+
+
+def test_model_origin_labels_never_imply_confirmation():
+    from core.sources.provenance import is_model_source_type
+    for value in ('MODEL_OUTPUT','MODEL_GENERATED','MODEL_INFERENCE'):
+        assert is_model_source_type(value)
+    for value in ('USER_STATEMENT','SYSTEM_GENERATED','model_output',None,{},[]):
+        assert not is_model_source_type(value)

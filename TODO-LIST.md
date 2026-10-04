@@ -67,12 +67,18 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+D10 — 04/10 : nouvelles sorties IA relues en MODEL_OUTPUT, alias historique
+MODEL_GENERATED préservé ; MODEL_INFERENCE reste admis pour les inférences.
+Un cas rouge avant, 90 tests ciblés verts, rejeux v1/v2 et compaction inclus.
+Aucune migration, statuts toujours UNVERIFIED. NON TESTÉ VM ; F1 reste ouvert.
+
+
 Tableau de bord compact demandé le 04/10 : densité réduite à largeur ≤640 px
 ou hauteur ≤540 px, mémoire/disque côte à côte, autres cartes par défilement.
 19 tests existants verts. Rendu navigateur/VM NON VÉRIFIÉ, installation
 Chromium indisponible ici ; [recette](docs/MONITORING.md#tableau-de-bord-compact--4-octobre-2026).
 
-**VM EN ATTENTE (04/10, toytoy au repos, accès VM indisponible)** : après la
+**VM EN ATTENTE (04/10, connexion serveur annoncée vers 08 h 12)** : après la
 base VM vérifiée 88050bc, synchroniser fenêtres v2 b3ae58e et les lots suivants,
 relancer les tests de rappel/import, de concurrence des reçus et de frontière
 legacy, puis tools.check_chatgpt_recall.
@@ -86,7 +92,7 @@ D9 rouges avant, 129 tests ciblés verts après. Limite des variantes v1
 supprimées et coût du scan documentés dans [Sources](docs/SOURCE-LIBRARY.md).
 Suite complète locale sans proxy : 1816 réussis, 5 échecs à la création
 des sockets Manager interdits, avant les scénarios métier ; aucun saut.
-NON TESTÉ VM ; D10 et F1 restent ouverts.
+NON TESTÉ VM ; D10 livré ensuite ci-dessus, F1 reste ouvert.
 
 Corrections locales supplémentaires : import de reçus Information concurrent
 avec attente et revalidation sous verrou ; historique core retenu (Events,
@@ -136,7 +142,7 @@ La présence du fichier de verrou permet une revalidation sous verrou ; elle
 ne prouve pas qu'un écrivain est actif. Les résidus abandonnés restent bloquants.
 Le refus préalable de `import_write_receipts` et la frontière legacy/core
 ont été corrigés dans le lot publié `873487a` (voir dernière vérification).
-D7 et D9 sont livrés en local ci-dessus ; D10, F1 et la recette UI réelle restent ouverts.
+D7 et D9 sont livrés en local ci-dessus ; D10 livré ci-dessus ; F1 et la recette UI réelle restent ouverts.
 
 
 Lot sources/dashboard/IA locale T-051 du **03/10/2026** : **1712 réussis en
