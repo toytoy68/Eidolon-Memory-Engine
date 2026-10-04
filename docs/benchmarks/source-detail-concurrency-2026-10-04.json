@@ -1,0 +1,369 @@
+{
+  "status": "PASS",
+  "synthetic": true,
+  "python": "3.12.14",
+  "workers": 4,
+  "points": [
+    {
+      "history_records": 0,
+      "shared_identity": true,
+      "replica": 0,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.061185446989838965,
+      "worker_seconds": [
+        0.011966730002313852,
+        0.0291059979936108,
+        0.04099166698870249,
+        0.05975734499224927
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 0,
+      "shared_identity": true,
+      "replica": 1,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.046165756008122116,
+      "worker_seconds": [
+        0.013872285999241285,
+        0.023194937006337568,
+        0.03421196399722248,
+        0.04452255599608179
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 0,
+      "shared_identity": true,
+      "replica": 2,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.043888583008083515,
+      "worker_seconds": [
+        0.015088113010278903,
+        0.02378366599441506,
+        0.03251099699991755,
+        0.04258303499955218
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 0,
+      "shared_identity": false,
+      "replica": 0,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.05349124899657909,
+      "worker_seconds": [
+        0.01100899100129027,
+        0.021412301997770555,
+        0.036304910987382755,
+        0.05170647599152289
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 0,
+      "shared_identity": false,
+      "replica": 1,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.051172313003917225,
+      "worker_seconds": [
+        0.010492964996956289,
+        0.02156383999681566,
+        0.035805360006634146,
+        0.04968433499743696
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 0,
+      "shared_identity": false,
+      "replica": 2,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.05679254200367723,
+      "worker_seconds": [
+        0.0107166310044704,
+        0.026310404995456338,
+        0.03972415100724902,
+        0.05469949600228574
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 100,
+      "shared_identity": true,
+      "replica": 0,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.28303913299168926,
+      "worker_seconds": [
+        0.09491292299935594,
+        0.15187794499797747,
+        0.21043571100744884,
+        0.2812293120077811
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 100,
+      "shared_identity": true,
+      "replica": 1,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.25794524200318847,
+      "worker_seconds": [
+        0.08198001900746021,
+        0.14304013799119275,
+        0.20203240698901936,
+        0.2563541449926561
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 100,
+      "shared_identity": true,
+      "replica": 2,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.2567906099866377,
+      "worker_seconds": [
+        0.08677305599849205,
+        0.14104287400550675,
+        0.1984305410005618,
+        0.2548574039974483
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 100,
+      "shared_identity": false,
+      "replica": 0,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.36659805600356776,
+      "worker_seconds": [
+        0.08480757000506856,
+        0.18338753101124894,
+        0.2740108589932788,
+        0.36502366900094785
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 100,
+      "shared_identity": false,
+      "replica": 1,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.3785511960013537,
+      "worker_seconds": [
+        0.08446165100031067,
+        0.1751123949943576,
+        0.26531382399844006,
+        0.3770047610014444
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 100,
+      "shared_identity": false,
+      "replica": 2,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.3762261200026842,
+      "worker_seconds": [
+        0.09223542700055987,
+        0.17754231800790876,
+        0.27778412199404556,
+        0.3747410880023381
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 300,
+      "shared_identity": true,
+      "replica": 0,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.7339118660020176,
+      "worker_seconds": [
+        0.24982206401182339,
+        0.43065721199673135,
+        0.578915179008618,
+        0.7320209140016232
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 300,
+      "shared_identity": true,
+      "replica": 1,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.7201401529891882,
+      "worker_seconds": [
+        0.23916802598978393,
+        0.39102891500806436,
+        0.5608394289884018,
+        0.7184346329886466
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 300,
+      "shared_identity": true,
+      "replica": 2,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.6755853880022187,
+      "worker_seconds": [
+        0.22788628599664662,
+        0.37763826800801326,
+        0.5221120109927142,
+        0.6736828489956679
+      ],
+      "new_objects": 1,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 300,
+      "shared_identity": false,
+      "replica": 0,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.9200162479974097,
+      "worker_seconds": [
+        0.2226438140060054,
+        0.45025536700268276,
+        0.6866715159994783,
+        0.9181754299934255
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 300,
+      "shared_identity": false,
+      "replica": 1,
+      "workers": 4,
+      "parent_elapsed_seconds": 0.9477042140060803,
+      "worker_seconds": [
+        0.22841682299622335,
+        0.46540976999676786,
+        0.6856801649992121,
+        0.9458511280099628
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    },
+    {
+      "history_records": 300,
+      "shared_identity": false,
+      "replica": 2,
+      "workers": 4,
+      "parent_elapsed_seconds": 1.0224651250027819,
+      "worker_seconds": [
+        0.243113631993765,
+        0.4893442400061758,
+        0.759326448009233,
+        1.0209439339960227
+      ],
+      "new_objects": 4,
+      "audit_issues": 0,
+      "readiness": true,
+      "protected_files_unchanged": true
+    }
+  ],
+  "summaries": [
+    {
+      "history_records": 0,
+      "shared_identity": true,
+      "replicas": 3,
+      "median_parent_elapsed_seconds": 0.046165756008122116,
+      "median_slowest_worker_seconds": 0.04452255599608179
+    },
+    {
+      "history_records": 0,
+      "shared_identity": false,
+      "replicas": 3,
+      "median_parent_elapsed_seconds": 0.05349124899657909,
+      "median_slowest_worker_seconds": 0.05170647599152289
+    },
+    {
+      "history_records": 100,
+      "shared_identity": true,
+      "replicas": 3,
+      "median_parent_elapsed_seconds": 0.25794524200318847,
+      "median_slowest_worker_seconds": 0.2563541449926561
+    },
+    {
+      "history_records": 100,
+      "shared_identity": false,
+      "replicas": 3,
+      "median_parent_elapsed_seconds": 0.3762261200026842,
+      "median_slowest_worker_seconds": 0.3747410880023381
+    },
+    {
+      "history_records": 300,
+      "shared_identity": true,
+      "replicas": 3,
+      "median_parent_elapsed_seconds": 0.7201401529891882,
+      "median_slowest_worker_seconds": 0.7184346329886466
+    },
+    {
+      "history_records": 300,
+      "shared_identity": false,
+      "replicas": 3,
+      "median_parent_elapsed_seconds": 0.9477042140060803,
+      "median_slowest_worker_seconds": 0.9458511280099628
+    }
+  ],
+  "limitations": [
+    "live unindexed synthetic histories, no local AI or private corpus",
+    "worker duration includes lock wait and validation; parent duration includes result collection and joins",
+    "startup excluded; barrier release and parent timer are not exactly simultaneous",
+    "warm local filesystem, not VM, CPU saturation or isolated disk latency",
+    "no throughput guarantee or optimization introduced"
+  ],
+  "tool_sha256": "d1c085d4a42b197488d81ffe4f553807e36eb792c2266af395c7f05c46677efe",
+  "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+  "source_commit": "801ab461e85a95021c4034de2b8016d5db7c9200",
+  "metadata_note": "Tool fingerprint recorded after adding metadata fields; measured acceptance code unchanged."
+}

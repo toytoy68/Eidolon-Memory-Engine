@@ -106,3 +106,43 @@ Sans ces options, le protocole initial reste live/non indexé/nouvelle v2.
 Les deux rapports représentent deux versions successives de l'outil ; leurs
 empreintes respectives sont conservées. Ce ne sont pas des comparaisons
 avant/après optimisation métier. Concurrence et corpus privé non mesurés.
+
+## Mesures multiprocessus
+
+`tools.benchmark_source_detail_concurrency` lance quatre vrais processus avec
+barrière de départ sur corpus synthétique jetable. Deux scénarios : acteurs et
+modèles différents relisant le même détail (variantes d'espaces), ou quatre
+détails distincts. Historiques vivants/non indexés, tailles 0/100/300, trois
+répliques : **18 points PASS**. Aucun Manager ni modification des verrous.
+
+Chaque processus mesure son appel, attente du verrou comprise. Le parent
+mesure après libération de la barrière jusqu'à réception des résultats et join ;
+ces deux horloges ne démarrent pas exactement ensemble. Le démarrage des
+processus est hors mesure. Les contrôles vérifient convergence à une identité
+ou quatre identités, comptes canoniques, audits/readiness et conservation des
+sources et Informations préexistantes. Nettoyage des enfants même après erreur.
+
+| Informations initiales | Scénario | Médiane parent (s) | Médiane processus le plus lent (s) |
+| --- | --- | --- | --- |
+| 0 | même détail | 0.0462 | 0.0445 |
+| 0 | détails distincts | 0.0535 | 0.0517 |
+| 100 | même détail | 0.2579 | 0.2564 |
+| 100 | détails distincts | 0.3762 | 0.3747 |
+| 300 | même détail | 0.7201 | 0.7184 |
+| 300 | détails distincts | 0.9477 | 0.9459 |
+
+[Rapport concurrent](benchmarks/source-detail-concurrency-2026-10-04.json).
+Le contrôle ne compare pas ces scénarios à une transaction parallèle : les
+validations sont coordonnées par le verrou Persistent et les appels en attente
+peuvent attendre les scans des autres. Pas de débit réel ou de saturation CPU
+revendiqués. Les détails distincts sont volontairement factices, pas quatre
+inférences du modèle.
+
+```bash
+.venv/bin/python -m tools.benchmark_source_detail_concurrency \
+  --sizes 0 100 300 --replicas 3 --workers 4 \
+  --output /tmp/source-detail-concurrency-new-report.json
+```
+
+Un test de l'outil vérifie les deux scénarios, les audits et le nettoyage ;
+ces mesures complètent les tests d'interruption existants sans les remplacer.

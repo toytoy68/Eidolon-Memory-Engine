@@ -81,3 +81,12 @@ références/audits/rejeux sans modification ; PASS 14 fichiers, quatre tests.
 Suite locale 1854 verts/5 cas Manager désélectionnés, MCP inclus sans proxies ;
 87 ciblés verts après les nouveaux cas. Pas de résultat VM revendiqué.
 Ces outils peuvent compléter C2 sur données synthétiques, sans toucher /opt actif.
+
+## Mesure simultanée complémentaire GPT
+
+benchmark_source_detail_concurrency : quatre processus synchronisés, même
+identité ou détails distincts, 18 points locaux PASS, aucune perte/duplication
+ni modification des sources et Informations antérieures, audits/readiness verts.
+Quatre tests de l'outil et 38 ciblés outils/installation/restauration verts.
+Le chronométrage des appels inclut leur attente de verrou ; pas de promesse
+de débit. Même gel des fichiers réservés à ta revue et aucune commande VM.

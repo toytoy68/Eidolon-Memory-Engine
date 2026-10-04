@@ -97,6 +97,15 @@ restauration, **87 ciblés verts**. Sous-recette TAR synthétique : 14 fichiers,
 référence/extraction/reçus/suppression/rejeu préservés ; trois archives incomplètes
 refusées. Pas de reprise interrompue/restauration privée/reboot validés ici.
 
+### Mesures simultanées GPT
+
+Outil multiprocessus synthétique : quatre validations simultanées, mêmes
+identités ou détails distincts, tailles 0/100/300 et trois répliques : 18 points
+PASS. Attente des verrous incluse dans les temps des appels ; pas de débit VM
+revendiqué. Source/Informations préexistantes et audits préservés. Quatre tests
+de l'outil verts, groupe outils/installation/restauration : 38 verts.
+Voir [protocole et mesures](docs/SOURCE-DETAIL-COST.md).
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,
