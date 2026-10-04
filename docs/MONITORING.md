@@ -204,7 +204,7 @@ l’ancien environnement par export, puis lance setsid/setpriv, sans variables
 secrètes dans les arguments. check_http exige 401 sans authentification, 200
 avec et resource-text ; les échecs contrôlés après restart/SIGKILL déclenchent
 le repli. SHA-256 du script :
-`b99eb75b3e0a7bd29c7c9e52ba865da75e5c124cc550eeecfc3e5513160303db`.
+`a047d257c5e403317f84eb2abd6e991801e2aa2fbb50a9b22753fd45365dbe75` (après contrôle supplémentaire de l’échec du SIGKILL).
 Il refuse une unité déjà existante : ne pas le relancer sur cette VM installée.
 L’unité installée est inchangée.
 
@@ -212,7 +212,12 @@ Preuves rapportées sur clone VM isolé : ancien script, trois rouges sur quatre
 répétés cinq fois ; correctif, quatre verts répétés trente fois ; suite complète
 MCP exclu : 1822 réussis. Le vrai setpriv sous root n’a pas été exécuté ; les
 commandes sont remplacées dans les tests, sans réseau ni systemd. Les chemins
-d’échec après restart/SIGKILL sont relus, sans test dédié.
+d’échec après restart/SIGKILL sont désormais testés localement par exécution
+du bloc shell réel avec commandes factices : neuf cas couvrent refus restart,
+absence/changement de PID, contrôle HTTP, refus SIGKILL et succès. **13 tests
+installateur verts**. Le cas SIGKILL refusé était rouge avant l’ajout de
+`|| rollback` : sans cela, set -e quittait le script sans repli. Aucun vrai
+systemd/setpriv root n’est exercé par ces tests.
 
 Historique rapporté : le repli défectueux n’a jamais été exécuté. La relance
 manuelle du 04/10 à 09 h 54 utilisait env avec le token en argument pendant
@@ -229,3 +234,9 @@ Elle n’est pas créée par l’installateur versionné. Tests exacts rapporté
 trois commandes passent ; variantes/autres services demandent un mot de passe.
 Conserver `--no-pager` : un paginateur interactif lancé comme root peut ouvrir
 un shell. Les commandes usuelles autorisées sont donc celles ci-dessus.
+
+
+Recette préparée pour les lacunes opérationnelles :
+[restauration, upload cloisonné et reboot différé](VM-OPERATIONS-ACCEPTANCE.md).
+Elle n'a pas été exécutée ; les missions Claude actuelles excluent le reboot
+et les modifications du service actif.

@@ -60,3 +60,14 @@ répliques), 58 tests ciblés verts. SOURCE-DETAIL-COST.md expose le protocole
 et les limites. Rejeu sans list mais contrôles globaux toujours proportionnels
 au corpus. Après C1/C2, proposer un rejeu VM sur clone synthétique, même grille,
 FS explicitement identifié ; pas d'optimisation ni de seuil arbitraire.
+
+## Suite autonome GPT (à lire avant C2)
+
+Neuf cas installateur exécutent le vrai bloc restart/SIGKILL sous commandes
+factices. SIGKILL refusé était rouge : correction `kill -KILL "$R" || rollback`.
+13 tests installateur verts, 79 ciblés sur le lot. Vrai root/setpriv non testé.
+Benchmark étendu : 144 points (live/compact, index/non index, v1 présente/nouvelle
+v2), trois tailles/trois répliques ; audits et empreintes des rejeux conformes.
+Recette d'exploitation préparée dans VM-OPERATIONS-ACCEPTANCE.md ; ne pas
+l'interpréter comme une demande de reboot ou d'installation sur l'unité active.
+Les fichiers d'import/rappel/dashboard et validation.py restent inchangés.

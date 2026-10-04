@@ -67,3 +67,42 @@ question d'engagement durable d'extraction, indépendante de ces mesures.
 
 Validation locale : **58 tests ciblés verts**, dont cinq cas de l'outil :
 corpus/audits/rejeu/compteurs et refus de paramètres invalides sans publication.
+
+## Extension : compactage, index et compatibilité v1
+
+Huit configurations indépendantes (live/compact × index désactivé/activé ×
+nouvelle v2/v1 présente), tailles 0/100/300, trois répliques, deux opérations :
+**144 points PASS**. Préparation par lots, compaction bornée et construction
+initiale de l'index sont hors mesure. En mode compact, les antécédents sont
+compactés ; la nouvelle validation v2 reste vivante pour son rejeu.
+
+La v1 est publiée par le writer avec la commande historique sur source factice.
+Les acceptations mesurées changent l'acteur et les espaces pour éviter le rejeu
+exact historique et éprouver la recherche de compatibilité. Les deux appels
+doivent retourner cette v1 sans changer aucune empreinte. Les Informations
+ordinaires préexistantes et tous les audits sont vérifiés à chaque point.
+
+Médianes locales, à 300 Informations ordinaires (plus une v1 quand présente) :
+
+| Antécédents | Index | Premier appel | Premier (s) | Second (s) | Ouvertures Markdown premier / second |
+| --- | --- | --- | --- | --- | --- |
+| live | non | nouvelle v2 | 0.2351 | 0.1568 | 1200 / 903 |
+| live | non | v1 présente | 0.1550 | 0.1561 | 1204 / 1204 |
+| live | oui | nouvelle v2 | 0.1728 | 0.1525 | 1200 / 903 |
+| live | oui | v1 présente | 0.1584 | 0.1533 | 1204 / 1204 |
+| compact | non | nouvelle v2 | 0.1964 | 0.1313 | 1200 / 903 |
+| compact | non | v1 présente | 0.1387 | 0.1364 | 1204 / 1204 |
+| compact | oui | nouvelle v2 | 0.1630 | 0.1308 | 1200 / 903 |
+| compact | oui | v1 présente | 0.1329 | 0.1333 | 1204 / 1204 |
+
+[Rapport de matrice](benchmarks/source-details-matrix-2026-10-04.json).
+L'index de réservations ne supprime ni les contrôles globaux de readiness ni la
+recherche des anciens détails v1. Retrouver une v1 impose encore le scan lors
+d'un nouvel appel variant : il n'existe pas de journal v2 pour cette variante.
+Ces résultats ne justifient pas de modifier les garanties de reprise.
+
+Options de l'outil : `--history compact`, `--reservation-index`, `--v1-match`.
+Sans ces options, le protocole initial reste live/non indexé/nouvelle v2.
+Les deux rapports représentent deux versions successives de l'outil ; leurs
+empreintes respectives sont conservées. Ce ne sont pas des comparaisons
+avant/après optimisation métier. Concurrence et corpus privé non mesurés.

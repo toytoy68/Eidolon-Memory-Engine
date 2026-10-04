@@ -89,3 +89,65 @@ check_http test
     result = subprocess.run(['bash', '-c', harness], env=env, capture_output=True, text=True, timeout=30)
     assert (result.returncode != 0) == bool(expected), result.stdout + result.stderr
     assert TOKEN not in result.stdout + result.stderr
+
+
+@pytest.mark.parametrize('failure', [
+    'restart_command', 'restart_listener', 'restart_same_pid', 'restart_http',
+    'kill_command', 'crash_listener', 'crash_same_pid', 'plantage_http', None,
+])
+def test_restart_and_crash_failures_restore_manual_dashboard(tmp_path, failure):
+    """Execute the real restart/crash block; every failed stage must reach rollback."""
+    script = SCRIPT.read_text(encoding='utf-8')
+    block = script.split('# 5. Restart test (systemctl restart).', 1)[1].split('OTHERS_AFTER=', 1)[0]
+    trace, listeners = tmp_path/'trace', tmp_path/'listeners'
+    responses = {
+        'restart_listener': ['FAIL'],
+        'restart_same_pid': ['101'],
+        'crash_listener': ['202', 'FAIL', 'FAIL'],
+        'crash_same_pid': ['202', '202'],
+    }.get(failure, ['202', '303'])
+    listeners.write_text('\n'.join(responses)+'\n', encoding='utf-8')
+    harness = f'''
+set -euo pipefail
+TRACE={trace} LISTENERS={listeners} FAIL={failure or 'none'}
+UNIT=eidolon-dashboard NEW=101
+say() {{ :; }}
+sleep() {{ :; }}
+systemctl() {{
+  printf 'systemctl %s\\n' "$*" >> "$TRACE"
+  if [ "$1" = restart ] && [ "$FAIL" = restart_command ]; then return 1; fi
+  printf 0
+}}
+wait_listener() {{
+  local value
+  value=$(head -1 "$LISTENERS")
+  sed -i '1d' "$LISTENERS"
+  [ "$value" != FAIL ] || return 1
+  printf '%s' "$value"
+}}
+check_http() {{
+  printf 'http %s\\n' "$1" >> "$TRACE"
+  [ "$FAIL" != "$1"_http ]
+}}
+kill() {{
+  printf 'kill %s\\n' "$*" >> "$TRACE"
+  [ "$FAIL" != kill_command ]
+}}
+rollback() {{ printf 'rollback\\n' >> "$TRACE"; exit 42; }}
+{block}
+printf 'completed\\n' >> "$TRACE"
+'''
+    result = subprocess.run(['bash', '-c', harness], capture_output=True, text=True, timeout=10)
+    events = trace.read_text().splitlines()
+    if failure:
+        assert result.returncode == 42, (failure, result.stderr, events)
+        assert events[-1] == 'rollback'
+        assert 'completed' not in events
+        if failure.startswith('restart'):
+            assert not any(event.startswith('kill') for event in events)
+    else:
+        assert result.returncode == 0, result.stderr
+        assert events[-1] == 'completed'
+        assert 'rollback' not in events
+        assert 'kill -KILL 202' in events
+        assert 'http restart' in events and 'http plantage' in events

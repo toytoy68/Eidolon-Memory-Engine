@@ -26,3 +26,22 @@ def test_invalid_measurement_does_not_create_corpus(tmp_path, sizes, replicas):
     with pytest.raises(ValueError):
         run(sizes=sizes, replicas=replicas, temp_parent=tmp_path)
     assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize('history', ['live', 'compact'])
+@pytest.mark.parametrize('reservation_index', [False, True])
+@pytest.mark.parametrize('v1_match', [False, True])
+def test_history_variants_preserve_audits_and_replay(tmp_path, history, reservation_index, v1_match):
+    report = run(sizes=(2,), replicas=1, temp_parent=tmp_path, history=history,
+                 reservation_index=reservation_index, v1_match=v1_match)
+    assert report['history'] == history and report['reservation_index'] == reservation_index
+    first, replay = report['points']
+    for point in (first, replay):
+        assert point['canonical_objects'] == 3 and point['audit_issues'] == 0
+        assert point['journal_json_opens'] > 0
+    assert replay['files_unchanged']
+    assert first['backend_list_calls'] == 1
+    assert first['backend_list_items'] == 2 + int(v1_match)
+    assert first['files_unchanged'] == v1_match
+    assert first['mode'] == ('v1_match' if v1_match else 'new')
+    assert list(tmp_path.iterdir()) == []

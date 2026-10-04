@@ -1,4 +1,4 @@
-"""Measure source-detail acceptance/replay on disposable synthetic live histories."""
+"""Measure source-detail acceptance/replay on disposable synthetic histories."""
 import argparse
 from contextlib import contextmanager
 from hashlib import sha256
@@ -61,7 +61,27 @@ def count_work():
         yield counts, journal
 
 
-def run(*, sizes=(0, 100, 300), replicas=3, temp_parent=None):
+def seed_v1(writer, record, draft):
+    """Publish a historical v1 command on synthetic data, never rewrite real history."""
+    key = sha256(json.dumps(dict(review=draft, reviewed_detail=draft['detail'], actor='benchmark'),
+                           sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+    provenance = dict(source_type='MODEL_GENERATED', source=record['source_id'],
+        source_sha256=record['sha256'], source_title=record['title'], author=record['author'],
+        extraction_sha256=draft['extraction_sha256'], extractor=draft['extractor'],
+        paragraph=draft['paragraph'], quote=draft['quote'], model=draft['model'],
+        model_digest=draft['model_digest'], proposed_detail=draft['detail'],
+        validated_by='benchmark', review_form_issued_at=draft['proposed_at'], human_accepted=True)
+    return writer.create(Memory('source-detail-'+key, content=draft['detail'],
+        metadata={'type': 'INTERPRETATION', 'epistemic_status': 'UNVERIFIED'}, provenance=provenance),
+        operation_id='source-accept-'+key, event_id='source-event-'+key,
+        actor='benchmark', timestamp=draft['proposed_at'])
+
+
+def run(*, sizes=(0, 100, 300), replicas=3, temp_parent=None, history='live',
+        reservation_index=False, v1_match=False):
+    if (history not in {'live', 'compact'} or type(reservation_index) is not bool
+            or type(v1_match) is not bool):
+        raise ValueError('valid history mode and boolean switches required')
     sizes = tuple(sizes)
     if (not sizes or any(type(n) is not int or n < 0 for n in sizes)
             or type(replicas) is not int or replicas < 1):
@@ -92,21 +112,32 @@ def run(*, sizes=(0, 100, 300), replicas=3, temp_parent=None):
                     extraction_sha256=extraction['text_sha256'], extractor=extraction['extractor'],
                     paragraph=1, quote='Lina lives in Lyon.', detail='Lina lives in Lyon.',
                     model='synthetic-no-inference', model_digest='a'*64, proposed_at=STAMP)
+                historical = seed_v1(writer, record, draft) if v1_match else None
+                if history == 'compact':
+                    identities = writer.journal.ids()
+                    for offset in range(0, len(identities), 100):
+                        if writer.compact_batch(identities[offset:offset+100])['status'] != 'COMPLETED':
+                            raise RuntimeError('compaction incomplete')
+                if reservation_index:
+                    writer.rebuild_reservation_index()
                 setup_seconds = perf_counter()-start
                 if not check_readiness(root)['ready']:
                     raise RuntimeError('seed not ready')
                 first = None
-                for mode in ('new', 'replay_variant'):
+                for mode in ('v1_match' if v1_match else 'new', 'replay_variant'):
                     before = hashes(root)
                     with count_work() as (work, journal):
                         start = perf_counter()
-                        result = accept_detail(root, draft, detail=draft['detail'] + ('  ' if first else ''),
-                                               actor='other' if first else 'benchmark')
+                        result = accept_detail(root, draft, detail=draft['detail'] + ('  ' if first or v1_match else ''),
+                                               actor='other' if first or v1_match else 'benchmark')
                         seconds = perf_counter()-start
                     unchanged = hashes(root) == before
                     if first is None:
                         first = result
-                        if unchanged or not result['information_id'].startswith('source-detail-v2-'):
+                        if v1_match:
+                            if result != historical or not unchanged:
+                                raise RuntimeError('v1 compatibility changed identity or corpus')
+                        elif unchanged or not result['information_id'].startswith('source-detail-v2-'):
                             raise RuntimeError('new acceptance missing')
                     elif result != first or not unchanged:
                         raise RuntimeError('replay changed identity or corpus')
@@ -118,25 +149,28 @@ def run(*, sizes=(0, 100, 300), replicas=3, temp_parent=None):
                     if any(backend.get(f'bench-{i:06}') != Memory(f'bench-{i:06}', content=f'Synthetic item {i}') for i in range(size)):
                         raise RuntimeError('existing Information changed')
                     points.append(dict(history_records=size, replica=replica, mode=mode,
+                        history=history, reservation_index=reservation_index, v1_match=v1_match,
                         seconds=seconds, setup_seconds=setup_seconds, **work, **journal,
                         files_unchanged=unchanged, audit_issues=0, readiness=True,
                         canonical_objects=len(objects)))
     summaries = []
     for size in sorted(set(sizes)):
-        for mode in ('new', 'replay_variant'):
+        for mode in ('v1_match' if v1_match else 'new', 'replay_variant'):
             group = [p for p in points if p['history_records'] == size and p['mode'] == mode]
             summaries.append(dict(history_records=size, mode=mode, measurements=len(group),
+                history=history, reservation_index=reservation_index, v1_match=v1_match,
                 median_seconds=statistics.median(p['seconds'] for p in group),
                 min_seconds=min(p['seconds'] for p in group), max_seconds=max(p['seconds'] for p in group),
                 counts={key: sorted({p[key] for p in group}) for key in (
                     'markdown_read_opens', 'backend_list_calls', 'backend_list_items',
                     'journal_reads', 'journal_scans', 'journal_json_opens')}))
     return dict(status='PASS', synthetic=True, python=platform.python_version(),
+        history=history, reservation_index=reservation_index, v1_match=v1_match,
         temp_parent=str(temp_parent) if temp_parent else tempfile.gettempdir(),
         tool_sha256=sha256(Path(__file__).read_bytes()).hexdigest(),
         validation_sha256=sha256(Path(validation.__file__).read_bytes()).hexdigest(),
         points=points, summaries=summaries, limitations=[
-            'live unindexed histories; unrelated Information, no historical v1 match',
+            'unrelated Information plus optional one published v1 detail; no deleted/revised v1',
             'single sequential operation per mode on each fresh replica; replay follows new acceptance',
             'warm synthetic filesystem, not VM or isolated disk latency',
             'counts include readiness and writer work; opens are not unique files or bytes',
@@ -149,12 +183,16 @@ def main(argv=None):
     parser.add_argument('--sizes', type=int, nargs='+', default=[0, 100, 300])
     parser.add_argument('--replicas', type=int, default=3)
     parser.add_argument('--temp-parent', type=Path)
+    parser.add_argument('--history', choices=('live', 'compact'), default='live')
+    parser.add_argument('--reservation-index', action='store_true')
+    parser.add_argument('--v1-match', action='store_true')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args(argv)
     if args.output.exists():
         parser.error('output must be new')
     try:
-        report = run(sizes=args.sizes, replicas=args.replicas, temp_parent=args.temp_parent)
+        report = run(sizes=args.sizes, replicas=args.replicas, temp_parent=args.temp_parent,
+                     history=args.history, reservation_index=args.reservation_index, v1_match=args.v1_match)
     except ValueError as exc:
         parser.error(str(exc))
     report['source_commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()

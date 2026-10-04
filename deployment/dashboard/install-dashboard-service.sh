@@ -133,7 +133,7 @@ say "systemctl restart : PID $NEW -> $R"
 check_http restart || rollback
 
 # 6. Crash test (SIGKILL -> Restart=on-failure).
-kill -KILL "$R"
+kill -KILL "$R" || rollback
 say "SIGKILL envoyé au PID $R ; attente de la reprise automatique (RestartSec=5)"
 sleep 1
 C=$(wait_listener) || { sleep 5; C=$(wait_listener) || rollback; }

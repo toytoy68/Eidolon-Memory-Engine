@@ -1,0 +1,4558 @@
+{
+  "status": "PASS",
+  "source_commit": "ad929f2fe3582a1fd3d778478695e753fa469482",
+  "reports": [
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "live",
+      "reservation_index": false,
+      "v1_match": false,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.012564846998429857,
+          "setup_seconds": 0.029187805004767142,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.008241798990638927,
+          "setup_seconds": 0.029187805004767142,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.009600831996067427,
+          "setup_seconds": 0.010222615994280204,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.010099210994667374,
+          "setup_seconds": 0.010222615994280204,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.010051981007563882,
+          "setup_seconds": 0.010521806994802319,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.009007419997942634,
+          "setup_seconds": 0.010521806994802319,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.08226744599232916,
+          "setup_seconds": 0.37983695400180295,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 203,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.06827631399210077,
+          "setup_seconds": 0.37983695400180295,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.08245845300552901,
+          "setup_seconds": 0.3786382129910635,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 203,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.05383453499234747,
+          "setup_seconds": 0.3786382129910635,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.08010648700292222,
+          "setup_seconds": 0.37029547200654633,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 203,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.05364982699393295,
+          "setup_seconds": 0.37029547200654633,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.23509397798625287,
+          "setup_seconds": 1.1751495320058893,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 603,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.15676681799232028,
+          "setup_seconds": 1.1751495320058893,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.301194771003793,
+          "setup_seconds": 1.2746066359977704,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 603,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.15821783000137657,
+          "setup_seconds": 1.2746066359977704,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.2288675440067891,
+          "setup_seconds": 1.1027003869967302,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 603,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.1473581549944356,
+          "setup_seconds": 1.1027003869967302,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "new",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.010051981007563882,
+          "min_seconds": 0.009600831996067427,
+          "max_seconds": 0.012564846998429857,
+          "counts": {
+            "markdown_read_opens": [
+              0
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              3
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              2
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.009007419997942634,
+          "min_seconds": 0.008241798990638927,
+          "max_seconds": 0.010099210994667374,
+          "counts": {
+            "markdown_read_opens": [
+              3
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "new",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.08226744599232916,
+          "min_seconds": 0.08010648700292222,
+          "max_seconds": 0.08245845300552901,
+          "counts": {
+            "markdown_read_opens": [
+              400
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              100
+            ],
+            "journal_reads": [
+              203
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              302
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.05383453499234747,
+          "min_seconds": 0.05364982699393295,
+          "max_seconds": 0.06827631399210077,
+          "counts": {
+            "markdown_read_opens": [
+              303
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "new",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.23509397798625287,
+          "min_seconds": 0.2288675440067891,
+          "max_seconds": 0.301194771003793,
+          "counts": {
+            "markdown_read_opens": [
+              1200
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              300
+            ],
+            "journal_reads": [
+              603
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              902
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.15676681799232028,
+          "min_seconds": 0.1473581549944356,
+          "max_seconds": 0.15821783000137657,
+          "counts": {
+            "markdown_read_opens": [
+              903
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    },
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "live",
+      "reservation_index": false,
+      "v1_match": true,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.007110509002814069,
+          "setup_seconds": 0.011124823009595275,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.00672974600456655,
+          "setup_seconds": 0.011124823009595275,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.0073114710103254765,
+          "setup_seconds": 0.011413897998863831,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.006528744997922331,
+          "setup_seconds": 0.011413897998863831,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.006850948993815109,
+          "setup_seconds": 0.011132904997793958,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.006355884994263761,
+          "setup_seconds": 0.011132904997793958,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.055317165999440476,
+          "setup_seconds": 0.36946690900367685,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.0547770529956324,
+          "setup_seconds": 0.36946690900367685,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.058730676013510674,
+          "setup_seconds": 0.40658051900391,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.05767915600154083,
+          "setup_seconds": 0.40658051900391,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.053517439009738155,
+          "setup_seconds": 0.4036590420000721,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.05786719800380524,
+          "setup_seconds": 0.4036590420000721,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.15243148799345363,
+          "setup_seconds": 1.2052757009951165,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.1663607590016909,
+          "setup_seconds": 1.2052757009951165,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.15497293800581247,
+          "setup_seconds": 1.1587917559954803,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.15359351500228513,
+          "setup_seconds": 1.1587917559954803,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.16026123899791855,
+          "setup_seconds": 1.3198331969906576,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.15609284200763796,
+          "setup_seconds": 1.3198331969906576,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.007110509002814069,
+          "min_seconds": 0.006850948993815109,
+          "max_seconds": 0.0073114710103254765,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              5
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.006528744997922331,
+          "min_seconds": 0.006355884994263761,
+          "max_seconds": 0.00672974600456655,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              5
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.055317165999440476,
+          "min_seconds": 0.053517439009738155,
+          "max_seconds": 0.058730676013510674,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              105
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.05767915600154083,
+          "min_seconds": 0.0547770529956324,
+          "max_seconds": 0.05786719800380524,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              105
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.15497293800581247,
+          "min_seconds": 0.15243148799345363,
+          "max_seconds": 0.16026123899791855,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              305
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.15609284200763796,
+          "min_seconds": 0.15359351500228513,
+          "max_seconds": 0.1663607590016909,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              305
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    },
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "live",
+      "reservation_index": true,
+      "v1_match": false,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.009104235999984667,
+          "setup_seconds": 0.009292818998801522,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.007041315999231301,
+          "setup_seconds": 0.009292818998801522,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.008196951996069402,
+          "setup_seconds": 0.008943134002038278,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.007494525998481549,
+          "setup_seconds": 0.008943134002038278,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.010467426007380709,
+          "setup_seconds": 0.012311737998970784,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.0067869119957322255,
+          "setup_seconds": 0.012311737998970784,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.06235607899725437,
+          "setup_seconds": 0.39875372100505047,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 103,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.05440829100552946,
+          "setup_seconds": 0.39875372100505047,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.06117231899406761,
+          "setup_seconds": 0.3776141330017708,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 103,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.0530634200113127,
+          "setup_seconds": 0.3776141330017708,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.06941322398779448,
+          "setup_seconds": 0.38769405998755246,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 103,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.053081992009538226,
+          "setup_seconds": 0.38769405998755246,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.17283362099260557,
+          "setup_seconds": 1.1724796470080037,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 303,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.15469587400730234,
+          "setup_seconds": 1.1724796470080037,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.179906523990212,
+          "setup_seconds": 1.1933613989967853,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 303,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.14886527899943758,
+          "setup_seconds": 1.1933613989967853,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "new",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.17133416699653026,
+          "setup_seconds": 1.2717657339962898,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 303,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.15251422399887815,
+          "setup_seconds": 1.2717657339962898,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "new",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.009104235999984667,
+          "min_seconds": 0.008196951996069402,
+          "max_seconds": 0.010467426007380709,
+          "counts": {
+            "markdown_read_opens": [
+              0
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              3
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              2
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.007041315999231301,
+          "min_seconds": 0.0067869119957322255,
+          "max_seconds": 0.007494525998481549,
+          "counts": {
+            "markdown_read_opens": [
+              3
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "new",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.06235607899725437,
+          "min_seconds": 0.06117231899406761,
+          "max_seconds": 0.06941322398779448,
+          "counts": {
+            "markdown_read_opens": [
+              400
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              100
+            ],
+            "journal_reads": [
+              103
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              302
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.053081992009538226,
+          "min_seconds": 0.0530634200113127,
+          "max_seconds": 0.05440829100552946,
+          "counts": {
+            "markdown_read_opens": [
+              303
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "new",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.17283362099260557,
+          "min_seconds": 0.17133416699653026,
+          "max_seconds": 0.179906523990212,
+          "counts": {
+            "markdown_read_opens": [
+              1200
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              300
+            ],
+            "journal_reads": [
+              303
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              902
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.15251422399887815,
+          "min_seconds": 0.14886527899943758,
+          "max_seconds": 0.15469587400730234,
+          "counts": {
+            "markdown_read_opens": [
+              903
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    },
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "live",
+      "reservation_index": true,
+      "v1_match": true,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.007900567012256943,
+          "setup_seconds": 0.012929517004522495,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.007301397010451183,
+          "setup_seconds": 0.012929517004522495,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.007587746003991924,
+          "setup_seconds": 0.012683366992860101,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.006654393000644632,
+          "setup_seconds": 0.012683366992860101,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.006928585993591696,
+          "setup_seconds": 0.012404978988342918,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.006620202999329194,
+          "setup_seconds": 0.012404978988342918,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 5,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.05718693000380881,
+          "setup_seconds": 0.4124082130001625,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.05938381100713741,
+          "setup_seconds": 0.4124082130001625,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.058295645998441614,
+          "setup_seconds": 0.4201292999932775,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.05794415800482966,
+          "setup_seconds": 0.4201292999932775,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.06096071000501979,
+          "setup_seconds": 0.43167285900563,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.059844421994057484,
+          "setup_seconds": 0.43167285900563,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 105,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.15838122900458984,
+          "setup_seconds": 1.2997245190053945,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.15235973600647412,
+          "setup_seconds": 1.2997245190053945,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.164048698003171,
+          "setup_seconds": 1.3053569650073769,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.1675748800043948,
+          "setup_seconds": 1.3053569650073769,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.15416353999171406,
+          "setup_seconds": 1.3381142990110675,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.15332270599901676,
+          "setup_seconds": 1.3381142990110675,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 305,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.007587746003991924,
+          "min_seconds": 0.006928585993591696,
+          "max_seconds": 0.007900567012256943,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              5
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.006654393000644632,
+          "min_seconds": 0.006620202999329194,
+          "max_seconds": 0.007301397010451183,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              5
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.058295645998441614,
+          "min_seconds": 0.05718693000380881,
+          "max_seconds": 0.06096071000501979,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              105
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.05938381100713741,
+          "min_seconds": 0.05794415800482966,
+          "max_seconds": 0.059844421994057484,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              105
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.15838122900458984,
+          "min_seconds": 0.15416353999171406,
+          "max_seconds": 0.164048698003171,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              305
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "live",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.15332270599901676,
+          "min_seconds": 0.15235973600647412,
+          "max_seconds": 0.1675748800043948,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              305
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    },
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "compact",
+      "reservation_index": false,
+      "v1_match": false,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.007744842005195096,
+          "setup_seconds": 0.00934283499373123,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.006448903994169086,
+          "setup_seconds": 0.00934283499373123,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.007761597997159697,
+          "setup_seconds": 0.008320498003740795,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.007092722997185774,
+          "setup_seconds": 0.008320498003740795,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.007845594009268098,
+          "setup_seconds": 0.008361047992366366,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.007086772995535284,
+          "setup_seconds": 0.008361047992366366,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.06927145199733786,
+          "setup_seconds": 0.47678098699543625,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 203,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.04558697799802758,
+          "setup_seconds": 0.47678098699543625,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.06997576099820435,
+          "setup_seconds": 0.4933374249958433,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 203,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.04705455500516109,
+          "setup_seconds": 0.4933374249958433,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.07324569599586539,
+          "setup_seconds": 0.49589284700050484,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 203,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.04831491899676621,
+          "setup_seconds": 0.49589284700050484,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.20015864601009525,
+          "setup_seconds": 1.6906531200074824,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 603,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.14183259799028747,
+          "setup_seconds": 1.6906531200074824,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.19373820099281147,
+          "setup_seconds": 1.722579740002402,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 603,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.1290831270016497,
+          "setup_seconds": 1.722579740002402,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.1964484439959051,
+          "setup_seconds": 1.6512965809961315,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 603,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "seconds": 0.13130392799212132,
+          "setup_seconds": 1.6512965809961315,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "new",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.007761597997159697,
+          "min_seconds": 0.007744842005195096,
+          "max_seconds": 0.007845594009268098,
+          "counts": {
+            "markdown_read_opens": [
+              0
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              3
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              2
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.007086772995535284,
+          "min_seconds": 0.006448903994169086,
+          "max_seconds": 0.007092722997185774,
+          "counts": {
+            "markdown_read_opens": [
+              3
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "new",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.06997576099820435,
+          "min_seconds": 0.06927145199733786,
+          "max_seconds": 0.07324569599586539,
+          "counts": {
+            "markdown_read_opens": [
+              400
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              100
+            ],
+            "journal_reads": [
+              203
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              302
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.04705455500516109,
+          "min_seconds": 0.04558697799802758,
+          "max_seconds": 0.04831491899676621,
+          "counts": {
+            "markdown_read_opens": [
+              303
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "new",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.1964484439959051,
+          "min_seconds": 0.19373820099281147,
+          "max_seconds": 0.20015864601009525,
+          "counts": {
+            "markdown_read_opens": [
+              1200
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              300
+            ],
+            "journal_reads": [
+              603
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              902
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": false,
+          "median_seconds": 0.13130392799212132,
+          "min_seconds": 0.1290831270016497,
+          "max_seconds": 0.14183259799028747,
+          "counts": {
+            "markdown_read_opens": [
+              903
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    },
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "compact",
+      "reservation_index": false,
+      "v1_match": true,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.005688269986421801,
+          "setup_seconds": 0.013678809991688468,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.006294010003330186,
+          "setup_seconds": 0.013678809991688468,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.005872637004358694,
+          "setup_seconds": 0.014099521999014542,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.006002933005220257,
+          "setup_seconds": 0.014099521999014542,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.005940408998867497,
+          "setup_seconds": 0.013992540989420377,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.006226308993063867,
+          "setup_seconds": 0.013992540989420377,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.048842513002455235,
+          "setup_seconds": 0.5314971629995853,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.0500567600101931,
+          "setup_seconds": 0.5314971629995853,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.05089128499093931,
+          "setup_seconds": 0.5552800620062044,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.05267984299280215,
+          "setup_seconds": 0.5552800620062044,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.04729120299452916,
+          "setup_seconds": 0.5617338300071424,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.048469273999216966,
+          "setup_seconds": 0.5617338300071424,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.1306536719930591,
+          "setup_seconds": 1.7291949299979024,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.1349924899986945,
+          "setup_seconds": 1.7291949299979024,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.13872819500102196,
+          "setup_seconds": 1.8293824739957927,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.13635416599572636,
+          "setup_seconds": 1.8293824739957927,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.16114266999647953,
+          "setup_seconds": 1.9102307360008126,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "seconds": 0.15686697300407104,
+          "setup_seconds": 1.9102307360008126,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.005872637004358694,
+          "min_seconds": 0.005688269986421801,
+          "max_seconds": 0.005940408998867497,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              3
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.006226308993063867,
+          "min_seconds": 0.006002933005220257,
+          "max_seconds": 0.006294010003330186,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              3
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.048842513002455235,
+          "min_seconds": 0.04729120299452916,
+          "max_seconds": 0.05089128499093931,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              203
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.0500567600101931,
+          "min_seconds": 0.048469273999216966,
+          "max_seconds": 0.05267984299280215,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              203
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.13872819500102196,
+          "min_seconds": 0.1306536719930591,
+          "max_seconds": 0.16114266999647953,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              603
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": false,
+          "v1_match": true,
+          "median_seconds": 0.13635416599572636,
+          "min_seconds": 0.1349924899986945,
+          "max_seconds": 0.15686697300407104,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              603
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    },
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "compact",
+      "reservation_index": true,
+      "v1_match": false,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.008103651998681016,
+          "setup_seconds": 0.010657942009856924,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.00707463501021266,
+          "setup_seconds": 0.010657942009856924,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.007851393995224498,
+          "setup_seconds": 0.01017323300766293,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.007837221986846998,
+          "setup_seconds": 0.01017323300766293,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.00868526600243058,
+          "setup_seconds": 0.009342384000774473,
+          "markdown_read_opens": 0,
+          "backend_list_calls": 1,
+          "backend_list_items": 0,
+          "journal_reads": 3,
+          "journal_scans": 2,
+          "journal_json_opens": 2,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.007298751996131614,
+          "setup_seconds": 0.009342384000774473,
+          "markdown_read_opens": 3,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 4,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.058682295013568364,
+          "setup_seconds": 0.5429897970025195,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 103,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.05402611599129159,
+          "setup_seconds": 0.5429897970025195,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.06178732300759293,
+          "setup_seconds": 0.5401775089994771,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 103,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.05382193000696134,
+          "setup_seconds": 0.5401775089994771,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.057919129001675174,
+          "setup_seconds": 0.5284145540063037,
+          "markdown_read_opens": 400,
+          "backend_list_calls": 1,
+          "backend_list_items": 100,
+          "journal_reads": 103,
+          "journal_scans": 2,
+          "journal_json_opens": 302,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.053006504007498734,
+          "setup_seconds": 0.5284145540063037,
+          "markdown_read_opens": 303,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 204,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.16152651199081447,
+          "setup_seconds": 1.9514948410069337,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 303,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.13082973100245,
+          "setup_seconds": 1.9514948410069337,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.16299450999940746,
+          "setup_seconds": 1.9151187800016487,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 303,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.14108164999925066,
+          "setup_seconds": 1.9151187800016487,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "new",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.17190360800304916,
+          "setup_seconds": 1.8775845549971564,
+          "markdown_read_opens": 1200,
+          "backend_list_calls": 1,
+          "backend_list_items": 300,
+          "journal_reads": 303,
+          "journal_scans": 2,
+          "journal_json_opens": 902,
+          "files_unchanged": false,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "seconds": 0.12747445500281174,
+          "setup_seconds": 1.8775845549971564,
+          "markdown_read_opens": 903,
+          "backend_list_calls": 0,
+          "backend_list_items": 0,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 604,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "new",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.008103651998681016,
+          "min_seconds": 0.007851393995224498,
+          "max_seconds": 0.00868526600243058,
+          "counts": {
+            "markdown_read_opens": [
+              0
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              3
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              2
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.007298751996131614,
+          "min_seconds": 0.00707463501021266,
+          "max_seconds": 0.007837221986846998,
+          "counts": {
+            "markdown_read_opens": [
+              3
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              4
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "new",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.058682295013568364,
+          "min_seconds": 0.057919129001675174,
+          "max_seconds": 0.06178732300759293,
+          "counts": {
+            "markdown_read_opens": [
+              400
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              100
+            ],
+            "journal_reads": [
+              103
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              302
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.05382193000696134,
+          "min_seconds": 0.053006504007498734,
+          "max_seconds": 0.05402611599129159,
+          "counts": {
+            "markdown_read_opens": [
+              303
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              204
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "new",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.16299450999940746,
+          "min_seconds": 0.16152651199081447,
+          "max_seconds": 0.17190360800304916,
+          "counts": {
+            "markdown_read_opens": [
+              1200
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              300
+            ],
+            "journal_reads": [
+              303
+            ],
+            "journal_scans": [
+              2
+            ],
+            "journal_json_opens": [
+              902
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": false,
+          "median_seconds": 0.13082973100245,
+          "min_seconds": 0.12747445500281174,
+          "max_seconds": 0.14108164999925066,
+          "counts": {
+            "markdown_read_opens": [
+              903
+            ],
+            "backend_list_calls": [
+              0
+            ],
+            "backend_list_items": [
+              0
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              604
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    },
+    {
+      "status": "PASS",
+      "synthetic": true,
+      "python": "3.12.14",
+      "history": "compact",
+      "reservation_index": true,
+      "v1_match": true,
+      "temp_parent": "/tmp",
+      "tool_sha256": "dfcbc251a6aab6cc266051315009664c90513a9679476fee3bd98ed02d261502",
+      "validation_sha256": "6072fba6c370ac44cb4d26a921770a1d0ef8366f2065791db1c3b99f66b335c4",
+      "points": [
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.005858757009264082,
+          "setup_seconds": 0.01663271099096164,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.0060111159982625395,
+          "setup_seconds": 0.01663271099096164,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.0058329379971837625,
+          "setup_seconds": 0.014198843011399731,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.005896203001611866,
+          "setup_seconds": 0.014198843011399731,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.0059397290024207905,
+          "setup_seconds": 0.01420071600296069,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 0,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.005903834011405706,
+          "setup_seconds": 0.01420071600296069,
+          "markdown_read_opens": 4,
+          "backend_list_calls": 1,
+          "backend_list_items": 1,
+          "journal_reads": 4,
+          "journal_scans": 1,
+          "journal_json_opens": 3,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 1
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.04715858701092657,
+          "setup_seconds": 0.5484287969884463,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.05321728400303982,
+          "setup_seconds": 0.5484287969884463,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.04809320099593606,
+          "setup_seconds": 0.544314412996755,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.04769672598922625,
+          "setup_seconds": 0.544314412996755,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.04807255099876784,
+          "setup_seconds": 0.5457320540008368,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 100,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.047309422996477224,
+          "setup_seconds": 0.5457320540008368,
+          "markdown_read_opens": 404,
+          "backend_list_calls": 1,
+          "backend_list_items": 101,
+          "journal_reads": 104,
+          "journal_scans": 1,
+          "journal_json_opens": 203,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 101
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.13292966400331352,
+          "setup_seconds": 1.8982852140034083,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 0,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.1332811720058089,
+          "setup_seconds": 1.8982852140034083,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.13248413200199138,
+          "setup_seconds": 1.891158982005436,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 1,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.13562108800397255,
+          "setup_seconds": 1.891158982005436,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "v1_match",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.1428080209880136,
+          "setup_seconds": 1.9102622450009221,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        },
+        {
+          "history_records": 300,
+          "replica": 2,
+          "mode": "replay_variant",
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "seconds": 0.13062220299616456,
+          "setup_seconds": 1.9102622450009221,
+          "markdown_read_opens": 1204,
+          "backend_list_calls": 1,
+          "backend_list_items": 301,
+          "journal_reads": 304,
+          "journal_scans": 1,
+          "journal_json_opens": 603,
+          "files_unchanged": true,
+          "audit_issues": 0,
+          "readiness": true,
+          "canonical_objects": 301
+        }
+      ],
+      "summaries": [
+        {
+          "history_records": 0,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.005858757009264082,
+          "min_seconds": 0.0058329379971837625,
+          "max_seconds": 0.0059397290024207905,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              3
+            ]
+          }
+        },
+        {
+          "history_records": 0,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.005903834011405706,
+          "min_seconds": 0.005896203001611866,
+          "max_seconds": 0.0060111159982625395,
+          "counts": {
+            "markdown_read_opens": [
+              4
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              1
+            ],
+            "journal_reads": [
+              4
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              3
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.04807255099876784,
+          "min_seconds": 0.04715858701092657,
+          "max_seconds": 0.04809320099593606,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              203
+            ]
+          }
+        },
+        {
+          "history_records": 100,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.04769672598922625,
+          "min_seconds": 0.047309422996477224,
+          "max_seconds": 0.05321728400303982,
+          "counts": {
+            "markdown_read_opens": [
+              404
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              101
+            ],
+            "journal_reads": [
+              104
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              203
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "v1_match",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.13292966400331352,
+          "min_seconds": 0.13248413200199138,
+          "max_seconds": 0.1428080209880136,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              603
+            ]
+          }
+        },
+        {
+          "history_records": 300,
+          "mode": "replay_variant",
+          "measurements": 3,
+          "history": "compact",
+          "reservation_index": true,
+          "v1_match": true,
+          "median_seconds": 0.1332811720058089,
+          "min_seconds": 0.13062220299616456,
+          "max_seconds": 0.13562108800397255,
+          "counts": {
+            "markdown_read_opens": [
+              1204
+            ],
+            "backend_list_calls": [
+              1
+            ],
+            "backend_list_items": [
+              301
+            ],
+            "journal_reads": [
+              304
+            ],
+            "journal_scans": [
+              1
+            ],
+            "journal_json_opens": [
+              603
+            ]
+          }
+        }
+      ],
+      "limitations": [
+        "unrelated Information plus optional one published v1 detail; no deleted/revised v1",
+        "single sequential operation per mode on each fresh replica; replay follows new acceptance",
+        "warm synthetic filesystem, not VM or isolated disk latency",
+        "counts include readiness and writer work; opens are not unique files or bytes",
+        "setup, hashing, verification and final audits excluded from measured duration",
+        "no local AI call, real corpus, concurrency or throughput guarantee"
+      ]
+    }
+  ]
+}

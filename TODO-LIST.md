@@ -77,6 +77,16 @@ GPT : benchmark synthétique livré, 18 points PASS, 58 tests ciblés verts ;
 Missions préparées, pas de session Claude déclenchée ni de résultat revendiqué.
 Estimation globale 45 % inchangée.
 
+### Suite GPT autonome — 4 octobre 2026
+
+Installateur : neuf chemins restart/plantage ajoutés, 13 tests dédiés verts ;
+SIGKILL refusé rouge avant correctif `|| rollback`. Pas d’intervention VM.
+Benchmark détails : extension live/compact, index/non index et v1 présente,
+144 points PASS ; 79 tests ciblés verts sur ce lot. Aucune optimisation métier.
+[Recette d’exploitation préparée](docs/VM-OPERATIONS-ACCEPTANCE.md) :
+restauration synthétique, upload sous cloisonnement, reboot réel différé.
+Rendu navigateur et opérations root toujours non déduits des tests simulés.
+
 ## Dernière vérification
 
 Handoff toytoy du 04/10 10 h 35 intégré : neuf tests de garde Claude,
