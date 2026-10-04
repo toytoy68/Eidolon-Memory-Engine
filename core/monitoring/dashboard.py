@@ -63,7 +63,9 @@ def render_dashboard(metrics: dict, state: dict) -> str:
                 f'style="background:conic-gradient({color} 0% {percent:.2f}%,#3b5369 {percent:.2f}% 100%)">'
                 f'<div class="donut-center"><b>{percent:.1f} %</b><span>{_size(used)}</span>'
                 '<small>utilisés</small></div></div>'
-                f'<p class="capacity">Sur {_size(total)} au total<br><small>{_size(available)} disponibles</small></p>')
+                f'<p class="capacity">Sur {_size(total)} au total<br><small>{_size(available)} disponibles</small></p>'
+                f'<p class="resource-text"><b>{escape(label.removesuffix(" de la VM"))} :</b> '
+                f'{_size(used)} / {_size(total)} ({percent:.1f} %)</p>')
 
     def rows(counts):
         return "".join(f"<tr><td>{escape(str(name))}</td><td>{int(number)}</td></tr>"
@@ -79,7 +81,7 @@ table{{width:100%;border-collapse:collapse}}td{{padding:.4rem;border-bottom:1px 
 td:last-child{{text-align:right}}small{{color:#bfd0e1}}strong{{color:#9fe5bf}}
 .donut{{width:190px;height:190px;border-radius:50%;margin:1.5rem auto;display:grid;place-items:center}}
 .donut-center{{width:148px;height:148px;border-radius:50%;background:#1d2b3e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem}}
-.donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
+.resource-text{{display:none}}.donut-center b{{font-size:2rem}}.capacity{{text-align:center;line-height:1.7}}a{{color:#8bd8ff}}</style></head>
 <body class="dashboard" data-refresh="30"><h1>Eidolon Memory Engine</h1><p class="dashboard-nav"><a href="/files">Fichiers Markdown</a> · <a href="/sources">Sources</a></p>
 <p class="dashboard-measurement">Machine : <strong>{escape(str(metrics['host']))}</strong><br>
 <small>Mesuré le {escape(_measurement_time(str(metrics['measured_at'])))} (Europe/Paris) · rafraîchissement 30 s</small></p>

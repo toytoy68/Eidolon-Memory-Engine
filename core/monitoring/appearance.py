@@ -108,6 +108,17 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;ba
  .dashboard-grid>section:not(.resource-card){grid-column:1/-1}
  .dashboard>.wallpaper-settings{margin:.5rem 0;padding:.5rem}
 }
+/* Tiny windows are a text-only resource monitor; enlarge to restore controls. */
+@media(max-width:360px),(max-height:260px){
+ body.dashboard{font-size:13px;padding:.4rem!important}
+ body.dashboard::before{background:#101827;background-image:none}
+ .dashboard>:not(main){display:none}
+ .dashboard main.dashboard-grid{grid-template-columns:minmax(0,1fr);gap:0}
+ .dashboard-grid>section:not(.resource-card){display:none}
+ .dashboard .resource-card{padding:0;border:0;background:transparent}
+ .dashboard .resource-card>:not(.resource-text){display:none}
+ .dashboard .resource-card .resource-text{display:block;margin:.25rem 0;line-height:1.4;overflow-wrap:anywhere}
+}
 .wallpaper-settings summary{cursor:pointer}.wallpaper-settings label{display:block;margin:1rem 0}.wallpaper-settings input{max-width:100%}.wallpaper-settings button{padding:.6rem;cursor:pointer}.wallpaper-settings p{line-height:1.5}
 </style>"""
 CONTROLS = """<details class="wallpaper-settings"><summary>Personnaliser le fond d’écran</summary>

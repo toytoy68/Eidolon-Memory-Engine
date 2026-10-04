@@ -67,6 +67,13 @@ Unité permanente systemd installée, services MCP/cloudflared actifs revérifi�
 
 ## Dernière vérification
 
+Dashboard : capture toytoy du 04/10 09 h 47 confirme les jauges compactes
+côte à côte sur VM après relance. Nouveau mode texte demandé ensuite :
+largeur ≤360 px ou hauteur utile ≤260 px, deux lignes mémoire/disque ;
+19 tests existants verts, rendu texte navigateur NON VÉRIFIÉ.
+[Comportement et reprise](docs/MONITORING.md#vue-minimale-texte--4-octobre-2026).
+
+
 **Validation directe toytoy sur /opt, 04/10 09 h 38, commit 9819d6b** :
 pull ff-only effectué, suite complète **1824 tests réussis en 44,25 s**,
 MCP inclus, aucune exclusion. Rappel réel PASS, références exactes, corpus

@@ -163,3 +163,16 @@ relancer le dashboard, recharger `/`, puis réduire la fenêtre à environ 400×
 320×320 et 600×400 pixels ; vérifier jauges côte à côte, valeurs lisibles,
 absence de défilement horizontal, accès aux autres cartes par défilement vertical,
 puis agrandir à 1000×800. Tester aussi le fond personnalisé et le zoom 200 %.
+
+## Vue minimale texte — 4 octobre 2026
+
+En dessous de 360 px de largeur **ou** 260 px de hauteur utile du navigateur,
+la page principale affiche seulement deux lignes : Mémoire et Espace disque,
+avec utilisé / total et pourcentage. Jauges, fond personnalisé, navigation et
+cartes secondaires sont masqués ; agrandir la fenêtre rétablit la vue et ses
+réglages. Aucun changement de données ou de préférences enregistrées.
+
+19 tests existants dashboard/sources verts ; rendu de ce nouveau mode à vérifier
+sur le navigateur VM, notamment à 600×220 et 320×320 pixels utiles.
+La capture de toytoy à 09 h 47 confirme la vue compacte précédente : deux
+jauges lisibles côte à côte après reprise du processus, et non ce mode texte.
