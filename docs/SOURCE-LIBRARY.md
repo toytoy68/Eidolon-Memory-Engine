@@ -343,8 +343,11 @@ Le premier appel ne crée aucun fichier, le second ne crée que l'engagement
 Une interruption après l'engagement et avant le texte laisse
 `pending_source_extraction`. Relancer explicitement l'extraction de cette source
 (API `SourceStore(root).extract(id)` ou bouton d'extraction du dashboard) reprend
-avec le pilote engagé, même si le défaut a changé. Aucune reprise automatique
-via `recover_all` ; les autres anomalies restent bloquantes. Un engagement
+avec le pilote engagé, même si le défaut a changé. Plusieurs attentes
+`pending_source_extraction` indépendantes se reprennent une par une : la
+commande doit cibler une attente existante. Une nouvelle extraction reste
+refusée tant que ces attentes existent. Aucune reprise automatique via
+`recover_all` ; toute anomalie d’un autre type reste bloquante. Un engagement
 corrompu n'est jamais réécrit pour faciliter cette reprise.
 
 L'inventaire connaît la nouvelle famille, la garde legacy la refuse, la copie
@@ -362,3 +365,28 @@ Aucune validation VM ou coupure électrique n'est revendiquée par GPT.
 Validation locale finale : 1947 tests réussis, 5 cas sockets exclus (MCP inclus).
 Les 18 gardes ciblées passent également, dont le test de cache ajouté après
 la collecte de la suite complète. Recette VM F1/F1b encore attendue.
+
+## Revue VM et reprise de plusieurs attentes — D-F1-1
+
+Rapport Claude dbd6365 : 1938 tests VM réussis sur 53d5047, MCP exclus,
+15 critères et 18 gardes verts. Revue sur clone isolé, corpus synthétiques ;
+services et données réelles inchangés. GPT n'a pas revérifié ces résultats VM.
+L'impasse entre deux attentes d'extraction a été reproduite et corrigée :
+chaque promesse peut être reprise explicitement, sans modifier les engagements
+ni leur date. Une corruption distincte continue à refuser toutes les reprises.
+
+Un arrêt pendant l'écriture atomique de l'engagement peut laisser un fichier
+`.<id>.json.<aléatoire>.tmp`. Il reste une anomalie bloquante, jamais une
+promesse à publier automatiquement. Sortie manuelle : arrêter les écrivains,
+conserver une archive complète de memory/ et le rapport d'audit ; identifier
+le chemin exact du résidu, vérifier qu'aucun processus ne l'utilise, et vérifier
+les originaux et les fichiers publiés séparément. Conserver une copie privée
+du résidu hors memory/ et en vérifier les octets/empreinte avant de retirer
+uniquement ce résidu de la famille active. Si une autre anomalie existe ou si
+la situation est incertaine, conserver tous les fichiers pour investigation.
+Relancer l'audit puis l'extraction explicite ; ne jamais convertir le fichier
+temporaire en engagement, supprimer un engagement publié, ni purger par motif.
+Aucun nettoyage de résidus ou de données réelles exécuté par ce correctif.
+
+Validation locale D-F1-1 : 77 tests ciblés verts ; suite complète 1985 réussis,
+5 cas sockets exclus, MCP inclus. Aucun essai VM exécuté par GPT.

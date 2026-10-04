@@ -30,16 +30,20 @@ def test_bad_commitment_blocks_without_repair(tmp_path, field, value):
     assert hashes(tmp_path) == before
 
 
-def test_other_pending_extraction_blocks_recovery(tmp_path):
+def test_independent_pending_extractions_resume_one_at_a_time(tmp_path):
     store, first, _ = setup(tmp_path)
     second = add(store, b'Second source.', original_name='second.txt')['source']
     store.extract(second['source_id'])
     for record in (first, second):
         (store.directory / record['source_id'] / 'extraction.json').unlink()
     before = hashes(tmp_path)
-    with pytest.raises(ValueError, match='readiness'):
-        store.extract(first['source_id'])
-    assert hashes(tmp_path) == before
+    promises = {record['source_id']: path(tmp_path, record).read_bytes() for record in (first, second)}
+    assert store.extract(first['source_id'])['status'] == 'EXTRACTED'
+    assert not check_readiness(tmp_path)['ready']
+    assert store.extract(second['source_id'])['status'] == 'EXTRACTED'
+    assert check_readiness(tmp_path)['ready']
+    for record in (first, second):
+        assert path(tmp_path, record).read_bytes() == promises[record['source_id']]
 
 
 def test_impossible_promise_missing_extraction_cannot_resume(tmp_path):

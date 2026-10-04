@@ -19,7 +19,9 @@ At audit, identity is compared with an extraction reproduced from the validated
 original. Missing original, malformed commitment, unsafe paths or mismatches
 block readiness. Missing extraction with a valid reproducible promise yields
 `pending_source_extraction`; only explicit extraction of that exact source can
-resume it, using its committed driver. Other blockers are never bypassed.
+resume it, using its committed driver. Other pending promises do not prevent
+that explicit resumption; a fresh extraction is refused while any remain.
+Every issue of another type still blocks.
 
 Existing extractions with no record stay free: `uncommitted_extraction` is an
 informational diagnostic, not a blocking issue. Reads/audits never engage them.

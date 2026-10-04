@@ -1125,3 +1125,15 @@ Aucune validation VM de ce nouveau lot revendiquée.
 Validation locale finale : 1947 tests réussis, 5 cas sockets exclus (MCP inclus).
 Les 18 gardes ciblées passent également, dont le test de cache ajouté après
 la collecte de la suite complète. Recette VM F1/F1b encore attendue.
+
+### Revue Claude dbd6365 — correction D-F1-1
+
+- VM F1/F1b 53d5047 : 1938 réussis, MCP exclus, selon Claude.
+- Impasse des attentes multiples corrigée : reprises indépendantes explicites ;
+  autres anomalies bloquantes et sources neuves refusées pendant les attentes.
+- Annexes négatives F1/F1a intégrées, résidus atomiques toujours bloquants ;
+  procédure de conservation/retrait manuel documentée, aucun nettoyage effectué.
+- Claude : recette isolée de ce correctif ; global 45 % reste gelé.
+
+Validation locale D-F1-1 : 77 tests ciblés verts ; suite complète 1985 réussis,
+5 cas sockets exclus, MCP inclus. Aucun essai VM exécuté par GPT.

@@ -114,11 +114,12 @@ class SourceStore:
         with exclusive_write(self.root / 'memory/persistent'), exclusive_write(self.directory):
             from core.operations.readiness import check_readiness
             from core.sources.commitments import read, matches, directory
-            # Only this exact pending extraction can be resumed by this command.
+            # Independent pending extractions can be resumed one at a time.
+            # This command must target an actual pending promise; all other issues block.
             pending_path = (directory(self.root) / (str(identity) + '.json')).relative_to(self.root).as_posix()
             state = check_readiness(self.root)
-            if any(issue['path'] != pending_path or issue['reason'] != 'pending_source_extraction'
-                   for issue in state['issues']):
+            if (any(issue['reason'] != 'pending_source_extraction' for issue in state['issues'])
+                    or (state['issues'] and all(issue['path'] != pending_path for issue in state['issues']))):
                 raise ValueError('readiness blocks source extraction')
             record, data = self.read(identity)
             committed = read(self.root, identity)
