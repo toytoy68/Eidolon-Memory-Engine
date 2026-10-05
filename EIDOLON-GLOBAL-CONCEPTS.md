@@ -1,6 +1,6 @@
 # Eidolon Global — concepts, idées et architecture future
 
-Dernière mise à jour : 2026-10-04.
+Dernière mise à jour : 2026-10-05.
 
 Ce document rassemble les concepts qui concernent **Eidolon dans son ensemble**
 et non le développement interne du Memory Engine. Il sert de parking architectural
@@ -371,6 +371,78 @@ Source : documentation Jarvis fournie en ZIP ; aucun code/test Jarvis audité.
 Memory conserve état, provenance et historique ; Core décide de l'interaction
 et exécute les outils. Les pistes ci-dessus n'ajoutent aucun runtime d'agent,
 ordonnanceur ou connecteur métier au Memory Engine.
+
+## G-017 — Banc de tests des variantes de modèles locaux
+
+**Idée ajoutée le 05/10/2026 à la demande de toytoy ; protocole à préparer,
+aucun benchmark exécuté.** Rattachement : G-011/G-012, résultats utilisables par
+G-002. Comparer un modèle d'origine à ses variantes communautaires
+« uncensored » / « abliterated » pour mesurer leurs gains et régressions dans
+Eidolon. Une baisse des refus ne prouve ni une meilleure exactitude ni une
+meilleure autonomie.
+
+### Identification et comparaison équitable
+
+Avant tout essai, vérifier la référence exacte, la source officielle du modèle
+d'origine, le dépôt de la variante, sa méthode de modification, sa licence,
+sa révision et les empreintes des poids. Les noms et capacités évoqués dans une
+conversation ou une capture restent à vérifier ; aucune version particulière
+de Qwen n'est tenue pour validée par cette entrée.
+
+Comparer d'abord origine/variante de la même famille, à quantification et
+configuration équivalentes. Ajouter ensuite un modèle de référence Eidolon
+dans une comparaison distincte. Consigner matériel (dont V100), pilote,
+backend/version, placement GPU/CPU, quantification des poids et du KV cache,
+template de chat, prompt système, mode de raisonnement, température, seed,
+limites d'entrée/sortie et éventuel cache de préfixe. Un réglage spécifique
+à un modèle doit être signalé.
+
+### Série prédéfinie et versionnée
+
+Constituer un corpus français avec identifiants stables, prompts, réponses ou
+critères attendus, validateurs et budgets définis **avant** les exécutions.
+Inclure des paraphrases et un lot réservé à la validation finale.
+
+| Axe | Cas prédéfinis | Mesures attendues |
+| --- | --- | --- |
+| Exactitude | Calculs, logique, extraction de faits d'un dossier, code avec tests, questions sans réponse dans les sources, prémisses fausses | Taux de réussite, hallucinations, références correctes, reconnaissance de l'incertitude |
+| Stabilité | Même cas répété, reformulations, conversations longues, séries soutenues de 30–60 min | Variabilité des scores, contradictions, boucles, réponses tronquées, erreurs et timeouts |
+| Rapidité | Prompts courts/longs ; chargement à froid puis modèle chaud ; cache désactivé puis mesuré séparément | Chargement, temps au premier token, débit prompt/decode, durée totale, médiane et p95 |
+| Contexte exploitable | Paliers 4k/8k/16k/32k puis au-delà si supportés ; faits au début/milieu/fin, distracteurs, plusieurs faits à relier | Tokens réellement traités, rappel exact, perte de qualité, latence, VRAM et limite avant OOM |
+| Instructions et outils | Respect du système, JSON validé par schéma, choix d'outil/arguments, succès et erreurs simulés | Conformité, appels valides, absence de succès inventé et respect des autorisations |
+| Comportement de refus | Demandes légitimes parfois refusées, cas exigeant clarification, actions hors permissions | Refus injustifiés, clarification pertinente et maintien des règles Eidolon |
+| Ressources | Charges identiques sur le matériel réel, contexte croissant, déchargement/rechargement | Pics VRAM/RAM, offload CPU, puissance moyenne, énergie par tâche, température et throttling |
+
+Pour le contexte, distinguer **maximum annoncé**, **maximum configuré/accepté
+par le backend** et **maximum utile mesuré**. Compter système, historique,
+mémoire, schémas d'outils et réserve de sortie dans le budget total. Détecter
+explicitement la troncature ; ne pas confondre acceptation d'une requête et
+lecture de tous ses tokens. Tester d'abord sans mémoire externe, puis avec
+un rappel Memory Engine figé pour séparer capacités du modèle et du retrieval.
+
+### Exécution et décision
+
+- Première passe : au moins cinq répétitions par cas, seeds consignées et
+  ordre des modèles alterné ; distinguer reproductibilité et variabilité.
+- Même budget de sortie ; compter séparément tokens de raisonnement et réponse
+  lorsque le backend les expose. Documenter les longueurs et timeouts.
+- Outils simulés et données synthétiques isolées pour les scénarios agentiques ;
+  évaluer aussi les injections présentes dans les documents/résultats d'outils.
+- Correction automatique lorsque possible ; revue humaine à l'aveugle avec
+  grille figée pour les réponses ouvertes. Un LLM juge seul ne constitue pas
+  une preuve d'exactitude.
+- Archiver configuration, corpus/version, sorties brutes, scores, erreurs,
+  chronologie et mesures matérielles dans un rapport JSON/CSV et une synthèse.
+- Définir avant mesure les seuils de qualité/stabilité par rôle Eidolon et les
+  régressions acceptables face au modèle d'origine. Tout contournement des
+  autorisations exclut le profil des actions autonomes.
+- Produire une fiche par modèle : tâches adaptées, limites, contexte utile,
+  coût matériel et modèle de repli. Garder les scores par axe ; un score global
+  ne doit pas masquer une faiblesse critique.
+
+**Livrables futurs :** corpus versionné, runner reproductible, grille de
+notation et tableau comparatif origine/variante/référence. Travail du futur
+AI Lab/Core ; aucune modification des priorités ou du pourcentage Memory Engine.
 
 ## Statut du document
 
