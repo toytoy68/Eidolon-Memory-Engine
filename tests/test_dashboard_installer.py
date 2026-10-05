@@ -26,7 +26,8 @@ def functions(*names):
         elif inside:
             out.append(line)
             inside = line != '}'
-    return '\n'.join(out)
+    presentation = (SCRIPT.parent.parent / 'presentation.sh').read_text(encoding='utf-8')
+    return presentation + '\n' + '\n'.join(out)
 
 
 def stub(directory, name, body):
@@ -180,4 +181,4 @@ printf 'prepared\\n'
     else:
         assert result.returncode == 1
         assert 'prepared' not in result.stdout
-        assert 'absent' in result.stdout
+        assert 'absent' in result.stderr

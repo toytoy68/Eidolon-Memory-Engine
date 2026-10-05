@@ -1,6 +1,28 @@
 #!/usr/bin/env bash
+
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Script      : install-vm.sh
+# Description : Installation Collaboration
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
 # Install the prepared package without opening the endpoint or starting the MCP.
 set -euo pipefail
+presentation_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+if [[ -f "$presentation_dir/../presentation.sh" ]]; then
+    source "$presentation_dir/../presentation.sh"
+else
+    source "$presentation_dir/presentation.sh"
+fi
+if [[ "${1:-}" == --presentation-preview ]]; then
+    eidolon_preview "Installation Collaboration" "Préparer le service et sa clé dédiée ; activation séparée."
+    exit 0
+fi
+eidolon_header "Installation Collaboration" 'installation'
+eidolon_section 'Opérations prévues'
+eidolon_message INFO "Préparer le service et sa clé dédiée ; activation séparée."
+
 umask 077
 
 bundle_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -9,16 +31,17 @@ service_state=/var/lib/eidolon-collaboration
 service_account=eidolon-collaboration
 
 if [[ "$EUID" -ne 0 ]]; then
-    echo "Relancer ce script avec sudo dans le terminal de la VM." >&2
+    eidolon_message ERREUR "Relancer ce script avec sudo dans le terminal de la VM." >&2
     exit 1
 fi
 if systemctl is-active --quiet eidolon-collaboration; then
-    echo "Le service est actif. Arrêter et examiner la mise à jour avant installation." >&2
+    eidolon_message ATTENTION "Le service est actif. Arrêter et examiner la mise à jour avant installation." >&2
     exit 1
 fi
 for executable in python3 git ssh-keygen useradd runuser systemctl systemd-analyze sha256sum; do
-    command -v "$executable" >/dev/null || { echo "Prérequis manquant : $executable" >&2; exit 1; }
+    command -v "$executable" >/dev/null || { eidolon_message ERREUR "Prérequis manquant : $executable" >&2; exit 1; }
 done
+eidolon_section "Vérification du paquet"
 (cd "$bundle_dir" && sha256sum --check SHA256SUMS)
 # A disposable copy prevents changes to the supplied bundle during installation.
 staging_dir="$(mktemp -d /tmp/eidolon-collaboration-install.XXXXXXXX)"
@@ -33,6 +56,7 @@ install -d -o "$service_account" -g "$service_account" -m 0700 "$service_state" 
 install -d -o root -g root -m 0700 /etc/eidolon-collaboration
 
 # Keep prior installations intact; select the new release only after dependencies work.
+eidolon_section "Préparation du service"
 release_dir="$(mktemp -d "$app_root/release.XXXXXXXX")"
 cp -a "$staging_dir/app/." "$release_dir/"
 chown -R root:root "$release_dir"
@@ -47,7 +71,7 @@ fi
 chown -R root:root "$app_root/venv"
 chmod -R u=rwX,go=rX "$app_root/venv"
 if [[ -e "$app_root/app" && ! -L "$app_root/app" ]]; then
-    echo "$app_root/app existe et n'est pas un lien de release ; examiner manuellement." >&2
+    eidolon_message ERREUR "$app_root/app existe et n'est pas un lien de release ; examiner manuellement." >&2
     exit 1
 fi
 ln -s "$release_dir" "$app_root/app.next"
@@ -64,7 +88,9 @@ fi
 systemd-analyze verify /etc/systemd/system/eidolon-collaboration.service
 systemctl daemon-reload
 
-echo "Installation préparée. Service MCP non démarré."
-echo "Ajouter cette clé PUBLIQUE comme Deploy key GitHub de ce dépôt, avec droit d'écriture :"
+eidolon_section "Bilan et prochaine étape"
+eidolon_message OK "Paquet installé et définition systemd vérifiée"
+eidolon_message ATTENTION "Service MCP non démarré ; activation encore nécessaire."
+eidolon_message INFO "Ajouter cette clé PUBLIQUE comme Deploy key GitHub de ce dépôt, avec droit d'écriture :"
 cat "$service_state/credentials/github_ed25519.pub"
-echo "Puis suivre NEXT-STEPS.md pour OAuth, clone dédié, HTTPS et activation."
+eidolon_message INFO "Puis suivre NEXT-STEPS.md pour OAuth, clone dédié, HTTPS et activation."

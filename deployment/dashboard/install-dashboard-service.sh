@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Script      : install-dashboard-service.sh
+# Description : Installation du dashboard
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
 # Replace the manually started Eidolon dashboard by the systemd unit
 # eidolon-dashboard, then verify it. Run as root:  sudo bash install-dashboard-service.sh
 #
@@ -11,6 +19,20 @@
 # - If the unit does not come up, it is disabled and the manual process is
 #   relaunched with its exact former command line and environment.
 set -euo pipefail
+presentation_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+if [[ -f "$presentation_dir/../presentation.sh" ]]; then
+    source "$presentation_dir/../presentation.sh"
+else
+    source "$presentation_dir/presentation.sh"
+fi
+if [[ "${1:-}" == --presentation-preview ]]; then
+    eidolon_preview "Installation du dashboard" "Remplacer le dashboard manuel par systemd et vérifier sa reprise."
+    exit 0
+fi
+eidolon_header "Installation du dashboard" 'installation'
+eidolon_section 'Opérations prévues'
+eidolon_message INFO "Remplacer le dashboard manuel par systemd et vérifier sa reprise."
+
 umask 077
 export LC_ALL=C
 
@@ -24,8 +46,8 @@ PORT=8766
 URL=http://$ADDR:$PORT/
 LOG=/home/toytoy/eidolon-dashboard.log
 
-say() { printf '%s\n' "$*"; }
-die() { say "ERREUR: $*"; exit 1; }
+say() { eidolon_message INFO "$*"; }
+die() { eidolon_message ERREUR "$*" >&2; exit 1; }
 require_relaunch_tools() {
   command -v setsid >/dev/null 2>&1 || die "setsid absent ; rien n’est modifié"
   command -v setpriv >/dev/null 2>&1 || die "setpriv absent ; rien n’est modifié"
@@ -61,6 +83,7 @@ OTHERS_BEFORE=$(others)
 say "Autres services avant : $OTHERS_BEFORE"
 
 # 1. Identify the manual dashboard.
+eidolon_section "Identification du dashboard"
 OLD=$(listener_pid) || true
 [ -n "${OLD:-}" ] || die "aucun processus n'écoute sur $ADDR:$PORT"
 [ "$(stat -c %U /proc/"$OLD")" = toytoy ] || die "PID $OLD n'appartient pas à toytoy"
@@ -74,6 +97,7 @@ EXPECTED=$(sed -n 's/^ExecStart=//p' "$SRC_UNIT")
 [ "$(printf '%s ' "${OLD_ARGS[@]}")" = "$EXPECTED " ] || die "arguments du processus différents du modèle ; rien n'est modifié"
 
 # 2. Protected environment file (token only).
+eidolon_section "Configuration protégée"
 TOKEN_LINE=$(printf '%s\n' "${OLD_ENV[@]}" | grep '^EIDOLON_DASHBOARD_TOKEN=.' || true)
 [ -n "$TOKEN_LINE" ] || die "token absent de l'environnement du processus"
 # systemd EnvironmentFile interprets quotes, backslashes and '$': refuse rather than alter the value.
@@ -91,12 +115,14 @@ unset TOKEN_LINE
 say "Fichier d'environnement : $(stat -c '%U:%G %a' "$ENV_FILE"), $(wc -l < "$ENV_FILE") ligne"
 
 # 3. Unit.
+eidolon_section "Préparation du service"
 install -m 0644 -o root -g root "$SRC_UNIT" /etc/systemd/system/$UNIT.service
 systemd-analyze verify /etc/systemd/system/$UNIT.service
 systemctl daemon-reload
 systemctl enable "$UNIT" >/dev/null
 
 # 4. Replace the manual process.
+eidolon_section "Démarrage et vérification"
 kill -TERM "$OLD"
 wait_gone "$OLD" || die "PID $OLD toujours actif après 15 s ; arrêt forcé non effectué (unité installée, non démarrée)"
 say "Processus manuel $OLD arrêté"
@@ -114,7 +140,7 @@ relaunch_manual() {
   ) &
 }
 rollback() {
-  say "ÉCHEC du service : retour au processus manuel"
+  eidolon_message ATTENTION "ÉCHEC du service : retour au processus manuel"
   systemctl disable --now "$UNIT" >/dev/null 2>&1 || true
   tail -n 20 "$LOG" | cut -c1-200
   relaunch_manual
@@ -148,6 +174,8 @@ check_http plantage || rollback
 
 OTHERS_AFTER=$(others)
 say "Autres services après : $OTHERS_AFTER"
-[ "$OTHERS_BEFORE" = "$OTHERS_AFTER" ] && say "MCP, cloudflared et Ollama inchangés" || say "ATTENTION: état des autres services différent"
+[ "$OTHERS_BEFORE" = "$OTHERS_AFTER" ] && eidolon_message OK "MCP, cloudflared et Ollama inchangés" || eidolon_message ATTENTION "État des autres services différent"
 systemctl --no-pager --lines=0 status "$UNIT" | head -6
-say "TERMINÉ"
+eidolon_section "Bilan"
+eidolon_message OK "Installation et contrôles du dashboard terminés"
+eidolon_message INFO "Suite : vérifier le rendu du dashboard dans le navigateur."

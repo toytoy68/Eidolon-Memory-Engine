@@ -54,6 +54,7 @@ def build_package(destination: Path, config=None):
         shutil.copyfile(ROOT / name, target)
     for name in TEMPLATES:
         shutil.copyfile(ROOT / "deployment/collaboration" / name, destination / name)
+    shutil.copyfile(ROOT / "deployment/presentation.sh", destination / "presentation.sh")
     (destination / "install-vm.sh").chmod(0o700)
     if rendered:
         (destination / "environment").write_text(rendered[0])

@@ -13,8 +13,8 @@ un parcours d'installation, lire et appliquer
   ils sont également disponibles dans `templates/source-header.py.txt` et
   `templates/source-header.sh.txt`.
 - Réutiliser les fonctions d'affichage communes du composant lorsqu'elles
-  existent ; éviter une nouvelle bannière par commande. Aucun module partagé
-  d'affichage Memory Engine n'est livré par cette copie documentaire.
+  existent ; éviter une nouvelle bannière par commande. Les installateurs
+  Bash partagent `deployment/presentation.sh`.
 - Une sortie JSON reste strictement exploitable par machine ; réserver la
   décoration au mode humain. Conserver les statuts et codes de retour.
 - `[OK]` exige une vérification réelle. L'affichage ne donne jamais une permission
