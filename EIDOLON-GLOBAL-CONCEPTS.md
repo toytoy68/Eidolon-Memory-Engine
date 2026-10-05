@@ -372,7 +372,7 @@ Memory conserve état, provenance et historique ; Core décide de l'interaction
 et exécute les outils. Les pistes ci-dessus n'ajoutent aucun runtime d'agent,
 ordonnanceur ou connecteur métier au Memory Engine.
 
-## G-017 — Banc de tests des variantes de modèles locaux
+## G-017 — AI Lab : qualification des modèles, agents et contrôleur Core
 
 **Idée ajoutée le 05/10/2026 à la demande de toytoy ; protocole à préparer,
 aucun benchmark exécuté.** Rattachement : G-011/G-012, résultats utilisables par
@@ -440,7 +440,79 @@ un rappel Memory Engine figé pour séparer capacités du modèle et du retrieva
   coût matériel et modèle de repli. Garder les scores par axe ; un score global
   ne doit pas masquer une faiblesse critique.
 
-**Livrables futurs :** corpus versionné, runner reproductible, grille de
+### Qualification de modèles divers et sélection du contrôleur Core
+
+**Extension demandée par toytoy le 05/10/2026.** Le laboratoire doit couvrir un
+catalogue de modèles divers : généralistes, raisonnement, code, extraction,
+petits spécialistes et variantes communautaires. La liste concrète sera établie
+à partir de références vérifiées et de la compatibilité matérielle ; aucun nom
+commercial ni benchmark public ne vaut qualification pour Eidolon.
+
+Une qualification porte sur **modèle + révision + quantification + backend +
+configuration + rôle + enveloppe matérielle/contexte**, jamais sur le nom du
+modèle seul. Un modèle peut réussir pour un agent spécialisé et échouer comme
+contrôleur. Le résultat doit pouvoir être : validé pour ce profil, validé avec
+restrictions explicites, rejeté pour ce profil, ou non évalué/preuves insuffisantes.
+Un test bloqué par le matériel ou le backend reste distinct d'un échec de qualité.
+
+| Rôle candidat | Épreuves spécifiques | Critère déterminant |
+| --- | --- | --- |
+| Classification / routage | Intentions ambiguës, hors domaine, choix du bon spécialiste, abstention/escalade | Routage fiable et absence de décision forcée |
+| Extraction / mémoire | Faits sourcés, contradictions, dates, identités, séparation fait/hypothèse | Fidélité aux sources et schémas, absence de faits inventés |
+| Agent code / technique | Correction vérifiée par tests, diagnostic, contraintes matérielles, erreurs d'outils | Résultat vérifiable et respect du périmètre |
+| Agent analyse / synthèse | Documents multiples, sources contradictoires, incertitude, comparaison argumentée | Exactitude, provenance et conclusions justifiées |
+| Contrôleur Eidolon Core | Planification, délégation, suivi d'état, validation, reprise et arbitrage des ressources | Fiabilité de bout en bout sous contraintes |
+
+Pour le **contrôleur**, construire des missions multiétapes avec état attendu
+observable et outils simulés, puis essais en environnement isolé. Couvrir :
+
+- décomposition et dépendances ; bon choix entre exécution directe, spécialiste
+  et demande de clarification ; délégation seulement si utile ;
+- conservation de l'objectif et des contraintes sur une conversation longue ;
+  intégration d'une correction utilisateur, annulation et changement de priorité ;
+- budgets temps/tokens/VRAM, outils indisponibles, worker contradictoire ou en
+  échec, modèle de repli et arrêt d'une boucle improductive ;
+- erreur partielle, timeout, redémarrage et reprise à partir d'un état persisté ;
+  aucun doublon d'action ni succès annoncé sans preuve ;
+- distinction entre mémoire/source, instruction utilisateur et contenu non
+  fiable ; résistance aux injections dans les documents et résultats d'outils ;
+- validation des résultats des workers par preuves externes au texte produit,
+  traçabilité des décisions et respect des autorisations.
+
+Comparer aussi un contrôleur unique à une architecture contrôleur léger +
+spécialistes sur les **mêmes missions**, en comptant chargements, échanges,
+échecs, énergie et latence totale. Choisir d'abord selon réussite des missions,
+fiabilité et limites critiques ; vitesse et coût départagent les profils
+admissibles. Le modèle le plus gros ou le plus rapide n'est pas automatiquement
+le meilleur contrôleur.
+
+### Campagne progressive et registre de qualification
+
+1. **Figer le protocole** : rôles, corpus, résultats attendus, seuils par axe,
+   erreurs éliminatoires et budgets ; versionner avant d'observer les candidats.
+2. **Vérifier la compatibilité** : identité des poids, chargement, template,
+   outils, contexte et mesures matérielles minimales.
+3. **Présélectionner** avec un corpus court commun, puis appliquer la suite
+   approfondie par rôle aux candidats admissibles.
+4. **Qualifier** sur le lot réservé, les répétitions et l'endurance ; conserver
+   effectifs, dispersion et intervalles d'incertitude lorsque pertinents.
+   Zéro erreur observée sur un lot fini ne prouve pas une fiabilité absolue.
+5. **Éprouver le contrôleur** sur des missions intégrées, d'abord avec outils
+   simulés puis en observation sans action réelle avant une activation explicite.
+6. **Publier la matrice** modèles × rôles, motifs du verdict, restrictions,
+   contexte utile, latence p95, ressources et repli ; proposer le contrôleur
+   retenu avec justification et alternative.
+7. **Requalifier** après changement de poids, quantification, backend, template,
+   outils ou politique ; conserver l'historique et un corpus de non-régression.
+
+Eidolon pourra orchestrer la campagne, collecter les mesures et proposer un
+classement. Les validateurs déterministes et la revue humaine arbitrent les
+cas ouverts ; le candidat ne s'attribue pas lui-même sa qualification.
+Le Policy/Permission Engine reste une frontière indépendante, y compris avec
+un contrôleur qualifié. Les seuils numériques et le catalogue restent à fixer ;
+cette consignation ne constitue ni un runner livré ni une qualification acquise.
+
+**Livrables futurs :** catalogue vérifié, matrice modèles × rôles, corpus versionné, runner reproductible, grille de
 notation et tableau comparatif origine/variante/référence. Travail du futur
 AI Lab/Core ; aucune modification des priorités ou du pourcentage Memory Engine.
 
