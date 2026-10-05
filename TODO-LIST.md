@@ -1,5 +1,17 @@
 # Memory Engine — TODO active
 
+## Reprise d'analyse du 5 octobre 2026 — sans VM
+
+[Audit ciblé sur df42ce2](docs/AUDIT-2026-10-05.md) : 1970 tests réussis hors
+MCP, cinq bloqués par les sockets Manager de Work ; 15 MCP réussis séparément.
+Trois constats synthétiques : A5-01 collision d'import sur exports recouvrants,
+A5-02 perte du contexte gauche/négation au rappel (limite connue caractérisée),
+A5-03 conteneur `parts` mal formé accepté. Corrections non livrées dans cet audit.
+Priorité proposée : imports/validation, puis politique de fenêtre et campagne
+sémantique. VM indisponible jusqu'à la fin de semaine selon toytoy ; estimation
+45 % et gel Core/Hermes/Qdrant inchangés. Les entrées datées ci-dessous restent
+des preuves historiques, pas toutes des descriptions de l'état courant.
+
 Mise à jour : **2026-10-04**, audit initial `a779c9d`, T-048 puis refus migration mixte et commandes projet livrés, branche
 `refactor/architecture-v1`. **Estimation globale gelée : 45 %. Grille : 52,75
 points, inchangée.** Aucun avancement chiffré pour cet audit documentaire.
