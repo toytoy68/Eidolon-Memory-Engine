@@ -11,9 +11,11 @@
 No semantic extraction, model invocation, automatic confirmation or branch merging.
 """
 import argparse
+from dataclasses import replace
 from datetime import datetime, timezone
 from hashlib import sha256
 import json
+import re
 from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
@@ -21,7 +23,8 @@ from core.backend.models import Memory
 from core.backend.errors import BackendError
 from core.operations.errors import OperationRepositoryError
 from core.persistence import exclusive_write
-from core.information.writes import FilesystemInformationWrites
+from core.information.writes import FilesystemInformationWrites, fingerprint
+from core.operations.models import OperationType, OperationStatus
 from core.migration.converter import _atomic_bytes
 from core.storage_format import decode_json_value
 
@@ -30,6 +33,59 @@ IMPORTER = 'chatgpt-archive-v2'
 # v1 kept tool calls (recipient other than 'all') and hidden context messages.
 # Its archives stay readable and recallable; they are never rewritten.
 ARCHIVE_IMPORTERS = frozenset({'chatgpt-archive-v1', IMPORTER})
+
+
+class ImportBlocked(ValueError):
+    """A blocked publication reports completed steps, never implicit rollback."""
+    def __init__(self, reason, progress):
+        super().__init__(reason)
+        self.progress = dict(progress)
+
+
+def _original_hashes(directory):
+    """Verify retained originals before using their hashes for command replay."""
+    hashes = []
+    for path in sorted(directory.glob('*.json')):
+        if (path.is_symlink() or not path.is_file()
+                or not re.fullmatch(r'[a-f0-9]{64}', path.stem)
+                or path.stat().st_size > 32 * 1024 * 1024
+                or sha256(path.read_bytes()).hexdigest() != path.stem):
+            raise ValueError('invalid retained original export')
+        hashes.append(path.stem)
+    return hashes
+
+
+def _resolve_commands(writer, plans, directory):
+    """Preflight the whole lot under writer locks, including compact receipts.
+
+    Only substitute source_sha256 when the original retained export recreates
+    the exact journal fingerprint. Never relax the generic writer's guard.
+    New occurrences remain traceable in their exact original exports.
+    """
+    resolved, originals = [], None
+    for memory, at in plans:
+        identity = memory.information_id
+        entry = writer.journal.read('import-' + identity)
+        if entry is None:
+            if writer.backend.get(identity) is not None:
+                raise ValueError('archive exists without its original command')
+            writer._check_deletion(OperationType.INFORMATION_CREATE, identity)
+            resolved.append((memory, at, False))
+            continue
+        if entry.operation is not None and entry.operation.status is OperationStatus.FAILED:
+            raise ValueError('failed import operation requires manual resolution')
+        if originals is None:
+            originals = _original_hashes(directory)
+        for source_hash in originals:
+            candidate = replace(memory, provenance={**memory.provenance, 'source_sha256': source_hash})
+            digest = fingerprint(OperationType.INFORMATION_CREATE, candidate, 0,
+                'event-' + identity, 'chatgpt-export-importer', at)
+            if digest == entry.fingerprint:
+                resolved.append((candidate, at, True))
+                break
+        else:
+            raise ValueError('cannot reconstruct original command from retained exports')
+    return resolved
 
 
 def is_conversation_archive(memory):
@@ -141,23 +197,36 @@ def import_exports(root, files):
         pass
     backend = FilesystemBackend(root / 'memory/persistent', root / 'memory/history')
     writer = FilesystemInformationWrites(backend)
-    with exclusive_write(root / 'memory/persistent'):
+    progress = dict(new_conversations=0, replayed_conversations=0, new_originals=0,
+                    publication_attempted=False)
+    with (exclusive_write(root / 'memory/persistent'), exclusive_write(writer.operations.root),
+          exclusive_write(writer.events.events_root)):
         _check_import_version(root)
         directory = root / 'import-originals'
-        directory.mkdir(exist_ok=True)
-        for digest, raw in originals:
-            target = directory / (digest + '.json')
-            if target.exists():
-                if target.read_bytes() != raw:
+        try:
+            commands = _resolve_commands(writer, plans, directory)
+            # Validate every existing original before publishing any new one.
+            for digest, raw in originals:
+                target = directory / (digest + '.json')
+                if target.is_symlink() or (target.exists() and target.read_bytes() != raw):
                     raise ValueError('original export differs from hash')
-            else:
-                _atomic_bytes(target, raw)
-        for memory, at in plans:
-            identity = memory.information_id
-            writer.create(memory, operation_id='import-' + identity, event_id='event-' + identity,
-                actor='chatgpt-export-importer', timestamp=at)
+            directory.mkdir(exist_ok=True)
+            for digest, raw in originals:
+                target = directory / (digest + '.json')
+                if not target.exists():
+                    progress['publication_attempted'] = True
+                    _atomic_bytes(target, raw)
+                    progress['new_originals'] += 1
+            for memory, at, replay in commands:
+                identity = memory.information_id
+                progress['publication_attempted'] = True
+                writer.create(memory, operation_id='import-' + identity, event_id='event-' + identity,
+                    actor='chatgpt-export-importer', timestamp=at)
+                progress['replayed_conversations' if replay else 'new_conversations'] += 1
+        except (ValueError, OSError, TypeError, BackendError, OperationRepositoryError) as exc:
+            raise ImportBlocked(str(exc), progress) from exc
     return dict(conversations=len(plans), messages=sum(m.metadata['message_count'] for m, _ in plans),
-        originals=len(originals), status='IMPORTED', semantic_facts_extracted=False)
+        originals=len(originals), status='IMPORTED', semantic_facts_extracted=False, **progress)
 
 
 def main(argv=None):
@@ -169,6 +238,8 @@ def main(argv=None):
         result = import_exports(args.root, args.files)
     except (ValueError, OSError, TypeError, BackendError, OperationRepositoryError) as exc:
         result = dict(status='BLOCKED', reason=str(exc))
+        if isinstance(exc, ImportBlocked):
+            result['progress'] = exc.progress
     print(json.dumps(result))
     return int(result['status'] == 'BLOCKED')
 

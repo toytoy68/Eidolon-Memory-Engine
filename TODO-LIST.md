@@ -1,3 +1,19 @@
+## Livraison du 5 octobre — imports recouvrants A5-01
+
+- Conversation identique dans plusieurs exports : reprise de la commande initiale
+  après vérification exacte de son empreinte et des originaux conservés.
+- Provenance initiale conservée ; nouveaux originaux gardés sans réécriture
+  des archives, événements ou reçus existants. Une archive supprimée reste supprimée.
+- Prévalidation du lot sous les verrous d’écriture avant publication ; un conflit
+  connu n’importe plus silencieusement les conversations précédentes du lot.
+- Sortie JSON enrichie de compteurs de progression, y compris en cas de blocage.
+  Ce n’est pas une transaction : un appel interrompu peut avoir écrit avant son retour.
+- Tests synthétiques : ordre inversé, sérialisation, compaction/suppression,
+  mort réelle d’un processus et reprise après publication partielle.
+- Contrôles : 38 tests ciblés et 1989 tests de suite réussis ; 5 cas Manager
+  et le fichier MCP exclus dans cet environnement.
+- Validation VM et corpus réel différées ; A5-02 reste à traiter.
+
 # Memory Engine — TODO active
 
 ## Livraison du 5 octobre — validation d'entrée A5-03
@@ -6,8 +22,8 @@
   publication du lot ; aucun changement sur les archives déjà importées.
 - Six cas négatifs rouges avant correctif puis verts ; cas multimodal valide
   conservé. Import/rappel/revue ChatGPT : **41 tests réussis**.
-- A5-01 (exports recouvrants) et A5-02 (contexte gauche au rappel) restent
-  ouverts. Ne pas assouplir l'idempotence du writer pour contourner A5-01.
+- A5-01 livré dans le lot suivant ci-dessus ; A5-02 (contexte gauche au rappel)
+  reste ouvert. La garde d'idempotence du writer reste stricte.
 - Harmonisation ECT livrée : installateurs `163c9fd`, en-têtes `0bbe7a0`.
   Aucun déploiement VM ; estimation globale inchangée.
 

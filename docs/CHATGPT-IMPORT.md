@@ -176,3 +176,28 @@ suppression de données ne sont nécessaires pour cette recette.
 D7/D9 ajoutés à la reprise : les tests vérifient l’identité des détails et le
 libellé Europe/Paris. Compléter ensuite par une visite du tableau de bord sur
 mobile ; les tests de rendu local ne constituent pas une recette navigateur.
+
+## Exports recouvrants et progression — correctif du 05/10
+
+Une conversation identique présente dans un nouvel export reprend désormais la
+commande d’import initiale. La reconstruction doit correspondre exactement à
+l’empreinte du journal, à partir d’un original conservé dont le SHA-256 est
+vérifié. La garde du writer n’est pas assouplie. La provenance de la première
+archive reste inchangée ; chaque nouvel export original reste conservé.
+Cela fonctionne aussi avec un reçu compacté et ne recrée pas une archive supprimée.
+Un original initial absent ou altéré entraîne un blocage explicite.
+Les règles de séparation des corpus v1/v2 restent applicables.
+
+Le lot est prévalidé sous les verrous Persistent/Operation/Event avant la
+publication de nouveaux originaux ou archives. Le succès JSON ajoute
+`new_conversations`, `replayed_conversations`, `new_originals` et
+`publication_attempted`. Les compteurs historiques décrivent toujours le lot demandé.
+Un blocage survenu pendant cette phase ajoute ces quatre champs dans `progress`.
+Ils comptent uniquement les appels terminés : un appel interrompu peut déjà avoir
+publié une opération ou un fichier. `publication_attempted: true` signale cette
+possibilité et ne promet aucun rollback. Relancer le même lot reprend les commandes
+existantes sans duplication. Les erreurs de validation d’entrée restent antérieures
+à la publication et peuvent ne pas contenir de champ `progress`.
+
+Validation locale sur corpus synthétiques uniquement. Aucun réimport du corpus
+réel n’est requis pour installer ce correctif ; sa recette VM reste à faire.
