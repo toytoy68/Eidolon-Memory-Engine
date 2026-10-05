@@ -1,5 +1,16 @@
 # Memory Engine — TODO active
 
+## Livraison du 5 octobre — validation d'entrée A5-03
+
+- **FAIT EN LOCAL / NON TESTÉ VM** : `content.parts` non liste refusé avant
+  publication du lot ; aucun changement sur les archives déjà importées.
+- Six cas négatifs rouges avant correctif puis verts ; cas multimodal valide
+  conservé. Import/rappel/revue ChatGPT : **41 tests réussis**.
+- A5-01 (exports recouvrants) et A5-02 (contexte gauche au rappel) restent
+  ouverts. Ne pas assouplir l'idempotence du writer pour contourner A5-01.
+- Harmonisation ECT livrée : installateurs `163c9fd`, en-têtes `0bbe7a0`.
+  Aucun déploiement VM ; estimation globale inchangée.
+
 ## Reprise d'analyse du 5 octobre 2026 — sans VM
 
 [Audit ciblé sur df42ce2](docs/AUDIT-2026-10-05.md) : 1970 tests réussis hors

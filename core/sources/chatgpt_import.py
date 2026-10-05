@@ -70,6 +70,8 @@ def plan_conversation(conversation, source_hash):
                 or (isinstance(metadata, dict) and metadata.get('is_visually_hidden_from_conversation') is True)):
             continue
         parts = content.get('parts', [])
+        if not isinstance(parts, list):
+            raise ValueError('conversation content.parts must be a list')
         text = '\n'.join(p for p in parts if isinstance(p, str))
         if not text.strip():
             continue

@@ -32,6 +32,13 @@ outils, raisonnement et multimédia non textuel restent exclus. Les entrées
 malformées sont refusées ; la CLI retourne BLOCKED avec code 1, sans traceback
 pour les erreurs attendues.
 
+Validation A5-03 du 05/10 : pour les messages texte retenus, `content.parts`
+doit être une liste. Une chaîne, un objet, `null`, un nombre ou un booléen
+provoque un refus explicite avant création de la destination ou publication
+d'un élément du lot. Dans une liste multimodale, les chaînes sont conservées
+dans leur ordre et les objets non textuels restent ignorés. Un champ absent
+reste équivalent à une liste vide. Aucun ancien contenu n'est réécrit.
+
 **Le corpus existant /home/toytoy/eidolon-corpus-gpt-test reste en v1.** Il est
 rappelable avec références exactes, sans réécriture ni purge. Un import v2 y est
 refusé avant publication pour éviter de doubler les archives. La garde couvre
