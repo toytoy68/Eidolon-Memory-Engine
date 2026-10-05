@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/retrieval/context.py
+# Description : Bounded, structured context for a caller to render under its own policy.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Bounded, structured context for a caller to render under its own policy."""
 
 from __future__ import annotations

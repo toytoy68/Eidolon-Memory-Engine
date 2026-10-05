@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/events/filesystem.py
+# Description : Filesystem implementation of the EventRepository contract.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Filesystem implementation of the EventRepository contract."""
 
 from __future__ import annotations

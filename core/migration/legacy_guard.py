@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/legacy_guard.py
+# Description : Fail closed when a historical writer would share persistent core data.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Fail closed when a historical writer would share persistent core data."""
 
 from __future__ import annotations

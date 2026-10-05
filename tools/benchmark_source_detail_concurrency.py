@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_source_detail_concurrency.py
+# Description : Measure concurrent synthetic detail acceptances without changing production writers.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Measure concurrent synthetic detail acceptances without changing production writers."""
 import argparse
 from hashlib import sha256

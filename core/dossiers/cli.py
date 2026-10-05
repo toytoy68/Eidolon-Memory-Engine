@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/dossiers/cli.py
+# Description : Explicit project dossier rebuild and read-only status/link resolution.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit project dossier rebuild and read-only status/link resolution."""
 import argparse
 import json

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_maintenance.py
+# Description : Measure explicit maintenance on disposable synthetic canonical engines.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Measure explicit maintenance on disposable synthetic canonical engines."""
 import argparse
 from collections import Counter

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_information_compaction.py
+# Description : Compare individual and bounded compaction on disposable synthetic histories.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Compare individual and bounded compaction on disposable synthetic histories."""
 import argparse
 from hashlib import sha256

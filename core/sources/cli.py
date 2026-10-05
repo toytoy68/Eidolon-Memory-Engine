@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/cli.py
+# Description : Explicit source preservation/extraction; never infer or accept details silently.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit source preservation/extraction; never infer or accept details silently."""
 import argparse
 from datetime import datetime, timezone

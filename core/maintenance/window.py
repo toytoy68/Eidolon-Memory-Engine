@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/maintenance/window.py
+# Description : Pure maintenance-window eligibility; never observe activity or execute a pass.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Pure maintenance-window eligibility; never observe activity or execute a pass."""
 from datetime import datetime, time, timezone
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError

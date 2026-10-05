@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/retrieval/ranking.py
+# Description : Deterministic lexical ranking signals, independent of agents and indexes.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Deterministic lexical ranking signals, independent of agents and indexes."""
 
 from __future__ import annotations

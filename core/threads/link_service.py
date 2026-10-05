@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/threads/link_service.py
+# Description : Create Threads with a verified link to a persisted Information.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Create Threads with a verified link to a persisted Information."""
 
 from __future__ import annotations

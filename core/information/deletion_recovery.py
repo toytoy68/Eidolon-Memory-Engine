@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/deletion_recovery.py
+# Description : Explicit, guarded recovery of interrupted core Information deletions.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit, guarded recovery of interrupted core Information deletions."""
 
 from __future__ import annotations

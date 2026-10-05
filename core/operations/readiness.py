@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/readiness.py
+# Description : Read-only startup gate and explicit recovery on a stopped engine tree.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only startup gate and explicit recovery on a stopped engine tree.
 
 This is a point-in-time check, not a lease against concurrent/legacy writers.

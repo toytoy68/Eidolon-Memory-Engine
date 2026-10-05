@@ -1,2 +1,11 @@
 #!/bin/sh
+
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Script      : services/memory-controller/eidolon-memory
+# Description : Lancement eidolon-memory
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 exec python3 "$(dirname "$0")/memory_controller.py" "$@"

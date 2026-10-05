@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/routing/execution_journal.py
+# Description : Durable routing intentions and compact terminal results; no implicit execution.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Durable routing intentions and compact terminal results; no implicit execution."""
 from contextlib import contextmanager
 from contextvars import ContextVar

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_source_details.py
+# Description : Measure source-detail acceptance/replay on disposable synthetic histories.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Measure source-detail acceptance/replay on disposable synthetic histories."""
 import argparse
 from contextlib import contextmanager

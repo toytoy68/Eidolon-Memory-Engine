@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/validation.py
+# Description : Validate a reviewed AI detail using the coordinated Information writer.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Validate a reviewed AI detail using the coordinated Information writer."""
 import base64
 from hashlib import sha256

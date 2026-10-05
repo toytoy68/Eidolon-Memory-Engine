@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/errors.py
+# Description : Exceptions for persistent Operations.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Exceptions for persistent Operations."""
 
 

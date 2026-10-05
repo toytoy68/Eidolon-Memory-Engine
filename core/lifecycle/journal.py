@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/lifecycle/journal.py
+# Description : Content-free lifecycle intentions. SCHEDULED is waiting, not failed recovery.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Content-free lifecycle intentions. SCHEDULED is waiting, not failed recovery."""
 from pathlib import Path
 import re

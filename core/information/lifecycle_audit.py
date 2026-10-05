@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/lifecycle_audit.py
+# Description : Read-only retention and applicability counts; never infer deletion rights.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only retention and applicability counts; never infer deletion rights."""
 
 from __future__ import annotations

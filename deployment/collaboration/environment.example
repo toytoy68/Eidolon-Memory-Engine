@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : deployment/collaboration/environment.example
+# Description : Configuration environment.example
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 # Nonsecret template. OAuth subjects and URLs must be replaced before startup.
 EIDOLON_EXCHANGE_REPO=/var/lib/eidolon-collaboration/repo
 EIDOLON_EXCHANGE_STATE=/var/lib/eidolon-collaboration/state

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/filesystem.py
+# Description : Filesystem implementation of the Operation repository.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Filesystem implementation of the Operation repository."""
 
 from __future__ import annotations

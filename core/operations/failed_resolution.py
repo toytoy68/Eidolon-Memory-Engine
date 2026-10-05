@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/failed_resolution.py
+# Description : Human-authorized retry of FAILED Thread creation, deletion, status and update operations, never abandonment.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Human-authorized retry of FAILED Thread creation, deletion, status and update operations, never abandonment.
 
 One atomic journal write records the review and moves FAILED to APPLYING.

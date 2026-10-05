@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/store.py
+# Description : Immutable original-source bundles; no canonical-memory ingestion.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Immutable original-source bundles; no canonical-memory ingestion."""
 from datetime import datetime
 from hashlib import sha256

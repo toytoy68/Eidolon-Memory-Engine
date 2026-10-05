@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/retrieval/contextual.py
+# Description : Explain scope/time/status before selecting bounded canonical excerpts.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explain scope/time/status before selecting bounded canonical excerpts.
 
 Operational mode excludes expired, out-of-scope, refuted, superseded and pending

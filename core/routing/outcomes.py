@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/routing/outcomes.py
+# Description : Read-only client outcomes; no durable decisions or implicit execution.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only client outcomes; no durable decisions or implicit execution.
 
 An outcome explains the next explicit step. It neither asserts readiness nor

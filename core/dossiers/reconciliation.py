@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/dossiers/reconciliation.py
+# Description : Reconcile managed project views from current canonical files.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Reconcile managed project views from current canonical files.
 
 No durable queue is necessary: missing/stale generated regions are the work

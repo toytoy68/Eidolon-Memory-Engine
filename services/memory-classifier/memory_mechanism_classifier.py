@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : services/memory-classifier/memory_mechanism_classifier.py
+# Description : Module services — memory-classifier — memory_mechanism_classifier
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
+
 from __future__ import annotations
 
 import argparse

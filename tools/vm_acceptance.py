@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/vm_acceptance.py
+# Description : Read-only VM acceptance against a stopped copy; all output stays in --workdir.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only VM acceptance against a stopped copy; all output stays in --workdir."""
 
 from __future__ import annotations

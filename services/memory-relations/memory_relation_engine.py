@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : services/memory-relations/memory_relation_engine.py
+# Description : Module services — memory-relations — memory_relation_engine
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 import argparse
 import re
 import sys

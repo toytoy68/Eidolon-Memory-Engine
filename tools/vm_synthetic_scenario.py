@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/vm_synthetic_scenario.py
+# Description : Build and verify a disposable VM scenario; refuse any populated root.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Build and verify a disposable VM scenario; refuse any populated root."""
 from dataclasses import asdict, replace
 from hashlib import sha256

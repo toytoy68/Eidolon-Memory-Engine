@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/thread_create.py
+# Description : Recoverable creation of a Thread linked to an existing Information.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Recoverable creation of a Thread linked to an existing Information."""
 
 from __future__ import annotations

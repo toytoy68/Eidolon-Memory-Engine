@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/routing/policy.py
+# Description : Reference policy v0.1: pure plans over explicitly qualified Memory objects.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Reference policy v0.1: pure plans over explicitly qualified Memory objects.
 
 No text classification, storage, scheduling or robot actions occur here.

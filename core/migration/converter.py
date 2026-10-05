@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/converter.py
+# Description : Explicit migration to a separate core tree; source is never modified.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit migration to a separate core tree; source is never modified."""
 
 from __future__ import annotations

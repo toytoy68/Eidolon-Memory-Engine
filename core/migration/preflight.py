@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/preflight.py
+# Description : Read-only structural preflight for legacy persistent Information files.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only structural preflight for legacy persistent Information files."""
 
 from __future__ import annotations

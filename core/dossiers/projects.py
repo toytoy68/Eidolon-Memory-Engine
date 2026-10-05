@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/dossiers/projects.py
+# Description : Explicit Markdown project projections from Threads and linked Information.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit Markdown project projections from Threads and linked Information.
 
 Generated text is reconstructible. Text outside the generated region is human

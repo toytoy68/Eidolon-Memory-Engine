@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/prepare_collaboration_deployment.py
+# Description : Build a reviewed, secret-free VM package; optionally render deployment config.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Build a reviewed, secret-free VM package; optionally render deployment config."""
 import argparse
 import hashlib

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/routing/information_execution.py
+# Description : Explicit qualified Information-only routing, without project creation.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit qualified Information-only routing, without project creation."""
 from contextlib import contextmanager, ExitStack
 from dataclasses import asdict, replace

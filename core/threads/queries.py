@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/threads/queries.py
+# Description : Query models for Eidolon Threads.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Query models for Eidolon Threads."""
 
 from __future__ import annotations

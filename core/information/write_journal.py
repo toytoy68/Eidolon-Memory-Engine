@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/write_journal.py
+# Description : Read Information plans and compact receipts as one logical journal.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read Information plans and compact receipts as one logical journal.
 
 The reader never creates directories or lock files. Live callers hold the

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/commitments.py
+# Description : Durable, content-free extraction identities. Readers never create files.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Durable, content-free extraction identities. Readers never create files."""
 from datetime import datetime, timezone
 import re

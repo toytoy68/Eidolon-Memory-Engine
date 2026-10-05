@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/models.py
+# Description : Domain models for Eidolon Information.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Domain models for Eidolon Information."""
 
 from __future__ import annotations

@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/config.py
+# Description : Module core — config
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
+
 from __future__ import annotations
 
 import os

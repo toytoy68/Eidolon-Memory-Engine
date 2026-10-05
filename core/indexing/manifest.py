@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/indexing/manifest.py
+# Description : Deterministic source manifest; an index can be rebuilt from these files.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Deterministic source manifest; an index can be rebuilt from these files."""
 
 from __future__ import annotations

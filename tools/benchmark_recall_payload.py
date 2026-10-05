@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_recall_payload.py
+# Description : Measure complete recall rendering on fresh disposable synthetic corpora.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Measure complete recall rendering on fresh disposable synthetic corpora."""
 from dataclasses import asdict
 from hashlib import sha256

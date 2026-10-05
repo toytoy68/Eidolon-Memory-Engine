@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/preflight.py
+# Description : Explicit pre-start filesystem and runtime check for a Memory Engine root.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit pre-start filesystem and runtime check for a Memory Engine root."""
 
 from __future__ import annotations

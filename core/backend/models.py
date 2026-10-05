@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/backend/models.py
+# Description : Common data models for the Memory Backend.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Common data models for the Memory Backend."""
 
 from dataclasses import dataclass, field

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/indexing/cli.py
+# Description : Read-only source manifest summary for stopped copies of engine data.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only source manifest summary for stopped copies of engine data."""
 
 from __future__ import annotations

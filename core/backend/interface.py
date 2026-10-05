@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/backend/interface.py
+# Description : Module core — backend — interface
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 from __future__ import annotations
 """Abstract interface implemented by Memory backends."""
 

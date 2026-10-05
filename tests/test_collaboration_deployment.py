@@ -34,7 +34,9 @@ def test_rendered_package_has_exact_audience_and_private_permissions(tmp_path):
     assert "EIDOLON_OAUTH_JWKS=https://auth.example.org/jwks\n" in env
     assert "REPLACE_WITH" not in env
     assert (destination / "environment").stat().st_mode & 0o777 == 0o600
-    assert (destination / "Caddyfile").read_text().startswith("exchange.example.org {")
+    caddy_lines = (destination / "Caddyfile").read_text().splitlines()
+    active_lines = [line for line in caddy_lines if line.strip() and not line.lstrip().startswith('#')]
+    assert active_lines[0] == "exchange.example.org {"
 
 
 @pytest.mark.parametrize("change", [

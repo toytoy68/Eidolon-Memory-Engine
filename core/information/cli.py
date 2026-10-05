@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/cli.py
+# Description : Explicit coordinated Information commands (imports use core.migration).
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit coordinated Information commands (imports use core.migration)."""
 import argparse
 import json

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/threads/models.py
+# Description : Domain models for Eidolon Threads.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Domain models for Eidolon Threads."""
 
 from __future__ import annotations

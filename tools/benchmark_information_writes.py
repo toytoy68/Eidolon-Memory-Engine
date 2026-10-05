@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_information_writes.py
+# Description : Repeatable local journal benchmark, using disposable synthetic data only.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Repeatable local journal benchmark, using disposable synthetic data only."""
 import argparse
 from contextlib import contextmanager

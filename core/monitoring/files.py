@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/monitoring/files.py
+# Description : Allowlisted, read-only Markdown access for the dashboard.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Allowlisted, read-only Markdown access for the dashboard."""
 
 from __future__ import annotations

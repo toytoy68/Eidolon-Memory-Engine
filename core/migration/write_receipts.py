@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/write_receipts.py
+# Description : Import terminal Information replay receipts with exact Events, never canonical bodies.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Import terminal Information replay receipts with exact Events, never canonical bodies.
 
 Source/legacy writers must be stopped. Destination core writers share the locks.

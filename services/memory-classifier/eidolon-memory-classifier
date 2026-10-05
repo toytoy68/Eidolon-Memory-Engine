@@ -1,2 +1,11 @@
 #!/bin/sh
+
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Script      : services/memory-classifier/eidolon-memory-classifier
+# Description : Lancement eidolon-memory-classifier
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 exec python3 "$(dirname "$0")/memory_mechanism_classifier.py" "$@"

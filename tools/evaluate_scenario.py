@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/evaluate_scenario.py
+# Description : Measure lexical_v1 on 30 versioned partial relevance judgments.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Measure lexical_v1 on 30 versioned partial relevance judgments."""
 
 from __future__ import annotations

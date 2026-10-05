@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/compaction.py
+# Description : Explicit recoverable snapshot compaction; callers hold the writer locks.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit recoverable snapshot compaction; callers hold the writer locks."""
 from datetime import datetime, timezone
 import os

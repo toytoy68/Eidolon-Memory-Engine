@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/deleted_receipts.py
+# Description : Explicit import of DELETED reservations and opt-in CANCELLED history from a stopped core tree.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit import of DELETED reservations and opt-in CANCELLED history from a stopped core tree.
 
 Only receipts are copied. Each publication is durable; replay the same source

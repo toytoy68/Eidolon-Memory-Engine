@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : services/memory-router/memory_router.py
+# Description : Module services — memory-router — memory_router
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
+
 from __future__ import annotations
 
 import argparse

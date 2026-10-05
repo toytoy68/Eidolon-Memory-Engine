@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/writer_inventory.py
+# Description : Read-only hints about running and configured Memory Engine writers on Linux.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only hints about running and configured Memory Engine writers on Linux.
 
 This is a heuristic inventory, not proof that every writer is stopped. Inspect

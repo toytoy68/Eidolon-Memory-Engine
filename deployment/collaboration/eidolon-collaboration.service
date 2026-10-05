@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : deployment/collaboration/eidolon-collaboration.service
+# Description : Configuration eidolon-collaboration.service
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 [Unit]
 Description=Eidolon Collaboration MCP
 Wants=network-online.target

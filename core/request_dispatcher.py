@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/request_dispatcher.py
+# Description : Dispatch external request envelopes to domain services.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Dispatch external request envelopes to domain services."""
 
 from __future__ import annotations

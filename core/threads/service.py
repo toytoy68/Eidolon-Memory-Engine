@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/threads/service.py
+# Description : Application service for Eidolon Threads.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Application service for Eidolon Threads."""
 
 from __future__ import annotations

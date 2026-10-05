@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/repository.py
+# Description : Repository contract for persistent Operations.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Repository contract for persistent Operations."""
 
 from __future__ import annotations

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/check_source_restore.py
+# Description : Check archive restoration of synthetic sources, accepted details and deletion receipts.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Check archive restoration of synthetic sources, accepted details and deletion receipts."""
 import argparse
 from hashlib import sha256

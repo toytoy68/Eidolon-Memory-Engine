@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/inventory.py
+# Description : Classify known runtime files without invoking writers or changing data.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Classify known runtime files without invoking writers or changing data."""
 
 from __future__ import annotations

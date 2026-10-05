@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/indexing/catalogue.py
+# Description : Disposable metadata catalogue. Discovery never promotes an entry to truth.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Disposable metadata catalogue. Discovery never promotes an entry to truth."""
 from contextlib import contextmanager, ExitStack
 from copy import deepcopy

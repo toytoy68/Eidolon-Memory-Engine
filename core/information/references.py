@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/references.py
+# Description : Check persisted references before removing an Information.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Check persisted references before removing an Information."""
 
 from __future__ import annotations

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/extraction.py
+# Description : Versioned paragraph extraction, not semantic detail selection.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Versioned paragraph extraction, not semantic detail selection."""
 from hashlib import sha256
 from io import BytesIO

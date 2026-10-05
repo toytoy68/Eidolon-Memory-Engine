@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/simulation.py
+# Description : Read-only migration feasibility report; never create converted documents.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only migration feasibility report; never create converted documents."""
 
 from __future__ import annotations

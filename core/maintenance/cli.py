@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/maintenance/cli.py
+# Description : Inspect or run one explicit maintenance pass; never install a scheduler.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Inspect or run one explicit maintenance pass; never install a scheduler."""
 import argparse
 import json

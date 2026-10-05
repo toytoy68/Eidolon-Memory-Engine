@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : services/collaboration/exchange.py
+# Description : Fixed-path Git exchange. The service owns a dedicated checkout on Linux.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Fixed-path Git exchange. The service owns a dedicated checkout on Linux."""
 from contextlib import contextmanager
 from datetime import datetime, timezone

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_information_batches.py
+# Description : Compare standalone and bounded writes on identical synthetic histories.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Compare standalone and bounded writes on identical synthetic histories."""
 import argparse
 from dataclasses import asdict, replace

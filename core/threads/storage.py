@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/threads/storage.py
+# Description : Persistent filesystem storage for Eidolon Threads.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Persistent filesystem storage for Eidolon Threads."""
 
 from __future__ import annotations

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/threads/request_envelope.py
+# Description : Mapping from external request envelopes to Thread requests.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Mapping from external request envelopes to Thread requests."""
 
 from __future__ import annotations

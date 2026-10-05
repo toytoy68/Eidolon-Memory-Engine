@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/monitoring/overview.py
+# Description : Read-only counts of current Thread and Operation journals.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only counts of current Thread and Operation journals."""
 
 from __future__ import annotations

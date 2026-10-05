@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/writes.py
+# Description : Explicit, journaled Information writes; files remain canonical.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit, journaled Information writes; files remain canonical.
 
 Business calls require stable command IDs, actor and timestamp. Imports keep

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/maintenance/service.py
+# Description : Resume canonical work, dispatch explicit deadlines, reconcile derived views.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Resume canonical work, dispatch explicit deadlines, reconcile derived views.
 
 The child journals and source manifests are the durable progress record. A

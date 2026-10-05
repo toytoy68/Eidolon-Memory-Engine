@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/routing/execution_cli.py
+# Description : Preview or explicitly execute a qualified plan on an existing engine tree.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Preview or explicitly execute a qualified plan on an existing engine tree."""
 import argparse
 from dataclasses import asdict

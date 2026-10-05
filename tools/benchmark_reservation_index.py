@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_reservation_index.py
+# Description : Compare indexed and strict Information reservations on disposable histories.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Compare indexed and strict Information reservations on disposable histories."""
 import argparse
 import hashlib

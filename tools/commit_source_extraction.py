@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/commit_source_extraction.py
+# Description : Preview or explicitly commit one existing extraction; never a bulk migration.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Preview or explicitly commit one existing extraction; never a bulk migration."""
 import argparse
 import json

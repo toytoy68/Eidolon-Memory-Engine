@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/thread_status.py
+# Description : Recoverable filesystem Thread status changes.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Recoverable filesystem Thread status changes.
 
 Writers hold the Thread storage lock across preparation and commit. Recovery is

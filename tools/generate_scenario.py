@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/generate_scenario.py
+# Description : Reproducible anonymous core and legacy scenario for migration and retrieval.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Reproducible anonymous core and legacy scenario for migration and retrieval."""
 
 from __future__ import annotations

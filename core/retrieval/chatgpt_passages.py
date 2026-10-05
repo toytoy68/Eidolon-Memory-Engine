@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/retrieval/chatgpt_passages.py
+# Description : Select a bounded verbatim message passage; never join conversation branches.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Select a bounded verbatim message passage; never join conversation branches."""
 from collections import Counter
 import json

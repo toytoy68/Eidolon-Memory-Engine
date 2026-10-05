@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/routing/execution.py
+# Description : Explicit, resumable STORE/UPDATE → chosen project → canonical dossier.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit, resumable STORE/UPDATE → chosen project → canonical dossier.
 
 Version 2 explicitly includes availability and durable schedule registration.

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/benchmark_contextual_recall.py
+# Description : Verified contextual recall measurements on disposable synthetic corpora.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Verified contextual recall measurements on disposable synthetic corpora."""
 import argparse
 from collections import Counter

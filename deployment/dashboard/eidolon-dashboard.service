@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : deployment/dashboard/eidolon-dashboard.service
+# Description : Configuration eidolon-dashboard.service
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 # Eidolon dashboard (LAN, Basic auth). Template without secret.
 # Token: /etc/eidolon-dashboard/environment, root:root 0600, one line
 #   EIDOLON_DASHBOARD_TOKEN=<value>

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/indexing/port.py
+# Description : Contract for a disposable index derived from canonical Information files.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Contract for a disposable index derived from canonical Information files."""
 
 from __future__ import annotations

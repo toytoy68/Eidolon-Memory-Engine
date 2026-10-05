@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/events/repository.py
+# Description : Repository contract for Eidolon Memory Events.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Repository contract for Eidolon Memory Events."""
 
 from __future__ import annotations

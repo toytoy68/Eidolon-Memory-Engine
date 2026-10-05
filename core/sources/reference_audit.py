@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/reference_audit.py
+# Description : Read-only, content-free warnings for present source-detail references.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only, content-free warnings for present source-detail references."""
 import re
 

@@ -28,9 +28,14 @@ paquet pour Collaboration et le checkout complet pour le dashboard.
 
 ## Portée
 
-Cette adoption concerne les deux installateurs et leurs en-têtes. Les outils
-JSON, les formats mémoire, les pages du dashboard et les anciens modules
-Python ne sont pas remaniés. Le standard copié depuis Core est conservé à
+Cette adoption concerne les deux installateurs et leurs en-têtes. Les modules
+Python de `core/`, `services/` et `tools/`, les lanceurs shell historiques,
+les unités systemd et les modèles de configuration du déploiement portent
+également l'en-tête commun. Les shebangs, déclarations d'encodage, docstrings
+et mentions existantes sont conservés. Le code Python est comparé par AST
+avant/après ; pour les autres fichiers, les lignes actives sont identiques.
+Les outils JSON, les formats mémoire et les pages du dashboard gardent leur
+comportement et leur présentation. Le standard copié depuis Core est conservé à
 l'identique ; sa table d'adoption décrit son lot d'origine. Ce document décrit
 l'adoption effective propre à Memory Engine.
 

@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/bootstrap.py
+# Description : Module core — bootstrap
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
+
 from __future__ import annotations
 
 import sys

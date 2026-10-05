@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/requests.py
+# Description : External request envelope for Eidolon Memory Engine.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """External request envelope for Eidolon Memory Engine."""
 
 from __future__ import annotations

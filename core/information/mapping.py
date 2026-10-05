@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/mapping.py
+# Description : Explicit textual Information projection over the existing Memory contract.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit textual Information projection over the existing Memory contract.
 
 No writes, revision increment or historical defaults are performed here.

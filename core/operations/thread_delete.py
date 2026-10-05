@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/thread_delete.py
+# Description : Journaled, repeatable deletion of a persisted Thread snapshot.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Journaled, repeatable deletion of a persisted Thread snapshot."""
 
 from __future__ import annotations

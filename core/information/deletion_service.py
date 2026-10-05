@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/deletion_service.py
+# Description : Application entry point for guarded Information deletion.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Application entry point for guarded Information deletion."""
 
 from __future__ import annotations

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/check_chatgpt_recall.py
+# Description : Read-only recipe for an existing ChatGPT test corpus; never print private passages.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only recipe for an existing ChatGPT test corpus; never print private passages."""
 import argparse
 from hashlib import sha256

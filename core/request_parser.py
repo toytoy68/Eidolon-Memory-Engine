@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/request_parser.py
+# Description : JSON parsing for Eidolon request envelopes.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """JSON parsing for Eidolon request envelopes."""
 
 from __future__ import annotations

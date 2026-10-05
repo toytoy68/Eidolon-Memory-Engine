@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/validator.py
+# Description : Validation rules for Eidolon Information.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Validation rules for Eidolon Information."""
 
 from __future__ import annotations

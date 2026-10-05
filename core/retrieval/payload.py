@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/retrieval/payload.py
+# Description : Bound complete recall JSON and supplied client framing without hiding metadata.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Bound complete recall JSON and supplied client framing without hiding metadata."""
 from dataclasses import asdict, dataclass, replace
 import json

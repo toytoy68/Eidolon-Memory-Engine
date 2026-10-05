@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/monitoring/metrics.py
+# Description : Host and memory-tree measurements without opening memory contents.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Host and memory-tree measurements without opening memory contents."""
 
 from __future__ import annotations

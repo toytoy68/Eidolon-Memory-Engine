@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/relation_audit.py
+# Description : Read-only inventory of core Information relation target shapes.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only inventory of core Information relation target shapes."""
 
 from __future__ import annotations

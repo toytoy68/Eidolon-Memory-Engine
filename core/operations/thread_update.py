@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/thread_update.py
+# Description : Recoverable project commands. Canonical lock order: Persistent → Thread → Operation → Event.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Recoverable project commands. Canonical lock order: Persistent → Thread → Operation → Event."""
 from copy import deepcopy
 from dataclasses import replace

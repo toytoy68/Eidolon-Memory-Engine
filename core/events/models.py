@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/events/models.py
+# Description : Domain models for Eidolon Memory Events.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Domain models for Eidolon Memory Events."""
 
 from __future__ import annotations

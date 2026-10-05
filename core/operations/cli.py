@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/cli.py
+# Description : Run with python -m core.operations.cli; uses isolated v1 journals.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Run with python -m core.operations.cli; uses isolated v1 journals."""
 import argparse
 import hashlib

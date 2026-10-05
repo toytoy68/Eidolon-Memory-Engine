@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/verification.py
+# Description : Independent, read-only comparison of a legacy copy and its conversion.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Independent, read-only comparison of a legacy copy and its conversion."""
 
 from __future__ import annotations

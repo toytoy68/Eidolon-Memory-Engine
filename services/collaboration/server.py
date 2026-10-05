@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : services/collaboration/server.py
+# Description : Authenticated Streamable HTTP MCP resource server, with exactly three tools.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Authenticated Streamable HTTP MCP resource server, with exactly three tools."""
 import asyncio
 from dataclasses import dataclass

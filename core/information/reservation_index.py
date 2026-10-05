@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/reservation_index.py
+# Description : Optional, reconstructible reservation index; journals remain authoritative.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Optional, reconstructible reservation index; journals remain authoritative.
 
 Every lookup hashes all journal bytes. Only unchanged content can reuse an

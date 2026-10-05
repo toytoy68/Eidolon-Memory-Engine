@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tools/preview_maintenance_window.py
+# Description : Preview explicit maintenance timing; does not install jobs or inspect/write memory.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Preview explicit maintenance timing; does not install jobs or inspect/write memory."""
 import argparse
 from datetime import datetime, time

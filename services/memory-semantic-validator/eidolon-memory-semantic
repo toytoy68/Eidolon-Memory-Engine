@@ -1,2 +1,11 @@
 #!/bin/sh
+
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Script      : services/memory-semantic-validator/eidolon-memory-semantic
+# Description : Lancement eidolon-memory-semantic
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 exec python3 "$(dirname "$0")/memory_semantic_validator.py" "$@"

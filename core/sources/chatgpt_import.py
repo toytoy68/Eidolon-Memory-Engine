@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/chatgpt_import.py
+# Description : Import conversation archives as UNVERIFIED observations into an isolated core root.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Import conversation archives as UNVERIFIED observations into an isolated core root.
 
 No semantic extraction, model invocation, automatic confirmation or branch merging.

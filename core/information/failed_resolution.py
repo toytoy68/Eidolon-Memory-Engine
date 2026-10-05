@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/failed_resolution.py
+# Description : Human-authorized retry of FAILED Information writes, with durable audit history.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Human-authorized retry of FAILED Information writes, with durable audit history.
 
 The original command is resumed after an atomic audit/APPLYING publication.

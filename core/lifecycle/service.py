@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/lifecycle/service.py
+# Description : Availability changes and durable deadlines, driven by an explicit caller clock.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Availability changes and durable deadlines, driven by an explicit caller clock."""
 from contextlib import contextmanager
 from copy import deepcopy

@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : services/memory-semantic-validator/memory_semantic_validator.py
+# Description : Module services — memory-semantic-validator — memory_semantic_validator
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
+
 import argparse
 import re
 import sys

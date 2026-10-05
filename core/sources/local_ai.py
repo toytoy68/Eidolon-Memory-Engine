@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/local_ai.py
+# Description : Bounded local Ollama detail proposals; drafts never write canonical memory.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Bounded local Ollama detail proposals; drafts never write canonical memory."""
 from hashlib import sha256
 import json

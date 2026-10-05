@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/threads/link_audit.py
+# Description : Read-only consistency audit of Thread links to Information files.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only consistency audit of Thread links to Information files."""
 
 from __future__ import annotations

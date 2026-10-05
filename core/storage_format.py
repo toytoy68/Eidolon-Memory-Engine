@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/storage_format.py
+# Description : Lossless, versioned JSON documents embedded in human-readable Markdown.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Lossless, versioned JSON documents embedded in human-readable Markdown."""
 import json
 import math

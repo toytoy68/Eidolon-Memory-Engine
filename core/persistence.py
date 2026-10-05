@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/persistence.py
+# Description : Cooperative cross-process locking for filesystem repositories.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Cooperative cross-process locking for filesystem repositories.
 
 All writers sharing a storage root must use this lock. Legacy CLI writers

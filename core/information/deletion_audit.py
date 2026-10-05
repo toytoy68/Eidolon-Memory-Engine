@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/deletion_audit.py
+# Description : Read-only audit of Information deletion requests and their files.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only audit of Information deletion requests and their files."""
 
 from __future__ import annotations

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/monitoring/dashboard.py
+# Description : Authenticated dashboard; source additions and reviewed details are explicit opt-ins.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Authenticated dashboard; source additions and reviewed details are explicit opt-ins."""
 
 from __future__ import annotations

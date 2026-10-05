@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/indexing/catalogue_cli.py
+# Description : Inspect, rebuild or search the disposable Information metadata catalogue.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Inspect, rebuild or search the disposable Information metadata catalogue."""
 import argparse
 import json

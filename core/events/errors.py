@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/events/errors.py
+# Description : Errors raised by EventRepository implementations.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Errors raised by EventRepository implementations."""
 
 

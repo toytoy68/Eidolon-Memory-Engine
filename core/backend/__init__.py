@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/backend/__init__.py
+# Description : Memory Backend abstraction.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Memory Backend abstraction."""
 
 from .errors import (

@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/write_audit.py
+# Description : Read-only logical journal audit; use a stopped copy for a stable snapshot.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only logical journal audit; use a stopped copy for a stable snapshot."""
 import argparse
 import json

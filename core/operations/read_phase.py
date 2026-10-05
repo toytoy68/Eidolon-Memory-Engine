@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/read_phase.py
+# Description : Private, lock-scoped reuse of a successful full readiness audit.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Private, lock-scoped reuse of a successful full readiness audit.
 
 Only derived/read-only work belongs in this scope. Nothing survives its exit.

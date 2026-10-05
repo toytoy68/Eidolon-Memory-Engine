@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/sources/provenance.py
+# Description : Model-origin vocabulary; historical labels are recognized, never rewritten.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Model-origin vocabulary; historical labels are recognized, never rewritten."""
 MODEL_OUTPUT = 'MODEL_OUTPUT'
 

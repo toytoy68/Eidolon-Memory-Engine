@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/indexing/memory_index.py
+# Description : Dependency-free reference implementation of the derived IndexPort.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Dependency-free reference implementation of the derived IndexPort."""
 
 from __future__ import annotations

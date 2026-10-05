@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/monitoring/appearance.py
+# Description : Browser-local wallpaper preferences, independent of canonical memory.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Browser-local wallpaper preferences, independent of canonical memory."""
 import base64
 from hashlib import sha256

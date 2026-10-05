@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/operations/models.py
+# Description : Domain models for Eidolon Memory Operations.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Domain models for Eidolon Memory Operations."""
 
 from __future__ import annotations

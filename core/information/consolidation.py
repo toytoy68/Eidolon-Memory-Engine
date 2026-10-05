@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/consolidation.py
+# Description : Read-only exact-content grouping for human consolidation review.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Read-only exact-content grouping for human consolidation review."""
 
 from __future__ import annotations

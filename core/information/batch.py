@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/information/batch.py
+# Description : Bounded Information writes with one strict reservation scan per locked lot.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Bounded Information writes with one strict reservation scan per locked lot.
 
 Only the existing per-command journals are durable. The caller retains its

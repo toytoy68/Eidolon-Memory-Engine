@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/lifecycle/cli.py
+# Description : Explicit lifecycle commands; no daemon or system scheduler is installed.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Explicit lifecycle commands; no daemon or system scheduler is installed."""
 import argparse
 import json

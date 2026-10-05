@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/migration/core_copy.py
+# Description : Verified transfer of a stopped core memory tree to a fresh destination.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Verified transfer of a stopped core memory tree to a fresh destination.
 
 This copies bytes, never executes journals or converts legacy formats. Both

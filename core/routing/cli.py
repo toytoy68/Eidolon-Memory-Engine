@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/routing/cli.py
+# Description : Print a policy proposal from explicit JSON inputs; perform no writes.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Print a policy proposal from explicit JSON inputs; perform no writes."""
 import argparse
 from dataclasses import asdict

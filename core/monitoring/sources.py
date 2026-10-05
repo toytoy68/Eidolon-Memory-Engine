@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/monitoring/sources.py
+# Description : Source-library HTML and bounded upload parsing, separate from memory ingestion.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Source-library HTML and bounded upload parsing, separate from memory ingestion."""
 from email import policy
 from email.parser import BytesParser

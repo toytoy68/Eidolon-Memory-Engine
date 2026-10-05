@@ -1,3 +1,11 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : core/backend/filesystem.py
+# Description : Filesystem implementation of the Memory Backend.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
 """Filesystem implementation of the Memory Backend."""
 
 from __future__ import annotations
