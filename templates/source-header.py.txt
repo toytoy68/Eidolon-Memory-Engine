@@ -1,0 +1,9 @@
+# ==========================================================
+# Projet      : <Eidolon Core / Eidolon Memory Engine>
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : <nom_du_module.py>
+# Description : <responsabilité du module>
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
+"""<Contrat du module et limites utiles.>"""

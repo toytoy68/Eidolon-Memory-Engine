@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# ==========================================================
+# Projet      : <Eidolon Bootstrap Framework / composant>
+# Organisation: Eidolon Core Technologies (ECT)
+# Script      : <nom_du_script.sh>
+# Version     : <version du composant>
+# Description : <opérations réellement effectuées>
+# Statut      : <statut réel>
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
+
+# Fragments de présentation uniquement : aucun installateur dans ce modèle.
+readonly COMPANY_NAME="Eidolon Core Technologies"
+readonly COMPANY_SHORT="ECT"
+readonly COMPANY_MOTTO="Local AI • Modular • Reliable • Reproducible"
