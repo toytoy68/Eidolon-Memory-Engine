@@ -1,6 +1,6 @@
 # Eidolon Global — concepts, idées et architecture future
 
-Dernière mise à jour : 2026-10-05.
+Dernière mise à jour : 2026-10-08.
 
 Ce document rassemble les concepts qui concernent **Eidolon dans son ensemble**
 et non le développement interne du Memory Engine. Il sert de parking architectural
@@ -515,6 +515,115 @@ cette consignation ne constitue ni un runner livré ni une qualification acquise
 **Livrables futurs :** catalogue vérifié, matrice modèles × rôles, corpus versionné, runner reproductible, grille de
 notation et tableau comparatif origine/variante/référence. Travail du futur
 AI Lab/Core ; aucune modification des priorités ou du pourcentage Memory Engine.
+
+## G-018 — Études runtime/Core/mémoire issues de la veille du 8 octobre 2026
+
+**À étudier et valider conjointement par ChatGPT et Claude ; aucune
+implémentation décidée à ce stade.** Ces pistes viennent de l'analyse de modèles
+MoE et d'un runtime spécialisé observés dans la veille technique. Elles doivent
+être reproduites sur le matériel Eidolon avant toute décision.
+
+### Backend-aware Model Router
+
+Étendre G-002/G-011 : une qualification ne porte jamais sur le modèle seul.
+Le Router/AI Lab doit connaître le couple **modèle + backend + configuration** et
+pouvoir recommander un moteur spécialisé lorsqu'il apporte un gain démontré.
+
+Comparer au minimum : débit decode, prefill, TTFT, contexte utile, stabilité,
+qualité, VRAM/RAM, consommation et comportement multi-GPU. Ne pas conclure qu'un
+modèle est lent ou inadapté avant d'avoir vérifié que le backend exploite
+correctement son architecture.
+
+### MoE Expert Cache — hot / warm / cold
+
+Étudier une politique de placement des experts MoE selon leur fréquence/coût :
+
+    HOT  -> HBM/VRAM rapide
+    WARM -> VRAM ou RAM selon pression mémoire
+    COLD -> RAM/offload
+
+Mesurer la stabilité du jeu d'experts « chauds », le coût des transferts,
+l'effet du contexte et la pertinence réelle sur V100. Ne pas figer une politique
+sur la seule fréquence : taille, coût de calcul et topologie d'interconnexion
+doivent entrer dans la décision.
+
+### Multi-GPU asymétrique
+
+En plus du split/tensor parallel classique, tester des rôles asymétriques :
+
+- GPU principal : calcul/experts principaux ;
+- GPU secondaire : cache d'experts, vision, KV/cache ou modèle auxiliaire ;
+- RAM : poids froids/offload lorsque nécessaire.
+
+Comparer cette stratégie au 50/50 sur la future paire V100 32 Go et mesurer
+explicitement l'apport ou non du NVLink. L'objectif n'est pas d'imposer cette
+topologie mais d'identifier le meilleur placement selon le modèle et la mission.
+
+### Prompt / Prefix Cache Policy
+
+Ajouter aux mesures AI Lab : taux de hit du cache de préfixe, coût de prefill,
+TTFT, invalidations, taille du system prompt et fréquence des checkpoints.
+
+Le Core doit éviter de retraiter inutilement les parties invariantes
+(identity/policy/tools/skills) tout en invalidant correctement le cache lorsqu'une
+information qui modifie réellement le contexte système change. Une optimisation
+de cache ne doit jamais réutiliser un état devenu faux ou non autorisé.
+
+### Goal Constraints pour Planner/Policy
+
+Une mission ne doit jamais être transmise au Planner sous la forme du seul
+résultat attendu. Le contrat doit distinguer :
+
+    objectif
+    contraintes
+    ressources/outils autorisés
+    actions interdites
+    budgets
+    critères de succès
+    preuves attendues
+    conditions d'arrêt/escalade
+
+Motivation : un agent optimisant un objectif peut choisir un moyen techniquement
+efficace mais contraire à l'intention de l'évaluation ou de l'utilisateur.
+Rattachement direct à G-003/G-006.
+
+### Consolidation mémoire nocturne contrôlée
+
+Étudier une phase de maintenance capable d'analyser les nouvelles mémoires et
+l'activité récente pour **proposer** : doublons, nouvelles relations,
+contradictions, éléments obsolètes, erreurs/procédures récurrentes ou
+consolidations.
+
+Architecture cible :
+
+    Memory Engine canonique
+            |
+      Night Analyzer
+            |
+      propositions/audit
+            |
+       Policy / Review
+            |
+    mutation contrôlée éventuelle
+
+Le modèle nocturne ne doit jamais réécrire silencieusement la mémoire canonique.
+Toute mutation doit respecter provenance, révisions, auditabilité, politique de
+suppression et mécanismes de reprise du Memory Engine. Cette piste devra être
+étudiée avec l'actuelle fenêtre de maintenance et les mécanismes de reprise, sans
+transformer Memory Engine en scheduler ou runtime d'agent.
+
+### Répartition d'étude ChatGPT / Claude
+
+Pour chaque piste ci-dessus, produire avant implémentation :
+
+1. une note d'architecture et les hypothèses à vérifier ;
+2. une proposition de benchmark/reproduction sur le matériel réel ;
+3. les risques, dépendances et critères d'abandon ;
+4. une revue croisée ChatGPT/Claude ;
+5. une décision : retenir, expérimenter davantage, différer ou rejeter.
+
+Aucun résultat annoncé par une vidéo ou un benchmark tiers ne vaut validation
+pour Eidolon sans reproduction ou source technique suffisante.
 
 ## Statut du document
 
