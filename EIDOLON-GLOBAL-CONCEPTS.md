@@ -1,6 +1,6 @@
 # Eidolon Global — concepts, idées et architecture future
 
-Dernière mise à jour : 2026-10-08.
+Dernière mise à jour : 2026-10-09.
 
 Ce document rassemble les concepts qui concernent **Eidolon dans son ensemble**
 et non le développement interne du Memory Engine. Il sert de parking architectural
@@ -624,6 +624,26 @@ Pour chaque piste ci-dessus, produire avant implémentation :
 
 Aucun résultat annoncé par une vidéo ou un benchmark tiers ne vaut validation
 pour Eidolon sans reproduction ou source technique suffisante.
+
+## G-019 — AI Lab : enseignements du comparatif Mistral Large 4
+
+**Statut : retenu pour étude, non implémenté.** Source : https://www.youtube.com/watch?v=ddcL39VLBss (comparatif de 118 tests annoncé par les auteurs). Rattachement : G-002, G-011 et G-017.
+
+### Cas à intégrer au protocole de tests
+
+- **Calcul industriel** : TRS/OEE avec temps d'arrêt, rebuts et cadence nominale explicitée. Calcul de référence déterministe ; ne pas noter un exercice sous-spécifié comme une erreur du modèle.
+- **Calcul financier** : échéances de prêt, taux, durée et conventions explicités ; oracle indépendant et tolérance fixée avant les essais.
+- **Contexte long** : distinguer contexte annoncé, limite effective de l'API/backend et récupération réellement réussie ; vérifier absence de troncature et positions début/milieu/fin.
+- **Refus et biais** : tester des demandes légitimes et controversées avec prompts équilibrés ; distinguer refus du modèle, filtrage du fournisseur, erreurs réseau et interruptions de génération.
+- **Stabilité** : répétitions, reformulations, sorties tronquées et dispersion des résultats.
+
+### Requalification automatique des agents
+
+Lorsqu'un agent change de modèle, révision, quantification, backend, template, prompt système, outils ou politique, relancer les tests de son rôle et ses missions de référence. Comparer au profil précédemment validé, bloquer les régressions critiques et conserver configuration, sorties, preuves et verdicts. Prévoir une revue humaine des réponses ouvertes.
+
+### Précautions
+
+Les scores, classements et prix de la vidéo sont des observations tierces non reproduites : ne pas les inscrire comme qualifications officielles Eidolon. Évaluer séparément exactitude, stabilité, refus, coût, latence et permissions. Étude et revue croisée ChatGPT/Claude avant toute implémentation.
 
 ## Statut du document
 
