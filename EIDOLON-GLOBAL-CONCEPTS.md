@@ -1,6 +1,6 @@
 # Eidolon Global — concepts, idées et architecture future
 
-Dernière mise à jour : 2026-10-09.
+Dernière mise à jour : 2026-10-10.
 
 Ce document rassemble les concepts qui concernent **Eidolon dans son ensemble**
 et non le développement interne du Memory Engine. Il sert de parking architectural
@@ -644,6 +644,42 @@ Lorsqu'un agent change de modèle, révision, quantification, backend, template,
 ### Précautions
 
 Les scores, classements et prix de la vidéo sont des observations tierces non reproduites : ne pas les inscrire comme qualifications officielles Eidolon. Évaluer séparément exactitude, stabilité, refus, coût, latence et permissions. Étude et revue croisée ChatGPT/Claude avant toute implémentation.
+
+## G-020 — Veille vidéo du 10 octobre 2026 : continuité, fiabilité et multimédia
+
+**Statut : pistes à étudier, non implémentées par cette consignation.** Sources : six transcriptions YouTube fournies par toytoy le 10/10/2026. Rattachements : G-002/G-003/G-005/G-006/G-007/G-008/G-011/G-015/G-017/G-018. Vérifier l'existant Core et Memory Engine avant toute nouvelle tâche ; ne pas dupliquer les mécanismes déjà présents.
+
+### Contexte mesuré et relais de conversation — priorité haute
+
+Inspiré des modes « jauge » et « relais » de Claude Code (https://www.youtube.com/watch?v=1Dlh_Mqze1s). Étudier un budget de contexte visible (système, historique, souvenirs, outils, sortie réservée), une alerte configurable, puis un checkpoint structuré : objectif, contraintes, décisions, état des tâches, preuves, blocages et prochaines étapes. La reprise doit relire les données canoniques via Memory Engine, préserver les identifiants de mission/Thread et vérifier la cohérence avant d'agir. Aucun seuil universel d'hallucination à 40/60 % : mesurer les limites utiles par modèle/backend via G-017.
+
+### Suivi inter-sessions, propositions de suite et reformulation — priorité haute
+
+Inspiré des modes « fil », « cap » et « plume » de la même vidéo. Étudier une vue consolidée des missions/agents avec états réels, durées, événements et notification de fin, y compris entre conversations ; pas de pourcentage fictif. Proposer plusieurs prochaines actions après une mission sans les lancer sans autorisation. Pour les demandes vocales ou désordonnées, proposer une reformulation **modifiable et confirmable**, sans changer silencieusement l'intention ni les permissions. Rattachement : G-003/G-007/G-008 et G-016.
+
+### Dossier de contexte de mission et validation indépendante — priorité haute
+
+Source : https://www.youtube.com/watch?v=u1X6xOuHZF8. Compléter l'ingénierie de contexte déjà prévue dans G-018 : objectifs, règles, documents sourcés, décisions antérieures, outils, budgets, critères de réussite, preuves attendues et conditions d'arrêt. Séparer « génération plausible » et « résultat livré et vérifié ». Favoriser tests déterministes, vérification d'état et revue humaine pour les cas sensibles ; ne jamais confier l'auto-validation au seul modèle exécutant. Les chiffres macroéconomiques cités par la vidéo ne sont pas validés ici.
+
+### Incidents, restauration et provenance IA — priorité haute
+
+Source : https://www.youtube.com/watch?v=n_y_mB1lgxA. Étudier un rapport d'incident par mission : agent, modèle/version, outils, chronologie, erreur, impact, état avant/après, tentative de récupération et preuve de reprise. Prévoir rollback ou compensation lorsque techniquement possible, journal exploitable et transparence sur les composants générés par IA. Éprouver les défaillances en cascade, y compris la défaillance du mécanisme de récupération. Les faits et dates d'actualité rapportés par la vidéo restent à vérifier indépendamment.
+
+### Pipeline Image/Vidéo et identité multimédia persistante — priorité moyenne à haute
+
+Source : https://www.youtube.com/watch?v=LlhTEttKcwQ. Étudier des agents Image et Vidéo accessibles depuis Core, avec étapes distinctes : scénario, fiche personnage/identité visuelle, références, voix, génération, contrôle qualité et export. Prévoir des adaptateurs de modèles locaux et de services externes interchangeables ; stocker versions, prompts, références, licences et coûts. Identifier explicitement les personnages synthétiques lorsqu'ils sont publiés et contrôler les contenus sensibles. Ne pas prendre les résultats commerciaux de la vidéo comme garantie de rentabilité.
+
+### Client Windows léger et latences de bout en bout — priorité moyenne à haute
+
+Source : https://www.youtube.com/watch?v=pzMcjjl3Qsw. Comparer les technologies du client Windows selon RAM/CPU au repos, démarrage, intégration tray/webcam/microphone et maintenance ; ne pas conclure qu'Electron est systématiquement inadapté sans mesure. Instrumenter le pipeline interaction temps réel : capture, STT, routage, préfill/décodage LLM, TTS, transport réseau, rendu et latence perçue. Étudier l'arbitrage compression/latence sur LAN 10G et les contraintes Wi-Fi/robot, sans extrapoler directement des codecs de streaming de jeux à la voix.
+
+### Veille matérielle et systèmes alternatifs — priorité faible à moyenne
+
+Sources : https://www.youtube.com/watch?v=pzMcjjl3Qsw et https://www.youtube.com/watch?v=wlRHIIlT40w. Suivre les plateformes ARM/NVIDIA à mémoire partagée en comparant bande passante, capacité réellement exploitable, backend, performance/watt et coût à la paire de V100 envisagée. Suivre le support Linux ARM pour de futurs terminaux. Vinix illustre l'intérêt de l'ABI Linux, de la compatibilité Alpine/musl et du sandboxing, mais son état expérimental ne justifie ni migration Debian ni chantier EidolonOS. Les annonces de produits et compatibilités doivent être vérifiées.
+
+### Critères de décision
+
+Pour chaque piste : auditer les fonctions déjà livrées, préciser le manque réel, estimer coût/complexité/risque, proposer un test mesurable, puis retenir, différer ou rejeter après revue. **Aucune modification de Core, Memory Engine, des priorités ou des roadmaps n'est autorisée par cette seule entrée.**
 
 ## Statut du document
 
