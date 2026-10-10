@@ -87,10 +87,14 @@ def test_mcp_http_auth_discovery_and_exact_tools(settings, keys, monkeypatch):
                 denied = await client.post("/mcp", headers=headers, json=request)
                 assert denied.status_code == 401
                 assert "resource_metadata=" in denied.headers["www-authenticate"]
-                metadata = await client.get("/.well-known/oauth-protected-resource/mcp")
-                assert metadata.status_code == 200
-                assert metadata.json()["authorization_servers"] == [settings.issuer]
-                assert metadata.json()["resource"] == settings.public_url
+                for metadata_path in (
+                    "/.well-known/oauth-protected-resource/mcp",
+                    "/.well-known/oauth-protected-resource",
+                ):
+                    metadata = await client.get(metadata_path)
+                    assert metadata.status_code == 200
+                    assert metadata.json()["authorization_servers"] == [settings.issuer]
+                    assert metadata.json()["resource"] == settings.public_url
                 headers["Authorization"] = "Bearer " + token(settings, keys)
                 response = await client.post("/mcp", headers=headers, json=request)
                 assert response.status_code == 200, response.text

@@ -93,6 +93,22 @@ def create_server(settings: Settings, exchange: Exchange | None = None):
             allowed_origins=[f"https://{public.netloc}", "https://claude.ai"]),
     )
 
+    @server.custom_route(
+        "/.well-known/oauth-protected-resource",
+        methods=["GET"],
+        include_in_schema=False,
+    )
+    async def oauth_protected_resource_metadata(request):
+        """Compatibility metadata for clients that discover OAuth at the origin root."""
+        from starlette.responses import JSONResponse
+
+        return JSONResponse({
+            "resource": settings.public_url,
+            "authorization_servers": [settings.issuer],
+            "scopes_supported": [SCOPE],
+            "bearer_methods_supported": ["header"],
+        })
+
     async def call(method, *args):
         access = get_access_token()
         if access is None:
