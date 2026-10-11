@@ -184,6 +184,10 @@ def test_vm_tools_require_additional_scope(settings, keys, monkeypatch):
                     metadata = await client.get(path)
                     assert metadata.status_code == 200
                     assert metadata.json()["scopes_supported"] == [SCOPE, "eidolon:vm:read"]
+                discovery = await client.post("/mcp", json={"jsonrpc": "2.0", "id": 0, "method": "tools/list"})
+                assert discovery.status_code == 401
+                assert 'scope="eidolon:exchange eidolon:vm:read"' in discovery.headers["www-authenticate"]
+                assert "resource_metadata=" in discovery.headers["www-authenticate"]
                 request = {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "vm_diagnostic", "arguments": {"target": "memory"}}}
                 headers = {"Accept": "application/json, text/event-stream", "Authorization": "Bearer " + token(settings, keys)}
                 denied = await client.post("/mcp", headers=headers, json=request)
