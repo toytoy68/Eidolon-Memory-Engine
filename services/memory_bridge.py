@@ -10,6 +10,7 @@ The canonical backend may create lock files during reads. Do not mount the
 underlying filesystem read-only without validating the existing engine contract.
 """
 from dataclasses import asdict
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import hmac
@@ -71,7 +72,7 @@ def make_handler(recall, token):
             if not lock.acquire(blocking=False):
                 return self.respond(503, {"error": "BUSY"})
             try:
-                result = recall.recall(**request)
+                result = recall.recall(**request, at=datetime.now(timezone.utc).isoformat())
                 payload = {"schema": "eidolon-memory-recall/1", "result": asdict(result)}
                 if len(json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")) > MAX_RESPONSE:
                     return self.respond(503, {"error": "RESPONSE_TOO_LARGE"})

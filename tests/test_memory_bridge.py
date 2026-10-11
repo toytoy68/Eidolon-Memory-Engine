@@ -1,5 +1,6 @@
 """Synthetic tests for the experimental Memory Bridge, no real memory accessed."""
 import json
+from datetime import datetime, timezone
 import threading
 import unittest
 from http.server import ThreadingHTTPServer
@@ -11,6 +12,7 @@ from services.memory_bridge import make_handler, validate_request
 
 class FakeRecall:
     def recall(self, **kwargs):
+        self.last = kwargs
         from dataclasses import dataclass
         @dataclass
         class Result:
@@ -23,13 +25,14 @@ class BridgeTests(unittest.TestCase):
     def test_reject_invalid_contract(self):
         valid = dict(query="test", mode="operational", max_items=5, max_chars=4000, max_item_chars=800)
         self.assertEqual(validate_request(valid), valid)
-        for change in ({"mode": "historical"}, {"max_items": True}, {"query": ""}, {"max_chars": 999999}):
+        for change in ({"mode": "historical"}, {"max_items": True}, {"query": ""}, {"max_chars": 999999}, {"at": "2030-01-01T00:00:00Z"}):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 validate_request({**valid, **change})
 
     def test_auth_and_loopback_recall(self):
         token = "synthetic-token-" + "x" * 40
-        server = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(FakeRecall(), token))
+        recall = FakeRecall()
+        server = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(recall, token))
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
@@ -44,6 +47,9 @@ class BridgeTests(unittest.TestCase):
                 result = json.load(response)
             self.assertEqual(result["schema"], "eidolon-memory-recall/1")
             self.assertEqual(result["result"]["query"], "test")
+            at = datetime.fromisoformat(recall.last["at"])
+            self.assertIsNotNone(at.tzinfo)
+            self.assertLess(abs((datetime.now(timezone.utc) - at).total_seconds()), 10)
         finally:
             server.shutdown()
             server.server_close()
