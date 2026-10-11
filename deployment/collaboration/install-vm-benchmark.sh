@@ -27,8 +27,8 @@ jobs=/var/lib/eidolon-vm/jobs
 runuser -u toytoy -- /usr/bin/bwrap --die-with-parent --new-session --unshare-all \
   --cap-drop ALL --ro-bind / / --proc /proc --dev /dev \
   --tmpfs /home --tmpfs /run --tmpfs /tmp \
-  --ro-bind "$lab" /runtime --clearenv --setenv PATH /usr/bin:/bin \
-  /runtime/.venv/bin/python -c \
+  --ro-bind "$lab" /tmp/runtime --clearenv --setenv PATH /usr/bin:/bin \
+  /tmp/runtime/.venv/bin/python -c \
   'import sentence_transformers, torch; print("Isolation et dépendances disponibles")'
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT

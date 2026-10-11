@@ -62,10 +62,10 @@ def test_bwrap_has_no_network_or_writable_original_corpus():
     argv = sandbox_argv({'lab': '/home/toytoy/lab', 'repo': '/opt/repo'}, Path('/tmp/stage'))
     assert '--unshare-all' in argv
     assert '--share-net' not in argv
-    assert argv[argv.index('--bind') + 1:argv.index('--bind') + 3] == ['/tmp/stage', '/work']
+    assert argv[argv.index('--bind') + 1:argv.index('--bind') + 3] == ['/tmp/stage', '/tmp/work']
     assert '--clearenv' in argv
     assert 'HF_HUB_OFFLINE' in argv
-    assert argv[-2:] == ['/runtime/.venv/bin/python', '/benchmark-code/independent_benchmark.py']
+    assert argv[-2:] == ['/tmp/runtime/.venv/bin/python', '/tmp/benchmark-code/independent_benchmark.py']
 
 
 def test_job_id_cannot_read_arbitrary_file(tmp_path):

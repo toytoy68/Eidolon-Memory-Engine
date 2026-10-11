@@ -122,7 +122,7 @@ def main():
     import torch
     from sentence_transformers import SentenceTransformer, CrossEncoder
     torch.set_num_threads(2)
-    root = Path('/work/corpus')
+    root = Path('/tmp/work/corpus')
     backend = FilesystemBackend(root / 'memory/persistent', root / 'memory/history')
     memories = {m.information_id: m for m in backend.list(limit=10000)}
     if not memories or len(memories) > 1000:
@@ -139,14 +139,14 @@ def main():
              + '\n' + memories[i].content for i in ids]
     load_start = time.perf_counter()
     model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
-              device='cpu', cache_folder='/runtime/models', local_files_only=True)
+              device='cpu', cache_folder='/tmp/runtime/models', local_files_only=True)
     embeddings = model.encode(texts, normalize_embeddings=True, batch_size=8, show_progress_bar=False)
     vector_setup_ms = (time.perf_counter() - load_start) * 1000
     # CrossEncoder is optional: absent offline cache is reported, never downloaded.
     load_start = time.perf_counter()
     try:
         encoder = CrossEncoder('cross-encoder/mmarco-mMiniLMv2-L12-H384-v1',
-                  device='cpu', cache_folder='/runtime/models', max_length=512, local_files_only=True)
+                  device='cpu', cache_folder='/tmp/runtime/models', max_length=512, local_files_only=True)
         encoder_error = None
     except Exception as exc:
         encoder = None
@@ -238,7 +238,7 @@ def main():
           'No automatic content-answer or temporal truth score. Unknown evidence requires review.',
           'Corrected operational methods use 2026-10-11T00:00:00Z; original router preserves its implicit-time behavior.',
           'Latency includes query retrieval but excludes model load and corpus embedding setup.']}
-    Path('/work/result.json').write_text(json.dumps(payload, ensure_ascii=True))
+    Path('/tmp/work/result.json').write_text(json.dumps(payload, ensure_ascii=True))
 
 
 if __name__ == '__main__':

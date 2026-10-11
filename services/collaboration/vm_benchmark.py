@@ -109,16 +109,16 @@ def sandbox_argv(data, stage):
     return ['/usr/bin/bwrap', '--die-with-parent', '--new-session', '--unshare-all',
             '--cap-drop', 'ALL', '--ro-bind', '/', '/', '--proc', '/proc', '--dev', '/dev',
             '--tmpfs', '/home', '--tmpfs', '/run', '--tmpfs', '/tmp',
-            '--ro-bind', data['lab'], '/runtime', '--bind', str(stage), '/work',
-            '--ro-bind', str(SCRIPT.parent), '/benchmark-code', '--chdir', '/work',
+            '--ro-bind', data['lab'], '/tmp/runtime', '--bind', str(stage), '/tmp/work',
+            '--ro-bind', str(SCRIPT.parent), '/tmp/benchmark-code', '--chdir', '/tmp/work',
             '--clearenv', '--setenv', 'PATH', '/usr/bin:/bin',
-            '--setenv', 'HOME', '/work/home', '--setenv', 'LANG', 'C.UTF-8',
-            '--setenv', 'PYTHONPATH', '/work/engine',
+            '--setenv', 'HOME', '/tmp/work/home', '--setenv', 'LANG', 'C.UTF-8',
+            '--setenv', 'PYTHONPATH', '/tmp/work/engine',
             '--setenv', 'PYTHONDONTWRITEBYTECODE', '1',
             '--setenv', 'HF_HUB_OFFLINE', '1', '--setenv', 'TRANSFORMERS_OFFLINE', '1',
             '--setenv', 'TOKENIZERS_PARALLELISM', 'false',
             '--setenv', 'OMP_NUM_THREADS', '2', '--setenv', 'MKL_NUM_THREADS', '2',
-            '/runtime/.venv/bin/python', '/benchmark-code/independent_benchmark.py']
+            '/tmp/runtime/.venv/bin/python', '/tmp/benchmark-code/independent_benchmark.py']
 
 
 def limits():
