@@ -22,3 +22,5 @@ Le raccordement SSH distant Core->Memory reste bloqué par la revue automatique.
 Les configurations privées et clés ne sont pas versionnées.
 Publication des nouveaux commits GitHub bloquée par la revue automatique,
 qui exige l'autorisation du dépôt et du contenu exacts.
+
+Validation finale : 2018 tests et 11 sous-tests réussis. Après ajout de la date UTC imposée par le serveur HTTP : 20 tests ciblés et 8 sous-tests réussis. Reranker activé sur le bridge local ; requête GPU vérifiée en 1,97 seconde, cinq résultats et date UTC présente. Aucun tunnel distant ajouté.
