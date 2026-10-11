@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import shlex
 import stat
+import re
 import subprocess
 import sys
 
@@ -46,7 +47,23 @@ def read_file(root, relative):
         os.close(descriptor)
 
 
-def dispatch(request, roots):
+def inventory(root):
+    files = []
+    for directory, dirs, names in os.walk(root, followlinks=False):
+        current = Path(directory)
+        dirs[:] = sorted(n for n in dirs if not n.startswith('.') and not (current / n).is_symlink()
+                         and len((current / n).relative_to(root).parts) <= 5)
+        for name in sorted(names):
+            path = current / name
+            info = path.lstat()
+            if not name.startswith('.') and stat.S_ISREG(info.st_mode) and path.suffix in {'.py', '.md', '.json', '.txt', '.csv'}:
+                files.append({'path': str(path.relative_to(root)), 'bytes': info.st_size})
+                if len(files) == 500:
+                    return {'files': files, 'truncated': True}
+    return {'files': files, 'truncated': False}
+
+
+def dispatch(request, roots, benchmark_config=None):
     if not isinstance(request, dict):
         raise ValueError("Object required")
     action = request.get("action")
@@ -65,6 +82,29 @@ def dispatch(request, roots):
         if request["root"] not in roots or not isinstance(request["path"], str):
             raise ValueError("Unknown root or invalid path")
         return read_file(roots[request["root"]], request["path"])
+    if action == 'inventory' and set(request) == {'action', 'root'}:
+        if request['root'] not in roots:
+            raise ValueError('Unknown root')
+        return inventory(roots[request['root']])
+    if benchmark_config and (
+        action == 'benchmark_start' and set(request) == {'action'}
+        or action == 'benchmark_status' and set(request) == {'action', 'job_id'}
+    ):
+        runner = Path('/usr/local/lib/eidolon-vm/vm_benchmark.py')
+        info = runner.lstat()
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
+            raise ValueError('Unsafe benchmark launcher')
+        argv = ['/usr/bin/python3', '-I', str(runner),
+                '--start' if action == 'benchmark_start' else '--status', str(benchmark_config)]
+        if action == 'benchmark_status':
+            if not isinstance(request['job_id'], str) or not re.fullmatch('[0-9a-f]{32}', request['job_id']):
+                raise ValueError('Invalid job ID')
+            argv.append(request['job_id'])
+        result = subprocess.run(argv, capture_output=True, timeout=15,
+                                env={'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8'})
+        if result.returncode or len(result.stdout) > 350000:
+            raise ValueError('Benchmark unavailable')
+        return json.loads(result.stdout)
     raise ValueError("Action not allowed")
 
 
@@ -75,12 +115,14 @@ def main():
         info = config_path.stat()
         if info.st_uid != 0 or info.st_mode & 0o022:
             raise ValueError("Configuration must be root-owned and not writable by group/others")
-        roots = json.loads(config_path.read_text())["roots"]
+        configuration = json.loads(config_path.read_text())
+        roots = configuration["roots"]
         command = shlex.split(os.environ.get("SSH_ORIGINAL_COMMAND", ""))
         if len(command) != 2 or command[0] != "eidolon-read-v1" or len(command[1]) > 8192:
             raise ValueError("Invalid gateway command")
         request = json.loads(base64.b64decode(command[1], validate=True))
-        print(json.dumps({"ok": True, "result": dispatch(request, roots)}, ensure_ascii=True))
+        print(json.dumps({"ok": True, "result": dispatch(request, roots,
+                         config_path if 'benchmark' in configuration else None)}, ensure_ascii=True))
     except Exception:
         print(json.dumps({"ok": False, "error": "Gateway request rejected or unavailable"}))
         sys.exit(1)

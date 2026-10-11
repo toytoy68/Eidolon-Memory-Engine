@@ -82,3 +82,53 @@ Tester `tools/list`, rejet sans scope, diagnostic des deux VM, lecture de
 `context_router_v3.py`, contrôle des hashes et journal d'audit. Rétablir
 l'environnement et le lien précédents en cas d'échec. Aucun succès Work ne doit
 être annoncé avant un appel MCP réel depuis la conversation.
+
+## Fixed offline benchmark extension (11 October 2026)
+
+An operator may install `install-vm-benchmark.sh` from a pinned commit on Memory.
+It adds bounded file inventory and `vm_benchmark_start` / `vm_benchmark_status`.
+The existing VM read scope gates these offline diagnostics: the client cannot
+select commands, arguments, code, query text, models or source paths. The gateway
+only enables execution when its root-owned configuration contains `benchmark`.
+Core's gateway stays unchanged and rejects benchmark requests.
+
+The launcher copies at most 64 MB / 10000 regular corpus files into temporary
+storage, rejects symlinks, and executes the operator-owned benchmark using
+Bubblewrap with all namespaces unshared, no network, read-only host filesystem,
+hidden home/runtime directories, and only the disposable `/work` tree writable.
+The existing hybrid runtime/model cache is mounted read-only at `/runtime`.
+There is no network or unsandboxed fallback. One flock-protected job runs at a
+time; wall/CPU limit 600 seconds, virtual address space 12 GiB, output/file-size
+limits, two numerical threads, reduced scheduling priority. Results are saved in
+`/var/lib/eidolon-vm/jobs`, not in application/corpus directories; 20 jobs maximum.
+The worker has the privileges of toytoy, not root. After completion its source
+snapshot and temporary logs are deleted. Status accepts only a generated UUID.
+
+Comparison: lexical, factual-card selection, original router v3, corrected
+experimental router, exact semantic cosine, RRF (20+20 candidates), optional
+cached Cross-Encoder. All use the same factual-v2 corpus snapshot. Semantic
+vectors are regenerated in RAM including factual cards; existing Qdrant index
+and services are not changed. This is not a measurement of Qdrant latency.
+Original v3 source is preserved byte-for-byte with a pinned SHA256; only audited
+classifier/scoring nodes are used, not its import-time backend initialization.
+
+The dataset contains 40 new formulations, 35 provisionally labelled against seven
+operator factual cards, plus five unjudged wider/unknown queries. Metrics are
+reference recall@5 and MRR@5, not answer accuracy or precision@5. No label comes
+from per-query signals used for ranking. These labels are source-retrieval
+checks, not verified ground truth about current hardware or VM allocation.
+Gold corpus files remain UNVERIFIED/PENDING_REVIEW. Wider source judgements,
+answer correctness and real temporal validity remain manual work. Model loading
+and corpus embedding times are separate from query latency. Model/package
+versions, snapshot SHA256 and selected provenance are returned.
+
+Local validation covers ASGI OAuth scope enforcement, no arbitrary execution,
+corpus-copy integrity, link/path rejection, sandbox command construction,
+classification counterexamples and operational versus historical retrieval.
+The local hosted environment blocks Bubblewrap's network namespace creation;
+therefore no claim of an executed VM/sandbox/model benchmark is made before the
+installer's same-user probe and actual MCP job complete on Memory.
+
+Refreshing the connected app's tool inventory may be required after installation.
+Keep OAuth permissions and app identity. Do not repeatedly reconnect if the new
+tools are absent; inspect the developer app's tool-refresh control instead.

@@ -172,6 +172,13 @@ def test_vm_tools_require_additional_scope(settings, keys, monkeypatch):
             return {"target": target, "synthetic": True}
         def read(self, target, root, path):
             return {"trust": "UNVERIFIED"}
+        def inventory(self, target, root):
+            return {"files": [], "truncated": False}
+        def benchmark_start(self, target):
+            self.calls.append('benchmark')
+            return {"state": "QUEUED", "job_id": "a" * 32}
+        def benchmark_status(self, target, job_id):
+            return {"state": "COMPLETED", "job_id": job_id}
 
     async def run():
         monkeypatch.setattr(jwt.PyJWKClient, "get_signing_key_from_jwt", lambda self, _: SimpleNamespace(key=keys.public_key()))
@@ -200,9 +207,16 @@ def test_vm_tools_require_additional_scope(settings, keys, monkeypatch):
                     expected = [SCOPE, "eidolon:vm:read"] if tool["name"].startswith("vm_") else [SCOPE]
                     assert tool["securitySchemes"] == [{"type": "oauth2", "scopes": expected}]
                     assert tool["_meta"]["securitySchemes"] == tool["securitySchemes"]
+                blocked_start = await client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 3,
+                    "method": "tools/call", "params": {"name": "vm_benchmark_start", "arguments": {"target": "memory"}}})
+                assert blocked_start.json()["result"]["isError"]
                 assert vm.calls == []
                 headers["Authorization"] = "Bearer " + token(settings, keys, scope=SCOPE + " eidolon:vm:read")
                 accepted = await client.post("/mcp", headers=headers, json=request)
                 assert not accepted.json()["result"].get("isError")
                 assert vm.calls == ["memory"]
+                queued = await client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 4,
+                    "method": "tools/call", "params": {"name": "vm_benchmark_start", "arguments": {"target": "memory"}}})
+                assert not queued.json()["result"].get("isError")
+                assert vm.calls == ["memory", "benchmark"]
     asyncio.run(run())

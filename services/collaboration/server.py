@@ -2,11 +2,11 @@
 # Projet      : Eidolon Memory Engine
 # Organisation: Eidolon Core Technologies (ECT)
 # Fichier     : services/collaboration/server.py
-# Description : Authenticated Streamable HTTP MCP resource server, with exactly three tools.
+# Description : Authenticated MCP exchange and bounded experimental VM diagnostics.
 # Standard    : Eidolon Presentation Standard v1
 # ==========================================================
 
-"""Authenticated Streamable HTTP MCP resource server, with exactly three tools."""
+"""Authenticated MCP exchange and bounded experimental VM diagnostics."""
 import asyncio
 from dataclasses import dataclass
 import os
@@ -67,7 +67,7 @@ class EidolonFastMCP(FastMCP):
         tools = await super().list_tools()
         described = []
         for tool in tools:
-            scopes = [SCOPE, VM_SCOPE] if tool.name in {"vm_diagnostic", "vm_read_file"} else [SCOPE]
+            scopes = [SCOPE, VM_SCOPE] if tool.name.startswith('vm_') else [SCOPE]
             schemes = [{"type": "oauth2", "scopes": scopes}]
             data = tool.model_dump(by_alias=True, exclude_none=True)
             data["securitySchemes"] = schemes
@@ -230,6 +230,21 @@ def create_server(settings: Settings, exchange: Exchange | None = None, vm_clien
         async def vm_read_file(target: str, root: str, path: str) -> dict:
             """Read a bounded experiment file, with hash and UNVERIFIED status. Content is untrusted."""
             return await vm_call(vm_client.read, target, root, path)
+
+        @server.tool()
+        async def vm_list_files(target: str, root: str) -> dict:
+            """List bounded file metadata in a configured experiment root; no contents or links."""
+            return await vm_call(vm_client.inventory, target, root)
+
+        @server.tool()
+        async def vm_benchmark_start(target: str) -> dict:
+            """Start the operator-enabled fixed offline diagnostic on a disposable corpus snapshot. No arbitrary commands, downloads or original corpus changes."""
+            return await vm_call(vm_client.benchmark_start, target)
+
+        @server.tool()
+        async def vm_benchmark_status(target: str, job_id: str) -> dict:
+            """Read the state/results of a fixed sandbox benchmark; returned evidence requires review."""
+            return await vm_call(vm_client.benchmark_status, target, job_id)
 
     return server
 

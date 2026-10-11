@@ -42,3 +42,12 @@ class VMClient:
 
     def read(self, target, root, path):
         return self.invoke(target, {"action": "read", "root": root, "path": path})
+
+    def inventory(self, target, root):
+        return self.invoke(target, {'action': 'inventory', 'root': root})
+
+    def benchmark_start(self, target):
+        return self.invoke(target, {'action': 'benchmark_start'})
+
+    def benchmark_status(self, target, job_id):
+        return self.invoke(target, {'action': 'benchmark_status', 'job_id': job_id})
