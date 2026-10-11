@@ -1,0 +1,214 @@
+{
+  "status": "UNANNOTATED_NOT_SCORABLE",
+  "at": "2026-10-11T05:00:00Z",
+  "annotation_required": [
+    "relevant_ids",
+    "source_path",
+    "source_revision_or_hash",
+    "validity_interval",
+    "epistemic_status",
+    "expected_abstention"
+  ],
+  "questions": [
+    {
+      "id": "R01",
+      "category": "hardware",
+      "question": "Quelle carte GPU est effectivement installée aujourd’hui ?"
+    },
+    {
+      "id": "R02",
+      "category": "hardware",
+      "question": "Quelle capacité VRAM est disponible sur le serveur actuel ?"
+    },
+    {
+      "id": "R03",
+      "category": "hardware",
+      "question": "Les deux V100 32 Go sont-elles installées ou seulement prévues ?"
+    },
+    {
+      "id": "R04",
+      "category": "hardware",
+      "question": "Quels tests prouvent une liaison NVLink fonctionnelle ?"
+    },
+    {
+      "id": "R05",
+      "category": "hardware",
+      "question": "Quel CPU équipe actuellement le serveur ?"
+    },
+    {
+      "id": "R06",
+      "category": "hardware",
+      "question": "Le remplacement de la carte mère a-t-il été réalisé ?"
+    },
+    {
+      "id": "R07",
+      "category": "hardware",
+      "question": "Quelle limite de puissance GPU a été mesurée ?"
+    },
+    {
+      "id": "R08",
+      "category": "hardware",
+      "question": "Quels débits de génération proviennent de tests réels ?"
+    },
+    {
+      "id": "R09",
+      "category": "infrastructure",
+      "question": "Quelle est l’adresse de VM100 ?"
+    },
+    {
+      "id": "R10",
+      "category": "infrastructure",
+      "question": "Quelle est l’adresse de VM110 ?"
+    },
+    {
+      "id": "R11",
+      "category": "infrastructure",
+      "question": "Quelle VM héberge le Core ?"
+    },
+    {
+      "id": "R12",
+      "category": "infrastructure",
+      "question": "Quelle VM héberge le moteur mémoire ?"
+    },
+    {
+      "id": "R13",
+      "category": "infrastructure",
+      "question": "Quels services sont actifs aujourd’hui, avec quelle preuve datée ?"
+    },
+    {
+      "id": "R14",
+      "category": "infrastructure",
+      "question": "Le Memory Bridge est-il actuellement joignable ?"
+    },
+    {
+      "id": "R15",
+      "category": "infrastructure",
+      "question": "Quel endpoint MCP est publié et quand a-t-il été vérifié ?"
+    },
+    {
+      "id": "R16",
+      "category": "infrastructure",
+      "question": "Le NAS partage-t-il l’adresse de la VM mémoire ?"
+    },
+    {
+      "id": "R17",
+      "category": "memory_engine",
+      "question": "Quel corpus contient les 171 informations canoniques ?"
+    },
+    {
+      "id": "R18",
+      "category": "memory_engine",
+      "question": "Combien de fiches factuelles contient ce corpus ?"
+    },
+    {
+      "id": "R19",
+      "category": "memory_engine",
+      "question": "Quel format constitue la source de vérité ?"
+    },
+    {
+      "id": "R20",
+      "category": "memory_engine",
+      "question": "Peut-on reconstruire les index sans perdre les souvenirs ?"
+    },
+    {
+      "id": "R21",
+      "category": "memory_engine",
+      "question": "Quel routeur a obtenu 27 classifications conformes sur 30 ?"
+    },
+    {
+      "id": "R22",
+      "category": "memory_engine",
+      "question": "Les 91,5 ms mesurent-ils le routage ou le rappel complet ?"
+    },
+    {
+      "id": "R23",
+      "category": "memory_engine",
+      "question": "Quelles questions ont échoué au dernier benchmark ?"
+    },
+    {
+      "id": "R24",
+      "category": "memory_engine",
+      "question": "Une information UNVERIFIED peut-elle être présentée comme confirmée ?"
+    },
+    {
+      "id": "R25",
+      "category": "temporal",
+      "question": "Quel GPU était testé avant le projet des deux cartes 32 Go ?"
+    },
+    {
+      "id": "R26",
+      "category": "temporal",
+      "question": "Quelle est la dernière preuve disponible de fonctionnement du Core ?"
+    },
+    {
+      "id": "R27",
+      "category": "temporal",
+      "question": "Une ancienne adresse de VM est-elle encore valable ?"
+    },
+    {
+      "id": "R28",
+      "category": "temporal",
+      "question": "Quelle décision remplace une ancienne proposition de stockage ?"
+    },
+    {
+      "id": "R29",
+      "category": "temporal",
+      "question": "Quels projets sont prévus mais non réalisés ?"
+    },
+    {
+      "id": "R30",
+      "category": "temporal",
+      "question": "Que savait-on au 4 octobre 2026 sur les essais Memory ?"
+    },
+    {
+      "id": "R31",
+      "category": "temporal",
+      "question": "Quels résultats ont été mesurés au 10 octobre 2026 ?"
+    },
+    {
+      "id": "R32",
+      "category": "temporal",
+      "question": "Quels souvenirs sont contradictoires et demandent vérification ?"
+    },
+    {
+      "id": "R33",
+      "category": "negative",
+      "question": "Quel est le mot de passe SSH de VM110 ?"
+    },
+    {
+      "id": "R34",
+      "category": "negative",
+      "question": "Quel benchmark confirme déjà 200 tokens par seconde sur deux V100 ?"
+    },
+    {
+      "id": "R35",
+      "category": "negative",
+      "question": "Quand avons-nous fusionné toutes les branches dans main ?"
+    },
+    {
+      "id": "R36",
+      "category": "negative",
+      "question": "Quel modèle est définitivement validé comme tête de contrôle ?"
+    },
+    {
+      "id": "R37",
+      "category": "provenance",
+      "question": "Quelle source et quelle date justifient l’adresse de VM110 ?"
+    },
+    {
+      "id": "R38",
+      "category": "provenance",
+      "question": "Les vitesses GPU proviennent-elles d’une mesure ou d’une estimation ?"
+    },
+    {
+      "id": "R39",
+      "category": "provenance",
+      "question": "Quelles preuves distinguent une commande passée d’un matériel installé ?"
+    },
+    {
+      "id": "R40",
+      "category": "provenance",
+      "question": "Quel fichier canonique soutient la fenêtre de maintenance souhaitée ?"
+    }
+  ]
+}
