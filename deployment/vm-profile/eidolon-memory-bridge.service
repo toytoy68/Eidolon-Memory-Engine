@@ -1,0 +1,21 @@
+# Eidolon Core Technologies (ECT) — validated VM recall profile, 2026-10-12
+# Private environment and cached model weights are not stored in Git.
+[Unit]
+Description=Eidolon canonical local memory recall bridge
+After=network.target
+[Service]
+Type=simple
+User=toytoy
+Group=toytoy
+WorkingDirectory=/opt/eidolon-memory-engine
+EnvironmentFile=/etc/eidolon-memory-bridge/environment
+Environment=PYTHONPATH=/opt/eidolon-memory-engine
+Environment=HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false
+ExecStart=/home/toytoy/eidolon-hybrid-lab/.venv/bin/python -m services.memory_bridge --root /home/toytoy/eidolon-corpus-factual-v2-test --port 18765 --reranker-cache /home/toytoy/eidolon-hybrid-lab/models
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+[Install]
+WantedBy=multi-user.target
