@@ -180,6 +180,10 @@ def test_vm_tools_require_additional_scope(settings, keys, monkeypatch):
         app = server.streamable_http_app()
         async with server.session_manager.run():
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://exchange.example.org") as client:
+                for path in ("/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp"):
+                    metadata = await client.get(path)
+                    assert metadata.status_code == 200
+                    assert metadata.json()["scopes_supported"] == [SCOPE, "eidolon:vm:read"]
                 request = {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "vm_diagnostic", "arguments": {"target": "memory"}}}
                 headers = {"Accept": "application/json, text/event-stream", "Authorization": "Bearer " + token(settings, keys)}
                 denied = await client.post("/mcp", headers=headers, json=request)
