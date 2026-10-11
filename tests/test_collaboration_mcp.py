@@ -188,6 +188,14 @@ def test_vm_tools_require_additional_scope(settings, keys, monkeypatch):
                 headers = {"Accept": "application/json, text/event-stream", "Authorization": "Bearer " + token(settings, keys)}
                 denied = await client.post("/mcp", headers=headers, json=request)
                 assert denied.json()["result"]["isError"]
+                challenge = denied.json()["result"]["_meta"]["mcp/www_authenticate"][0]
+                assert 'error="insufficient_scope"' in challenge
+                assert 'scope="eidolon:exchange eidolon:vm:read"' in challenge
+                listing = await client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
+                for tool in listing.json()["result"]["tools"]:
+                    expected = [SCOPE, "eidolon:vm:read"] if tool["name"].startswith("vm_") else [SCOPE]
+                    assert tool["securitySchemes"] == [{"type": "oauth2", "scopes": expected}]
+                    assert tool["_meta"]["securitySchemes"] == tool["securitySchemes"]
                 assert vm.calls == []
                 headers["Authorization"] = "Bearer " + token(settings, keys, scope=SCOPE + " eidolon:vm:read")
                 accepted = await client.post("/mcp", headers=headers, json=request)

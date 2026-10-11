@@ -20,6 +20,7 @@ from mcp.server.auth.provider import AccessToken
 from mcp.server.auth.settings import AuthSettings
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
+from mcp.types import CallToolResult, TextContent, Tool
 from pydantic import AnyHttpUrl
 
 from .exchange import Exchange, ExchangeError
@@ -48,6 +49,18 @@ class EidolonFastMCP(FastMCP):
     def __init__(self, *args, resource_metadata, **kwargs):
         super().__init__(*args, **kwargs)
         self.resource_metadata = resource_metadata
+
+    async def list_tools(self):
+        tools = await super().list_tools()
+        described = []
+        for tool in tools:
+            scopes = [SCOPE, VM_SCOPE] if tool.name in {"vm_diagnostic", "vm_read_file"} else [SCOPE]
+            schemes = [{"type": "oauth2", "scopes": scopes}]
+            data = tool.model_dump(by_alias=True, exclude_none=True)
+            data["securitySchemes"] = schemes
+            data.setdefault("_meta", {})["securitySchemes"] = schemes
+            described.append(Tool.model_validate(data))
+        return described
 
     def streamable_http_app(self):
         app = super().streamable_http_app()
@@ -173,7 +186,18 @@ def create_server(settings: Settings, exchange: Exchange | None = None, vm_clien
         async def vm_call(method, *args):
             access = get_access_token()
             if access is None or VM_SCOPE not in access.scopes:
-                raise ExchangeError("Additional scope eidolon:vm:read required")
+                metadata_url = f"https://{public.netloc}/.well-known/oauth-protected-resource/mcp"
+                challenge = (
+                    f'Bearer resource_metadata="{metadata_url}", '
+                    'error="insufficient_scope", '
+                    'error_description="Authorize VM read access to continue", '
+                    f'scope="{SCOPE} {VM_SCOPE}"'
+                )
+                return CallToolResult(
+                    isError=True,
+                    content=[TextContent(type="text", text="Additional scope eidolon:vm:read required")],
+                    _meta={"mcp/www_authenticate": [challenge]},
+                )
             await asyncio.to_thread(exchange.audit, "vm_tool_started", subject=access.subject,
                                     tool=method.__name__, target=args[0])
             try:
