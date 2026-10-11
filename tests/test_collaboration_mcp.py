@@ -140,7 +140,7 @@ def test_official_mcp_client_over_loopback_with_real_git(settings, keys, setup, 
         assert runner.started
 
         async def run():
-            async with httpx.AsyncClient(headers={"Authorization": "Bearer " + token(settings, keys), "Host": "exchange.example.org"}) as http:
+            async with httpx.AsyncClient(trust_env=False, headers={"Authorization": "Bearer " + token(settings, keys), "Host": "exchange.example.org"}) as http:
                 async with streamable_http_client(f"http://127.0.0.1:{port}/mcp", http_client=http) as (read, write, _):
                     async with ClientSession(read, write) as client:
                         await client.initialize()
@@ -162,3 +162,31 @@ def test_official_mcp_client_over_loopback_with_real_git(settings, keys, setup, 
         thread.join(timeout=5)
         sock.close()
         assert not thread.is_alive()
+
+
+def test_vm_tools_require_additional_scope(settings, keys, monkeypatch):
+    class FakeVM:
+        calls = []
+        def diagnostic(self, target):
+            self.calls.append(target)
+            return {"target": target, "synthetic": True}
+        def read(self, target, root, path):
+            return {"trust": "UNVERIFIED"}
+
+    async def run():
+        monkeypatch.setattr(jwt.PyJWKClient, "get_signing_key_from_jwt", lambda self, _: SimpleNamespace(key=keys.public_key()))
+        vm = FakeVM()
+        server = create_server(settings, FakeExchange(), vm)
+        app = server.streamable_http_app()
+        async with server.session_manager.run():
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://exchange.example.org") as client:
+                request = {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "vm_diagnostic", "arguments": {"target": "memory"}}}
+                headers = {"Accept": "application/json, text/event-stream", "Authorization": "Bearer " + token(settings, keys)}
+                denied = await client.post("/mcp", headers=headers, json=request)
+                assert denied.json()["result"]["isError"]
+                assert vm.calls == []
+                headers["Authorization"] = "Bearer " + token(settings, keys, scope=SCOPE + " eidolon:vm:read")
+                accepted = await client.post("/mcp", headers=headers, json=request)
+                assert not accepted.json()["result"].get("isError")
+                assert vm.calls == ["memory"]
+    asyncio.run(run())

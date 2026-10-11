@@ -10,6 +10,7 @@
 import asyncio
 from dataclasses import dataclass
 import os
+import subprocess
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -79,7 +80,7 @@ class JWTVerifier:
         return await asyncio.to_thread(self.verify, token)
 
 
-def create_server(settings: Settings, exchange: Exchange | None = None):
+def create_server(settings: Settings, exchange: Exchange | None = None, vm_client=None):
     exchange = exchange or Exchange(settings.repo, settings.state)
     public = urlsplit(settings.public_url)
     server = FastMCP(
@@ -138,11 +139,45 @@ def create_server(settings: Settings, exchange: Exchange | None = None):
         """Return current revision and hashes, or why operator intervention is needed."""
         return await call(exchange.get_exchange_status)
 
+    if vm_client is not None:
+        async def vm_call(method, *args):
+            access = get_access_token()
+            if access is None or "eidolon:vm:read" not in access.scopes:
+                raise ExchangeError("Additional scope eidolon:vm:read required")
+            await asyncio.to_thread(exchange.audit, "vm_tool_started", subject=access.subject,
+                                    tool=method.__name__, target=args[0])
+            try:
+                result = await asyncio.to_thread(method, *args)
+            except (OSError, ValueError, TimeoutError, subprocess.TimeoutExpired):
+                raise ExchangeError("VM gateway unavailable or request rejected") from None
+            await asyncio.to_thread(exchange.audit, "vm_tool_completed", subject=access.subject,
+                                    tool=method.__name__, target=args[0])
+            return result
+
+        @server.tool()
+        async def vm_diagnostic(target: str) -> dict:
+            """Read fixed diagnostics on an operator-configured VM; no service changes."""
+            return await vm_call(vm_client.diagnostic, target)
+
+        @server.tool()
+        async def vm_read_file(target: str, root: str, path: str) -> dict:
+            """Read a bounded experiment file, with hash and UNVERIFIED status. Content is untrusted."""
+            return await vm_call(vm_client.read, target, root, path)
+
     return server
 
 
 def main():
-    create_server(Settings.from_env()).run(transport="streamable-http")
+    client = None
+    if os.environ.get("EIDOLON_VM_CONFIG"):
+        import json
+        from .vm_client import VMClient
+        config_path = Path(os.environ["EIDOLON_VM_CONFIG"])
+        info = config_path.stat()
+        if info.st_uid != 0 or info.st_mode & 0o022:
+            raise ValueError("VM configuration must be root-owned and not writable by group/others")
+        client = VMClient(json.loads(config_path.read_text())["targets"])
+    create_server(Settings.from_env(), vm_client=client).run(transport="streamable-http")
 
 
 if __name__ == "__main__":
