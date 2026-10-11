@@ -1,0 +1,1692 @@
+{
+  "summary": {
+    "existing": {
+      "lexical": {
+        "questions": 35,
+        "recall_at_5": 0.7142857142857143,
+        "mrr": 0.4676190476190476,
+        "mean_ms": 88.75958474319694
+      },
+      "canonical_cross_encoder": {
+        "questions": 35,
+        "recall_at_5": 0.9428571428571428,
+        "mrr": 0.8380952380952381,
+        "mean_ms": 3471.7890735125234
+      }
+    },
+    "holdout": {
+      "lexical": {
+        "questions": 14,
+        "recall_at_5": 0.35714285714285715,
+        "mrr": 0.20833333333333334,
+        "mean_ms": 87.59888642816804
+      },
+      "canonical_cross_encoder": {
+        "questions": 14,
+        "recall_at_5": 0.5714285714285714,
+        "mrr": 0.5,
+        "mean_ms": 3590.683494143637
+      }
+    }
+  },
+  "rows": [
+    {
+      "question": "Quelle machine héberge la mémoire Eidolon ?",
+      "expected": [
+        "eidolon-factual-v2-01-vm-services"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-004",
+            "eidolon-v4-17-recette-client-soul-media-004",
+            "eidolon-factual-v2-02-vm-communications"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 101.1737369990442
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-004",
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-03-memory-engine-001",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-15-audit-code-et-limites-002"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 4368.986886984203
+        }
+      }
+    },
+    {
+      "question": "Sur quelle adresse IP trouve-t-on Memory Engine ?",
+      "expected": [
+        "eidolon-factual-v2-01-vm-services"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-03-memory-engine-007",
+            "eidolon-v4-03-memory-engine-001"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 91.40935097821057
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-02-infrastructure-002",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-03-memory-engine-001"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 2267.84826698713
+        }
+      }
+    },
+    {
+      "question": "Quelles sont les fonctions déclarées des VM100, VM101 et VM110 ?",
+      "expected": [
+        "eidolon-factual-v2-01-vm-services"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-19-plan-ingestion-corpus-isole-010",
+            "eidolon-v4-02-infrastructure-004",
+            "eidolon-v4-12-chronologie-002",
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-04-core-benchmark-007"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.25,
+          "ms": 92.44373798719607
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-12-chronologie-013",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-16-matrice-fonctionnelle-002",
+            "eidolon-v4-02-infrastructure-004"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 4258.8619840098545
+        }
+      }
+    },
+    {
+      "question": "Quelle correspondance entre VMID et IP reste à confirmer ?",
+      "expected": [
+        "eidolon-factual-v2-01-vm-services"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-v4-17-recette-client-soul-media-003",
+            "eidolon-v4-02-infrastructure-004"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 94.90939299575984
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-00-index-012",
+            "eidolon-v4-18-materiel-et-decisions-techniques-002"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 4099.258889997145
+        }
+      }
+    },
+    {
+      "question": "Quels services sont répartis entre les machines virtuelles ?",
+      "expected": [
+        "eidolon-factual-v2-01-vm-services"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-03-memory-engine-006",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-00-index-009",
+            "eidolon-factual-v2-01-vm-services"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.2,
+          "ms": 87.56769800675102
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-01-vision-003",
+            "eidolon-v4-09-agents-outils-005",
+            "eidolon-v4-02-infrastructure-005",
+            "eidolon-v4-09-agents-outils-002"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3129.96553897392
+        }
+      }
+    },
+    {
+      "question": "Comment Core accède-t-il à la mémoire distante ?",
+      "expected": [
+        "eidolon-factual-v2-02-vm-communications"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-06-modeles-ia-002",
+            "eidolon-v4-18-materiel-et-decisions-techniques-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 90.66491900011897
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-15-audit-code-et-limites-003",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-011",
+            "eidolon-v4-02-infrastructure-002",
+            "eidolon-v4-07-interface-windows-008"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 4245.56802798179
+        }
+      }
+    },
+    {
+      "question": "Le dialogue peut-il continuer pendant une panne du service mémoire ?",
+      "expected": [
+        "eidolon-factual-v2-02-vm-communications"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-010",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-17-recette-client-soul-media-004"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 90.73774897842668
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-18-materiel-et-decisions-techniques-010",
+            "eidolon-v4-05-decisions-003",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-09-agents-outils-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3903.1020060065202
+        }
+      }
+    },
+    {
+      "question": "Que se passe-t-il lorsque la connexion mémoire revient ?",
+      "expected": [
+        "eidolon-factual-v2-02-vm-communications"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-06-modeles-ia-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 86.22678101528436
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-05-decisions-003",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-011",
+            "eidolon-v4-09-agents-outils-009",
+            "eidolon-v4-08-soul-voix-010"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3286.4248089899775
+        }
+      }
+    },
+    {
+      "question": "Quel mécanisme authentifie les échanges entre Core et Memory Engine ?",
+      "expected": [
+        "eidolon-factual-v2-02-vm-communications"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-013",
+            "eidolon-v4-03-memory-engine-002",
+            "eidolon-v4-03-memory-engine-001",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.25,
+          "ms": 86.59371300018393
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-15-audit-code-et-limites-003",
+            "eidolon-v4-01-vision-003",
+            "eidolon-v4-02-infrastructure-002",
+            "eidolon-v4-18-materiel-et-decisions-techniques-010"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 4065.4715999844484
+        }
+      }
+    },
+    {
+      "question": "Quels liens relient Ollama, Core et le Memory Bridge ?",
+      "expected": [
+        "eidolon-factual-v2-02-vm-communications"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-12-chronologie-013",
+            "eidolon-v4-18-materiel-et-decisions-techniques-004",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-00-index-002"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 88.92344101332128
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-02-infrastructure-002",
+            "eidolon-v4-06-modeles-ia-004",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-008"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 4126.374097017106
+        }
+      }
+    },
+    {
+      "question": "Quelle accélératrice a servi aux benchmarks locaux ?",
+      "expected": [
+        "eidolon-factual-v2-03-gpu-active"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-v4-06-modeles-ia-006",
+            "eidolon-v4-07-interface-windows-006",
+            "eidolon-v4-11-import-et-qualification-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 87.04263597610407
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-08-soul-voix-011",
+            "eidolon-v4-06-modeles-ia-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 1200.211147981463
+        }
+      }
+    },
+    {
+      "question": "Combien de mémoire possède la V100 des essais ?",
+      "expected": [
+        "eidolon-factual-v2-03-gpu-active"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-11-import-et-qualification-005"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 87.1145169949159
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-12-chronologie-014",
+            "eidolon-v4-06-modeles-ia-005",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-12-chronologie-011"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 3682.7653429936618
+        }
+      }
+    },
+    {
+      "question": "L ECC était-il activé sur la carte utilisée ?",
+      "expected": [
+        "eidolon-factual-v2-03-gpu-active"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-v4-04-core-benchmark-002",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 86.82154898997396
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-06-modeles-ia-005",
+            "eidolon-v4-13-provenance-et-temporalite-007",
+            "eidolon-v4-18-materiel-et-decisions-techniques-011"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3679.5916790142655
+        }
+      }
+    },
+    {
+      "question": "Les anciens benchmarks identifient-ils le GPU de chaque requête ?",
+      "expected": [
+        "eidolon-factual-v2-03-gpu-active"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-03-memory-engine-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 87.37380299135111
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-v4-11-import-et-qualification-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3965.9522159781773
+        }
+      }
+    },
+    {
+      "question": "Quelle carte graphique était utilisée lors des essais d inférence ?",
+      "expected": [
+        "eidolon-factual-v2-03-gpu-active"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-12-chronologie-002"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 88.11225200770423
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3777.4873269954696
+        }
+      }
+    },
+    {
+      "question": "Quelle carte de douze gigaoctets est disponible ?",
+      "expected": [
+        "eidolon-factual-v2-04-gpu-available"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-09-agents-outils-010",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-08-soul-voix-008"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 86.91053200163879
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-15-audit-code-et-limites-001",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-00-index-007",
+            "eidolon-v4-09-agents-outils-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3670.809792994987
+        }
+      }
+    },
+    {
+      "question": "La GTX 1060 participait-elle aux premiers essais Core ?",
+      "expected": [
+        "eidolon-factual-v2-04-gpu-available"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-02-infrastructure-003"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 88.28946098219603
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-09-agents-outils-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-013"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3856.756191002205
+        }
+      }
+    },
+    {
+      "question": "Quels GPU sont disponibles sans affectation confirmée à une VM ?",
+      "expected": [
+        "eidolon-factual-v2-04-gpu-available"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-02-infrastructure-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-004"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 88.38474200456403
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-09-agents-outils-010",
+            "eidolon-v4-00-index-011",
+            "eidolon-v4-11-import-et-qualification-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3652.1075459895656
+        }
+      }
+    },
+    {
+      "question": "Une carte disponible est-elle nécessairement installée ?",
+      "expected": [
+        "eidolon-factual-v2-04-gpu-available"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-09-agents-outils-007",
+            "eidolon-v4-12-chronologie-015",
+            "eidolon-v4-08-soul-voix-002",
+            "eidolon-v4-08-soul-voix-008"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 86.96965500712395
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-02-infrastructure-006",
+            "eidolon-v4-16-matrice-fonctionnelle-004",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-09-agents-outils-010"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 2623.7872980127577
+        }
+      }
+    },
+    {
+      "question": "Quel est le statut déclaré de la RTX 2060 ?",
+      "expected": [
+        "eidolon-factual-v2-04-gpu-available"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 90.04811401246116
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-v4-18-materiel-et-decisions-techniques-002",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-09-agents-outils-004"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3744.126948993653
+        }
+      }
+    },
+    {
+      "question": "Quelle évolution vers deux accélérateurs est projetée ?",
+      "expected": [
+        "eidolon-factual-v2-05-gpu-planned"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-07-interface-windows-008",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-06-modeles-ia-003"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 86.51265400112607
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-06-modeles-ia-003",
+            "eidolon-v4-12-chronologie-011"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 1813.1846319884062
+        }
+      }
+    },
+    {
+      "question": "Quel volume de VRAM physique est visé avec deux V100 de 32 Go ?",
+      "expected": [
+        "eidolon-factual-v2-05-gpu-planned"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-factual-v2-06-hardware-decisions"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 87.53308601444587
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-13-provenance-et-temporalite-005",
+            "eidolon-v4-02-infrastructure-003"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3835.319403995527
+        }
+      }
+    },
+    {
+      "question": "NVLink fusionne-t-il automatiquement la mémoire pour tous les moteurs ?",
+      "expected": [
+        "eidolon-factual-v2-05-gpu-planned"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-06-modeles-ia-006",
+            "eidolon-v4-11-import-et-qualification-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 89.06848801416345
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-18-materiel-et-decisions-techniques-010",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-004"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3967.5324790005106
+        }
+      }
+    },
+    {
+      "question": "Quelles validations restent nécessaires pour le double SXM2 ?",
+      "expected": [
+        "eidolon-factual-v2-05-gpu-planned"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-00-index-012",
+            "eidolon-v4-09-agents-outils-006",
+            "eidolon-v4-13-provenance-et-temporalite-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 86.46412700181827
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-12-chronologie-011"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 2954.371389001608
+        }
+      }
+    },
+    {
+      "question": "Quel adaptateur est prévu pour les futures cartes ?",
+      "expected": [
+        "eidolon-factual-v2-05-gpu-planned"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 88.18400200107135
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-07-interface-windows-008"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 3518.805361003615
+        }
+      }
+    },
+    {
+      "question": "Quel processeur et quelle RAM sont déclarés pour le serveur ?",
+      "expected": [
+        "eidolon-factual-v2-06-hardware-decisions"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-04-core-benchmark-007",
+            "eidolon-v4-18-materiel-et-decisions-techniques-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-02-infrastructure-004"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 88.11582499765791
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-02-infrastructure-005",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-06-modeles-ia-003",
+            "eidolon-v4-10-robotique-walle-003"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3820.6458450003993
+        }
+      }
+    },
+    {
+      "question": "Quelle carte mère est prévue pour remplacement ?",
+      "expected": [
+        "eidolon-factual-v2-06-hardware-decisions"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-factual-v2-04-gpu-available"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 85.25078700040467
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-08-soul-voix-008",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-005",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-011"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 2010.036306019174
+        }
+      }
+    },
+    {
+      "question": "Quelles décisions matérielles sont actuelles et lesquelles restent des projets ?",
+      "expected": [
+        "eidolon-factual-v2-06-hardware-decisions"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-04-core-benchmark-007",
+            "eidolon-v4-00-index-012",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-00-index-002"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 87.20554001047276
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-00-index-012",
+            "eidolon-v4-05-decisions-008",
+            "eidolon-v4-04-core-benchmark-007",
+            "eidolon-v4-18-materiel-et-decisions-techniques-011"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3738.680305017624
+        }
+      }
+    },
+    {
+      "question": "Quel débit réseau est déclaré pour le serveur Proxmox ?",
+      "expected": [
+        "eidolon-factual-v2-06-hardware-decisions"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-10-robotique-walle-002",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-03-memory-engine-004"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 86.92574501037598
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-18-materiel-et-decisions-techniques-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3777.2633509885054
+        }
+      }
+    },
+    {
+      "question": "Les deux V100 32 Go sont-elles une installation confirmée ?",
+      "expected": [
+        "eidolon-factual-v2-06-hardware-decisions"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-factual-v2-07-gpu-history"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 96.68738700565882
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-13-provenance-et-temporalite-005",
+            "eidolon-v4-12-chronologie-011"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 3820.1226119999774
+        }
+      }
+    },
+    {
+      "question": "Quelles familles RTX avaient été envisagées avant la V100 ?",
+      "expected": [
+        "eidolon-factual-v2-07-gpu-history"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-v4-18-materiel-et-decisions-techniques-005",
+            "eidolon-v4-02-infrastructure-005",
+            "eidolon-v4-09-agents-outils-010"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 86.40491601545364
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-02-infrastructure-005",
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-18-materiel-et-decisions-techniques-007"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3275.554755993653
+        }
+      }
+    },
+    {
+      "question": "Quel était le projet GPU initial ?",
+      "expected": [
+        "eidolon-factual-v2-07-gpu-history"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-factual-v2-05-gpu-planned"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 87.3395120142959
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-factual-v2-06-hardware-decisions"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 2724.503730016295
+        }
+      }
+    },
+    {
+      "question": "Comment les choix de cartes graphiques ont-ils évolué ?",
+      "expected": [
+        "eidolon-factual-v2-07-gpu-history"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-11-import-et-qualification-002",
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-15-audit-code-et-limites-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-005"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 88.6382189928554
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-003",
+            "eidolon-v4-03-memory-engine-003",
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-factual-v2-05-gpu-planned"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3839.509621000616
+        }
+      }
+    },
+    {
+      "question": "Les anciennes hypothèses matérielles décrivent-elles le serveur actuel ?",
+      "expected": [
+        "eidolon-factual-v2-07-gpu-history"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-13-provenance-et-temporalite-006",
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-04-core-benchmark-007",
+            "eidolon-v4-15-audit-code-et-limites-003",
+            "eidolon-v4-10-robotique-walle-002"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 87.71076699486002
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-12-chronologie-008",
+            "eidolon-v4-14-plan-validation-chronologie-005",
+            "eidolon-v4-00-index-009",
+            "eidolon-v4-13-provenance-et-temporalite-006"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 3719.8100950045045
+        }
+      }
+    },
+    {
+      "question": "Quels choix historiques ont précédé les essais Tesla ?",
+      "expected": [
+        "eidolon-factual-v2-07-gpu-history"
+      ],
+      "judged": true,
+      "split": "existing",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-18-materiel-et-decisions-techniques-013"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 86.82662999490276
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-08-soul-voix-012",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3091.82009001961
+        }
+      }
+    },
+    {
+      "question": "Quel environnement est consacré au développement Core ?",
+      "expected": [
+        "eidolon-factual-v2-01-vm-services"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-09-agents-outils-008",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 88.4855929762125
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-01-vm-services",
+            "eidolon-v4-07-interface-windows-008",
+            "eidolon-v4-12-chronologie-011",
+            "eidolon-v4-07-interface-windows-004",
+            "eidolon-v4-09-agents-outils-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 2793.797388992971
+        }
+      }
+    },
+    {
+      "question": "Où réside le moteur qui conserve les souvenirs ?",
+      "expected": [
+        "eidolon-factual-v2-01-vm-services"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-08-soul-voix-009",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-004",
+            "eidolon-v4-07-interface-windows-008"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 91.70943600474857
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-03-memory-engine-002",
+            "eidolon-v4-01-vision-003",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-03-memory-engine-001",
+            "eidolon-v4-07-interface-windows-008"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 3561.69519998366
+        }
+      }
+    },
+    {
+      "question": "Le dialogue doit-il s'arrêter si le rappel distant tombe ?",
+      "expected": [
+        "eidolon-factual-v2-02-vm-communications"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-04-core-benchmark-005",
+            "eidolon-v4-16-matrice-fonctionnelle-002",
+            "eidolon-v4-12-chronologie-013"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 86.91978600108996
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-010",
+            "eidolon-v4-08-soul-voix-010",
+            "eidolon-v4-08-soul-voix-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3125.160808005603
+        }
+      }
+    },
+    {
+      "question": "Par quel canal sécurisé passe la consultation des souvenirs ?",
+      "expected": [
+        "eidolon-factual-v2-02-vm-communications"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-15-audit-code-et-limites-003",
+            "eidolon-v4-04-core-benchmark-002",
+            "eidolon-v4-07-interface-windows-002",
+            "eidolon-v4-15-audit-code-et-limites-004",
+            "eidolon-v4-12-chronologie-002"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 86.90051399753429
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-004",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-03-memory-engine-006",
+            "eidolon-v4-12-chronologie-013",
+            "eidolon-v4-04-core-benchmark-005"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 3687.1226519870106
+        }
+      }
+    },
+    {
+      "question": "Quel format physique a la Tesla testée ?",
+      "expected": [
+        "eidolon-factual-v2-03-gpu-active"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-factual-v2-03-gpu-active",
+            "eidolon-factual-v2-05-gpu-planned"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.25,
+          "ms": 86.7777870153077
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-08-soul-voix-012",
+            "eidolon-v4-13-provenance-et-temporalite-005",
+            "eidolon-v4-02-infrastructure-003"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 2997.732691001147
+        }
+      }
+    },
+    {
+      "question": "La correction d'erreurs mémoire était-elle utilisée pendant les essais ?",
+      "expected": [
+        "eidolon-factual-v2-03-gpu-active"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-08-soul-voix-002",
+            "eidolon-v4-12-chronologie-014",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-08-soul-voix-008"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 87.94352199765854
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-011",
+            "eidolon-v4-12-chronologie-014",
+            "eidolon-v4-13-provenance-et-temporalite-008",
+            "eidolon-factual-v2-06-hardware-decisions"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 4388.107927021338
+        }
+      }
+    },
+    {
+      "question": "Quelle RTX est en réserve avec 12 Go de mémoire ?",
+      "expected": [
+        "eidolon-factual-v2-04-gpu-available"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-04-core-benchmark-004",
+            "eidolon-v4-11-import-et-qualification-005",
+            "eidolon-v4-12-chronologie-013",
+            "eidolon-v4-12-chronologie-014"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 88.04578200215474
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-02-infrastructure-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 3716.263330017682
+        }
+      }
+    },
+    {
+      "question": "Disponible veut-il dire affectée à une machine virtuelle ?",
+      "expected": [
+        "eidolon-factual-v2-04-gpu-available"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-01-vision-002",
+            "eidolon-v4-06-modeles-ia-002",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-09-agents-outils-010"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 86.90245798788965
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-06-modeles-ia-002",
+            "eidolon-v4-09-agents-outils-009",
+            "eidolon-v4-16-matrice-fonctionnelle-004",
+            "eidolon-v4-07-interface-windows-010"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3418.3854799775872
+        }
+      }
+    },
+    {
+      "question": "La somme des mémoires des futures Tesla représente combien ?",
+      "expected": [
+        "eidolon-factual-v2-05-gpu-planned"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-12-chronologie-002",
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-17-recette-client-soul-media-005",
+            "eidolon-v4-08-soul-voix-010"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 86.6846980061382
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-12-chronologie-014",
+            "eidolon-v4-12-chronologie-013",
+            "eidolon-v4-06-modeles-ia-004",
+            "eidolon-v4-06-modeles-ia-003",
+            "eidolon-v4-00-index-013"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 3705.945847003022
+        }
+      }
+    },
+    {
+      "question": "Le lien entre les deux GPU garantit-il un espace mémoire unique ?",
+      "expected": [
+        "eidolon-factual-v2-05-gpu-planned"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-004",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-02-vm-communications",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 88.40959900408052
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-05-gpu-planned",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-009",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.5,
+          "ms": 3820.176384993829
+        }
+      }
+    },
+    {
+      "question": "Combien de RAM DDR4 a la configuration déclarée ?",
+      "expected": [
+        "eidolon-factual-v2-06-hardware-decisions"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-12-chronologie-002",
+            "eidolon-v4-18-materiel-et-decisions-techniques-005",
+            "eidolon-factual-v2-01-vm-services"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 86.53667400358245
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-02-infrastructure-003",
+            "eidolon-v4-08-soul-voix-009",
+            "eidolon-v4-10-robotique-walle-005"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3642.744042997947
+        }
+      }
+    },
+    {
+      "question": "Le changement de carte mère est-il déjà validé comme installation ?",
+      "expected": [
+        "eidolon-factual-v2-06-hardware-decisions"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-07-interface-windows-010",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-03-memory-engine-004",
+            "eidolon-v4-04-core-benchmark-002",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-010"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 86.59658601391129
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-00-index-005",
+            "eidolon-v4-16-matrice-fonctionnelle-004",
+            "eidolon-v4-00-index-007",
+            "eidolon-v4-07-interface-windows-011"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3792.3245780111756
+        }
+      }
+    },
+    {
+      "question": "Quelles séries de RTX étaient envisagées au début ?",
+      "expected": [
+        "eidolon-factual-v2-07-gpu-history"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-02-infrastructure-005",
+            "eidolon-v4-08-soul-voix-009"
+          ],
+          "recall_at_5": 1,
+          "mrr": 0.3333333333333333,
+          "ms": 86.83706898591481
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-07-gpu-history",
+            "eidolon-v4-02-infrastructure-005",
+            "eidolon-v4-12-chronologie-016",
+            "eidolon-factual-v2-04-gpu-available",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006"
+          ],
+          "recall_at_5": 1,
+          "mrr": 1.0,
+          "ms": 3706.838960002642
+        }
+      }
+    },
+    {
+      "question": "Les hypothèses du début décrivent-elles le matériel de maintenant ?",
+      "expected": [
+        "eidolon-factual-v2-07-gpu-history"
+      ],
+      "split": "holdout",
+      "methods": {
+        "lexical": {
+          "ids": [
+            "eidolon-v4-18-materiel-et-decisions-techniques-012",
+            "eidolon-v4-18-materiel-et-decisions-techniques-003",
+            "eidolon-v4-18-materiel-et-decisions-techniques-006",
+            "eidolon-v4-18-materiel-et-decisions-techniques-013",
+            "eidolon-v4-19-plan-ingestion-corpus-isole-008"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 87.6349059981294
+        },
+        "canonical_cross_encoder": {
+          "ids": [
+            "eidolon-factual-v2-06-hardware-decisions",
+            "eidolon-v4-09-agents-outils-004",
+            "eidolon-v4-13-provenance-et-temporalite-006",
+            "eidolon-v4-12-chronologie-015",
+            "eidolon-v4-12-chronologie-008"
+          ],
+          "recall_at_5": 0,
+          "mrr": 0,
+          "ms": 3913.273628015304
+        }
+      }
+    }
+  ],
+  "canonical_copy_unchanged": true,
+  "limitations": [
+    "Reference relevance only; no generated answer or truth score.",
+    "Holdout authored from the seven existing cards, not broad independent coverage.",
+    "No answer abstention guarantee. Original corpus not modified."
+  ]
+}

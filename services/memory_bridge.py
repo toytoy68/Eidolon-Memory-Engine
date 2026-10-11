@@ -89,6 +89,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--port", type=int, default=18765)
+    parser.add_argument("--reranker-cache", type=Path, help="Optional offline CPU reranker cache")
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("invalid port")
@@ -100,6 +101,18 @@ def main():
         parser.error("canonical memory directories must exist")
     backend = FilesystemBackend(root / "memory" / "persistent", root / "memory" / "history")
     recall = ContextualRecall(backend)
+    if args.reranker_cache is not None:
+        from core.retrieval.reranked import RerankedRecall
+        from sentence_transformers import CrossEncoder
+        import torch
+        torch.set_num_threads(2)
+        encoder = CrossEncoder("cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
+            device="cpu", cache_folder=str(args.reranker_cache),
+            max_length=512, local_files_only=True)
+        def score(query, texts):
+            return encoder.predict([(query, text) for text in texts],
+                batch_size=8, show_progress_bar=False).tolist() if texts else []
+        recall = RerankedRecall(recall, score)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(recall, token))
     server.daemon_threads = True
     server.serve_forever()
