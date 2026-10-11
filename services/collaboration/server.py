@@ -42,7 +42,20 @@ class ResourceMetadataMiddleware:
             from starlette.responses import JSONResponse
             await JSONResponse(self.metadata)(scope, receive, send)
             return
-        await self.app(scope, receive, send)
+        async def send_with_scopes(message):
+            if (scope["type"] == "http" and scope.get("path") == "/mcp"
+                    and message["type"] == "http.response.start"
+                    and message["status"] == 401):
+                advertised = " ".join(self.metadata["scopes_supported"])
+                headers = []
+                for name, value in message.get("headers", []):
+                    if name.lower() == b"www-authenticate" and value.startswith(b"Bearer "):
+                        value += f', scope="{advertised}"'.encode("ascii")
+                    headers.append((name, value))
+                message = {**message, "headers": headers}
+            await send(message)
+
+        await self.app(scope, receive, send_with_scopes)
 
 
 class EidolonFastMCP(FastMCP):
