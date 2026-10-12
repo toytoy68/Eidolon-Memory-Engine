@@ -1,3 +1,12 @@
+## G181 — Rappel Qdrant canonique optionnel, 12 octobre
+
+Livré et testé sur Core isolé : candidats relus dans le Markdown, révisions
+périmées/absences exclues, filtres opérationnels et budgets conservés.
+2087 tests + 12 sous-tests ; 3 scénarios sur vrai Qdrant.
+[Contrat, preuves et limites](docs/QDRANT-CANONICAL-G181-2026-10-12.md).
+À faire : passages/embeddings évalués, synchronisation, bridge autorisé.
+Aucune activation vectorielle en production ; défaut lexical inchangé.
+
 ## G180 — Patchs Claude intégrés et vérifiés, 12 octobre
 
 A5-02, corpus figé, banc et contre-revue intégrés. Correction des frontières de

@@ -55,7 +55,13 @@ class RecallBundle:
 
 
 class ContextualRecall:
-    def __init__(self, backend):
+    def __init__(self, backend, *, index=None, candidate_limit=100):
+        if type(candidate_limit) is not int or not 1 <= candidate_limit <= 1000:
+            raise ValueError("invalid candidate limit")
+        if index is not None and not callable(getattr(index, "query", None)):
+            raise ValueError("index must expose query")
+        self.index = index
+        self.candidate_limit = candidate_limit
         if (backend.persistent_root.name != 'persistent' or backend.persistent_root.parent.name != 'memory'
                 or backend.history_root.absolute() != (backend.persistent_root.parent / 'history').absolute()):
             raise ValueError('contextual recall requires canonical engine roots')
@@ -120,7 +126,8 @@ class ContextualRecall:
                     excluded['STALE_CANDIDATE'] += 1
                     return False
                 epistemic = memory.metadata.get('epistemic_status')
-                reasons = ['canonical_source', 'lexical_v1_candidate']
+                reasons = ['canonical_source', ('index_candidate' if self.index is not None
+                                                else 'lexical_v1_candidate')]
                 try:
                     applies = applicability(memory, scope, at=at, unresolved_conflict=epistemic == 'CONFLICTED')
                 except (TypeError, AttributeError, ValueError):
@@ -148,7 +155,12 @@ class ContextualRecall:
                     or bool(memory.metadata.get('recheck_required')), tuple(reasons))
                 return True
 
-            bundle = ContextAssembler(self.backend).assemble(
+            search_backend = self.backend
+            if self.index is not None:
+                from core.retrieval.indexed import CanonicalIndexCandidates
+                search_backend = CanonicalIndexCandidates(
+                    self.backend, self.index, self.candidate_limit, excluded)
+            bundle = ContextAssembler(search_backend).assemble(
                 query, max_items=max_items, max_chars=max_chars, max_item_chars=max_item_chars,
                 max_tokens=max_tokens, token_counter=token_counter, ranking='lexical_v1',
                 include_structured_content=include_structured_content, candidate_filter=accept)

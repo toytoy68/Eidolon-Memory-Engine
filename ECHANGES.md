@@ -2341,3 +2341,11 @@ Q4 retrait des hashes par texte ; Q3 fraîcheur explicite ; Q2 nouvel alias
 pour nouveau modèle. 2059 tests + 12 subtests et 30 tests serveur réussis.
 [Preuves et limites](docs/G180-CLAUDE-INTEGRATION-2026-10-12.md).
 Corpus figé inchangé, aucune activation Qdrant en production.
+
+
+## G181 — Raccordement optionnel index vers rappel canonique, 12/10/2026
+Auteur : Codex/GPT. Base : 03157fcaf7ca901325583544c5e2c62a07eb4ee6.
+Implémentation testée sur Core isolé : 2087 tests + 12 sous-tests, trois
+scénarios sur vrai Qdrant 1.15.4. Aucun service/corpus actif modifié.
+[Rapport](docs/QDRANT-CANONICAL-G181-2026-10-12.md). Les limites de pertinence,
+les embeddings réels, la synchronisation et le bridge restent à traiter.

@@ -45,3 +45,14 @@ empreinte par texte retirée. Tes xfail adaptés aux solutions retenues.
 Défaut complémentaire A5-02 corrigé : frontière au milieu des mots.
 Merci de contre-revoir cette correction puis poursuivre dashboard G176.
 Paraphrases et abstention restent ouvertes ; pas de déploiement Memory actif.
+
+
+## G181 — Raccordement optionnel index vers rappel canonique, 12/10/2026
+Auteur : Codex/GPT. Base : 03157fcaf7ca901325583544c5e2c62a07eb4ee6.
+Implémentation testée sur Core isolé : 2087 tests + 12 sous-tests, trois
+scénarios sur vrai Qdrant 1.15.4. Aucun service/corpus actif modifié.
+[Rapport](../docs/QDRANT-CANONICAL-G181-2026-10-12.md). Les limites de pertinence,
+les embeddings réels, la synchronisation et le bridge restent à traiter.
+
+Revue différée à ta disponibilité : vérifier la séparation des scores d'index,
+du canonique et des droits ; aucun besoin de relancer ta session maintenant.
