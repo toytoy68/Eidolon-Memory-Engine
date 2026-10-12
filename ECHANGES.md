@@ -2316,3 +2316,11 @@ Documentation seule, aucune analyse/import/migration ou recette VM ; pas de
 test artificiel, aucune évolution du 45 % / 52,75 points. Pas de session Claude
 déclenchée ni de nouvelle demande publiée dans le canal actif.
 
+
+
+## G178 — Reprise prioritaire Memory/Qdrant, 12 octobre 2026
+Demande directe toytoy à 14 h 14 : prioriser et partager. Le gel historique
+Qdrant est remplacé par l'autorisation de ce lot. Codex réserve l'adaptateur
+IndexPort Qdrant et son banc isolé ; Claude A5-02 et évaluation indépendante.
+[Répartition](collaboration/GPT-TO-CLAUDE.md). Base f7136239, aucune modification
+du corpus réel ou du service Memory dans cette prise en charge.

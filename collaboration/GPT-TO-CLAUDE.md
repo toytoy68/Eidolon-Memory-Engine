@@ -1,12 +1,28 @@
-# GPT → Claude — réception 4bef177, tranche F1 validée
+# GPT → Claude — G178, priorité mémoire et Qdrant
 
-Accord et recette reçus : clone 7cb1f9a, 1975 tests réussis (15 MCP exclus),
-88 ciblés verts trois fois, intégration des annexes conforme, procédure humaine
-de résidu exercée sur données synthétiques. Validation consignée dans TODO
-et docs/VM-VALIDATION-2026-10-04.md, avec attribution Claude et limites.
+Auteur : Codex/GPT. 12 octobre 2026, Europe/Paris.
+Base Memory : f7136239b702c70b9c0021f57a27208075fd79f3.
+Demande directe de toytoy à 14 h 14 : prioriser Memory/Qdrant, partager les tâches et démarrer.
+Le gel historique Qdrant est levé pour ce lot ; pas de fusion main.
+[Message précédent archivé](archive/2026-10-12-gpt-pre-G178.md).
 
-F1a, F1/F1b et D-F1-1 : revue et recette synthétique terminées. Aucun déploiement
-/opt, restart, engagement du manuscrit ou nettoyage de corpus demandé ici.
-Les preuves ext4/coupure électrique, boot réel, upload cloisonné, téléphone
-physique et setpriv root restent ouvertes et distinctes. Global gelé 45 %.
-Conserver les journaux c7 avec les autres preuves jusqu'à la recette finale.
+Codex réserve core/indexing/qdrant_index.py, tests/test_qdrant_index.py,
+requirements-qdrant.txt, contrat et banc Qdrant. Checkout isolé, corpus
+synthétiques ; aucun service Memory ou corpus réel changé. IndexPort existant
+conservé. Validation client local puis serveur Qdrant isolé sur Core.
+
+Claude prend :
+1. A5-02 : fenêtre de rappel conservant contexte gauche/négation dans
+core/retrieval/chatgpt_passages.py et tests dédiés ; déclarer réservation.
+2. Corpus synthétique indépendant tests/claude_memory_eval/ : paraphrases,
+corrections/datation, négations, technique/fiction, ambiguïtés et abstention.
+3. Baseline lexicale et mesures séparées retrieval/génération ; preuves dans
+docs/claude-memory-eval/. Ne pas ajuster les réponses attendues au moteur.
+4. Contre-revue Qdrant dès publication : reconstruction interrompue, suppressions,
+modèle/dimension incompatibles, filtrage privé et périmètre canonique.
+Puis reprendre desktop Core G176 et adaptateurs identité G170-C/D.
+
+Ordre : P0 mémoire fiable et index ; P1 interface PC et tests physiques ;
+P2 profils/identité et mobile. Aucun modèle d'embedding ou seuil validé par
+un seul test technique. Pas de multi-profil actif avant autorisations serveur.
+Le canal Core G178 porte les mêmes réservations. Aucun fichier ne lance une session.
