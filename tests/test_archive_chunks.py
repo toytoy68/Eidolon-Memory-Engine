@@ -99,7 +99,7 @@ def test_semantic_candidate_without_shared_words_returns_canonical_message(tmp_p
     assert item.content == text and item.needs_review
     assert item.excerpt_reference['message_id'] == 'm-1'
     assert item.excerpt_reference['role'] == 'assistant'
-    assert item.excerpt_reference['policy'] == 'chatgpt-indexed-passage-v1'
+    assert item.excerpt_reference['policy'] == 'chatgpt-indexed-passage-v2'
 
 
 def test_index_passage_obeys_token_budget_and_offsets(tmp_path):
@@ -125,10 +125,10 @@ def test_changed_revision_is_rejected_before_passage_resolution(tmp_path):
     assert not result.items and result.excluded_counts == {'INDEX_REVISION_MISMATCH': 1}
 
 
-def test_partial_left_context_exposes_omitted_negation():
+def test_left_context_preserves_negation_when_the_complete_passage_fits():
     text = 'Ne pas acheter le GPU cette semaine.'
     start = text.index('GPU')
     excerpt, ref = resolve_passage(archive([text]),
         {'message_index': 0, 'start': start, 'end': len(text)}, 100)
-    assert excerpt == text[start:]
-    assert ref['left_context'] == 'partial' and ref['left_markers_dropped'] == 2
+    assert excerpt == text
+    assert ref['left_context'] == 'message_start' and ref['left_markers_dropped'] == 0

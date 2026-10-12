@@ -27,7 +27,7 @@ sys.path.insert(0, str(ROOT))
 
 from qdrant_client import QdrantClient, models
 from core.indexing.port import IndexHit
-from core.retrieval.archive_chunks import chunk_messages
+from core.retrieval.archive_chunks import CHUNK_POLICY, PASSAGE_POLICY, chunk_messages
 from core.retrieval.contextual import ContextualRecall
 from tests.claude_memory_eval.run_baseline import CORPUS, build, evaluate, summarize
 
@@ -36,7 +36,7 @@ EXPECTED_DIGEST = 'ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a156
 INSTRUCTION = 'Given a question, retrieve relevant passages from a personal memory archive that answer the question'
 OPTIONS = {'num_gpu': 0, 'num_thread': 2, 'num_ctx': 2048}
 DIMENSIONS = 1024
-EMBEDDING_ID = f'qwen3-0.6b:{EXPECTED_DIGEST}:memory-query-v1:ctx2048'
+EMBEDDING_ID = f'qwen3-0.6b:{EXPECTED_DIGEST}:memory-query-v1:ctx2048:{CHUNK_POLICY}'
 
 
 def ollama(path, body=None):
@@ -149,6 +149,7 @@ def main():
                 'embedding_id': EMBEDDING_ID, 'dimensions': DIMENSIONS,
                 'options': OPTIONS, 'query_instruction': INSTRUCTION, 'truncate': False,
                 'chunk_chars': 1200, 'chunk_overlap': 160, 'chunk_count': len(chunks),
+                'chunk_policy': CHUNK_POLICY, 'passage_policy': PASSAGE_POLICY,
                 'index_seconds': round(index_seconds, 3), 'size_vram': resident[0]['size_vram'],
                 'size_resident': resident[0].get('size'), 'abstention_threshold': None,
                 'summary': summarize(rows), 'rows': rows, 'evidence': evidence}

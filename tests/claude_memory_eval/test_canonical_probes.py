@@ -5,8 +5,8 @@
 # Description : Contre-revue Claude G181/G182 : sondes indépendantes du rappel canonique par index et des passages
 # Standard    : Eidolon Presentation Standard v1
 # ==========================================================
-"""Independent probes (Claude, G183 order item 1). Positive tests pin behaviour that holds; xfail(strict)
-tests document a finding and turn red the day it is resolved, so the resolution is noticed."""
+"""Independent probes (Claude, G183 order item 1). Original patch 0005 kept in Core. Codex G186 removes four strict xfails after
+reproducing XPASS, and updates the positive P3 reference to include the preserved negation."""
 import json
 import random
 import unicodedata
@@ -65,10 +65,10 @@ def test_index_passage_is_read_from_the_current_canonical_text(tmp_path):
     store_archive(data, ['Ne pas acheter la V100 maintenant.', 'Autre message.'])
     item = ContextualRecall(data, index=Candidates([passage_hit({'message_index': 0, 'start': 7, 'end': 34})])
                             ).recall('carte graphique').items[0]
-    assert item.content == 'acheter la V100 maintenant.'
+    assert item.content == 'Ne pas acheter la V100 maintenant.'
     ref = item.excerpt_reference
-    assert (ref['left_context'], ref['left_markers_dropped']) == ('partial', 2)   # « Ne pas » signalled
-    assert ref['policy'] == 'chatgpt-indexed-passage-v1'
+    assert (ref['left_context'], ref['left_markers_dropped']) == ('message_start', 0)  # G186 keeps « Ne pas »
+    assert ref['policy'] == 'chatgpt-indexed-passage-v2'
 
 
 def test_stale_index_revision_never_resolves_offsets_against_new_text(tmp_path):
@@ -82,8 +82,6 @@ def test_stale_index_revision_never_resolves_offsets_against_new_text(tmp_path):
     assert result.excluded_counts == {'INDEX_REVISION_MISMATCH': 1}
 
 
-@pytest.mark.xfail(strict=True, reason='Claude finding P1: one out-of-range passage aborts the whole recall '
-                   'instead of being excluded and counted like a revision mismatch')
 def test_one_unresolvable_passage_is_excluded_not_fatal(tmp_path):
     data = backend(tmp_path)
     store_archive(data, ['Un seul message.'])
@@ -92,8 +90,6 @@ def test_one_unresolvable_passage_is_excluded_not_fatal(tmp_path):
     assert result.excluded_counts.get('INDEX_PASSAGE_UNRESOLVED') == 1
 
 
-@pytest.mark.xfail(strict=True, reason='Claude finding P2: a semantic hit on an archive WITHOUT a passage '
-                   'reference falls back to lexical selection and is dropped silently, with no exclusion count')
 def test_archive_hit_without_lexical_overlap_is_not_dropped_silently(tmp_path):
     data = backend(tmp_path)
     store_archive(data, ['Ne pas acheter la V100 maintenant.'])
@@ -102,8 +98,6 @@ def test_archive_hit_without_lexical_overlap_is_not_dropped_silently(tmp_path):
     assert result.items or result.excluded_counts
 
 
-@pytest.mark.xfail(strict=True, reason='Claude finding P3: the indexed path does not extend to the sentence '
-                   'start like select_passage v3; a negation just before the chunk is only counted')
 def test_indexed_passage_keeps_the_sentence_start_when_budget_allows(tmp_path):
     data = backend(tmp_path)
     store_archive(data, ['Ne pas acheter la V100 maintenant.'])
@@ -112,8 +106,6 @@ def test_indexed_passage_keeps_the_sentence_start_when_budget_allows(tmp_path):
     assert item.content.startswith('Ne pas')
 
 
-@pytest.mark.xfail(strict=True, reason='Claude finding P4: an unbroken run is cut at max_chars, so a chunk can '
-                   'start between a letter and its combining accent')
 def test_chunks_never_start_on_a_combining_mark():
     text = ('é' * 40 + ' ') * 4
     for chunk in chunk_messages(archive([text]), max_chars=33, overlap=8):

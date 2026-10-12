@@ -54,13 +54,27 @@ class CanonicalIndexCandidates:
             for hit in hits:
                 if hit.information_id in seen:
                     continue
-                seen.add(hit.information_id)
                 memory = self.backend.get(hit.information_id)
                 if memory is None:
                     self.excluded['INDEX_MISSING_CANONICAL'] += 1
                     continue
                 if memory.revision != hit.ranking['revision']:
                     self.excluded['INDEX_REVISION_MISMATCH'] += 1
+                    continue
+                from core.sources.chatgpt_import import is_conversation_archive
+                from core.retrieval.archive_chunks import validate_canonical_reference
+                if 'passage' in hit.ranking:
+                    try:
+                        if not is_conversation_archive(memory):
+                            raise ValueError('index passage requires a conversation archive')
+                        validate_canonical_reference(memory.content, hit.ranking['passage'])
+                    except (ValueError, TypeError):
+                        self.excluded['INDEX_PASSAGE_UNRESOLVED'] += 1
+                        continue
+                elif is_conversation_archive(memory):
+                    # A semantic archive identity alone cannot locate its evidence.
+                    # Do not silently substitute a lexical passage from that archive.
+                    self.excluded['INDEX_PASSAGE_MISSING'] += 1
                     continue
                 # Never take content, provenance or applicability from the index.
                 ranking = {'policy': 'canonical-index-candidates/1',
@@ -72,11 +86,9 @@ class CanonicalIndexCandidates:
                                      if key in hit.ranking}}
                 metadata = {'ranking': ranking}
                 if 'passage' in hit.ranking:
-                    from core.sources.chatgpt_import import is_conversation_archive
-                    if not is_conversation_archive(memory):
-                        raise ValueError('index passage requires a conversation archive')
                     metadata['index_passage'] = deepcopy(hit.ranking['passage'])
                 results.append(SearchResult(memory, hit.score, metadata))
+                seen.add(hit.information_id)
             self._results = results
         offset, limit = options['offset'], options['limit']
         return self._results[offset:offset + limit]
