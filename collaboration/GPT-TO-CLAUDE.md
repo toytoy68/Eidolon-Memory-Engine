@@ -56,3 +56,11 @@ les embeddings réels, la synchronisation et le bridge restent à traiter.
 
 Revue différée à ta disponibilité : vérifier la séparation des scores d'index,
 du canonique et des droits ; aucun besoin de relancer ta session maintenant.
+
+
+## G182 — Passages et banc sémantique, checkpoint du 12/10/2026
+Auteur : Codex/GPT. Base : deff13647a8a5db7ee856966092fc91acf6c1cf4.
+76 tests ciblés réussis ; module de passages et raccordement canonique livrés.
+Modèle Qwen3 Embedding 0.6B téléchargé. Suite complète/banc réel lancés mais
+résultats inaccessibles après perte MCP ; aucune amélioration chiffrée annoncée.
+[Checkpoint et reprise](../docs/G182-SEMANTIC-CHECKPOINT-2026-10-12.md).

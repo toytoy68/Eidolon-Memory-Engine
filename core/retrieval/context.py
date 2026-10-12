@@ -126,7 +126,12 @@ class ContextAssembler:
                 from core.sources.chatgpt_import import is_conversation_archive
                 if is_conversation_archive(memory) and isinstance(content, str):
                     from core.retrieval.chatgpt_passages import select_passage
-                    passage = select_passage(content, query, min(max_item_chars, remaining))
+                    if 'index_passage' in result.metadata:
+                        from core.retrieval.archive_chunks import resolve_passage
+                        passage = resolve_passage(content, result.metadata['index_passage'],
+                                                  min(max_item_chars, remaining))
+                    else:
+                        passage = select_passage(content, query, min(max_item_chars, remaining))
                     if passage is None:
                         continue
                     content, excerpt_reference = passage
@@ -149,6 +154,8 @@ class ContextAssembler:
                         continue
                 if excerpt_reference is not None:
                     excerpt_reference["end"] = excerpt_reference["start"] + length
+                    if "right_context" in excerpt_reference and length < len(content):
+                        excerpt_reference["right_context"] = "partial"
                 items.append(ContextItem(
                     information_id=memory.information_id,
                     revision=memory.revision,

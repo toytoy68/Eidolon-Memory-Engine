@@ -46,6 +46,9 @@ class CanonicalIndexCandidates:
                         or type(hit.ranking.get('revision')) is not int
                         or hit.ranking['revision'] < 1):
                     raise ValueError('invalid index candidate identity, score or revision')
+                if 'passage' in hit.ranking:
+                    from core.retrieval.archive_chunks import validate_reference
+                    validate_reference(hit.ranking['passage'])
             results = []
             seen = set()
             for hit in hits:
@@ -67,7 +70,13 @@ class CanonicalIndexCandidates:
                                      ('policy', 'embedding_id', 'revision',
                                       'source_digest', 'index_freshness')
                                      if key in hit.ranking}}
-                results.append(SearchResult(memory, hit.score, {'ranking': ranking}))
+                metadata = {'ranking': ranking}
+                if 'passage' in hit.ranking:
+                    from core.sources.chatgpt_import import is_conversation_archive
+                    if not is_conversation_archive(memory):
+                        raise ValueError('index passage requires a conversation archive')
+                    metadata['index_passage'] = deepcopy(hit.ranking['passage'])
+                results.append(SearchResult(memory, hit.score, metadata))
             self._results = results
         offset, limit = options['offset'], options['limit']
         return self._results[offset:offset + limit]

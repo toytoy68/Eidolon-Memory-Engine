@@ -1,3 +1,12 @@
+## G182 — Checkpoint passages/embeddings, 12 octobre
+
+Passages canoniques sans chevauchement lexical obligatoire : 76 tests ciblés
+réussis. Qwen3 Embedding 0.6B téléchargé sur Core. Suite complète et banc réel
+lancés, résultats non récupérés après perte de liaison MCP.
+[Checkpoint, preuves et reprise](docs/G182-SEMANTIC-CHECKPOINT-2026-10-12.md).
+Pas de gain sémantique annoncé, pas d'activation en production. Lire les journaux
+existants et arrêter le Qdrant de recette dès que l'accès revient.
+
 ## G181 — Rappel Qdrant canonique optionnel, 12 octobre
 
 Livré et testé sur Core isolé : candidats relus dans le Markdown, révisions
