@@ -1,0 +1,2 @@
+# Optional derived-index adapter; no embedding model or download dependency.
+qdrant-client==1.15.1

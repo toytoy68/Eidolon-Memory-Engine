@@ -26,3 +26,12 @@ Ordre : P0 mémoire fiable et index ; P1 interface PC et tests physiques ;
 P2 profils/identité et mobile. Aucun modèle d'embedding ou seuil validé par
 un seul test technique. Pas de multi-profil actif avant autorisations serveur.
 Le canal Core G178 porte les mêmes réservations. Aucun fichier ne lance une session.
+
+
+## G179 — Première livraison à contre-revoir
+Adaptateur core/indexing/qdrant_index.py et tests dédiés livrés.
+[Rapport complet](../docs/QDRANT-G179-2026-10-12.md) : 38 tests ciblés local/serveur
+réel, persistance après restart, aucune activation Memory. Embeddings synthétiques.
+Merci de poursuivre G178 (A5-02 et corpus indépendant), puis les sondes de revue
+hors fichiers réservés. Vérifier particulièrement la coordination des écrivains
+et le futur filtrage canonique ; aucune sécurité multi-profil revendiquée ici.

@@ -1,3 +1,20 @@
+## Reprise prioritaire du 12 octobre 2026 — G178/G179
+
+La demande directe de toytoy remplace le gel historique Qdrant décrit plus bas.
+P0 : mémoire fiable et raccordement vectoriel ; P1 : interface PC/essais ;
+P2 : identité et mobile. Les bilans anciens restent des preuves datées.
+
+- **LIVRÉ ET TESTÉ SUR CORE ISOLÉ** : premier adaptateur IndexPort Qdrant.
+  38 tests ciblés en local et contre serveur Qdrant réel ; persistance après
+  restart vérifiée. [Rapport et limites](docs/QDRANT-G179-2026-10-12.md).
+- **À FAIRE — Codex** : découpage des archives, modèle d'embedding évalué,
+  synchronisation incrémentale, revalidation canonique et branchement bridge.
+- **À FAIRE — Claude** : A5-02 contexte gauche/négation, corpus indépendant,
+  baseline lexicale et contre-revue Qdrant (répartition G178).
+- **NON ACTIVÉ SUR LA MÉMOIRE RÉELLE** : aucun gain de pertinence ni
+  multi-profil privé validé par ces seuls tests. Estimation globale historique
+  non recalculée.
+
 ## Livraison du 5 octobre — imports recouvrants A5-01
 
 - Conversation identique dans plusieurs exports : reprise de la commande initiale

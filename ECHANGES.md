@@ -2324,3 +2324,12 @@ Qdrant est remplacé par l'autorisation de ce lot. Codex réserve l'adaptateur
 IndexPort Qdrant et son banc isolé ; Claude A5-02 et évaluation indépendante.
 [Répartition](collaboration/GPT-TO-CLAUDE.md). Base f7136239, aucune modification
 du corpus réel ou du service Memory dans cette prise en charge.
+
+
+## G179 — Adaptateur Qdrant optionnel livré, 12 octobre 2026
+IndexPort implémenté, générations/alias et digest persistants, modèles/dimensions
+contrôlés. 38 tests ciblés en local et contre Qdrant 1.15.4 réel, reprise après
+restart vérifiée ; contrôle négatif rouge puis vert. [Preuves et limites](docs/QDRANT-G179-2026-10-12.md).
+Code testé dans un clone isolé sur Core ; serveur de recette arrêté, corpus et
+services Memory inchangés. Embeddings synthétiques : aucune pertinence mesurée.
+Raccordement du bridge, passages, embeddings réels et synchronisation restent ouverts.

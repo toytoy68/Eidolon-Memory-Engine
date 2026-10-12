@@ -2,7 +2,9 @@
 
 Moteur de mémoire en fichiers pour Eidolon. Les Informations et Threads sous
 `memory/` sont la source de vérité ; un port d’index reconstructible et sa
-référence sans dépendance externe existent. Le connecteur Qdrant reste différé.
+référence sans dépendance externe existent. Un premier adaptateur Qdrant optionnel est livré et testé sur un serveur isolé ;
+son activation dans le rappel réel reste à faire. Voir le
+[bilan G179 du 12 octobre](docs/QDRANT-G179-2026-10-12.md).
 La branche `refactor/architecture-v1` est en cours de
 développement. Sa suite de tests passe sur la VM. Un corpus ChatGPT réel a été importé et
 rappelé avec références exactes le 04/10 ; la pertinence sémantique, la recette
