@@ -681,6 +681,30 @@ Sources : https://www.youtube.com/watch?v=pzMcjjl3Qsw et https://www.youtube.com
 
 Pour chaque piste : auditer les fonctions déjà livrées, préciser le manque réel, estimer coût/complexité/risque, proposer un test mesurable, puis retenir, différer ou rejeter après revue. **Aucune modification de Core, Memory Engine, des priorités ou des roadmaps n'est autorisée par cette seule entrée.**
 
+## Veille GitHub — composants open source candidats (12/10/2026)
+
+**Statut : liste d'étude, aucune adoption ni intégration décidée.** Une veille hebdomadaire est programmée. Objectif : réutiliser les composants utiles sans remplacer les frontières Core / Memory Engine / Darme / EidolonOS.
+
+| Projet | Référence | Piste d'étude |
+| --- | --- | --- |
+| Hermes Agent | https://github.com/NousResearch/hermes-agent | Apprentissage de skills, révision des procédures, mémoire de sessions ; comparer sans remplacer Core. |
+| OpenHands Agent SDK | https://github.com/OpenHands/software-agent-sdk | Agents de programmation, exécution, outils et validation. |
+| Open-Sandbox | https://github.com/colinlikescode/Open-Sandbox | Isolation d'exécutions agentiques ; évaluer coût opérationnel de K3s/gVisor. |
+| agent-memory-bench | https://github.com/hamza-dev-tech/agent-memory-bench | Évaluation indépendante du rappel Memory Engine sur corpus versionné. |
+| Graphiti | https://github.com/getzep/graphiti | Relations temporelles, provenance et évolution des faits ; comparer aux fonctions existantes. |
+| NVIDIA DCGM Exporter | https://github.com/NVIDIA/dcgm-exporter | Télémétrie GPU pour Darme ; vérifier support V100, pilote et environnement VM. |
+| Hindsight | https://github.com/vectorize-io/hindsight | Mémoire réflexive et apprentissage des expériences. |
+| Agent-Sandbox | https://github.com/agent-sandbox/agent-sandbox | Isolation des agents et politiques d'exécution ; comparer à l'existant. |
+| llama.cpp | https://github.com/ggml-org/llama.cpp | Régressions et performances V100 SXM2 multi-GPU/NVLink, splits layer/row/tensor. |
+
+### Méthode de qualification
+
+Pour chaque candidat : confirmer l'existence et le dépôt officiel, licence, activité, qualité des tests, dépendances, maintenance, compatibilité Debian 13 / CUDA / V100 si pertinente, surfaces d'attaque et coût d'intégration. Définir une fonction précise à reprendre, un test reproductible, des critères d'abandon et un rollback. Comparer d'abord à l'implémentation déjà disponible chez Eidolon.
+
+Priorités initiales : DCGM Exporter (monitoring), agent-memory-bench (validation mémoire), Hermes Agent (skills), Graphiti/Hindsight (mémoire temporelle), OpenHands et sandboxes (agents développeurs). Ces priorités sont des propositions de veille, pas une modification de la roadmap.
+
+**Veille hebdomadaire :** lundi matin, changements significatifs et nouvelles opportunités uniquement. Pas de déploiement ni de modification automatique des dépôts ; toute adoption requiert une décision explicite.
+
 ## Statut du document
 
 Ce fichier est un **registre d'idées et de concepts**, pas une promesse de
