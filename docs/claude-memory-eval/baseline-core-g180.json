@@ -1,0 +1,504 @@
+{
+ "schema": "claude-memory-eval-result/1",
+ "engine": "ContextualRecall defaults (lexical_passage_v1, passage v3)",
+ "corpus_sha256": "80ea76bf9054834ae6d8e73ba36df38c38c7d0fd4148eb727a3ae3e9bb82a3a1",
+ "retrieval_only": true,
+ "synthetic": true,
+ "summary": {
+  "recall@1": 0.783,
+  "recall@3": 0.826,
+  "recall@5": 0.826,
+  "answerable": 23,
+  "abstention_rate": 0.0,
+  "absence_questions": 4,
+  "checks_passed": "10/10",
+  "latency_ms_median": 6.42,
+  "latency_ms_max": 16.1,
+  "by_category": {
+   "absence": {
+    "n": 4,
+    "hit@1": 0,
+    "hit@5": 0,
+    "checks": "0/0",
+    "abstained": 0
+   },
+   "condition": {
+    "n": 2,
+    "hit@1": 2,
+    "hit@5": 2,
+    "checks": "2/2",
+    "abstained": 0
+   },
+   "corrected": {
+    "n": 3,
+    "hit@1": 3,
+    "hit@5": 3,
+    "checks": "3/3",
+    "abstained": 0
+   },
+   "direct": {
+    "n": 4,
+    "hit@1": 4,
+    "hit@5": 4,
+    "checks": "0/0",
+    "abstained": 0
+   },
+   "homonym": {
+    "n": 4,
+    "hit@1": 4,
+    "hit@5": 4,
+    "checks": "0/0",
+    "abstained": 0
+   },
+   "negation": {
+    "n": 3,
+    "hit@1": 2,
+    "hit@5": 3,
+    "checks": "3/3",
+    "abstained": 0
+   },
+   "paraphrase": {
+    "n": 5,
+    "hit@1": 1,
+    "hit@5": 1,
+    "checks": "0/0",
+    "abstained": 0
+   },
+   "tech_vs_fiction": {
+    "n": 2,
+    "hit@1": 2,
+    "hit@5": 2,
+    "checks": "2/2",
+    "abstained": 0
+   }
+  }
+ },
+ "rows": [
+  {
+   "id": "para-1",
+   "category": "paraphrase",
+   "returned": [
+    "person-paul-plumber",
+    "routine-car",
+    "tech-voice",
+    "cond-backup",
+    "distract-carte"
+   ],
+   "latency_ms": 16.1,
+   "rank": null,
+   "hit@1": false,
+   "hit@3": false,
+   "hit@5": false
+  },
+  {
+   "id": "para-2",
+   "category": "paraphrase",
+   "returned": [
+    "tech-voice",
+    "tech-nas-backup",
+    "routine-garden",
+    "chem-mercure",
+    "distract-photos"
+   ],
+   "latency_ms": 6.32,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "para-3",
+   "category": "paraphrase",
+   "returned": [
+    "pref-coffee",
+    "pref-no-meat",
+    "pref-tea",
+    "tech-gpu-buy-old",
+    "tech-voice"
+   ],
+   "latency_ms": 6.09,
+   "rank": null,
+   "hit@1": false,
+   "hit@3": false,
+   "hit@5": false
+  },
+  {
+   "id": "para-4",
+   "category": "paraphrase",
+   "returned": [
+    "distract-port",
+    "pref-tea",
+    "tech-wireguard",
+    "chem-mercure",
+    "date-meeting"
+   ],
+   "latency_ms": 6.17,
+   "rank": null,
+   "hit@1": false,
+   "hit@3": false,
+   "hit@5": false
+  },
+  {
+   "id": "para-5",
+   "category": "paraphrase",
+   "returned": [
+    "tech-gpu-buy-old",
+    "fiction-mercure",
+    "tech-core-port-old",
+    "distract-serveur",
+    "tech-core-port-new"
+   ],
+   "latency_ms": 6.47,
+   "rank": null,
+   "hit@1": false,
+   "hit@3": false,
+   "hit@5": false
+  },
+  {
+   "id": "direct-1",
+   "category": "direct",
+   "returned": [
+    "tech-nas-backup",
+    "tech-nas-format",
+    "fiction-nas",
+    "distract-photos",
+    "tech-darme"
+   ],
+   "latency_ms": 6.8,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "direct-2",
+   "category": "direct",
+   "returned": [
+    "person-paul-plumber",
+    "routine-car",
+    "cond-backup",
+    "distract-carte",
+    "distract-port"
+   ],
+   "latency_ms": 6.39,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "direct-3",
+   "category": "direct",
+   "returned": [
+    "routine-car",
+    "distract-carte",
+    "distract-port",
+    "person-paul-plumber",
+    "science-mercure"
+   ],
+   "latency_ms": 6.42,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "direct-4",
+   "category": "direct",
+   "returned": [
+    "tech-darme"
+   ],
+   "latency_ms": 5.52,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "neg-1",
+   "category": "negation",
+   "returned": [
+    "tech-gpu-buy-old",
+    "tech-gpu-buy-new",
+    "person-paul-plumber",
+    "routine-car",
+    "science-mercure"
+   ],
+   "latency_ms": 6.28,
+   "rank": 2,
+   "hit@1": false,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "neg-2",
+   "category": "negation",
+   "returned": [
+    "tech-nas-format",
+    "fiction-nas",
+    "pref-coffee",
+    "tech-nas-backup",
+    "pref-no-meat"
+   ],
+   "latency_ms": 6.41,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "neg-3",
+   "category": "negation",
+   "returned": [
+    "pref-no-meat",
+    "routine-car",
+    "distract-port",
+    "person-paul-plumber",
+    "distract-carte"
+   ],
+   "latency_ms": 6.63,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "corr-1",
+   "category": "corrected",
+   "returned": [
+    "tech-core-port-new",
+    "tech-core-port-old",
+    "tech-wireguard",
+    "date-meeting",
+    "date-meeting-old"
+   ],
+   "latency_ms": 6.12,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "corr-2",
+   "category": "corrected",
+   "returned": [
+    "date-meeting",
+    "date-meeting-old",
+    "tech-voice",
+    "tech-gpu-buy-new",
+    "tech-stt"
+   ],
+   "latency_ms": 6.46,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "corr-3",
+   "category": "corrected",
+   "returned": [
+    "tech-gpu-buy-new",
+    "tech-gpu-buy-old",
+    "person-paul-plumber",
+    "routine-car",
+    "science-mercure"
+   ],
+   "latency_ms": 6.34,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "tf-1",
+   "category": "tech_vs_fiction",
+   "returned": [
+    "tech-nas-backup",
+    "tech-nas-format",
+    "fiction-nas",
+    "distract-photos",
+    "tech-darme"
+   ],
+   "latency_ms": 6.58,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "tf-2",
+   "category": "tech_vs_fiction",
+   "returned": [
+    "tech-core-port-new",
+    "tech-core-port-old",
+    "distract-port",
+    "tech-stt",
+    "tech-voice"
+   ],
+   "latency_ms": 6.13,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "hom-1",
+   "category": "homonym",
+   "returned": [
+    "science-mercure",
+    "routine-car",
+    "distract-carte",
+    "distract-port",
+    "tech-core-port-new"
+   ],
+   "latency_ms": 6.52,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "hom-2",
+   "category": "homonym",
+   "returned": [
+    "chem-mercure",
+    "distract-port",
+    "fiction-mercure",
+    "routine-car",
+    "science-mercure"
+   ],
+   "latency_ms": 6.48,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "hom-3",
+   "category": "homonym",
+   "returned": [
+    "person-paul-cousin",
+    "tech-core-port-old",
+    "tech-core-port-new",
+    "distract-carte",
+    "distract-port"
+   ],
+   "latency_ms": 6.36,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "hom-4",
+   "category": "homonym",
+   "returned": [
+    "person-paul-plumber",
+    "person-paul-cousin",
+    "distract-serveur",
+    "fiction-nas",
+    "pref-coffee"
+   ],
+   "latency_ms": 6.38,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true
+  },
+  {
+   "id": "cond-1",
+   "category": "condition",
+   "returned": [
+    "cond-backup",
+    "cond-heating",
+    "tech-nas-format",
+    "person-paul-plumber",
+    "routine-car"
+   ],
+   "latency_ms": 6.44,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "cond-2",
+   "category": "condition",
+   "returned": [
+    "cond-heating",
+    "distract-serveur",
+    "fiction-nas",
+    "pref-coffee",
+    "tech-nas-backup"
+   ],
+   "latency_ms": 6.42,
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "check_ok": true
+  },
+  {
+   "id": "abs-1",
+   "category": "absence",
+   "returned": [
+    "distract-port",
+    "routine-car",
+    "tech-core-port-old",
+    "distract-serveur",
+    "chem-mercure"
+   ],
+   "latency_ms": 6.68,
+   "abstained": false
+  },
+  {
+   "id": "abs-2",
+   "category": "absence",
+   "returned": [
+    "routine-car",
+    "distract-carte",
+    "distract-port",
+    "person-paul-plumber",
+    "science-mercure"
+   ],
+   "latency_ms": 6.49,
+   "abstained": false
+  },
+  {
+   "id": "abs-3",
+   "category": "absence",
+   "returned": [
+    "tech-gpu-buy-new",
+    "tech-gpu-buy-old",
+    "distract-serveur",
+    "distract-port",
+    "fiction-mercure"
+   ],
+   "latency_ms": 6.6,
+   "abstained": false
+  },
+  {
+   "id": "abs-4",
+   "category": "absence",
+   "returned": [
+    "person-paul-plumber",
+    "tech-core-port-old",
+    "tech-core-port-new",
+    "distract-port",
+    "person-paul-cousin"
+   ],
+   "latency_ms": 6.9,
+   "abstained": false
+  }
+ ]
+}

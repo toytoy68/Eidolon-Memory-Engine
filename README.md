@@ -1,5 +1,9 @@
 # Eidolon Memory Engine
 
+**12/10 — G180** : patchs Claude intégrés et tests rejoués sur Core ;
+[état, mesures et limites](docs/G180-CLAUDE-INTEGRATION-2026-10-12.md).
+Qdrant reste optionnel et non branché au rappel actif.
+
 Moteur de mémoire en fichiers pour Eidolon. Les Informations et Threads sous
 `memory/` sont la source de vérité ; un port d’index reconstructible et sa
 référence sans dépendance externe existent. Un premier adaptateur Qdrant optionnel est livré et testé sur un serveur isolé ;

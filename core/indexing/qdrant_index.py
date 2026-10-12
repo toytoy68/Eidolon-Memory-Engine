@@ -133,7 +133,7 @@ class QdrantIndex(IndexPort):
             memory.content, ensure_ascii=False, sort_keys=True, allow_nan=False)
         return models.PointStruct(id=_point_id(identity), vector=self._vector(text), payload={
             "kind": "information", "information_id": identity,
-            "revision": memory.revision, "text_sha256": sha256(text.encode()).hexdigest()})
+            "revision": memory.revision})
 
     @staticmethod
     def _filter():
@@ -159,7 +159,7 @@ class QdrantIndex(IndexPort):
         if not isinstance(text, str) or type(limit) is not int or not 1 <= limit <= 1000:
             raise ValueError("invalid query or limit")
         with self._lock:
-            self._descriptor()
+            descriptor = self._descriptor()
             if not text.strip():
                 return []
             result = self.client.query_points(self.alias, query=self._vector(text),
@@ -171,13 +171,13 @@ class QdrantIndex(IndexPort):
                 identity = self._identity(p.get("information_id"))
                 if (p.get("kind") != "information" or str(hit.id) != _point_id(identity)
                         or type(p.get("revision")) is not int or p["revision"] < 1
-                        or not isinstance(p.get("text_sha256"), str)
-                        or not re.fullmatch(r"[0-9a-f]{64}", p["text_sha256"])
                         or not math.isfinite(hit.score)):
                     raise ValueError("invalid candidate payload")
                 hits.append(IndexHit(identity, hit.score, {
                     "policy": "qdrant_cosine_candidates_v1", "embedding_id": self.embedding_id,
-                    "revision": p["revision"], "text_sha256": p["text_sha256"],
+                    "revision": p["revision"], "source_digest": descriptor["source_digest"],
+                    "index_freshness": ("FULL_REBUILD_SNAPSHOT" if descriptor["source_digest"]
+                                        else "UNVERIFIED_INCREMENTAL"),
                     "canonical_revalidation_required": True}))
             return sorted(hits, key=lambda h: (-h.score, h.information_id))
 

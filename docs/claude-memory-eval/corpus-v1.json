@@ -1,0 +1,474 @@
+{
+ "schema": "claude-memory-eval-corpus/1",
+ "version": 1,
+ "author": "Claude",
+ "date": "2026-10-12",
+ "rule": "Références écrites avant toute exécution du moteur ; ne jamais les ajuster au résultat.",
+ "synthetic": true,
+ "documents": [
+  {
+   "id": "tech-nas-backup",
+   "text": "Le NAS sauvegarde les photos chaque nuit à 2 h vers le disque externe.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "tech-nas-format",
+   "text": "Ne jamais formater le NAS sans avoir vérifié la dernière sauvegarde.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "tech-gpu-buy-old",
+   "text": "Il faut acheter la V100 cette semaine pour le serveur de calcul.",
+   "kind": "conversation",
+   "date": "2026-08-01"
+  },
+  {
+   "id": "tech-gpu-buy-new",
+   "text": "Correction : ne pas acheter la V100 cette semaine, attendre le lot de deux cartes avec NVLink.",
+   "kind": "conversation",
+   "date": "2026-09-20"
+  },
+  {
+   "id": "tech-core-port-old",
+   "text": "Le port de l'API Core est 8765.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "tech-core-port-new",
+   "text": "Mise à jour : l'API Core écoute désormais sur le port 8767, l'ancien port 8765 n'est plus utilisé.",
+   "kind": "conversation",
+   "date": "2026-10-10"
+  },
+  {
+   "id": "tech-wireguard",
+   "text": "WireGuard est installé sur la VM Core pour accéder au téléphone depuis l'extérieur.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "tech-voice",
+   "text": "La voix d'Eidolon utilise Piper avec la voix française Siwis à vitesse 0,9.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "tech-stt",
+   "text": "La dictée utilise Whisper small sur le processeur avec deux threads.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "tech-memory-qdrant",
+   "text": "Qdrant sera un index dérivé et reconstructible ; le Markdown reste canonique.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "tech-darme",
+   "text": "DARME surveille les services systemd et le disque du journal, sans pouvoir d'action.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "fiction-nas",
+   "text": "Dans l'histoire, le robot Nas traverse le désert pour retrouver sa sœur.",
+   "kind": "fiction",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "fiction-mercure",
+   "text": "Le dieu Mercure apporte un message aux habitants de la cité flottante.",
+   "kind": "fiction",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "science-mercure",
+   "text": "Mercure est la planète la plus proche du Soleil.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "chem-mercure",
+   "text": "Le mercure est un métal liquide toxique à température ambiante.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "person-paul-plumber",
+   "text": "Paul le plombier viendra réparer la fuite de la cuisine jeudi.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "person-paul-cousin",
+   "text": "Mon cousin Paul fête son anniversaire le 3 novembre.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "pref-coffee",
+   "text": "Je préfère le café sans sucre le matin.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "pref-tea",
+   "text": "Le soir, je bois plutôt une tisane à la verveine.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "pref-no-meat",
+   "text": "Je ne mange pas de viande le vendredi.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "routine-garden",
+   "text": "Arroser les tomates du jardin tous les deux jours en été.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "routine-car",
+   "text": "La révision de la Toyota est prévue en mars chez le garagiste.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "cond-backup",
+   "text": "Si la sauvegarde échoue deux nuits de suite, prévenir toytoy par message.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "cond-heating",
+   "text": "Allumer le chauffage seulement si la température descend sous 18 degrés.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "date-meeting",
+   "text": "La réunion avec l'électricien a été déplacée au mardi 14 octobre.",
+   "kind": "conversation",
+   "date": "2026-10-01"
+  },
+  {
+   "id": "date-meeting-old",
+   "text": "La réunion avec l'électricien aura lieu le lundi 6 octobre.",
+   "kind": "conversation",
+   "date": "2026-09-25"
+  },
+  {
+   "id": "distract-photos",
+   "text": "J'ai trié les photos de vacances dans un album numérique.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "distract-port",
+   "text": "Le bateau est resté au port de Marseille pendant la tempête.",
+   "kind": "fiction",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "distract-carte",
+   "text": "La carte postale de grand-mère est arrivée hier.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  },
+  {
+   "id": "distract-serveur",
+   "text": "Le serveur du restaurant a recommandé le plat du jour.",
+   "kind": "conversation",
+   "date": "2026-09-01"
+  }
+ ],
+ "questions": [
+  {
+   "id": "para-1",
+   "question": "À quelle heure se fait la copie de sécurité des images ?",
+   "expected": [
+    "tech-nas-backup"
+   ],
+   "category": "paraphrase",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "para-2",
+   "question": "Quel logiciel lit les réponses à voix haute ?",
+   "expected": [
+    "tech-voice"
+   ],
+   "category": "paraphrase",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "para-3",
+   "question": "Comment Eidolon transcrit-il ce que je dis ?",
+   "expected": [
+    "tech-stt"
+   ],
+   "category": "paraphrase",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "para-4",
+   "question": "Qu'est-ce que je bois au réveil ?",
+   "expected": [
+    "pref-coffee"
+   ],
+   "category": "paraphrase",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "para-5",
+   "question": "Quand faut-il donner de l'eau aux plantes du potager ?",
+   "expected": [
+    "routine-garden"
+   ],
+   "category": "paraphrase",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "direct-1",
+   "question": "Quand le NAS sauvegarde-t-il les photos ?",
+   "expected": [
+    "tech-nas-backup"
+   ],
+   "category": "direct",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "direct-2",
+   "question": "Qui vient réparer la fuite de la cuisine ?",
+   "expected": [
+    "person-paul-plumber"
+   ],
+   "category": "direct",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "direct-3",
+   "question": "Quand est la révision de la Toyota ?",
+   "expected": [
+    "routine-car"
+   ],
+   "category": "direct",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "direct-4",
+   "question": "Que surveille DARME ?",
+   "expected": [
+    "tech-darme"
+   ],
+   "category": "direct",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "neg-1",
+   "question": "Faut-il acheter la V100 cette semaine ?",
+   "expected": [
+    "tech-gpu-buy-new"
+   ],
+   "category": "negation",
+   "check": {
+    "excerpt_contains": "ne pas"
+   },
+   "notes": "la version corrigée et datée porte la négation"
+  },
+  {
+   "id": "neg-2",
+   "question": "Puis-je formater le NAS ?",
+   "expected": [
+    "tech-nas-format"
+   ],
+   "category": "negation",
+   "check": {
+    "excerpt_contains": "Ne jamais"
+   },
+   "notes": ""
+  },
+  {
+   "id": "neg-3",
+   "question": "Est-ce que je mange de la viande le vendredi ?",
+   "expected": [
+    "pref-no-meat"
+   ],
+   "category": "negation",
+   "check": {
+    "excerpt_contains": "ne mange pas"
+   },
+   "notes": ""
+  },
+  {
+   "id": "corr-1",
+   "question": "Sur quel port écoute l'API Core ?",
+   "expected": [
+    "tech-core-port-new"
+   ],
+   "category": "corrected",
+   "check": {
+    "before": "tech-core-port-old"
+   },
+   "notes": ""
+  },
+  {
+   "id": "corr-2",
+   "question": "Quand a lieu la réunion avec l'électricien ?",
+   "expected": [
+    "date-meeting"
+   ],
+   "category": "corrected",
+   "check": {
+    "before": "date-meeting-old"
+   },
+   "notes": ""
+  },
+  {
+   "id": "corr-3",
+   "question": "Doit-on acheter la V100 ?",
+   "expected": [
+    "tech-gpu-buy-new"
+   ],
+   "category": "corrected",
+   "check": {
+    "before": "tech-gpu-buy-old"
+   },
+   "notes": ""
+  },
+  {
+   "id": "tf-1",
+   "question": "Le NAS sauvegarde-t-il les photos ?",
+   "expected": [
+    "tech-nas-backup"
+   ],
+   "category": "tech_vs_fiction",
+   "check": {
+    "not_top": "fiction-nas"
+   },
+   "notes": ""
+  },
+  {
+   "id": "tf-2",
+   "question": "Quel port réseau utilise Core ?",
+   "expected": [
+    "tech-core-port-new"
+   ],
+   "category": "tech_vs_fiction",
+   "check": {
+    "not_top": "distract-port"
+   },
+   "notes": ""
+  },
+  {
+   "id": "hom-1",
+   "question": "Quelle est la planète la plus proche du Soleil ?",
+   "expected": [
+    "science-mercure"
+   ],
+   "category": "homonym",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "hom-2",
+   "question": "Le mercure est-il dangereux ?",
+   "expected": [
+    "chem-mercure"
+   ],
+   "category": "homonym",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "hom-3",
+   "question": "Quand est l'anniversaire de mon cousin Paul ?",
+   "expected": [
+    "person-paul-cousin"
+   ],
+   "category": "homonym",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "hom-4",
+   "question": "Quand vient Paul le plombier ?",
+   "expected": [
+    "person-paul-plumber"
+   ],
+   "category": "homonym",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "cond-1",
+   "question": "Que faire si la sauvegarde échoue ?",
+   "expected": [
+    "cond-backup"
+   ],
+   "category": "condition",
+   "check": {
+    "excerpt_contains": "Si la sauvegarde"
+   },
+   "notes": ""
+  },
+  {
+   "id": "cond-2",
+   "question": "Quand allumer le chauffage ?",
+   "expected": [
+    "cond-heating"
+   ],
+   "category": "condition",
+   "check": {
+    "excerpt_contains": "seulement si"
+   },
+   "notes": ""
+  },
+  {
+   "id": "abs-1",
+   "question": "Quel est le numéro de téléphone du vétérinaire ?",
+   "expected": [],
+   "category": "absence",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "abs-2",
+   "question": "Quelle est la marque de la machine à laver ?",
+   "expected": [],
+   "category": "absence",
+   "check": null,
+   "notes": ""
+  },
+  {
+   "id": "abs-3",
+   "question": "Combien de cartes graphiques possède le serveur de rendu vidéo ?",
+   "expected": [],
+   "category": "absence",
+   "check": null,
+   "notes": "mots proches de documents GPU/serveur, sans réponse"
+  },
+  {
+   "id": "abs-4",
+   "question": "Quand est l'anniversaire de Paul le plombier ?",
+   "expected": [],
+   "category": "absence",
+   "check": null,
+   "notes": "Paul existe deux fois, mais cette information n'existe pas"
+  }
+ ]
+}

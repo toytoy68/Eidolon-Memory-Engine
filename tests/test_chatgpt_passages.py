@@ -102,3 +102,54 @@ def test_passage_options_are_explicit_and_validated(tmp_path):
                     {'passage_chars':80}):
         with pytest.raises(ValueError):
             backend.search('',options)
+
+
+# --- A5-02 : contexte gauche et négation (politique v3) ----------------------
+
+def one(tmp_path, query, text, budget=200):
+    _, bundle = recall(tmp_path, query, [message(text)], max_item_chars=budget, max_chars=budget)
+    item = bundle.items[0]
+    ref = item.excerpt_reference
+    assert text[ref['start']:ref['end']] == item.content          # offsets stay exact
+    assert ref['policy'] == 'chatgpt-message-passage-v3'
+    return item, ref
+
+
+def test_negation_before_the_term_is_kept(tmp_path):
+    item, ref = one(tmp_path, 'V100', 'Ne pas acheter la V100 cette semaine.')
+    assert item.content == 'Ne pas acheter la V100 cette semaine.'
+    assert (ref['left_context'], ref['left_markers_dropped']) == ('sentence', 0)
+
+
+def test_condition_correction_subject_and_relative_date_are_kept(tmp_path):
+    cases = [('V100', "Si le budget le permet, prendre la V100.", "Si le budget"),
+             ('V100', "Correction : Paul n'a finalement pas commandé la V100.", "Correction"),
+             ('NAS', "Marie, pas toi, redémarre le NAS demain.", "Marie, pas toi"),
+             ('sauvegarde', "Il y a deux jours, la sauvegarde a échoué.", "Il y a deux jours")]
+    for query, text, head in cases:
+        item, _ = one(tmp_path / query / head[:3], query, text)
+        assert item.content.startswith(head), (text, item.content)
+
+
+def test_only_the_matching_sentence_is_taken_not_the_previous_ones(tmp_path):
+    text = "Le NAS est neuf. Ne jamais formater le NAS sans sauvegarde."
+    item, ref = one(tmp_path, 'formater', text)
+    assert item.content.startswith('Ne jamais formater') and ref['left_context'] == 'sentence'
+
+
+def test_long_sentence_partial_left_context_is_flagged_with_dropped_markers(tmp_path):
+    text = 'Ne pas ' + 'vraiment ' * 30 + 'acheter la V100 maintenant.'
+    item, ref = one(tmp_path, 'V100', text, budget=60)
+    assert ref['left_context'] == 'partial' and ref['left_markers_dropped'] == 2    # "ne", "pas" outside
+    assert 'V100' in item.content and len(item.content) <= 60
+    assert not item.content.startswith('raiment')                                  # never a cut word
+
+
+def test_term_alone_fits_but_no_room_for_context(tmp_path):
+    item, ref = one(tmp_path, 'Eidolon', 'Ce soir, Eidolon', budget=7)
+    assert item.content == 'Eidolon' and ref['left_context'] == 'none' and ref['left_markers_dropped'] == 0
+
+
+def test_term_at_sentence_start_reports_match(tmp_path):
+    _, ref = one(tmp_path, 'Eidolon', 'Eidolon garde la mémoire.')
+    assert ref['left_context'] == 'match' and ref['start'] == 0

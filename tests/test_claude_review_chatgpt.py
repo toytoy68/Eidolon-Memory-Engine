@@ -187,10 +187,11 @@ def test_decomposed_accent_in_archive_matches_composed_query(tmp_path):
     assert items and 'moire' in items[0].content
 
 
-def test_passage_starts_at_first_matched_term_without_left_context(tmp_path):
-    """Characterization: the excerpt begins exactly on a query term."""
+def test_passage_keeps_its_sentence_start_when_the_budget_allows(tmp_path):
+    """A5-02, policy v3 (was: the excerpt began exactly on a query term)."""
     items = recall_one(tmp_path, 'robot', 'Hier soir, nous avons parlé du robot de cuisine.')
-    assert items[0].content.startswith('robot')
+    assert items[0].content.startswith('Hier soir')
+    assert items[0].excerpt_reference['left_context'] == 'sentence'
 
 
 # --- versioning of the importer (proposal v2) ---------------------------------

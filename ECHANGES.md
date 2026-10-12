@@ -2333,3 +2333,11 @@ restart vérifiée ; contrôle négatif rouge puis vert. [Preuves et limites](do
 Code testé dans un clone isolé sur Core ; serveur de recette arrêté, corpus et
 services Memory inchangés. Embeddings synthétiques : aucune pertinence mesurée.
 Raccordement du bridge, passages, embeddings réels et synchronisation restent ouverts.
+
+
+## G180 — Intégration Claude, 12 octobre 2026
+Patchs 0001–0004 intégrés, défaut de découpage au milieu des mots corrigé.
+Q4 retrait des hashes par texte ; Q3 fraîcheur explicite ; Q2 nouvel alias
+pour nouveau modèle. 2059 tests + 12 subtests et 30 tests serveur réussis.
+[Preuves et limites](docs/G180-CLAUDE-INTEGRATION-2026-10-12.md).
+Corpus figé inchangé, aucune activation Qdrant en production.

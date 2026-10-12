@@ -121,7 +121,7 @@ def test_payload_contains_no_body(index, client):
     index.upsert(Memory("a", content="private secret text", metadata={"private": "never copy"}))
     points, _ = client.scroll(index.alias, limit=10, with_vectors=False)
     doc = next(p for p in points if p.payload.get("kind") == "information")
-    assert set(doc.payload) == {"kind", "information_id", "revision", "text_sha256"}
+    assert set(doc.payload) == {"kind", "information_id", "revision"}
     assert "private" not in str(doc.payload)
 
 

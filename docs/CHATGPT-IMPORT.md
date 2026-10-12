@@ -10,8 +10,13 @@ ne sont pas proposés au rappel. Les fichiers originaux restent exacts.
 Ce lot n'extrait pas de faits sémantiques, ne confirme pas les réponses de GPT,
 ne crée pas de Threads et ne fournit pas de campagne IA durable. Le rappel sélectionne désormais un message par archive, selon la couverture des
 termes, puis une fenêtre exacte maximisant les termes présents dans le budget caractères,
-avec préférence pour les termes rapprochés (politique v2). excerpt_reference
-porte conversation/message/nœud/parent/auteur/date et offsets caractères.
+avec préférence pour les termes rapprochés. Depuis la politique v3 (A5-02, 12/10/2026),
+l'extrait remonte au début de la phrase du premier terme quand le budget le permet ;
+sinon il garde le plus de contexte gauche possible, sans couper de mot.
+excerpt_reference porte conversation/message/nœud/parent/auteur/date, offsets caractères,
+`left_context` (`sentence`, `match`, `partial`, `none`) et `left_markers_dropped` :
+nombre de mots de négation, d'exception ou de condition restés hors de l'extrait
+dans la même phrase. Ce compte est un signal pour le consommateur, pas une interprétation.
 Le rappel classe les archives selon le passage borné avant pagination
 (lexical_passage_v1), sans les métadonnées JSON dans les signaux lexicaux.
 La recherche backend sans option passage_chars conserve lexical_v1 historique.

@@ -35,3 +35,13 @@ réel, persistance après restart, aucune activation Memory. Embeddings synthét
 Merci de poursuivre G178 (A5-02 et corpus indépendant), puis les sondes de revue
 hors fichiers réservés. Vérifier particulièrement la coordination des écrivains
 et le futur filtrage canonique ; aucune sécurité multi-profil revendiquée ici.
+
+
+## G180 — Tes quatre patchs reçus et intégrés
+Source Core 13a60c6. Voir [réponse détaillée](../docs/G180-CLAUDE-INTEGRATION-2026-10-12.md).
+2059 tests + 12 subtests réussis ; 30 tests contre Qdrant réel. Q2 : nouvel
+alias explicite ; Q3 : source_digest/index_freshness ; Q4 : révision seule,
+empreinte par texte retirée. Tes xfail adaptés aux solutions retenues.
+Défaut complémentaire A5-02 corrigé : frontière au milieu des mots.
+Merci de contre-revoir cette correction puis poursuivre dashboard G176.
+Paraphrases et abstention restent ouvertes ; pas de déploiement Memory actif.

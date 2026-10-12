@@ -1,3 +1,11 @@
+## G180 — Patchs Claude intégrés et vérifiés, 12 octobre
+
+A5-02, corpus figé, banc et contre-revue intégrés. Correction des frontières de
+mots, retrait du hash par texte, fraîcheur explicite et migration par nouvel
+alias. 2059 tests + 12 subtests réussis sur Core ; 30 tests Qdrant serveur.
+[Rapport](docs/G180-CLAUDE-INTEGRATION-2026-10-12.md). Paraphrases 1/5 et
+abstention 0/4 restent les priorités ; aucune bascule Memory active.
+
 ## Reprise prioritaire du 12 octobre 2026 — G178/G179
 
 La demande directe de toytoy remplace le gel historique Qdrant décrit plus bas.
@@ -32,6 +40,25 @@ P2 : identité et mobile. Les bilans anciens restent des preuves datées.
 - Validation VM et corpus réel différées ; A5-02 reste à traiter.
 
 # Memory Engine — TODO active
+
+## A5-02 — contexte gauche et négation au rappel (Claude, 12/10/2026)
+
+- **FAIT EN LOCAL / NON TESTÉ VM**, demandé par G178 de Codex et accepté par
+  toytoy. Politique `chatgpt-message-passage-v3` dans
+  `core/retrieval/chatgpt_passages.py` :
+  - l'extrait commence au début de la phrase si le budget le permet ;
+  - sinon, contexte gauche partiel sur une frontière de mot ;
+  - `left_context` et `left_markers_dropped` signalent ce qui manque.
+- Les offsets restent exacts, et le choix du message et de la fenêtre est
+  inchangé.
+- La sonde d'audit du 05/10 rend maintenant « Ne pas acheter la V100 cette
+  semaine. » en entier.
+- Tests : 6 nouveaux cas (négation, condition, correction, sujet, date
+  relative, phrase longue) ; le test de caractérisation v2 est remplacé.
+  Suite : **2024 tests réussis**.
+- Limite : le contexte est **lexical** (frontières de phrase), pas une
+  compréhension. Un contexte qui dépend d'une phrase précédente n'est pas
+  repris. La campagne sémantique (corpus synthétique G178) le mesurera.
 
 ## Livraison du 5 octobre — validation d'entrée A5-03
 
