@@ -12,6 +12,7 @@ class PreparedWork:
     candidate_ids: tuple[str, ...]
     review_ids: tuple[str, ...]
     blocked_ids: tuple[str, ...]
+    waiting_ids: tuple[str, ...] = ()
 
 
 def prepare_work(preview, *, allow_upsert=False):
@@ -23,8 +24,10 @@ def prepare_work(preview, *, allow_upsert=False):
     if preview.requires_review:
         return PreparedWork(
             (), tuple(a.information_id for a in preview.actions),
-            tuple(a.information_id for a in classified.refused))
+            tuple(a.information_id for a in classified.refused),
+            tuple(a.information_id for a in classified.waiting))
     return PreparedWork(
         tuple(a.information_id for a in classified.proposals),
         tuple(a.information_id for a in classified.review),
-        tuple(a.information_id for a in classified.refused))
+        tuple(a.information_id for a in classified.refused),
+        tuple(a.information_id for a in classified.waiting))
