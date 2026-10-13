@@ -69,7 +69,10 @@ class ChangeJournal:
                 updated REAL NOT NULL,
                 terminal_reason TEXT
             )""")
-            db.execute("CREATE INDEX IF NOT EXISTS intent_state_seq ON intents(state,seq)")
+            if is_new:
+                db.execute("CREATE INDEX intent_state_seq ON intents(state,seq)")
+            elif db.execute("SELECT 1 FROM sqlite_master WHERE type='index' AND name='intent_state_seq'").fetchone() is None:
+                raise ValueError("existing journal index missing; explicit repair required")
             if is_new:
                 db.execute("PRAGMA user_version=2")
 
