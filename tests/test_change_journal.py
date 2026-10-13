@@ -34,7 +34,7 @@ def test_transition_cannot_skip_canonical_ack(tmp_path):
     with pytest.raises(ValueError, match="transition"):
         journal.indexed(seq)
     journal.published(seq)
-    with pytest.raises(ValueError, match="transition"):
+    with pytest.raises(ValueError, match="unknown intent"):
         journal.published(seq + 1)
 
 
