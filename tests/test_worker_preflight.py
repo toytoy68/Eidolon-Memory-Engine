@@ -18,7 +18,8 @@ def test_upsert_only_when_explicitly_enabled():
     result = preflight([action("INDEX_UPSERT"), action("ENQUEUE_UPSERT"),
                         action("MARK_PUBLISHED"), action("ENQUEUE_DELETE")],
                        allow_upsert=True)
-    assert len(result.proposals) == 3
+    assert len(result.proposals) == 2
+    assert "MARK_PUBLISHED" in [a.kind for a in result.review]
     assert [a.kind for a in result.review] == ["ENQUEUE_DELETE"]
 
 
@@ -30,3 +31,8 @@ def test_unknown_action_is_rejected():
 def test_invalid_policy_is_rejected():
     with pytest.raises(ValueError, match="policy"):
         preflight([], allow_upsert=1)
+
+def test_publication_is_not_executable_even_with_upsert_enabled():
+    result = preflight([action("MARK_PUBLISHED")], allow_upsert=True)
+    assert result.proposals == ()
+    assert [a.kind for a in result.review] == ["MARK_PUBLISHED"]
