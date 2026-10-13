@@ -47,5 +47,6 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
                 raise ValueError("invalid intent timestamp")
             ages[intent.sequence] = now - intent.created
     actions = reconcile_plan(pending, canonical, indexed, ages=ages, grace_seconds=grace_seconds)
-    review = any(action.kind in ("INTEGRITY_ALERT", "WAIT") for action in actions)
+    unknown_ids = (set(indexed) | {intent.information_id for intent in pending}) - set(canonical)
+    review = bool(unknown_ids) or any(action.kind in ("INTEGRITY_ALERT", "WAIT") for action in actions)
     return ReconcilePreview(actions, len(pending), float(now), review)
