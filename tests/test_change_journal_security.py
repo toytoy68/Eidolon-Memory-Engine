@@ -42,4 +42,4 @@ def test_state_transition_does_not_go_backwards(tmp_path):
     journal.indexed(seq)
     with pytest.raises(ValueError, match="transition"):
         journal.published(seq)
-    assert journal.inspect(seq) if hasattr(journal, "inspect") else not journal.pending()
+    assert journal.pending() == ()
