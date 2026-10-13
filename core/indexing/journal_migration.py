@@ -39,6 +39,8 @@ def migrate_v2(path):
             expected = ["seq","information_id","revision","operation","canonical_sha256","state","created","updated"]
             if columns != expected:
                 raise ValueError("unknown journal columns")
+            sequence_row = db.execute("SELECT seq FROM sqlite_sequence WHERE name='intents'").fetchone()
+            prior_sequence = sequence_row[0] if sequence_row else 0
             db.execute("""CREATE TABLE intents_v2 (
                 seq INTEGER PRIMARY KEY AUTOINCREMENT,
                 information_id TEXT NOT NULL,
@@ -58,6 +60,10 @@ def migrate_v2(path):
                 raise ValueError("migration count mismatch")
             db.execute("DROP TABLE intents")
             db.execute("ALTER TABLE intents_v2 RENAME TO intents")
+            migrated_max = db.execute("SELECT COALESCE(MAX(seq),0) FROM intents").fetchone()[0]
+            db.execute("DELETE FROM sqlite_sequence WHERE name='intents'")
+            db.execute("INSERT INTO sqlite_sequence(name,seq) VALUES ('intents',?)",
+                       (max(prior_sequence, migrated_max),))
             db.execute("CREATE INDEX IF NOT EXISTS intent_state_seq ON intents(state,seq)")
             db.execute("PRAGMA user_version=2")
             db.commit()
