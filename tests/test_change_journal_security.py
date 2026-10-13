@@ -31,7 +31,7 @@ def test_public_parent_is_rejected(tmp_path):
     directory = tmp_path / "public"
     directory.mkdir(mode=0o755)
     directory.chmod(0o755)
-    with pytest.raises(ValueError, match="private"):
+    with pytest.raises(ValueError, match="accessible to others"):
         ChangeJournal(directory / "journal.sqlite3")
 
 
