@@ -11,7 +11,7 @@ def preview(kinds, review=False):
 
 def test_default_worker_preparation_has_no_candidates():
     result = prepare_work(preview(["INDEX_UPSERT"]))
-    assert result.candidate_ids == ("",) if False else ()
+    assert result.candidate_ids == ()
     assert result.blocked_ids == ("doc-0",)
 
 
