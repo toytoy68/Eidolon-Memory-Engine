@@ -7,13 +7,13 @@ def test_passages_reconstruct_exact_source():
     assert len(chunks) > 2
     assert chunks[0].start == 0
     assert chunks[-1].end == len(text)
-    assert all(verify_passage(p, text) for p in chunks)
+    assert all(verify_passage(p, text, document_id="archive-01", revision=3) for p in chunks)
     assert len({p.passage_id for p in chunks}) == len(chunks)
 
 def test_change_invalidates_passage():
     text = "a" * 400
     passage = split_passages("archive", 1, text, size=256)[0]
-    assert not verify_passage(passage, "b" + text[1:])
+    assert not verify_passage(passage, "b" + text[1:], document_id="archive", revision=1)
 
 def test_revision_changes_identity():
     a = split_passages("archive", 1, "a" * 256)[0]
@@ -35,8 +35,14 @@ def test_passage_rejects_forged_identity_and_wrong_canonical_metadata():
     assert verify_passage(passage, text, document_id="archive", revision=3)
     assert not verify_passage(passage, text, document_id="other", revision=3)
     assert not verify_passage(passage, text, document_id="archive", revision=4)
-    assert not verify_passage(replace(passage, passage_id="0" * 64), text)
-    assert not verify_passage(replace(passage, document_id="other"), text)
-    assert not verify_passage(replace(passage, revision=4), text)
-    assert not verify_passage(replace(passage, size=512), text)
-    assert not verify_passage(replace(passage, overlap=16), text)
+    assert not verify_passage(replace(passage, passage_id="0" * 64), text, document_id="archive", revision=3)
+    assert not verify_passage(replace(passage, document_id="other"), text, document_id="archive", revision=3)
+    assert not verify_passage(replace(passage, revision=4), text, document_id="archive", revision=3)
+    assert not verify_passage(replace(passage, size=512), text, document_id="archive", revision=3)
+    assert not verify_passage(replace(passage, overlap=16), text, document_id="archive", revision=3)
+
+def test_trusted_identity_is_required():
+    text = "canonical " * 50
+    passage = split_passages("doc", 1, text)[0]
+    with pytest.raises(TypeError):
+        verify_passage(passage, text)
