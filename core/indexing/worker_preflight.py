@@ -6,8 +6,8 @@ before executing each approved operation.
 """
 from dataclasses import dataclass
 
-ALLOWED_PROPOSALS = frozenset({"INDEX_UPSERT", "ENQUEUE_UPSERT", "MARK_PUBLISHED"})
-REVIEW_ACTIONS = frozenset({"INDEX_DELETE", "ENQUEUE_DELETE", "CLOSE_ABANDONED",
+ALLOWED_PROPOSALS = frozenset({"INDEX_UPSERT", "ENQUEUE_UPSERT"})
+REVIEW_ACTIONS = frozenset({"MARK_PUBLISHED", "INDEX_DELETE", "ENQUEUE_DELETE", "CLOSE_ABANDONED",
                             "INTEGRITY_ALERT", "CLOSE_SUPERSEDED", "WAIT"})
 
 
@@ -19,7 +19,7 @@ class WorkerPreflight:
 
 
 def preflight(actions, *, allow_upsert=False):
-    """Classify pure planner actions. Defaults to no executable proposals."""
+    """Classify untrusted plans; never grant execution authority.\n\n    Even with allow_upsert=True, callers must revalidate canonical state,\n    permissions and model identity before any effect. MARK_PUBLISHED is\n    journal state recovery, not an index operation.\n    """
     if type(allow_upsert) is not bool:
         raise ValueError("invalid preflight policy")
     proposals, review, refused = [], [], []
