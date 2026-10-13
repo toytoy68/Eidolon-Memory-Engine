@@ -8,7 +8,8 @@ from dataclasses import dataclass
 
 ALLOWED_PROPOSALS = frozenset({"INDEX_UPSERT", "ENQUEUE_UPSERT"})
 REVIEW_ACTIONS = frozenset({"MARK_PUBLISHED", "INDEX_DELETE", "ENQUEUE_DELETE", "CLOSE_ABANDONED",
-                            "INTEGRITY_ALERT", "CLOSE_SUPERSEDED", "WAIT"})
+                            "INTEGRITY_ALERT", "CLOSE_SUPERSEDED"})
+WAIT_ACTIONS = frozenset({"WAIT"})
 
 
 @dataclass(frozen=True)
@@ -16,13 +17,14 @@ class WorkerPreflight:
     proposals: tuple
     review: tuple
     refused: tuple
+    waiting: tuple = ()
 
 
 def preflight(actions, *, allow_upsert=False):
     """Classify untrusted plans; never grant execution authority.\n\n    Even with allow_upsert=True, callers must revalidate canonical state,\n    permissions and model identity before any effect. MARK_PUBLISHED is\n    journal state recovery, not an index operation.\n    """
     if type(allow_upsert) is not bool:
         raise ValueError("invalid preflight policy")
-    proposals, review, refused = [], [], []
+    proposals, review, refused, waiting = [], [], [], []
     for action in actions:
         kind = getattr(action, "kind", None)
         if kind in ALLOWED_PROPOSALS:
@@ -32,6 +34,8 @@ def preflight(actions, *, allow_upsert=False):
                 refused.append(action)
         elif kind in REVIEW_ACTIONS:
             review.append(action)
+        elif kind in WAIT_ACTIONS:
+            waiting.append(action)
         else:
             raise ValueError("unknown reconciliation action")
-    return WorkerPreflight(tuple(proposals), tuple(review), tuple(refused))
+    return WorkerPreflight(tuple(proposals), tuple(review), tuple(refused), tuple(waiting))
