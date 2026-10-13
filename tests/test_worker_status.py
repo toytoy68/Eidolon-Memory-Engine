@@ -38,3 +38,8 @@ def test_invalid_flags_fail_closed():
     with pytest.raises(ValueError):
         summarize_work(PreparedWork((), (), ()), index_available=1,
                        canonical_complete=True, model_compatible=True)
+
+def test_blocked_work_is_not_reported_current():
+    result = summarize_work(PreparedWork((), (), ("doc",)),
+                            index_available=True, canonical_complete=True, model_compatible=True)
+    assert result.state == "POLICY_BLOCKED"
