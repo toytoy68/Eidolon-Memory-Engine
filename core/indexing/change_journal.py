@@ -62,9 +62,10 @@ class ChangeJournal:
                 revision INTEGER NOT NULL,
                 operation TEXT NOT NULL,
                 canonical_sha256 TEXT,
-                state TEXT NOT NULL CHECK(state IN ('INTENT','PUBLISHED','INDEXED')),
+                state TEXT NOT NULL CHECK(state IN ('INTENT','PUBLISHED','INDEXED','ABANDONED','SUPERSEDED')),
                 created REAL NOT NULL,
-                updated REAL NOT NULL
+                updated REAL NOT NULL,
+                terminal_reason TEXT
             )""")
             db.execute("CREATE INDEX IF NOT EXISTS intent_state_seq ON intents(state,seq)")
 
