@@ -34,6 +34,11 @@ def preflight(actions, *, allow_upsert=False):
                 or (action.sequence is not None and action.sequence < 1)):
             raise ValueError("invalid reconciliation action")
         kind = action.kind
+        if kind in ALLOWED_PROPOSALS and (
+                action.revision is None or
+                (kind == "INDEX_UPSERT" and action.sequence is None) or
+                (kind == "ENQUEUE_UPSERT" and action.sequence is not None)):
+            raise ValueError("invalid upsert action provenance")
         if kind in ALLOWED_PROPOSALS:
             if allow_upsert:
                 proposals.append(action)
