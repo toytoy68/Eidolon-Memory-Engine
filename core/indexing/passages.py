@@ -19,6 +19,8 @@ class Passage:
     text_sha256: str
     passage_id: str
     text: str
+    size: int = 1200
+    overlap: int = 160
 
 def split_passages(document_id: str, revision: int, text: str, *, size: int = 1200, overlap: int = 160):
     if not isinstance(document_id, str) or re.fullmatch(r"[A-Za-z0-9._-]{1,256}", document_id) is None:
@@ -34,15 +36,36 @@ def split_passages(document_id: str, revision: int, text: str, *, size: int = 12
         chunk = text[start:end]
         digest = sha256(chunk.encode("utf-8")).hexdigest()
         identity = sha256(f"passage-v1:{document_id}:{revision}:{size}:{overlap}:{start}:{end}:{digest}".encode()).hexdigest()
-        out.append(Passage(document_id, revision, start, end, digest, identity, chunk))
+        out.append(Passage(document_id, revision, start, end, digest, identity, chunk, size, overlap))
         if end == len(text):
             break
     return tuple(out)
 
-def verify_passage(passage: Passage, canonical_text: str):
+def verify_passage(passage: Passage, canonical_text: str, *,
+                   document_id: str | None = None, revision: int | None = None):
+    """Validate content and the self-consistency of the passage identity.
+
+    The caller MUST supply trusted canonical document_id and revision for a
+    security-sensitive citation. Legacy callers without them get only
+    internal identity consistency, not proof of canonical ownership.
+    """
     if not isinstance(passage, Passage) or not isinstance(canonical_text, str):
         return False
-    if not 0 <= passage.start < passage.end <= len(canonical_text):
+    if document_id is not None and passage.document_id != document_id:
+        return False
+    if revision is not None and passage.revision != revision:
+        return False
+    if (type(passage.revision) is not int or passage.revision < 1
+            or type(passage.size) is not int or type(passage.overlap) is not int
+            or not 128 <= passage.size <= 8192
+            or not 0 <= passage.overlap < passage.size
+            or not 0 <= passage.start < passage.end <= len(canonical_text)
+            or passage.end - passage.start > passage.size):
         return False
     value = canonical_text[passage.start:passage.end]
-    return (value == passage.text and sha256(value.encode("utf-8")).hexdigest() == passage.text_sha256)
+    digest = sha256(value.encode("utf-8")).hexdigest()
+    expected = sha256(
+        f"passage-v1:{passage.document_id}:{passage.revision}:{passage.size}:{passage.overlap}:{passage.start}:{passage.end}:{digest}".encode()
+    ).hexdigest()
+    return (value == passage.text and digest == passage.text_sha256
+            and passage.passage_id == expected)
