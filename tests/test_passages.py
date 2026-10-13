@@ -27,3 +27,16 @@ def test_invalid_chunking(size, overlap):
 
 def test_empty_document_has_no_passage():
     assert split_passages("archive",1,"") == ()
+
+def test_passage_rejects_forged_identity_and_wrong_canonical_metadata():
+    from dataclasses import replace
+    text = "Eidolon remembers a canonical conversation. " * 20
+    passage = split_passages("archive", 3, text, size=256, overlap=32)[0]
+    assert verify_passage(passage, text, document_id="archive", revision=3)
+    assert not verify_passage(passage, text, document_id="other", revision=3)
+    assert not verify_passage(passage, text, document_id="archive", revision=4)
+    assert not verify_passage(replace(passage, passage_id="0" * 64), text)
+    assert not verify_passage(replace(passage, document_id="other"), text)
+    assert not verify_passage(replace(passage, revision=4), text)
+    assert not verify_passage(replace(passage, size=512), text)
+    assert not verify_passage(replace(passage, overlap=16), text)
