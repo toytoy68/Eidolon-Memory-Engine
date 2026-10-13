@@ -32,8 +32,8 @@ def test_stale_intent_may_be_closed_after_grace(tmp_path):
     journal = ChangeJournal(tmp_path / "changes.sqlite3")
     journal.begin("doc", 1, "UPSERT", "a" * 64)
     created = journal.pending()[0].created
-    result = preview_reconciliation(journal, {}, {}, now=created + 601)
-    assert result.actions[0].kind == "CLOSE_ABANDONED"
+    from core.indexing.reconcile_plan import ABSENT\n    result = preview_reconciliation(journal, {"doc": ABSENT}, {}, now=created + 601)
+    assert result.actions[0].kind == "CLOSE_ABANDONED"\n    assert result.requires_review
     assert journal.pending()[0].state == "INTENT"
 
 
@@ -64,3 +64,12 @@ def test_proven_absence_allows_deletion_candidate(tmp_path):
     result = preview_reconciliation(journal, {"removed": ABSENT}, {"removed": 2})
     assert [action.kind for action in result.actions] == ["ENQUEUE_DELETE"]
     assert not result.requires_review
+
+
+def test_exact_limit_is_not_truncated(tmp_path):
+    journal = ChangeJournal(tmp_path / "changes.sqlite3")
+    journal.begin("doc", 1, "DELETE")
+    created = journal.pending()[0].created
+    from core.indexing.reconcile_plan import ABSENT
+    result = preview_reconciliation(journal, {"doc": ABSENT}, {}, now=created + 1, limit=1)
+    assert result.pending_count == 1
