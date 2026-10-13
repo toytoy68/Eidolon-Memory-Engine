@@ -47,3 +47,18 @@ def test_rejects_unknown_schema_without_mutation(tmp_path):
         migrate_v2(path)
     with sqlite3.connect(path) as db:
         assert [r[1] for r in db.execute("PRAGMA table_info(intents)")] == ["x"]
+
+
+def test_native_v2_sets_version_without_rewriting_existing_v1(tmp_path):
+    native = tmp_path / "native.sqlite3"
+    ChangeJournal(native)
+    with sqlite3.connect(native) as db:
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert "terminal_reason" in {r[1] for r in db.execute("PRAGMA table_info(intents)")}
+
+    from tests.legacy_journal_fixture import legacy_v1
+    old = tmp_path / "legacy.sqlite3"
+    legacy_v1(old)
+    with sqlite3.connect(old) as db:
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 0
+        assert "terminal_reason" not in {r[1] for r in db.execute("PRAGMA table_info(intents)")}
