@@ -41,6 +41,7 @@ def test_rejects_unknown_schema_without_mutation(tmp_path):
     path = tmp_path / "journal.sqlite3"
     with sqlite3.connect(path) as db:
         db.execute("CREATE TABLE intents (x INTEGER)")
+    path.chmod(0o600)
     with pytest.raises(ValueError, match="unknown journal schema"):
         migrate_v2(path)
     with sqlite3.connect(path) as db:
