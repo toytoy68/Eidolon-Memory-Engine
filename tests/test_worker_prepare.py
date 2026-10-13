@@ -36,3 +36,17 @@ def test_waiting_is_reported_without_human_review():
     assert result.candidate_ids == ()
     assert result.review_ids == ()
     assert result.waiting_ids == ("doc-0",)
+
+def test_wait_does_not_become_human_review_during_global_review():
+    result = prepare_work(preview(["WAIT", "INTEGRITY_ALERT"], review=True), allow_upsert=True)
+    assert result.candidate_ids == ()
+    assert result.review_ids == ("doc-1",)
+    assert result.waiting_ids == ("doc-0",)
+
+
+def test_forged_preview_object_is_rejected():
+    class Forged:
+        actions = ()
+        requires_review = False
+    with pytest.raises(ValueError, match="preview"):
+        prepare_work(Forged(), allow_upsert=True)
