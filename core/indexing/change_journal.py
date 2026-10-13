@@ -15,6 +15,9 @@ This module neither mutates canonical Markdown nor writes to Qdrant.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from contextlib import contextmanager, closing
+import os
+import stat
 from pathlib import Path
 import re
 import sqlite3
@@ -37,6 +40,19 @@ class ChangeIntent:
 class ChangeJournal:
     def __init__(self, path: str | Path):
         self.path = str(path)
+        parent = Path(self.path).parent
+        if not parent.is_dir() or parent.is_symlink():
+            raise ValueError("journal parent must be an existing private directory")
+        if stat.S_IMODE(parent.stat().st_mode) & 0o077:
+            raise ValueError("journal directory must not be accessible to others")
+        flags = os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC
+        fd = os.open(self.path, flags, 0o600)
+        try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & 0o077:
+                raise ValueError("journal file must be private and regular")
+        finally:
+            os.close(fd)
         # WAL is not a substitute for backups or canonical reconciliation.
         with self._db() as db:
             db.execute("""CREATE TABLE IF NOT EXISTS intents (
@@ -51,11 +67,13 @@ class ChangeJournal:
             )""")
             db.execute("CREATE INDEX IF NOT EXISTS intent_state_seq ON intents(state,seq)")
 
+    @contextmanager
     def _db(self):
-        db = sqlite3.connect(self.path, timeout=10)
-        db.execute("PRAGMA busy_timeout=10000")
-        db.execute("PRAGMA synchronous=FULL")
-        return db
+        with closing(sqlite3.connect(self.path, timeout=10)) as db:
+            db.execute("PRAGMA busy_timeout=10000")
+            db.execute("PRAGMA synchronous=FULL")
+            with db:
+                yield db
 
     def begin(self, information_id: str, revision: int, operation: str,
               canonical_sha256: str | None = None) -> int:
@@ -77,6 +95,7 @@ class ChangeJournal:
         if type(sequence) is not int or sequence < 1:
             raise ValueError("invalid sequence")
         with self._db() as db:
+            db.execute("BEGIN IMMEDIATE")
             row = db.execute("SELECT state FROM intents WHERE seq=?", (sequence,)).fetchone()
             if row is None:
                 raise ValueError("unknown intent")
@@ -84,8 +103,10 @@ class ChangeJournal:
                 return
             if row[0] != before:
                 raise ValueError("invalid state transition")
-            db.execute("UPDATE intents SET state=?,updated=? WHERE seq=?",
-                       (after, time.time(), sequence))
+            changed = db.execute("UPDATE intents SET state=?,updated=? WHERE seq=? AND state=?",
+                                 (after, time.time(), sequence, before))
+            if changed.rowcount != 1:
+                raise ValueError("concurrent state transition")
 
     def published(self, sequence: int) -> None:
         """Call only after the canonical rename and its durability checks."""
