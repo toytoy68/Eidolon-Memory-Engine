@@ -36,3 +36,9 @@ def test_publication_is_not_executable_even_with_upsert_enabled():
     result = preflight([action("MARK_PUBLISHED")], allow_upsert=True)
     assert result.proposals == ()
     assert [a.kind for a in result.review] == ["MARK_PUBLISHED"]
+
+def test_wait_is_not_a_human_review_or_executable():
+    result = preflight([action("WAIT")], allow_upsert=True)
+    assert result.proposals == ()
+    assert result.review == ()
+    assert [a.kind for a in result.waiting] == ["WAIT"]
