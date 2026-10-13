@@ -54,3 +54,14 @@ def test_duck_typed_action_is_rejected():
 def test_empty_action_identity_is_rejected():
     with pytest.raises(ValueError, match="invalid"):
         preflight([Action("INDEX_UPSERT", "", 1, 1, "bad")], allow_upsert=True)
+
+@pytest.mark.parametrize("bad", [
+    Action("INDEX_UPSERT", "doc", True, 1, "bad"),
+    Action("INDEX_UPSERT", "doc", 1, True, "bad"),
+    Action("INDEX_UPSERT", "doc", 0, 1, "bad"),
+    Action("INDEX_UPSERT", "doc", 1, 0, "bad"),
+    Action("INDEX_UPSERT", "doc", 1, 1, None),
+])
+def test_malformed_action_metadata_rejected(bad):
+    with pytest.raises(ValueError, match="invalid"):
+        preflight([bad], allow_upsert=True)
