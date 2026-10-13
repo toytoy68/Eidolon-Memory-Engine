@@ -25,7 +25,7 @@ def prepare_work(preview, *, allow_upsert=False):
     if preview.requires_review:
         return PreparedWork(
             (), tuple(a.information_id for a in classified.review),
-            tuple(a.information_id for a in classified.refused),
+            tuple(a.information_id for a in classified.refused + classified.proposals),
             tuple(a.information_id for a in classified.waiting))
     return PreparedWork(
         tuple(a.information_id for a in classified.proposals),
