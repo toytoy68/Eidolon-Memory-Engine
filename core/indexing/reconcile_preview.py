@@ -53,5 +53,5 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
             raise ValueError("verified snapshots required")
     actions = reconcile_plan(pending, canonical, indexed, ages=ages, grace_seconds=grace_seconds)
     unknown_ids = (set(indexed) | {intent.information_id for intent in pending}) - set(canonical)
-    review = bool(unknown_ids) or any(action.kind in ("INTEGRITY_ALERT", "WAIT", "CLOSE_ABANDONED") for action in actions)
+    review = bool(unknown_ids) or any(action.kind in ("INTEGRITY_ALERT", "CLOSE_ABANDONED", "CLOSE_SUPERSEDED") for action in actions)
     return ReconcilePreview(actions, len(pending), float(now), review)
