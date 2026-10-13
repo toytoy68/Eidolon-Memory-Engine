@@ -35,6 +35,7 @@ class ChangeIntent:
     operation: str
     canonical_sha256: str | None
     state: str
+    created: float | None = None
 
 
 class ChangeJournal:
@@ -116,11 +117,40 @@ class ChangeJournal:
         """Call only after the worker revalidates canonical revision and index ack."""
         self._advance(sequence, "PUBLISHED", "INDEXED")
 
+    def close_terminal(self, sequence: int, state: str, reason: str) -> None:
+        """Close a reconciled intent only on an explicitly migrated v2 journal.
+
+        The caller must verify canonical state before invoking this method.
+        No automatic migration and no canonical or Qdrant mutation occur here.
+        """
+        if (type(sequence) is not int or sequence < 1
+                or state not in ("ABANDONED", "SUPERSEDED")
+                or type(reason) is not str or not 1 <= len(reason) <= 300
+                or any(ord(c) < 32 for c in reason)):
+            raise ValueError("invalid terminal transition")
+        with self._db() as db:
+            db.execute("BEGIN IMMEDIATE")
+            columns = {r[1] for r in db.execute("PRAGMA table_info(intents)")}
+            if "terminal_reason" not in columns:
+                raise ValueError("journal v2 migration required")
+            row = db.execute("SELECT state,terminal_reason FROM intents WHERE seq=?", (sequence,)).fetchone()
+            if row is None:
+                raise ValueError("unknown intent")
+            if row == (state, reason):
+                return
+            if row[0] not in ("INTENT", "PUBLISHED"):
+                raise ValueError("invalid state transition")
+            updated = db.execute(
+                "UPDATE intents SET state=?,terminal_reason=?,updated=? WHERE seq=? AND state=?",
+                (state, reason, time.time(), sequence, row[0]))
+            if updated.rowcount != 1:
+                raise ValueError("concurrent state transition")
+
     def pending(self, limit: int = 100) -> tuple[ChangeIntent, ...]:
         if type(limit) is not int or not 1 <= limit <= 1000:
             raise ValueError("invalid limit")
         with self._db() as db:
-            rows = db.execute("""SELECT seq,information_id,revision,operation,canonical_sha256,state
-                                 FROM intents WHERE state != 'INDEXED' ORDER BY seq LIMIT ?""",
+            rows = db.execute("""SELECT seq,information_id,revision,operation,canonical_sha256,state,created
+                                 FROM intents WHERE state IN ('INTENT','PUBLISHED') ORDER BY seq LIMIT ?""",
                               (limit,)).fetchall()
         return tuple(ChangeIntent(*row) for row in rows)
