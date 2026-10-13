@@ -4,7 +4,7 @@ import pytest
 
 
 def action(kind):
-    return Action(kind, "doc", 1, 1, "test")
+    return Action(kind, "doc", None if kind.startswith("ENQUEUE_") else 1, 1, "test")
 
 
 def test_default_denies_all_executable_actions():
@@ -64,4 +64,13 @@ def test_empty_action_identity_is_rejected():
 ])
 def test_malformed_action_metadata_rejected(bad):
     with pytest.raises(ValueError, match="invalid"):
+        preflight([bad], allow_upsert=True)
+
+@pytest.mark.parametrize("bad", [
+    Action("INDEX_UPSERT", "doc", None, 1, "bad"),
+    Action("ENQUEUE_UPSERT", "doc", 1, 1, "bad"),
+    Action("INDEX_UPSERT", "doc", 1, None, "bad"),
+])
+def test_upsert_requires_matching_provenance_shape(bad):
+    with pytest.raises(ValueError, match="provenance"):
         preflight([bad], allow_upsert=True)
