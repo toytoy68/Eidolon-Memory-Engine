@@ -46,3 +46,8 @@ def test_trusted_identity_is_required():
     passage = split_passages("doc", 1, text)[0]
     with pytest.raises(TypeError):
         verify_passage(passage, text)
+
+@pytest.mark.parametrize("doc,rev", [("doc", True), ("doc", 0), (None, 1), (123, 1)])
+def test_trusted_canonical_identity_types_must_be_valid(doc, rev):
+    passage = split_passages("doc", 1, "a" * 128)[0]
+    assert not verify_passage(passage, "a" * 128, document_id=doc, revision=rev)
