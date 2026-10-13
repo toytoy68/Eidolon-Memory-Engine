@@ -24,7 +24,7 @@ def test_explicit_upsert_is_only_a_candidate():
 def test_review_required_blocks_all_candidates():
     result = prepare_work(preview(["INDEX_UPSERT", "INTEGRITY_ALERT"], review=True), allow_upsert=True)
     assert result.candidate_ids == ()
-    assert "doc-0" in result.review_ids
+    assert "doc-0" in result.blocked_ids
 
 
 def test_invalid_preview_is_rejected():
@@ -50,3 +50,9 @@ def test_forged_preview_object_is_rejected():
         requires_review = False
     with pytest.raises(ValueError, match="preview"):
         prepare_work(Forged(), allow_upsert=True)
+
+def test_global_review_preserves_deferred_candidate_as_blocked():
+    result = prepare_work(preview(["INDEX_UPSERT", "INTEGRITY_ALERT"], review=True), allow_upsert=True)
+    assert result.candidate_ids == ()
+    assert result.blocked_ids == ("doc-0",)
+    assert result.review_ids == ("doc-1",)
