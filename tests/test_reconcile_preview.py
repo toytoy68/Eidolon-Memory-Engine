@@ -32,14 +32,17 @@ def test_stale_intent_may_be_closed_after_grace(tmp_path):
     journal = ChangeJournal(tmp_path / "changes.sqlite3")
     journal.begin("doc", 1, "UPSERT", "a" * 64)
     created = journal.pending()[0].created
-    from core.indexing.reconcile_plan import ABSENT\n    result = preview_reconciliation(journal, {"doc": ABSENT}, {}, now=created + 601)
-    assert result.actions[0].kind == "CLOSE_ABANDONED"\n    assert result.requires_review
+    from core.indexing.reconcile_plan import ABSENT
+    result = preview_reconciliation(journal, {"doc": ABSENT}, {}, now=created + 601)
+    assert result.actions[0].kind == "CLOSE_ABANDONED"
+    assert result.requires_review
     assert journal.pending()[0].state == "INTENT"
 
 
 def test_reject_truncated_journal(tmp_path):
     journal = ChangeJournal(tmp_path / "changes.sqlite3")
     journal.begin("doc", 1, "DELETE")
+    journal.begin("doc2", 1, "DELETE")
     with pytest.raises(ValueError, match="truncated"):
         preview_reconciliation(journal, {}, {}, limit=1)
 
