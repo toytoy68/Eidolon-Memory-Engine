@@ -56,6 +56,7 @@ class ChangeJournal:
             os.close(fd)
         # WAL is not a substitute for backups or canonical reconciliation.
         with self._db() as db:
+            is_new = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='intents'").fetchone() is None
             db.execute("""CREATE TABLE IF NOT EXISTS intents (
                 seq INTEGER PRIMARY KEY AUTOINCREMENT,
                 information_id TEXT NOT NULL,
@@ -68,9 +69,7 @@ class ChangeJournal:
                 terminal_reason TEXT
             )""")
             db.execute("CREATE INDEX IF NOT EXISTS intent_state_seq ON intents(state,seq)")
-            version = db.execute("PRAGMA user_version").fetchone()[0]
-            columns = {r[1] for r in db.execute("PRAGMA table_info(intents)")}
-            if version == 0 and "terminal_reason" in columns:
+            if is_new:
                 db.execute("PRAGMA user_version=2")
 
     @contextmanager
