@@ -3,11 +3,12 @@ import sqlite3
 
 from core.indexing.change_journal import ChangeJournal
 from core.indexing.journal_migration import migrate_v2
+from tests.legacy_journal_fixture import legacy_v1
 
 
 def test_migration_preserves_high_water_after_compaction(tmp_path):
     path = tmp_path / "journal.sqlite3"
-    journal = ChangeJournal(path)
+    journal = legacy_v1(path)
     numbers = [journal.begin(f"doc-{i}", 1, "DELETE") for i in range(5)]
     with sqlite3.connect(path) as db:
         db.execute("DELETE FROM intents WHERE seq >= ?", (numbers[-2],))
@@ -19,7 +20,7 @@ def test_migration_preserves_high_water_after_compaction(tmp_path):
 
 def test_migration_keeps_sequence_after_empty_compacted_table(tmp_path):
     path = tmp_path / "journal.sqlite3"
-    journal = ChangeJournal(path)
+    journal = legacy_v1(path)
     old = journal.begin("old", 1, "DELETE")
     with sqlite3.connect(path) as db:
         db.execute("DELETE FROM intents")
