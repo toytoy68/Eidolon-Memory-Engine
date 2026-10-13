@@ -27,7 +27,8 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
                            limit: int = 100):
     if not isinstance(journal, ChangeJournal):
         raise ValueError("journal required")
-    if type(canonical) is not dict or type(indexed) is not dict:
+    reader = canonical if callable(canonical) else None
+    if (reader is None and type(canonical) is not dict) or type(indexed) is not dict:
         raise ValueError("verified snapshots required")
     if type(limit) is not int or not 1 <= limit <= 999:
         raise ValueError("invalid limit")
@@ -46,6 +47,10 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
             if not math.isfinite(intent.created) or intent.created > now:
                 raise ValueError("invalid intent timestamp")
             ages[intent.sequence] = now - intent.created
+    if reader is not None:
+        canonical = reader(frozenset(indexed) | {intent.information_id for intent in pending})
+        if type(canonical) is not dict:
+            raise ValueError("verified snapshots required")
     actions = reconcile_plan(pending, canonical, indexed, ages=ages, grace_seconds=grace_seconds)
     unknown_ids = (set(indexed) | {intent.information_id for intent in pending}) - set(canonical)
     review = bool(unknown_ids) or any(action.kind in ("INTEGRITY_ALERT", "WAIT", "CLOSE_ABANDONED") for action in actions)
