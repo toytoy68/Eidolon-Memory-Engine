@@ -42,3 +42,15 @@ def test_wait_is_not_a_human_review_or_executable():
     assert result.proposals == ()
     assert result.review == ()
     assert [a.kind for a in result.waiting] == ["WAIT"]
+
+def test_duck_typed_action_is_rejected():
+    class Forged:
+        kind = "INDEX_UPSERT"
+        information_id = "doc"
+    with pytest.raises(ValueError, match="invalid"):
+        preflight([Forged()], allow_upsert=True)
+
+
+def test_empty_action_identity_is_rejected():
+    with pytest.raises(ValueError, match="invalid"):
+        preflight([Action("INDEX_UPSERT", "", 1, 1, "bad")], allow_upsert=True)
