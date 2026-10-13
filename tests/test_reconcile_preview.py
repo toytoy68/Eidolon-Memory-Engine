@@ -76,3 +76,8 @@ def test_exact_limit_is_not_truncated(tmp_path):
     from core.indexing.reconcile_plan import ABSENT
     result = preview_reconciliation(journal, {"doc": ABSENT}, {}, now=created + 1, limit=1)
     assert result.pending_count == 1
+
+def test_preview_rejects_limit_1000_before_query(tmp_path):
+    journal = ChangeJournal(tmp_path / "changes.sqlite3")
+    with pytest.raises(ValueError, match="limit"):
+        preview_reconciliation(journal, {}, {}, limit=1000)
