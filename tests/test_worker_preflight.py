@@ -20,7 +20,7 @@ def test_upsert_only_when_explicitly_enabled():
                        allow_upsert=True)
     assert len(result.proposals) == 2
     assert "MARK_PUBLISHED" in [a.kind for a in result.review]
-    assert [a.kind for a in result.review] == ["ENQUEUE_DELETE"]
+    assert [a.kind for a in result.review] == ["MARK_PUBLISHED", "ENQUEUE_DELETE"]
 
 
 def test_unknown_action_is_rejected():
