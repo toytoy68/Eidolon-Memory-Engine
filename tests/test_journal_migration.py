@@ -4,11 +4,12 @@ import sqlite3
 import pytest
 from core.indexing.change_journal import ChangeJournal
 from core.indexing.journal_migration import migrate_v2
+from tests.legacy_journal_fixture import legacy_v1
 
 
 def test_migration_preserves_rows_and_is_idempotent(tmp_path):
     path = tmp_path / "journal.sqlite3"
-    journal = ChangeJournal(path)
+    journal = legacy_v1(path)
     first = journal.begin("archive", 2, "UPSERT", hashlib.sha256(b"test").hexdigest())
     journal.published(first)
     second = journal.begin("other", 1, "DELETE")
