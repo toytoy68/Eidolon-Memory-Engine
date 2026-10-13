@@ -56,6 +56,7 @@ class ChangeJournal:
             os.close(fd)
         # WAL is not a substitute for backups or canonical reconciliation.
         with self._db() as db:
+            db.execute("BEGIN IMMEDIATE")
             is_new = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='intents'").fetchone() is None
             db.execute("""CREATE TABLE IF NOT EXISTS intents (
                 seq INTEGER PRIMARY KEY AUTOINCREMENT,
