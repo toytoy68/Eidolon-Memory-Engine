@@ -36,9 +36,9 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
         raise ValueError("invalid clock")
     if type(grace_seconds) not in (float, int) or not math.isfinite(grace_seconds) or grace_seconds < 0:
         raise ValueError("invalid grace period")
-    pending = journal.pending(limit=limit)
+    pending = journal.pending(limit=limit + 1)
     # Never treat a truncated journal as a complete snapshot.
-    if len(pending) == limit:
+    if len(pending) > limit:
         raise ValueError("pending journal may be truncated")
     ages = {}
     for intent in pending:
@@ -48,5 +48,5 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
             ages[intent.sequence] = now - intent.created
     actions = reconcile_plan(pending, canonical, indexed, ages=ages, grace_seconds=grace_seconds)
     unknown_ids = (set(indexed) | {intent.information_id for intent in pending}) - set(canonical)
-    review = bool(unknown_ids) or any(action.kind in ("INTEGRITY_ALERT", "WAIT") for action in actions)
+    review = bool(unknown_ids) or any(action.kind in ("INTEGRITY_ALERT", "WAIT", "CLOSE_ABANDONED") for action in actions)
     return ReconcilePreview(actions, len(pending), float(now), review)
