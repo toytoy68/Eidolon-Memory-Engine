@@ -42,18 +42,16 @@ def split_passages(document_id: str, revision: int, text: str, *, size: int = 12
     return tuple(out)
 
 def verify_passage(passage: Passage, canonical_text: str, *,
-                   document_id: str | None = None, revision: int | None = None):
+                   document_id: str, revision: int):
     """Validate content and the self-consistency of the passage identity.
 
-    The caller MUST supply trusted canonical document_id and revision for a
-    security-sensitive citation. Legacy callers without them get only
-    internal identity consistency, not proof of canonical ownership.
+    The caller MUST supply trusted canonical document_id and revision.\n    This is not proof of authorization; access rights must be checked separately.
     """
     if not isinstance(passage, Passage) or not isinstance(canonical_text, str):
         return False
-    if document_id is not None and passage.document_id != document_id:
+    if passage.document_id != document_id:
         return False
-    if revision is not None and passage.revision != revision:
+    if passage.revision != revision:
         return False
     if (type(passage.revision) is not int or passage.revision < 1
             or type(passage.size) is not int or type(passage.overlap) is not int
