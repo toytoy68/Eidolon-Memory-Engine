@@ -24,6 +24,7 @@ Rules (the canon always wins; the journal only accelerates):
 """
 from dataclasses import dataclass
 
+ABSENT = "ABSENT"  # Proven missing canonical document; missing key means unknown.
 TERMINAL = frozenset({"INDEXED", "SUPERSEDED", "ABANDONED"})
 ACTIONS = ("MARK_PUBLISHED", "INDEX_UPSERT", "INDEX_DELETE", "CLOSE_SUPERSEDED", "CLOSE_ABANDONED",
            "WAIT", "INTEGRITY_ALERT", "ENQUEUE_UPSERT", "ENQUEUE_DELETE")
@@ -45,8 +46,10 @@ class Action:
 
 
 def _intent_action(intent, canonical, age, grace_seconds):
-    current = canonical.get(intent.information_id)
     seq, ident = intent.sequence, intent.information_id
+    if ident not in canonical:
+        return Action("WAIT", ident, seq, intent.revision, "canonical state unknown")
+    current = None if canonical[ident] is ABSENT else canonical[ident]
     if current is not None and current.revision > intent.revision:
         return Action("CLOSE_SUPERSEDED", ident, seq, current.revision, "newer canonical revision")
     if intent.operation == "UPSERT":
@@ -73,6 +76,9 @@ def reconcile_plan(pending, canonical, indexed, *, ages=None, grace_seconds=600)
     """pending: ChangeIntent tuple; canonical: {id: Canonical}; indexed: {id: revision}; ages: {seq: s}."""
     if type(grace_seconds) not in (int, float) or grace_seconds < 0:
         raise ValueError("invalid grace delay")
+    for value in canonical.values():
+        if value is not ABSENT and not isinstance(value, Canonical):
+            raise ValueError("canonical values must be Canonical or ABSENT")
     ages = ages or {}
     actions, covered = [], set()
     for intent in sorted(pending, key=lambda i: i.sequence):
@@ -83,9 +89,12 @@ def reconcile_plan(pending, canonical, indexed, *, ages=None, grace_seconds=600)
         if action.kind not in ("CLOSE_SUPERSEDED", "CLOSE_ABANDONED"):
             covered.add(intent.information_id)
     for ident in sorted(set(canonical) | set(indexed)):
-        if ident in covered:
+        if ident in covered or ident not in canonical:
             continue
-        current, revision = canonical.get(ident), indexed.get(ident)
+        current = None if canonical[ident] is ABSENT else canonical[ident]
+        revision = indexed.get(ident)
+        if current is None and revision is None:
+            continue
         if current is None:
             actions.append(Action("ENQUEUE_DELETE", ident, None, revision, "indexed but absent from the canon"))
         elif revision != current.revision:
@@ -114,7 +123,7 @@ def retirement_plan(generations, *, live, readers, retired_at, now, grace_second
         raise ValueError("live generation unknown: refuse to plan anything")
     out = []
     for name in sorted(generations):
-        if name == live or readers.get(name, 0) != 0:
+        if name == live or readers.get(name) != 0:
             continue
         since = retired_at.get(name)
         if since is not None and now - since >= grace_seconds:
