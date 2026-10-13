@@ -49,3 +49,18 @@ def test_reject_future_intent(tmp_path):
     journal.begin("doc", 1, "DELETE")
     with pytest.raises(ValueError, match="timestamp"):
         preview_reconciliation(journal, {}, {}, now=1)
+
+
+def test_unread_indexed_document_is_not_deleted_and_requires_review(tmp_path):
+    journal = ChangeJournal(tmp_path / "changes.sqlite3")
+    result = preview_reconciliation(journal, {}, {"private-doc": 2})
+    assert result.actions == ()
+    assert result.requires_review
+
+
+def test_proven_absence_allows_deletion_candidate(tmp_path):
+    from core.indexing.reconcile_plan import ABSENT
+    journal = ChangeJournal(tmp_path / "changes.sqlite3")
+    result = preview_reconciliation(journal, {"removed": ABSENT}, {"removed": 2})
+    assert [action.kind for action in result.actions] == ["ENQUEUE_DELETE"]
+    assert not result.requires_review
