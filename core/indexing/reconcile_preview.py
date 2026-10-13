@@ -29,7 +29,7 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
         raise ValueError("journal required")
     if type(canonical) is not dict or type(indexed) is not dict:
         raise ValueError("verified snapshots required")
-    if type(limit) is not int or not 1 <= limit <= 1000:
+    if type(limit) is not int or not 1 <= limit <= 999:
         raise ValueError("invalid limit")
     now = time.time() if now is None else now
     if type(now) not in (float, int) or not math.isfinite(now):
