@@ -27,7 +27,13 @@ def preflight(actions, *, allow_upsert=False):
         raise ValueError("invalid preflight policy")
     proposals, review, refused, waiting = [], [], [], []
     for action in actions:
-        if type(action) is not Action or type(action.information_id) is not str or not action.information_id:\n            raise ValueError("invalid reconciliation action")\n        kind = action.kind
+        if type(action) is not Action or type(action.information_id) is not str or not action.information_id:\n            raise ValueError("invalid reconciliation action")\n        if (type(action.kind) is not str or type(action.reason) is not str
+                or type(action.revision) not in (int, type(None))
+                or (action.revision is not None and action.revision < 1)
+                or type(action.sequence) not in (int, type(None))
+                or (action.sequence is not None and action.sequence < 1)):
+            raise ValueError("invalid reconciliation action")
+        kind = action.kind
         if kind in ALLOWED_PROPOSALS:
             if allow_upsert:
                 proposals.append(action)
