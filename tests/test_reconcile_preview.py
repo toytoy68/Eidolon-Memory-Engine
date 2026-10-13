@@ -102,3 +102,12 @@ def test_canonical_reader_invalid_result_refused(tmp_path):
     journal = ChangeJournal(tmp_path / "changes.sqlite3")
     with pytest.raises(ValueError, match="snapshots"):
         preview_reconciliation(journal, lambda ids: None, {})
+
+def test_known_inflight_write_waits_without_human_review(tmp_path):
+    journal = ChangeJournal(tmp_path / "changes.sqlite3")
+    journal.begin("doc", 1, "UPSERT", "a" * 64)
+    created = journal.pending()[0].created
+    from core.indexing.reconcile_plan import ABSENT
+    result = preview_reconciliation(journal, {"doc": ABSENT}, {}, now=created + 1)
+    assert [a.kind for a in result.actions] == ["WAIT"]
+    assert result.requires_review is False
