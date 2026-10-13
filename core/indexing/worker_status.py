@@ -18,11 +18,10 @@ def summarize_work(prepared: PreparedWork, *, index_available: bool,
         raise ValueError("invalid prepared work")
     if any(type(x) is not bool for x in (index_available, canonical_complete, model_compatible)):
         raise ValueError("invalid status flags")
-    for entries in (prepared.candidate_ids, prepared.waiting_ids,
-                    prepared.review_ids, prepared.blocked_ids):
-        if not isinstance(entries, tuple) or any(type(x) is not str for x in entries):
+    all_entries = (prepared.candidate_ids, prepared.waiting_ids,\n                   prepared.review_ids, prepared.blocked_ids)\n    for entries in all_entries:
+        if not isinstance(entries, tuple) or any(type(x) is not str or not x for x in entries):
             raise ValueError("invalid work entries")
-    if not index_available:
+    if len(set().union(*[set(x) for x in all_entries])) < sum(len(x) for x in all_entries):\n        raise ValueError("ambiguous worker status: duplicate document identities")\n    if not index_available:
         state = "INDEX_UNAVAILABLE"
     elif not model_compatible:
         state = "INDEX_INCOMPATIBLE"
