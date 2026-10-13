@@ -47,7 +47,7 @@ def verify_passage(passage: Passage, canonical_text: str, *,
 
     The caller MUST supply trusted canonical document_id and revision.\n    This is not proof of authorization; access rights must be checked separately.
     """
-    if not isinstance(passage, Passage) or not isinstance(canonical_text, str):
+    if (not isinstance(passage, Passage) or type(canonical_text) is not str\n            or type(document_id) is not str or type(revision) is not int or revision < 1):
         return False
     if passage.document_id != document_id:
         return False
