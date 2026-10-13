@@ -32,6 +32,8 @@ def summarize_work(prepared: PreparedWork, *, index_available: bool,
         state = "REVIEW_REQUIRED"
     elif prepared.waiting_ids or prepared.candidate_ids:
         state = "INDEX_PENDING"
+    elif prepared.blocked_ids:
+        state = "POLICY_BLOCKED"
     else:
         state = "INDEX_CURRENT"
     return WorkerStatus(state, len(prepared.candidate_ids), len(prepared.waiting_ids),
