@@ -62,3 +62,15 @@ def test_native_v2_sets_version_without_rewriting_existing_v1(tmp_path):
     with sqlite3.connect(old) as db:
         assert db.execute("PRAGMA user_version").fetchone()[0] == 0
         assert "terminal_reason" not in {r[1] for r in db.execute("PRAGMA table_info(intents)")}
+
+def test_open_existing_journal_missing_index_does_not_repair(tmp_path):
+    path = tmp_path / "legacy.sqlite3"
+    from tests.legacy_journal_fixture import legacy_v1
+    legacy_v1(path)
+    with sqlite3.connect(path) as db:
+        db.execute("DROP INDEX intent_state_seq")
+    with pytest.raises(ValueError, match="explicit repair"):
+        ChangeJournal(path)
+    with sqlite3.connect(path) as db:
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 0
+        assert db.execute("SELECT name FROM sqlite_master WHERE type='index' AND name='intent_state_seq'").fetchone() is None
