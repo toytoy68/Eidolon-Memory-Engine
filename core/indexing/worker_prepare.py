@@ -17,13 +17,14 @@ class PreparedWork:
 
 def prepare_work(preview, *, allow_upsert=False):
     """Extract candidate document ids from a read-only reconciliation preview."""
-    if not hasattr(preview, "actions") or not hasattr(preview, "requires_review"):
+    from .reconcile_preview import ReconcilePreview
+    if not isinstance(preview, ReconcilePreview) or type(preview.requires_review) is not bool:
         raise ValueError("invalid preview")
     classified = preflight(preview.actions, allow_upsert=allow_upsert)
     # A preview requiring review cannot promote any action into a candidate.
     if preview.requires_review:
         return PreparedWork(
-            (), tuple(a.information_id for a in preview.actions),
+            (), tuple(a.information_id for a in classified.review),
             tuple(a.information_id for a in classified.refused),
             tuple(a.information_id for a in classified.waiting))
     return PreparedWork(
