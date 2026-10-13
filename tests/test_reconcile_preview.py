@@ -81,3 +81,24 @@ def test_preview_rejects_limit_1000_before_query(tmp_path):
     journal = ChangeJournal(tmp_path / "changes.sqlite3")
     with pytest.raises(ValueError, match="limit"):
         preview_reconciliation(journal, {}, {}, limit=1000)
+
+
+def test_canonical_reader_runs_after_pending(tmp_path):
+    from core.indexing.reconcile_plan import ABSENT
+    journal = ChangeJournal(tmp_path / "changes.sqlite3")
+    journal.begin("doc", 1, "DELETE")
+    calls = []
+    def read_canon(ids):
+        calls.append(ids)
+        assert "doc" in ids
+        assert journal.pending()[0].state == "INTENT"
+        return {"doc": ABSENT}
+    result = preview_reconciliation(journal, read_canon, {})
+    assert len(calls) == 1
+    assert result.actions[0].kind == "MARK_PUBLISHED"
+
+
+def test_canonical_reader_invalid_result_refused(tmp_path):
+    journal = ChangeJournal(tmp_path / "changes.sqlite3")
+    with pytest.raises(ValueError, match="snapshots"):
+        preview_reconciliation(journal, lambda ids: None, {})
