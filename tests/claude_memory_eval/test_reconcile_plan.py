@@ -10,7 +10,7 @@ import hashlib
 import pytest
 
 from core.indexing.change_journal import ChangeIntent, ChangeJournal
-from core.indexing.reconcile_plan import Canonical, compaction_plan, reconcile_plan, retirement_plan
+from core.indexing.reconcile_plan import ABSENT, Canonical, compaction_plan, reconcile_plan, retirement_plan
 
 A = hashlib.sha256(b"a").hexdigest()
 B = hashlib.sha256(b"b").hexdigest()
@@ -49,10 +49,10 @@ def test_same_revision_other_content_is_an_alert_never_indexed():
 
 
 def test_deletes_and_lost_events_are_reconciled_from_the_manifest():
-    plan = reconcile_plan([intent(1, "gone", 3, op="DELETE")], {"new": Canonical(1, A)},
+    plan = reconcile_plan([intent(1, "gone", 3, op="DELETE")], {"new": Canonical(1, A), "gone": ABSENT, "orphan": ABSENT},
                           {"gone": 3, "orphan": 5})
     assert kinds(plan) == [("MARK_PUBLISHED", "gone"), ("ENQUEUE_UPSERT", "new"), ("ENQUEUE_DELETE", "orphan")]
-    published = reconcile_plan([intent(1, "gone", 3, op="DELETE", state="PUBLISHED")], {}, {"gone": 3})
+    published = reconcile_plan([intent(1, "gone", 3, op="DELETE", state="PUBLISHED")], {"gone": ABSENT}, {"gone": 3})
     assert kinds(published) == [("INDEX_DELETE", "gone")]
 
 
@@ -72,9 +72,20 @@ def test_compaction_never_touches_pending_rows_or_rows_a_reader_may_need():
 
 def test_retirement_spares_live_read_and_recent_generations():
     generations = {"g1", "g2", "g3", "g4"}
-    plan = retirement_plan(generations, live="g4", readers={"g2": 1}, retired_at={"g1": 0, "g2": 0, "g3": 3000},
+    plan = retirement_plan(generations, live="g4", readers={"g1": 0, "g2": 1, "g3": 0}, retired_at={"g1": 0, "g2": 0, "g3": 3000},
                            now=4000, grace_seconds=3600)
     assert plan == ("g1",)                       # g2 is being read, g3 too recent, g4 live
     assert retirement_plan(generations, live="g4", readers={}, retired_at={}, now=10**9) == ()  # unknown history
     with pytest.raises(ValueError):
         retirement_plan({"g1"}, live="g9", readers={}, retired_at={"g1": 0}, now=10**9)
+
+def test_unknown_canonical_does_not_trigger_deletion():
+    plan = reconcile_plan([intent(1, "doc", 3, op="DELETE")], {}, {"doc": 3}, ages={1: 99999})
+    assert kinds(plan) == [("WAIT", "doc")]
+    for bad in (None, 3, "absent"):
+        with pytest.raises(ValueError):
+            reconcile_plan([intent(1, "doc", 3, op="DELETE")], {"doc": bad}, {"doc": 3})
+
+
+def test_unknown_readers_prevent_generation_retirement():
+    assert retirement_plan({"g1", "g2"}, live="g2", readers={}, retired_at={"g1": 0}, now=99999) == ()
