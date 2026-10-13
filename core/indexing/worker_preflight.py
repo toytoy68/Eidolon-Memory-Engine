@@ -5,6 +5,7 @@ worker must re-read canonical state and check profile permissions immediately
 before executing each approved operation.
 """
 from dataclasses import dataclass
+from .reconcile_plan import Action
 
 ALLOWED_PROPOSALS = frozenset({"INDEX_UPSERT", "ENQUEUE_UPSERT"})
 REVIEW_ACTIONS = frozenset({"MARK_PUBLISHED", "INDEX_DELETE", "ENQUEUE_DELETE", "CLOSE_ABANDONED",
@@ -26,7 +27,7 @@ def preflight(actions, *, allow_upsert=False):
         raise ValueError("invalid preflight policy")
     proposals, review, refused, waiting = [], [], [], []
     for action in actions:
-        kind = getattr(action, "kind", None)
+        if type(action) is not Action or type(action.information_id) is not str or not action.information_id:\n            raise ValueError("invalid reconciliation action")\n        kind = action.kind
         if kind in ALLOWED_PROPOSALS:
             if allow_upsert:
                 proposals.append(action)
