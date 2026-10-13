@@ -30,3 +30,9 @@ def test_review_required_blocks_all_candidates():
 def test_invalid_preview_is_rejected():
     with pytest.raises(ValueError):
         prepare_work(None)
+
+def test_waiting_is_reported_without_human_review():
+    result = prepare_work(preview(["WAIT"]), allow_upsert=True)
+    assert result.candidate_ids == ()
+    assert result.review_ids == ()
+    assert result.waiting_ids == ("doc-0",)
