@@ -43,3 +43,15 @@ def test_blocked_work_is_not_reported_current():
     result = summarize_work(PreparedWork((), (), ("doc",)),
                             index_available=True, canonical_complete=True, model_compatible=True)
     assert result.state == "POLICY_BLOCKED"
+
+def test_status_rejects_empty_document_identifier():
+    with pytest.raises(ValueError, match="entries"):
+        summarize_work(PreparedWork(("",), (), ()), index_available=True,
+                       canonical_complete=True, model_compatible=True)
+
+
+def test_multiple_pending_intents_same_document_are_allowed():
+    result = summarize_work(PreparedWork(("doc", "doc"), (), ()),
+                            index_available=True, canonical_complete=True, model_compatible=True)
+    assert result.state == "INDEX_PENDING"
+    assert result.candidates == 2
