@@ -1,6 +1,6 @@
 # Eidolon Memory Engine
 
-**G233 — 14 octobre** : arriérés paginés sans famine derrière les revues et orchestration durable des scanners/worker livrés. Conditions de maintenance et reports raccordés, aucune activation de service. [Rapport](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). Qualification CI en cours.
+**G233 — 14 octobre** : arriérés paginés sans famine derrière les revues et orchestration durable des scanners/worker livrés. Conditions de maintenance et reports raccordés, aucune activation de service. [Rapport](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). CI Memory verte : 2470 tests complets, 215 ciblés, 19 expérimentaux (comptes chevauchants).
 
 **G232 — 14 octobre** : inventaire inverse Qdrant reprenable, absence canonique vérifiée et revue fraîche des candidats orphelins. Aucune suppression exécutée. [Preuves et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md). CI Memory verte : 2430 tests complets, 175 ciblés, 19 expérimentaux ; comptes chevauchants.
 

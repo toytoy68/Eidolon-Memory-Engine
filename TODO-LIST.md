@@ -1,6 +1,6 @@
 ## G233 — Priorités actives, 14 octobre 2026
 
-Pagination des gros arriérés et cycle durable scanner/worker/orphelins livrés, avec fenêtre/inactivité/démarrage/charge et reports. 40 nouveaux tests ; qualification CI en cours. [Rapport](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). Suite J2 : contrat historique complet/identité du découpeur, contre-revue, raccordement à l’hôte et qualification serveur/corpus/modèles réels puis VM/PC. Suppression désactivée.
+Pagination des gros arriérés et cycle durable scanner/worker/orphelins livrés, avec fenêtre/inactivité/démarrage/charge et reports. 40 nouveaux tests ; CI verte : 2470 tests complets, 215 ciblés, 19 expérimentaux (comptes chevauchants). [Rapport](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). Suite J2 : contrat historique complet/identité du découpeur, contre-revue, raccordement à l’hôte et qualification serveur/corpus/modèles réels puis VM/PC. Suppression désactivée.
 
 ## G232 — Priorités actives, 14 octobre 2026
 

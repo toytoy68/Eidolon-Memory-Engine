@@ -2426,3 +2426,7 @@ G233 implémenté : 246 tests ciblés puis 40 cas du lot réussis avec -W error.
 Arriéré de 1005 revues + une ligne saine, cycle complet et arrêt réel avant commit
 du contrôleur qualifiés en isolation. InvalidMemory ne bloque plus la ligne suivante.
 [Rapport, API et limites](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). CI à confirmer.
+
+G233 confirmé côté Memory sur `53f7bf0` : 2470 tests et 12 sous-tests réussis en
+CI complète, 215 ciblés Qdrant/worker/scanners/maintenance, 19 expérimentaux.
+Aucun échec ; comptes chevauchants. [Preuves](docs/G233-INDEX-MAINTENANCE-2026-10-14.md).

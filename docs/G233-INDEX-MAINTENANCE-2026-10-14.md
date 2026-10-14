@@ -3,6 +3,18 @@
 Auteur : Codex/GPT. Suite demandée jusqu’au bout par toytoy à 22 h 36 Europe/Paris.
 Base Memory : `0c23815fd25ceefa69614e06fc89c0466d52fdf8`.
 
+## Qualification du code publié
+
+Révision Memory testée : `53f7bf01a811f65a418d1f07cb42b9734f585213`.
+
+| Validation | Résultat observé |
+| --- | --- |
+| [Memory complet](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38635265838) | **2470 tests et 12 sous-tests réussis**, 125,77 s |
+| Worker expérimental, même workflow | **19 réussis**, 1,35 s ; contrat distinct du cycle G233 |
+| [Qdrant/worker/scanners/maintenance](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38635266047) | **215 tests réussis**, 8,90 s |
+
+Les comptes ciblés et complets se chevauchent ; ils ne s’additionnent pas.
+
 ## Livraison et portée
 
 Les deux étapes G232 sont implémentées : consommation paginée des gros arriérés,
@@ -140,9 +152,10 @@ la revalidation G232. Aucune de ces API ne supprime ou n’abandonne une intenti
 - Droits révoqués/rétablis, file saturée de revues, nouvelle arrivée pendant une
   passe, changement de génération avant la clôture, concurrence, fenêtre/activité/
   démarrage/charge, horloge reculée, contexte remplacé et checkpoint incohérent.
-- CI complète Memory, ciblée Qdrant et intégration Core : à confirmer sur les
-  révisions publiées. Les tests utilisent Markdown, SQLite et Qdrant local réels
-  avec vecteurs synthétiques ; aucun corpus privé ni serveur de production.
+- CI complète Memory et ciblée Qdrant : réussies sur la révision publiée,
+  sans test masqué. L’intégration Core est suivie dans son bilan consolidé.
+  Les tests utilisent Markdown, SQLite et Qdrant local réels avec vecteurs
+  synthétiques ; aucun corpus privé ni serveur de production.
 
 ## Limites et J2 restant
 
