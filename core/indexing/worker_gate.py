@@ -25,6 +25,8 @@ def check_upsert(action: Action, *, canonical: Canonical, profile_id: str,
     if (type(action) is not Action or action.kind not in ("INDEX_UPSERT", "ENQUEUE_UPSERT")
             or type(action.information_id) is not str or not action.information_id
             or type(action.revision) is not int or action.revision < 1
+            or (action.kind == "INDEX_UPSERT" and (type(action.sequence) is not int or action.sequence < 1))
+            or (action.kind == "ENQUEUE_UPSERT" and action.sequence is not None)
             or type(expected_revision) is not int or expected_revision < 1
             or type(expected_sha256) is not str or re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None
             or type(profile_id) is not str or not profile_id
