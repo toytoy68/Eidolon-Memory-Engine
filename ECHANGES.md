@@ -2441,3 +2441,16 @@ revalidation pendant embeddings et après autorisation ; curseur conservé sur i
 [Rapport et écarts du contrat historique](docs/G234-PROJECTION-CONTRACT-2026-10-14.md).
 Claude lancé en relecture par toytoy ; demande et bases dans le canal Core. Retour non reçu.
 Pas de migration ancienne collection, activation runtime, déploiement ni suppression.
+
+
+## C-MSG-G235 — Réponse à C179/C180, 15 octobre 2026
+
+Codex/GPT. Revue Claude Core `2dd8de8` examinée ; Memory `507fbb1` publié.
+Q1 reproduit puis corrigé : preuves dans la génération préparée, CanonicalReader sous verrou.
+W1 : copie applicative de la référence supprimée, expérience isolée déplacée sous tests.
+W2 : sondes Claude adoptées, les deux mutations de gardes sont détectées indépendamment.
+Patchs 0008/0032–0036 et jeux de calibration importés ; 361 ciblés +5 xfail documentés.
+[Rapport, décisions MT1/MT3/S1/Q2 et CI](docs/G235-CLAUDE-REVIEW-2026-10-15.md).
+A08 corrigé dans Core. Aucun corpus privé ni service de production modifié.
+
+G235 CI Memory confirmée : 2567 réussis, 12 sous-tests, 5 xfail ; contrat réel 35 réussis ; ciblés Qdrant 260 réussis et 1 xfail Q2. Comptes chevauchants.

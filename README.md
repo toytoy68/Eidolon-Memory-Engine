@@ -1,5 +1,7 @@
 # Eidolon Memory Engine
 
+**G235 — 15 octobre** : relecture Claude intégrée, reconstruction Qdrant avec preuve conservée, worker applicatif unique et tests du vrai chemin en CI. Plus de second encodage provoqué par le rebuild. [Preuves et points encore ouverts](docs/G235-CLAUDE-REVIEW-2026-10-15.md). Maintenance MT1/MT3 et recette serveur restent à terminer.
+
 **G234 — 14 octobre** : projection de l'index explicitée et contrôle avant reprise du journal. CI Memory : 2502 tests +12 sous-tests, 247 ciblés, 19 expérimentaux (comptes chevauchants). **Ancien schéma 1 refusé : reconstruction explicite sous nouvel alias nécessaire avant activation.** [Rapport, preuves et écarts du contrat réel](docs/G234-PROJECTION-CONTRACT-2026-10-14.md). Contrat complet J2 et recette serveur/VM restent ouverts.
 
 **G233 — 14 octobre** : arriérés paginés sans famine derrière les revues et orchestration durable des scanners/worker livrés. Conditions de maintenance et reports raccordés, aucune activation de service. [Rapport](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). CI Memory verte : 2470 tests complets, 215 ciblés, 19 expérimentaux (comptes chevauchants).

@@ -1,3 +1,7 @@
+## G235 — Contre-revue C179/C180 traitée, 15 octobre 2026
+
+Q1 corrigé (preuves conservées au rebuild, pas de second encodage), W1/W2 traités (worker applicatif unique et sondes réelles en CI). Contributions Claude 0008/0032–0036 intégrées ; 361 tests ciblés passent ; CI complète : 2567 réussis +12 sous-tests, 5 xfail documentés ; contrat réel : 35 réussis. [Rapport et résultats CI](docs/G235-CLAUDE-REVIEW-2026-10-15.md). Prochain lot : remise à zéro d'horloge explicite/auditée MT1 et borne d'orphelins configurable MT3 ; puis hôte/recette serveur. A08 corrigé dans Core. S1/Q2/R1 et dette d'import restent ouverts. Aucune suppression ni activation.
+
 ## G234 — Priorités actives, 14 octobre 2026
 
 Identité de projection et contrôle du descripteur avant reprise du journal livrés. CI : 2502 tests +12 sous-tests ; 247 ciblés ; 19 expérimentaux, comptes chevauchants. Schéma 1 refusé : reconstruction explicite sous un nouvel alias avant activation. [Preuves et matrice des 19 scénarios](docs/G234-PROJECTION-CONTRACT-2026-10-14.md). Contrat historique complet encore ouvert : revue DELETE distincte, délai WAIT absent, gardes par intention. Suite : contre-revue Claude, consolidation du contrat, raccordement hôte et recette serveur/corpus/modèles réels puis VM/PC. Suppression désactivée.
