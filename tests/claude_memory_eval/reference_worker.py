@@ -83,6 +83,24 @@ class ReferenceWorker:
             if action.kind == "WAIT":
                 report.skipped.append((action.information_id, "wait"))
                 continue
+            if action.kind == "MARK_PUBLISHED":
+                # Journal recovery is a distinct privileged transition, never
+                # an index operation. Re-read and compare the canonical snapshot.
+                try:
+                    current = self.canon.read(action.information_id)
+                except CanonUnreadable:
+                    report.skipped.append((action.information_id, "canon unreadable"))
+                    continue
+                if (current != snapshot.get(action.information_id)
+                        or current is ABSENT and action.revision is None):
+                    report.skipped.append((action.information_id, "canon changed since plan"))
+                    continue
+                if self.rights(self.profile, action.information_id) is not True:
+                    report.skipped.append((action.information_id, "forbidden"))
+                    continue
+                self.journal.published(action.sequence)
+                report.applied.append((action.kind, action.information_id, action.sequence))
+                continue
             deletion = action.kind in ("INDEX_DELETE", "ENQUEUE_DELETE")
             if id(action) not in executable and not deletion:
                 report.review.append((action.kind, action.information_id, action.sequence))
