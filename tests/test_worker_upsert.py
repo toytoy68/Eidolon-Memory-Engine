@@ -147,3 +147,19 @@ def test_matching_adapter_embedding_identity_is_accepted():
     receipt = apply_upsert(**operation(index=index))
     assert receipt.state == "ACKNOWLEDGED"
     assert index.calls == ["doc"]
+
+
+def test_missing_point_readback_is_unverified_not_success():
+    index = FakeIndex()
+    index.revision_for = None
+    receipt = apply_upsert(**operation(index=index))
+    assert receipt.state == "UNVERIFIED"
+    assert index.calls == ["doc"]
+
+
+def test_wrong_point_revision_is_unverified():
+    index = FakeIndex()
+    index.revision_for = lambda _: 1
+    receipt = apply_upsert(**operation(index=index))
+    assert receipt.state == "UNVERIFIED"
+    assert index.calls == ["doc"]
