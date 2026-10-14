@@ -89,3 +89,42 @@ def test_authorization_must_be_boolean():
     with pytest.raises(ValueError, match="authorization"):
         apply_upsert(**args)
     assert args["index"].calls == []
+
+
+def test_canonical_changes_during_upsert_never_acknowledged():
+    index = FakeIndex()
+    state = {"revision": 2}
+    def reader(_):
+        return Memory("doc", revision=state["revision"], content="canonical"), SHA
+    def writing(memory):
+        index.calls.append(memory.information_id)
+        state["revision"] = 3
+    index.upsert = writing
+    receipt = apply_upsert(**operation(index=index, read_canonical=reader))
+    assert receipt.state == "STALE"
+    assert index.calls == ["doc"]
+
+
+def test_permission_revoked_during_upsert_never_acknowledged():
+    index = FakeIndex()
+    rights = {"allowed": True}
+    def writing(memory):
+        index.calls.append(memory.information_id)
+        rights["allowed"] = False
+    index.upsert = writing
+    receipt = apply_upsert(**operation(index=index, authorize=lambda *args: rights["allowed"]))
+    assert receipt.state == "STALE"
+    assert index.calls == ["doc"]
+
+
+def test_canonical_reader_fails_after_write_no_false_acknowledgement():
+    index = FakeIndex()
+    reads = {"count": 0}
+    def reader(_):
+        reads["count"] += 1
+        if reads["count"] == 2:
+            raise OSError("canonical unavailable after write")
+        return Memory("doc", revision=2, content="canonical"), SHA
+    with pytest.raises(OSError):
+        apply_upsert(**operation(index=index, read_canonical=reader))
+    assert index.calls == ["doc"]
