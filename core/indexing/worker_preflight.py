@@ -22,12 +22,19 @@ class WorkerPreflight:
 
 
 def preflight(actions, *, allow_upsert=False):
-    """Classify untrusted plans; never grant execution authority.\n\n    Even with allow_upsert=True, callers must revalidate canonical state,\n    permissions and model identity before any effect. MARK_PUBLISHED is\n    journal state recovery, not an index operation.\n    """
+    """Classify untrusted plans; never grant execution authority.
+
+    Even with allow_upsert=True, callers must revalidate canonical state,
+    permissions and model identity before any effect. MARK_PUBLISHED is
+    journal state recovery, not an index operation.
+    """
     if type(allow_upsert) is not bool:
         raise ValueError("invalid preflight policy")
     proposals, review, refused, waiting = [], [], [], []
     for action in actions:
-        if type(action) is not Action or type(action.information_id) is not str or not action.information_id:\n            raise ValueError("invalid reconciliation action")\n        if (type(action.kind) is not str or type(action.reason) is not str
+        if type(action) is not Action or type(action.information_id) is not str or not action.information_id:
+            raise ValueError("invalid reconciliation action")
+        if (type(action.kind) is not str or type(action.reason) is not str
                 or type(action.revision) not in (int, type(None))
                 or (action.revision is not None and action.revision < 1)
                 or type(action.sequence) not in (int, type(None))
