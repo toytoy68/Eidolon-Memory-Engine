@@ -213,7 +213,7 @@ def test_worker_upsert_to_disposable_qdrant(index, tmp_path):
         read_canonical=reader, authorize=lambda profile, identity, operation: True,
         index=index, profile_id="owner", model_id="synthetic-hash-v1",
         expected_model_id="synthetic-hash-v1", expected_profile_id="owner",
-        expected_sha256=digest)
+        expected_sha256=digest, canonical_root=root)
     assert receipt.state == "ACKNOWLEDGED"
     assert index.status().documents == 1
     assert index.query("robotique")[0].information_id == "doc"
