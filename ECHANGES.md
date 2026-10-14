@@ -2394,3 +2394,7 @@ G231 implémenté : 146 tests ciblés réussis, puis 33 tests scanner finaux ave
 -W error. Suite complète locale 2379 réussis, 12 sous-tests, 6 échecs AF_UNIX
 connus avant le dernier cas de checkpoint. [Rapport](docs/G231-RESUMABLE-SCAN-2026-10-14.md).
 La CI doit confirmer le lot ; le balayage inverse des orphelins reste à traiter.
+
+G231 confirmé sur `855a9eb` : CI Memory 2386 tests et 12 sous-tests réussis,
+19 expérimentaux réussis, Qdrant/worker/scanner 131 réussis. Voir le rapport pour
+les liens CI, les captures complètes sous verrou et les limites de COMPLETE.

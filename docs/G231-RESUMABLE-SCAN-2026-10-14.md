@@ -3,9 +3,23 @@
 Auteur : Codex/GPT. Base : `5d5c7b0702c9c5a9f0add9b4b464a208fb2e690b`.
 Suite autorisée par toytoy à 21 h 08 Europe/Paris.
 
+## Qualification du code publié
+
+Révision Memory testée : `855a9eb325a306543afdf7a703fb8b37ec739c9b`.
+
+| Validation | Résultat observé |
+| --- | --- |
+| [Suite Memory complète](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38622854670) | **2386 tests et 12 sous-tests réussis**, 96,01 s |
+| Worker expérimental, même workflow | **19 réussis**, 1,24 s ; contrat distinct du scanner/consommateur G230 |
+| [Qdrant/worker/scanner ciblés](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38622854503) | **131 réussis**, 9,20 s |
+
+Les six échecs locaux passent sur le runner Linux ; aucun test n’a été masqué.
+Les lots se chevauchent : ne pas additionner leurs comptes.
+
 ## Fonctionnement livré
 
-`ReconciliationScan` inventorie les fichiers canoniques pour retrouver les upserts
+`ReconciliationScan` inventorie les fichiers Information `*.md` au premier niveau
+de la racine persistante pour retrouver les upserts
 absents du journal. Il lit les preuves Qdrant et ajoute des intentions ; il n'écrit
 pas de point et ne supprime rien. Le consommateur G230 conserve ses relectures et
 ses contrôles avant indexation.
@@ -60,7 +74,9 @@ Les pages sont bornées, mais les captures initiale/finale parcourent toute la
 collection autorisée sous verrou. Leur coût est proportionnel à sa taille ; la
 mesure sur le corpus réel reste à faire. Des modifications continuelles peuvent
 empêcher la fin d'un passage. Les écrivains canoniques, de droits et d'alias doivent
-respecter la coordination commune.
+respecter la coordination commune. Un journal est affecté à une seule configuration
+d’indexation active ; des modèles/alias servis indépendamment nécessitent des
+journaux dédiés. Ce lot ne crée pas une file multi-index.
 
 Le budget de file par défaut correspond au lot de 100 du worker G230. Si ce budget
 est relevé, la limite du worker doit être ajustée explicitement, au maximum 999.
@@ -81,7 +97,7 @@ Une file remplie d'intentions nécessitant une revue ne se vide pas automatiquem
 - Deux scanners concurrents, contexte différent, limites d'entrées/octets,
   lien symbolique et checkpoint dont le curseur ou l'état final est incohérent.
 
-Suite complète locale avant le dernier cas de checkpoint : **2379 tests et 12 sous-tests réussis, 6 échecs**, 95,92 s. Les six échecs sont les restrictions AF_UNIX/Manager déjà observées en G229/G230 ; aucun n’est masqué. La CI Linux doit qualifier le code final publié.
+Suite complète locale avant le dernier cas de checkpoint : **2379 tests et 12 sous-tests réussis, 6 échecs**, 95,92 s. Les six échecs sont les restrictions AF_UNIX/Manager déjà observées en G229/G230 ; aucun n’est masqué. La CI Linux a ensuite qualifié le code final publié (table ci-dessus).
 Qdrant utilise ici son moteur local en mémoire ou sur disque, avec des vecteurs
 synthétiques. Ce n'est pas une recette du serveur ni une mesure de pertinence.
 

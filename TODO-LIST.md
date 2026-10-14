@@ -1,6 +1,6 @@
 ## G231 — Priorités actives, 14 octobre 2026
 
-Balayage canonique reprenable livré : checkpoint SQLite, inventaires initial/final, ajout idempotent et pause sur file pleine. [Preuves et limites](docs/G231-RESUMABLE-SCAN-2026-10-14.md). Qualification CI à confirmer. Suite : inventaire inverse des points orphelins, orchestration scanner/worker, contrat complet et recette serveur Qdrant/VM.
+Balayage canonique reprenable livré : checkpoint SQLite, inventaires initial/final, ajout idempotent et pause sur file pleine. [Preuves et limites](docs/G231-RESUMABLE-SCAN-2026-10-14.md). CI confirmée : 2386 tests et 12 sous-tests, 19 scénarios expérimentaux, 131 tests ciblés ; comptes chevauchants. Suite : inventaire inverse des points orphelins, orchestration scanner/worker, contrat complet et recette serveur Qdrant/VM.
 
 ## G230 — Priorités actives, 14 octobre 2026
 
