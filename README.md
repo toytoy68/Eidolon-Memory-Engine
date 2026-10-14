@@ -1,5 +1,7 @@
 # Eidolon Memory Engine
 
+**G231 — 14 octobre** : balayage canonique reprenable, événements manquants remis en file sans doublon, contrôle final des modifications derrière le curseur et pause sur file pleine. [Preuves et limites](docs/G231-RESUMABLE-SCAN-2026-10-14.md). CI du lot à confirmer ; J2 reste ouvert.
+
 **G230 — 14 octobre** : consommateur du journal sous verrou, reprise sans ré-embedding après accusé perdu, alerte sur digest divergent à révision égale. [Preuves et limites](docs/G230-JOURNAL-RECOVERY-2026-10-14.md). CI verte : 2353 tests de la suite complète, 19 scénarios expérimentaux et 98 tests Qdrant/worker ciblés. J2 reste ouvert.
 
 **État du 14 octobre — G229** : lecteur canonique par descripteur, verrou obligatoire et preuve complète du point Qdrant. [Bilan et limites](docs/G229-INTEGRITY-2026-10-14.md). CI verte sur `d74d772` : 2315 tests de la suite complète, 19 scénarios expérimentaux et 60 tests Qdrant ciblés. J2 reste ouvert ; les bilans ci-dessous sont historiques.

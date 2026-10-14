@@ -144,6 +144,15 @@ class QdrantIndex(IndexPort):
             raise ValueError("unavailable managed index generation")
         return generation
 
+    def active_generation(self) -> str:
+        """Observed managed generation, with a compatible descriptor (not a lease)."""
+        with self._lock:
+            generation = self._active_generation()
+            self._descriptor()
+            if self._active_generation() != generation:
+                raise ValueError("index generation changed during observation")
+            return generation
+
     def upsert_verified(self, memory: Memory, *, canonical_sha256: str) -> IndexEvidence:
         """Bind trusted canonical bytes to an upsert; caller must read it back."""
         if type(canonical_sha256) is not str or not re.fullmatch(r"[0-9a-f]{64}", canonical_sha256):

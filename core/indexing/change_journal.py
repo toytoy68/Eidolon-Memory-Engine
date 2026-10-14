@@ -38,6 +38,10 @@ class ChangeIntent:
     created: float | None = None
 
 
+class JournalCapacityExceeded(RuntimeError):
+    """Recovery must wait for pending work to drain; no intent was inserted."""
+
+
 class ChangeJournal:
     def __init__(self, path: str | Path):
         self.path = str(path)
@@ -116,6 +120,41 @@ class ChangeJournal:
                                  (after, time.time(), sequence, before))
             if changed.rowcount != 1:
                 raise ValueError("concurrent state transition")
+
+    def ensure_upsert_intent(self, information_id: str, revision: int,
+                             canonical_sha256: str, *, pending_limit=100) -> int | None:
+        """Recover a lost event without duplicating a pending upsert.
+
+        Caller verifies durable canonical bytes and permissions under the writer
+        lock. A pending delete, newer revision or same-revision conflict refuses
+        the enqueue. Terminal history does not cover a currently missing point.
+        """
+        if (type(information_id) is not str or _ID.fullmatch(information_id) is None
+                or type(revision) is not int or revision < 1
+                or type(canonical_sha256) is not str or _DIGEST.fullmatch(canonical_sha256) is None
+                or type(pending_limit) is not int or not 1 <= pending_limit <= 999):
+            raise ValueError("invalid recovery intent")
+        with self._db() as db:
+            db.execute("BEGIN IMMEDIATE")
+            rows = db.execute("""SELECT seq,revision,operation,canonical_sha256 FROM intents
+                               WHERE state IN ('INTENT','PUBLISHED') AND information_id=?
+                               ORDER BY seq""", (information_id,)).fetchall()
+            if any(op != "UPSERT" or rev > revision or
+                   (rev == revision and digest != canonical_sha256) for _, rev, op, digest in rows):
+                return None
+            for seq, rev, _, digest in rows:
+                if rev == revision and digest == canonical_sha256:
+                    return seq
+            count = db.execute("""SELECT count(*) FROM (SELECT 1 FROM intents
+                WHERE state IN ('INTENT','PUBLISHED') LIMIT ?)""", (pending_limit,)).fetchone()[0]
+            if count >= pending_limit:
+                raise JournalCapacityExceeded("pending journal requires processing or review")
+            now = time.time()
+            result = db.execute("""INSERT INTO intents
+                (information_id,revision,operation,canonical_sha256,state,created,updated)
+                VALUES (?,?,'UPSERT',?,'INTENT',?,?)""",
+                                (information_id, revision, canonical_sha256, now, now))
+            return int(result.lastrowid)
 
     def published(self, sequence: int) -> None:
         """Call only after the canonical rename and its durability checks."""

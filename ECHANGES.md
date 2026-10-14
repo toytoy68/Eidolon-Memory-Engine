@@ -2382,3 +2382,15 @@ AF_UNIX connus. Qualification CI en cours, aucune clôture globale J2.
 G230 confirmé sur `180f3a7` : CI Memory 2353 tests et 12 sous-tests réussis,
 19 scénarios expérimentaux réussis, Qdrant/worker 98 tests réussis. Voir le rapport
 pour les liens des exécutions et les limites J2. Aucune recette serveur/VM annoncée.
+
+
+## G231 — Balayage canonique reprenable, 14 octobre 2026, 21 h 08 Europe/Paris
+Auteur : Codex/GPT. Suite autorisée par toytoy ; base Memory `5d5c7b0`.
+Prise en charge : inventaire borné, curseur SQLite durable, détection de changements
+derrière le curseur et ajout idempotent des événements absents. Pause sur file pleine,
+aucune suppression d'index. Qualification isolée et publication sur la branche autorisée.
+
+G231 implémenté : 146 tests ciblés réussis, puis 33 tests scanner finaux avec
+-W error. Suite complète locale 2379 réussis, 12 sous-tests, 6 échecs AF_UNIX
+connus avant le dernier cas de checkpoint. [Rapport](docs/G231-RESUMABLE-SCAN-2026-10-14.md).
+La CI doit confirmer le lot ; le balayage inverse des orphelins reste à traiter.
