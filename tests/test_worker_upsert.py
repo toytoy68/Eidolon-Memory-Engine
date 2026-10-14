@@ -185,3 +185,21 @@ def test_missing_canonical_lock_root_rejected_before_write(tmp_path):
     with pytest.raises(ValueError, match="canonical root"):
         apply_upsert(**args, canonical_root=tmp_path / "missing")
     assert args["index"].calls == []
+
+
+def test_locked_entrypoint_requires_root_and_holds_lock(tmp_path):
+    from core.indexing.worker_upsert import apply_locked_upsert
+    from core.persistence import write_lock_held
+    args = operation()
+    with pytest.raises(ValueError, match="canonical_root"):
+        apply_locked_upsert(**args, canonical_root=None)
+    assert args["index"].calls == []
+    original = args["index"].upsert
+    held = []
+    def recording(memory):
+        held.append(write_lock_held(tmp_path))
+        original(memory)
+    args["index"].upsert = recording
+    result = apply_locked_upsert(**args, canonical_root=tmp_path)
+    assert result.state == "ACKNOWLEDGED"
+    assert held == [True]
