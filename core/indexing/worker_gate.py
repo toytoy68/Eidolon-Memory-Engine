@@ -20,7 +20,7 @@ class UpsertGate:
 
 
 def check_upsert(action: Action, *, canonical: Canonical, profile_id: str,
-                 model_id: str, permitted: bool, expected_revision: int,
+                 model_id: str, permitted: bool, expected_model_id: str, expected_profile_id: str, expected_revision: int,
                  expected_sha256: str) -> UpsertGate:
     if (type(action) is not Action or action.kind not in ("INDEX_UPSERT", "ENQUEUE_UPSERT")
             or type(action.information_id) is not str or not action.information_id
@@ -31,11 +31,14 @@ def check_upsert(action: Action, *, canonical: Canonical, profile_id: str,
             or type(expected_sha256) is not str or re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None
             or type(profile_id) is not str or not profile_id
             or type(model_id) is not str or not model_id
+            or type(expected_model_id) is not str or not expected_model_id
+            or type(expected_profile_id) is not str or not expected_profile_id
             or type(permitted) is not bool or not isinstance(canonical, Canonical)
             or type(canonical.revision) is not int or canonical.revision < 1
             or type(canonical.sha256) is not str or re.fullmatch(r"[0-9a-f]{64}", canonical.sha256) is None):
         raise ValueError("invalid worker gate evidence")
-    verified = (permitted and canonical.revision == expected_revision == action.revision
+    verified = (permitted and model_id == expected_model_id
+                and profile_id == expected_profile_id and canonical.revision == expected_revision == action.revision
                 and canonical.sha256 == expected_sha256)
     return UpsertGate(action.information_id, action.revision, canonical.sha256,
                       model_id, profile_id, verified)
