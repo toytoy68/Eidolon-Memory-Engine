@@ -26,7 +26,7 @@ def test_worker_writes_only_to_explicit_disposable_alias():
             action, index=index, read_canonical=read, authorize=lambda p, d: p == "owner",
             profile_id="owner", model_id="synthetic-worker-v1",
             expected_profile_id="owner", expected_model_id="synthetic-worker-v1",
-            expected_sha256="a" * 64)
+            expected_sha256="a" * 64, disposable_test=True)
         assert result.state == "APPLIED_UNCONFIRMED"
         assert len(calls) == 2
         assert index.status().documents == 1
