@@ -1,6 +1,6 @@
 # Eidolon Memory Engine
 
-**G232 — 14 octobre** : inventaire inverse Qdrant reprenable, absence canonique vérifiée et revue fraîche des candidats orphelins. Aucune suppression exécutée. [Preuves et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md). Qualification CI en cours.
+**G232 — 14 octobre** : inventaire inverse Qdrant reprenable, absence canonique vérifiée et revue fraîche des candidats orphelins. Aucune suppression exécutée. [Preuves et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md). CI Memory verte : 2430 tests complets, 175 ciblés, 19 expérimentaux ; comptes chevauchants.
 
 **G231 — 14 octobre** : balayage canonique reprenable, événements manquants remis en file sans doublon, contrôle final des modifications derrière le curseur et pause sur file pleine. [Preuves et limites](docs/G231-RESUMABLE-SCAN-2026-10-14.md). CI verte : 2386 tests complets, 19 scénarios expérimentaux et 131 tests ciblés. J2 reste ouvert.
 

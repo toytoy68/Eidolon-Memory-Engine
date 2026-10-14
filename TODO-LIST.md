@@ -1,6 +1,6 @@
 ## G232 — Priorités actives, 14 octobre 2026
 
-Inventaire inverse et revue revalidée livrés, sans suppression ni intention DELETE. [Rapport](docs/G232-ORPHAN-REVIEW-2026-10-14.md). 44 nouveaux tests réussis ; CI à confirmer. Suite : orchestration scanner/worker et politique de revue, contrat complet, serveur Qdrant/corpus réel puis VM/PC.
+Inventaire inverse et revue revalidée livrés, sans suppression ni intention DELETE. [Rapport](docs/G232-ORPHAN-REVIEW-2026-10-14.md). 44 nouveaux tests réussis ; CI confirmée : 2430 tests complets, 175 ciblés, 19 expérimentaux (comptes chevauchants). Suite : consommation paginée des arriérés supérieurs à la limite du worker, puis orchestration scanner/worker et politique de revue, contrat complet, serveur Qdrant/corpus réel puis VM/PC.
 
 ## G231 — Priorités actives, 14 octobre 2026
 

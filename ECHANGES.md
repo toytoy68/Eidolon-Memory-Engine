@@ -2410,3 +2410,7 @@ G232 implémenté : 185 tests ciblés puis 44 cas du lot réussis avec -W error,
 avec mort réelle avant/après commit du checkpoint. [Rapport et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md).
 Fin de curseur distinguée d’un instantané ; revalidation obligatoire pour revue.
 Qualification CI en cours ; aucune suppression activée.
+
+G232 confirmé côté Memory sur `e4d38ee` : CI complète 2430 tests et 12 sous-tests,
+19 scénarios expérimentaux, 175 tests Qdrant/worker/scanners réussis, aucun échec.
+Comptes chevauchants. [Preuves et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md).

@@ -3,6 +3,18 @@
 Auteur : Codex/GPT. Suite autorisée par toytoy à 21 h 32 Europe/Paris.
 Base Memory : `bef722294aa5ac7481e851218a18b8e743845a9c`.
 
+## Qualification du code publié
+
+Révision Memory testée : `e4d38ee3d4b56ec0a24ddec9939b2466ec5b9af4`.
+
+| Validation | Résultat observé |
+| --- | --- |
+| [Memory complet](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38625545805) | **2430 tests et 12 sous-tests réussis**, 98,74 s |
+| Worker expérimental, même workflow | **19 réussis**, 1,16 s ; contrat distinct du scanner/consommateur |
+| [Qdrant/worker/scanners ciblés](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38625545759) | **175 tests réussis**, 7,61 s |
+
+Les lots ciblés et complets se chevauchent ; leurs comptes ne s’additionnent pas.
+
 ## Livraison
 
 `OrphanScan` parcourt les points Information de l’alias Qdrant géré, dans une
@@ -108,9 +120,30 @@ scanner Information ; une collection mélangée est refusée, pas nettoyée.
   FIFO/liens, intention au-delà des 100 premières, révocation et bascule d’alias.
 - Point remplacé à même révision, provenance historique, points étrangers,
   curseur répété/désordonné, page surdimensionnée, limite atteinte et concurrence.
-- CI complète Memory, contrat Qdrant ciblé et intégration Core : à confirmer
-  sur les révisions publiées. Les limitations AF_UNIX locales connues ne sont
-  pas assimilées à des échecs du runner Linux.
+- CI complète Memory et contrat Qdrant ciblé : réussis sur la révision publiée
+  (table ci-dessus). Aucun test masqué ; les six restrictions AF_UNIX locales
+  connues ne se reproduisent pas sur le runner Linux. Intégration Core suivie
+  dans son bilan consolidé.
+
+## Raccordement suivant — non implémenté dans G232
+
+Le contrôleur devra conserver séparément les deux checkpoints et appeler des
+étapes bornées, avec reprise différée hors verrou pour BUSY/INDEX_UNAVAILABLE.
+Une intention récupérée passe d’abord à PUBLISHED : le worker G230 a besoin d’un
+appel ultérieur pour l’indexer. DONE décrit un appel, pas une file synchronisée ;
+les motifs `deferred` restent à traiter/revoir.
+
+Point à résoudre avant activation : le worker actuel refuse une file dépassant
+sa limite complète (TRUNCATED, maximum 999). La limite de 100 du scanner G231
+évite de remplir davantage sa propre file, mais ne borne pas les autres
+producteurs. Il faut donc qualifier la consommation paginée d’un arriéré et
+l’absence de famine derrière des intentions à revoir, avant de brancher un
+ordonnanceur. Augmenter simplement la limite ne résout pas un arriéré arbitraire.
+
+Le contrôleur ne devra pas relancer `restart=True` à chaque étape, ni interpréter
+EXHAUSTED/COMPLETE comme une permission de suppression. La revue des orphelins
+reste distincte des upserts. Les horaires/inactivité d’exploitation seront
+raccordés explicitement ; aucun cron ou service permanent n’est créé par ce lot.
 
 ## Suite J2
 
