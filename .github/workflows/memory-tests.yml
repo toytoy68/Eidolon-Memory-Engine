@@ -31,4 +31,4 @@ jobs:
       - name: Compile
         run: python -m compileall -q core tests
       - name: Full isolated suite
-        run: python -m pytest -q -p no:cacheprovider --basetemp="${{ runner.temp }}/pytest-memory"
+        run: python -m pytest -q -rs -p no:cacheprovider --basetemp="${{ runner.temp }}/pytest-memory"
