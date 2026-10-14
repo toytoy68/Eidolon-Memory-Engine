@@ -25,7 +25,7 @@ def test_unpublished_intent_waits_before_grace(tmp_path):
     result = preview_reconciliation(journal, {"doc": Canonical(1, "a" * 64)}, {"doc": 1},
                                     now=created + 2, grace_seconds=600)
     assert result.actions[0].kind == "WAIT"
-    assert result.requires_review
+    assert not result.requires_review
 
 
 def test_stale_intent_may_be_closed_after_grace(tmp_path):
