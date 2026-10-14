@@ -76,7 +76,7 @@ def test_delete_is_rejected():
                             read_canonical=reader, authorize=lambda p, d: True,
                             profile_id="owner", model_id="embedding-v1",
                             expected_profile_id="owner", expected_model_id="embedding-v1",
-                            expected_sha256=SHA)
+                            expected_sha256=SHA, disposable_test=True)
     assert not index.items
 
 
@@ -84,4 +84,11 @@ def test_embedding_mismatch_blocks():
     index = FakeIndex()
     assert execute(index, reader, lambda p, d: True,
                    expected_model_id="embedding-v2").state == "BLOCKED"
+    assert not index.items
+
+def test_disposable_mode_is_required():
+    import pytest
+    index = FakeIndex()
+    with pytest.raises(ValueError, match="disposable"):
+        execute(index, reader, lambda p, d: True, disposable_test=False)
     assert not index.items
