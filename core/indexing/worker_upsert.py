@@ -62,6 +62,15 @@ def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callabl
                              "canonical, model, profile or authorization mismatch")
     # No retry on uncertain acknowledgements: caller must reconcile first.
     index.upsert(memory)
+    # Acknowledgement is insufficient without point read-back.
+    read_back = getattr(index, "revision_for", None)
+    if not callable(read_back):
+        return UpsertReceipt(action.information_id, action.revision, "UNVERIFIED",
+                             "index adapter has no point read-back")
+    observed_revision = read_back(action.information_id)
+    if type(observed_revision) is not int or observed_revision != memory.revision:
+        return UpsertReceipt(action.information_id, action.revision, "UNVERIFIED",
+                             "index point revision differs or is missing")
     # Recheck after an acknowledged write. A change detected here must not
     # advance the journal or be reported as a successful synchronization.
     # This is detection, NOT atomicity: a production writer lock is required.
