@@ -89,3 +89,16 @@ def test_unknown_canonical_does_not_trigger_deletion():
 
 def test_unknown_readers_prevent_generation_retirement():
     assert retirement_plan({"g1", "g2"}, live="g2", readers={}, retired_at={"g1": 0}, now=99999) == ()
+
+
+def test_absence_must_be_typed_not_equal_string():
+    forged = "".join(["AB", "SENT"])
+    with pytest.raises(ValueError, match="Canonical or ABSENT"):
+        reconcile_plan([], {"doc": forged}, {"doc": 1})
+    assert kinds(reconcile_plan([], {"doc": ABSENT}, {"doc": 1})) == [("ENQUEUE_DELETE", "doc")]
+
+
+@pytest.mark.parametrize("delay", [float("nan"), float("inf"), -1.0])
+def test_nonfinite_grace_delay_rejected(delay):
+    with pytest.raises(ValueError, match="grace"):
+        reconcile_plan([], {}, {}, grace_seconds=delay)
