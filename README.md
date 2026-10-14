@@ -1,5 +1,7 @@
 # Eidolon Memory Engine
 
+**G234 — 14 octobre** : projection de l'index explicitée et contrôle avant reprise du journal. CI Memory : 2502 tests +12 sous-tests, 247 ciblés, 19 expérimentaux (comptes chevauchants). **Ancien schéma 1 refusé : reconstruction explicite sous nouvel alias nécessaire avant activation.** [Rapport, preuves et écarts du contrat réel](docs/G234-PROJECTION-CONTRACT-2026-10-14.md). Contrat complet J2 et recette serveur/VM restent ouverts.
+
 **G233 — 14 octobre** : arriérés paginés sans famine derrière les revues et orchestration durable des scanners/worker livrés. Conditions de maintenance et reports raccordés, aucune activation de service. [Rapport](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). CI Memory verte : 2470 tests complets, 215 ciblés, 19 expérimentaux (comptes chevauchants).
 
 **G232 — 14 octobre** : inventaire inverse Qdrant reprenable, absence canonique vérifiée et revue fraîche des candidats orphelins. Aucune suppression exécutée. [Preuves et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md). CI Memory verte : 2430 tests complets, 175 ciblés, 19 expérimentaux ; comptes chevauchants.

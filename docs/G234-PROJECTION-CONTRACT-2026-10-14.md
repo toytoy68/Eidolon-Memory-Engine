@@ -27,7 +27,9 @@ CI du code publié confirmée :
 Comptes chevauchants, non additionnés. Intégration Core épinglée sur ce SHA :
 `833fea3d3041bf80a214045c4c7f8f64797c7d89`,
 [run](https://github.com/toytoy68/Eidolon-Bootstrap-Framework/actions/runs/38639019833)
-en cours lors de cette rédaction ; résultat consolidé dans PROJECT-STATUS Core.
+**réussi : 1763 tests et 1299 sous-tests, 7 ignorés**, 308,59 s, aucun avertissement pytest.
+Les exclusions concernent numpy/ONNX/OpenCV et les modèles d’identité optionnels.
+Les avertissements Node des actions GitHub sont distincts. Bilan consolidé dans PROJECT-STATUS Core.
 
 ## Identité persistée et incompatibilité
 
