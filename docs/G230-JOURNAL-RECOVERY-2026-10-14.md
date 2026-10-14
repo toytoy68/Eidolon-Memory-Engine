@@ -3,6 +3,20 @@
 Auteur : Codex/GPT. Base Memory : `fb82360b961b05b26370ff274905b6fca95a6135`.
 Suite autorisée par toytoy à 19 h 55 Europe/Paris. Branche de développement uniquement.
 
+## Qualification du code publié
+
+Commit testé : `180f3a72064636964e718e2d81e88e198aeac01f`.
+
+| Validation | Résultat observé |
+| --- | --- |
+| [Suite Memory complète](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38611998863) | **2353 tests et 12 sous-tests réussis**, 258,42 s |
+| Contrat du worker expérimental, même workflow | **19 réussis**, 1,84 s ; contrat distinct du nouveau consommateur |
+| [Qdrant et worker ciblés](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38611998817) | **98 réussis**, 2,59 s |
+
+Les six échecs locaux passent sur le runner Linux ; aucun test n'a été masqué.
+Les lots se chevauchent et ne doivent pas être additionnés. Les avertissements
+Node des actions GitHub sont de l'infrastructure, distincts des résultats pytest.
+
 ## Livré dans ce lot
 
 - `JournalUpsertWorker` consomme une liste bornée et complète d'intentions existantes, sous le même verrou que les écrivains canoniques. Une seconde exécution concurrente retourne BUSY. Il utilise le lecteur Markdown réel et le chemin public `apply_upsert` de G229.
@@ -16,7 +30,7 @@ Suite autorisée par toytoy à 19 h 55 Europe/Paris. Branche de développement u
 
 - Quatre tests rouges sans les nouvelles API, puis verts après implémentation.
 - **134 tests ciblés réussis avec `-W error`**, couvrant journal, lecteur, worker, planificateur et adaptateur Qdrant ; puis **38 nouveaux cas réussis avec `-W error`**, dont un test interprocessus ajouté après cette première campagne. Comptes chevauchants, non additionnables.
-- Suite complète locale avant ce dernier test : **2346 tests et 12 sous-tests réussis, 6 échecs**, 90,00 s. Les six échecs sont les restrictions AF_UNIX/Manager déjà documentées en G229 ; ils ne sont ni supprimés ni masqués. La CI Linux doit confirmer le code publié.
+- Suite complète locale avant ce dernier test : **2346 tests et 12 sous-tests réussis, 6 échecs**, 90,00 s. Les six échecs sont les restrictions AF_UNIX/Manager déjà documentées en G229 ; ils ne sont ni supprimés ni masqués. La CI Linux a ensuite confirmé le code publié (table ci-dessus).
 - Arrêt réel d'un sous-processus avec `os._exit(73)` après écriture du point et avant la transition INDEXED : redémarrage sur SQLite et Qdrant local sur disque, clôture réussie sans ré-embedding.
 - Autres cas : droits refusés/révoqués, source modifiée pendant l'indexation, digest divergent à révision égale, point historique sans preuve, index indisponible, modèle incorrect, troncature, horloge reculée, transition concurrente du journal, génération modifiée, échec fsync, deux workers concurrents et écrivain bloquant dans un autre processus.
 - Core : `fork` résiduel de `test_profile_registry_probes` remplacé par `spawn` ; **44 tests et 18 sous-tests ciblés réussis**, `-W error`. Les huit avertissements observés en G229 doivent être revérifiés dans la CI complète.

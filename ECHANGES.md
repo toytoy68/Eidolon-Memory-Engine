@@ -2378,3 +2378,7 @@ G230 implémenté : transitions conditionnelles du journal, récupération sans 
 contrôle d'intégrité dans les plans. [Résultats et limites](docs/G230-JOURNAL-RECOVERY-2026-10-14.md).
 134 tests ciblés réussis, puis 38 nouveaux cas ; suite locale 2346 réussis / 6 échecs
 AF_UNIX connus. Qualification CI en cours, aucune clôture globale J2.
+
+G230 confirmé sur `180f3a7` : CI Memory 2353 tests et 12 sous-tests réussis,
+19 scénarios expérimentaux réussis, Qdrant/worker 98 tests réussis. Voir le rapport
+pour les liens des exécutions et les limites J2. Aucune recette serveur/VM annoncée.

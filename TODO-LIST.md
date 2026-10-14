@@ -1,6 +1,6 @@
 ## G230 — Priorités actives, 14 octobre 2026
 
-Consommateur borné du journal raccordé au worker réel et preuve complète ; reprise après arrêt/accusé perdu testée sur disque. Planification avec digest/modèle/génération disponible. [Preuves et limites](docs/G230-JOURNAL-RECOVERY-2026-10-14.md). CI du lot à confirmer. Restent : inventaire complet et pagination, couverture intégrale du contrat historique, coordination alias/droits et recette serveur Qdrant/VM.
+Consommateur borné du journal raccordé au worker réel et preuve complète ; reprise après arrêt/accusé perdu testée sur disque. Planification avec digest/modèle/génération disponible. [Preuves et limites](docs/G230-JOURNAL-RECOVERY-2026-10-14.md). CI du lot confirmée : 2353 tests, 12 sous-tests, 19 scénarios expérimentaux et 98 tests ciblés, périmètres chevauchants. Restent : inventaire complet et pagination, couverture intégrale du contrat historique, coordination alias/droits et recette serveur Qdrant/VM.
 
 ## G229 — Priorités actives, 14 octobre 2026
 
