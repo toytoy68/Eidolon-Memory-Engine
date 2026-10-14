@@ -23,8 +23,6 @@ def summarize_work(prepared: PreparedWork, *, index_available: bool,
     for entries in all_entries:
         if not isinstance(entries, tuple) or any(type(x) is not str or not x for x in entries):
             raise ValueError("invalid work entries")
-    if len(set().union(*[set(x) for x in all_entries])) < sum(len(x) for x in all_entries):
-        raise ValueError("ambiguous worker status: duplicate document identities")
     if not index_available:
         state = "INDEX_UNAVAILABLE"
     elif not model_compatible:
