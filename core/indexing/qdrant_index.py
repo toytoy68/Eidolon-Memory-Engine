@@ -147,6 +147,32 @@ class QdrantIndex(IndexPort):
             self._write_descriptor(self.alias, None)
             self.client.upsert(self.alias, points=[point], wait=True)
 
+    def revision_for(self, information_id: str) -> int | None:
+        """Read back a specific point, validating its identity and revision.
+
+        This is evidence of the adapter's current observation, not a
+        transaction spanning Qdrant and canonical Markdown.
+        """
+        identity = self._identity(information_id)
+        with self._lock:
+            self._descriptor()
+            records = self.client.retrieve(
+                self.alias, ids=[_point_id(identity)],
+                with_payload=True, with_vectors=False)
+            if not records:
+                return None
+            if len(records) != 1:
+                raise ValueError("ambiguous index read-back")
+            record = records[0]
+            payload = record.payload or {}
+            if (str(record.id) != _point_id(identity)
+                    or payload.get("kind") != "information"
+                    or payload.get("information_id") != identity
+                    or type(payload.get("revision")) is not int
+                    or payload["revision"] < 1):
+                raise ValueError("invalid index read-back payload")
+            return payload["revision"]
+
     def delete(self, information_id: str) -> None:
         with self._lock:
             self._descriptor()
