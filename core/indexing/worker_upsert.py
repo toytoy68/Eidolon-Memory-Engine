@@ -113,3 +113,19 @@ def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callabl
         raise ValueError("canonical root must be an existing directory")
     with exclusive_write(root):
         return _apply_unlocked(action, **arguments)
+
+
+def apply_locked_upsert(action: Action, *, canonical_root: Path,
+                        read_canonical: Callable, authorize: Callable,
+                        index, profile_id: str, model_id: str,
+                        expected_model_id: str, expected_profile_id: str,
+                        expected_sha256: str) -> UpsertReceipt:
+    """Explicit locked entrypoint; still experimental until production qualification."""
+    if canonical_root is None:
+        raise ValueError("canonical_root required for locked worker")
+    return apply_upsert(action, canonical_root=canonical_root,
+                        read_canonical=read_canonical, authorize=authorize,
+                        index=index, profile_id=profile_id, model_id=model_id,
+                        expected_model_id=expected_model_id,
+                        expected_profile_id=expected_profile_id,
+                        expected_sha256=expected_sha256)
