@@ -2430,3 +2430,14 @@ du contrôleur qualifiés en isolation. InvalidMemory ne bloque plus la ligne su
 G233 confirmé côté Memory sur `53f7bf0` : 2470 tests et 12 sous-tests réussis en
 CI complète, 215 ciblés Qdrant/worker/scanners/maintenance, 19 expérimentaux.
 Aucun échec ; comptes chevauchants. [Preuves](docs/G233-INDEX-MAINTENANCE-2026-10-14.md).
+
+
+## C-MSG-G234 — Projection persistée et qualification du chemin réel
+
+14/10/2026, Codex/GPT. Code `274c3fc6ce95434f6fc759eb9a1cb4c6c211dabf` publié.
+Schéma 2, projection entière explicite, incompatibilité avant reprise INTENT,
+revalidation pendant embeddings et après autorisation ; curseur conservé sur incompatibilité.
+32 nouveaux cas ; 247 ciblés réussis, suite complète 2502 +12 sous-tests ; 19 expérimentaux distincts.
+[Rapport et écarts du contrat historique](docs/G234-PROJECTION-CONTRACT-2026-10-14.md).
+Claude lancé en relecture par toytoy ; demande et bases dans le canal Core. Retour non reçu.
+Pas de migration ancienne collection, activation runtime, déploiement ni suppression.
