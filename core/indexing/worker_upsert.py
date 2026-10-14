@@ -7,6 +7,8 @@ success means only that the index adapter acknowledged the upsert; it does
 not imply journal publication or end-to-end durability.
 """
 from dataclasses import dataclass
+from pathlib import Path
+from core.persistence import exclusive_write
 from typing import Callable
 
 from core.backend.models import Memory
@@ -22,7 +24,7 @@ class UpsertReceipt:
     reason: str
 
 
-def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callable,
+def _apply_unlocked(action: Action, *, read_canonical: Callable, authorize: Callable,
                  index, profile_id: str, model_id: str, expected_model_id: str,
                  expected_profile_id: str, expected_sha256: str) -> UpsertReceipt:
     """Re-read, verify, then upsert; no delete, no implicit retries."""
@@ -87,3 +89,27 @@ def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callabl
                              "permission changed during index write; reconciliation required")
     return UpsertReceipt(action.information_id, action.revision, "ACKNOWLEDGED",
                          "index adapter acknowledged; canonical rechecked; journal unchanged")
+
+
+def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callable,
+                 index, profile_id: str, model_id: str, expected_model_id: str,
+                 expected_profile_id: str, expected_sha256: str,
+                 canonical_root: Path | None = None) -> UpsertReceipt:
+    """Optionally hold the repository's cooperative writer lock throughout.
+
+    A production caller must supply the canonical root and ensure every writer
+    cooperates with the same lock. The unlocked path is retained for isolated
+    contract tests and MUST NOT be used as a production authorization.
+    """
+    arguments = dict(read_canonical=read_canonical, authorize=authorize, index=index,
+                     profile_id=profile_id, model_id=model_id,
+                     expected_model_id=expected_model_id,
+                     expected_profile_id=expected_profile_id,
+                     expected_sha256=expected_sha256)
+    if canonical_root is None:
+        return _apply_unlocked(action, **arguments)
+    root = Path(canonical_root)
+    if not root.is_dir():
+        raise ValueError("canonical root must be an existing directory")
+    with exclusive_write(root):
+        return _apply_unlocked(action, **arguments)
