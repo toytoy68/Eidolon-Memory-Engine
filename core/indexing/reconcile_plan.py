@@ -24,7 +24,11 @@ Rules (the canon always wins; the journal only accelerates):
 """
 from dataclasses import dataclass
 
-ABSENT = "ABSENT"  # Proven missing canonical document; missing key means unknown.
+class CanonicalAbsence(Enum):
+    PROVEN_ABSENT = "proven_absent"
+
+
+ABSENT = CanonicalAbsence.PROVEN_ABSENT  # Missing key means unknown; strings are never absence.
 TERMINAL = frozenset({"INDEXED", "SUPERSEDED", "ABANDONED"})
 ACTIONS = ("MARK_PUBLISHED", "INDEX_UPSERT", "INDEX_DELETE", "CLOSE_SUPERSEDED", "CLOSE_ABANDONED",
            "WAIT", "INTEGRITY_ALERT", "ENQUEUE_UPSERT", "ENQUEUE_DELETE")
@@ -74,7 +78,7 @@ def _intent_action(intent, canonical, age, grace_seconds):
 
 def reconcile_plan(pending, canonical, indexed, *, ages=None, grace_seconds=600):
     """pending: ChangeIntent tuple; canonical: {id: Canonical}; indexed: {id: revision}; ages: {seq: s}."""
-    if type(grace_seconds) not in (int, float) or grace_seconds < 0:
+    if type(grace_seconds) not in (int, float) or not math.isfinite(grace_seconds) or grace_seconds < 0:
         raise ValueError("invalid grace delay")
     for value in canonical.values():
         if value is not ABSENT and not isinstance(value, Canonical):
