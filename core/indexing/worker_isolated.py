@@ -20,7 +20,7 @@ class UpsertResult:
 
 def run_isolated_upsert(action: Action, *, index, read_canonical, authorize,
                         profile_id: str, model_id: str, expected_profile_id: str,
-                        expected_model_id: str, expected_sha256: str):
+                        expected_model_id: str, expected_sha256: str, disposable_test: bool = False):
     """Perform one bounded experimental upsert; never delete or mark indexed.
 
     read_canonical(id) returns (Memory, canonical file SHA-256). It MUST
