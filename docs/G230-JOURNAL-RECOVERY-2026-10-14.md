@@ -12,6 +12,7 @@ Commit testé : `180f3a72064636964e718e2d81e88e198aeac01f`.
 | [Suite Memory complète](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38611998863) | **2353 tests et 12 sous-tests réussis**, 258,42 s |
 | Contrat du worker expérimental, même workflow | **19 réussis**, 1,84 s ; contrat distinct du nouveau consommateur |
 | [Qdrant et worker ciblés](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38611998817) | **98 réussis**, 2,59 s |
+| [Core épinglé sur Memory G230](https://github.com/toytoy68/Eidolon-Bootstrap-Framework/actions/runs/38612137486), Core `e7cba2b` | **1763 tests et 1299 sous-tests réussis, 7 ignorés, 0 avertissement pytest**, 286,59 s |
 
 Les six échecs locaux passent sur le runner Linux ; aucun test n'a été masqué.
 Les lots se chevauchent et ne doivent pas être additionnés. Les avertissements
@@ -33,7 +34,7 @@ Node des actions GitHub sont de l'infrastructure, distincts des résultats pytes
 - Suite complète locale avant ce dernier test : **2346 tests et 12 sous-tests réussis, 6 échecs**, 90,00 s. Les six échecs sont les restrictions AF_UNIX/Manager déjà documentées en G229 ; ils ne sont ni supprimés ni masqués. La CI Linux a ensuite confirmé le code publié (table ci-dessus).
 - Arrêt réel d'un sous-processus avec `os._exit(73)` après écriture du point et avant la transition INDEXED : redémarrage sur SQLite et Qdrant local sur disque, clôture réussie sans ré-embedding.
 - Autres cas : droits refusés/révoqués, source modifiée pendant l'indexation, digest divergent à révision égale, point historique sans preuve, index indisponible, modèle incorrect, troncature, horloge reculée, transition concurrente du journal, génération modifiée, échec fsync, deux workers concurrents et écrivain bloquant dans un autre processus.
-- Core : `fork` résiduel de `test_profile_registry_probes` remplacé par `spawn` ; **44 tests et 18 sous-tests ciblés réussis**, `-W error`. Les huit avertissements observés en G229 doivent être revérifiés dans la CI complète.
+- Core : `fork` résiduel de `test_profile_registry_probes` remplacé par `spawn` ; **44 tests et 18 sous-tests ciblés réussis**, `-W error`. La CI complète confirme leur disparition ; les sept tests ignorés concernent les moteurs/modèles d’identité optionnels.
 
 ## Limites — J2 reste ouvert
 
