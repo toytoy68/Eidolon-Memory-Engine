@@ -8,6 +8,7 @@
 """Contract tests for the future index worker, run against Claude's reference worker and in-memory doubles.
 No Qdrant, no Markdown, no VM. GPT's worker should pass the same scenarios (swap ReferenceWorker)."""
 import hashlib
+import importlib
 import os
 
 import pytest
@@ -16,6 +17,17 @@ from core.indexing.change_journal import ChangeJournal
 from core.indexing.journal_migration import migrate_v2
 from core.indexing.reconcile_plan import Canonical
 from tests.claude_memory_eval.reference_worker import Crash, FakeCanon, FakeIndex, ReferenceWorker
+
+
+def _factory():
+    spec = os.environ.get("EIDOLON_WORKER_FACTORY")
+    if not spec:
+        return ReferenceWorker
+    module, _, name = spec.partition(":")
+    return getattr(importlib.import_module(module), name)
+
+
+WORKER = _factory()
 
 
 def sha(text):
@@ -41,7 +53,7 @@ class World:
         return self.now if self.now is not None else __import__("time").time()
 
     def worker(self, profile="alice", **kwargs):
-        return ReferenceWorker(self.journal, self.canon, self.index, self.rights, profile=profile,
+        return WORKER(self.journal, self.canon, self.index, self.rights, profile=profile,
                                lock_path=str(self.lock), clock=self.clock, **kwargs)
 
     def write(self, ident, revision, text, *, crash=None):
@@ -155,14 +167,15 @@ def test_canon_changed_between_plan_and_action_is_not_indexed_stale(world):
     assert world.index.points == {} and world.states() == {seq: "PUBLISHED"}
 
 
-def test_two_fast_revisions_supersede_the_older_and_index_only_the_latest(world):
+def test_two_fast_revisions_index_only_latest_and_send_older_to_review(world):
     first = world.write("doc", 1, "v1")
     second = world.write("doc", 2, "v2")
+    report = world.worker().run_once()
+    assert ("CLOSE_SUPERSEDED", "doc", first) in report.review
     world.worker().run_once()
-    world.worker().run_once()
-    assert world.index.points["doc"] == (2, sha("v2")) and world.states() == {}
+    assert world.index.points["doc"] == (2, sha("v2")) and world.index.writes == 1
+    assert world.states() == {first: "PUBLISHED"}
     with __import__("sqlite3").connect(world.path) as raw:
-        assert raw.execute("SELECT state FROM intents WHERE seq=?", (first,)).fetchone()[0] == "SUPERSEDED"
         assert raw.execute("SELECT state FROM intents WHERE seq=?", (second,)).fetchone()[0] == "INDEXED"
 
 
