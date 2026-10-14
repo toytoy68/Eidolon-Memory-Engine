@@ -23,6 +23,8 @@ Rules (the canon always wins; the journal only accelerates):
   gets an ENQUEUE action (the journal lost the event); an indexed id absent from the canon is deleted.
 """
 from dataclasses import dataclass
+from enum import Enum
+import math
 
 class CanonicalAbsence(Enum):
     PROVEN_ABSENT = "proven_absent"
