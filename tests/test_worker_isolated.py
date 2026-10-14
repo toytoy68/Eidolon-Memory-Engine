@@ -24,7 +24,7 @@ def execute(index, reader, policy, **changes):
     options = dict(index=index, read_canonical=reader, authorize=policy,
                    profile_id="owner", model_id="embedding-v1",
                    expected_profile_id="owner", expected_model_id="embedding-v1",
-                   expected_sha256=SHA)
+                   expected_sha256=SHA, disposable_test=True)
     options.update(changes)
     return run_isolated_upsert(action(), **options)
 
