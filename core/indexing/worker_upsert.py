@@ -33,6 +33,12 @@ def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callabl
     if (type(expected_sha256) is not str or len(expected_sha256) != 64
             or any(ch not in "0123456789abcdef" for ch in expected_sha256)):
         raise ValueError("invalid expected canonical digest")
+    # If the index exposes an embedding identity, never trust a caller's
+    # model label over the adapter's own configured model.
+    configured_model = getattr(index, "embedding_id", None)
+    if configured_model is not None and configured_model != expected_model_id:
+        return UpsertReceipt(action.information_id, action.revision, "REFUSED",
+                             "index embedding identity differs from expected model")
     # The canonical reader MUST verify the source bytes, identity and digest,
     # not simply return an untrusted index payload.
     observed = read_canonical(action.information_id)
