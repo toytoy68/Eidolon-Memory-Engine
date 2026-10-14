@@ -1,3 +1,7 @@
+## G233 — Priorités actives, 14 octobre 2026
+
+Pagination des gros arriérés et cycle durable scanner/worker/orphelins livrés, avec fenêtre/inactivité/démarrage/charge et reports. 40 nouveaux tests ; qualification CI en cours. [Rapport](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). Suite J2 : contrat historique complet/identité du découpeur, contre-revue, raccordement à l’hôte et qualification serveur/corpus/modèles réels puis VM/PC. Suppression désactivée.
+
 ## G232 — Priorités actives, 14 octobre 2026
 
 Inventaire inverse et revue revalidée livrés, sans suppression ni intention DELETE. [Rapport](docs/G232-ORPHAN-REVIEW-2026-10-14.md). 44 nouveaux tests réussis ; CI confirmée : 2430 tests complets, 175 ciblés, 19 expérimentaux (comptes chevauchants). Suite : consommation paginée des arriérés supérieurs à la limite du worker, puis orchestration scanner/worker et politique de revue, contrat complet, serveur Qdrant/corpus réel puis VM/PC.

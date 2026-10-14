@@ -233,3 +233,29 @@ class ChangeJournal:
             return db.execute("""SELECT 1 FROM intents WHERE
                 state IN ('INTENT','PUBLISHED') AND information_id=? LIMIT 1""",
                               (information_id,)).fetchone() is not None
+
+    def high_watermark(self) -> int:
+        """Highest allocated sequence, retained even if terminal rows are compacted."""
+        with self._db() as db:
+            row = db.execute("SELECT seq FROM sqlite_sequence WHERE name='intents'").fetchone()
+            return row[0] if row else 0
+
+    def pending_page(self, *, after: int, through: int, limit=100):
+        """Keyset page within an explicit finite pass; no offset or starvation."""
+        if (type(after) is not int or type(through) is not int or not 0 <= after <= through
+                or type(limit) is not int or not 1 <= limit <= 1000):
+            raise ValueError("invalid pending page")
+        with self._db() as db:
+            rows = db.execute("""SELECT seq,information_id,revision,operation,canonical_sha256,state,created
+                FROM intents WHERE state IN ('INTENT','PUBLISHED') AND seq>? AND seq<=?
+                ORDER BY seq LIMIT ?""", (after, through, limit)).fetchall()
+            return tuple(ChangeIntent(*row) for row in rows)
+
+    def intent(self, sequence: int):
+        """Read one current intent for advisory review, including terminal states."""
+        if type(sequence) is not int or sequence < 1:
+            raise ValueError("invalid sequence")
+        with self._db() as db:
+            row = db.execute("""SELECT seq,information_id,revision,operation,canonical_sha256,state,created
+                FROM intents WHERE seq=?""", (sequence,)).fetchone()
+            return ChangeIntent(*row) if row else None

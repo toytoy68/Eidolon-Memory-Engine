@@ -17,6 +17,7 @@ import math
 import time
 
 from core.persistence import exclusive_write, RepositoryBusy
+from core.backend.errors import InvalidMemory
 from .change_journal import ChangeJournal
 from .port import IndexEvidence
 from .reconcile_plan import Action
@@ -30,6 +31,15 @@ class JournalReport:
     published: tuple[int, ...] = ()
     indexed: tuple[int, ...] = ()
     deferred: tuple[tuple[int, str], ...] = ()
+
+
+@dataclass(frozen=True)
+class JournalPageReport:
+    status: str
+    after: int
+    through: int | None
+    exhausted: bool
+    result: JournalReport
 
 
 class _IndexUnavailable(Exception):
@@ -107,8 +117,46 @@ class JournalUpsertWorker:
         pending = self.journal.pending(limit + 1)
         if len(pending) > limit:
             return JournalReport("TRUNCATED")
-        if any(i.created is None or not math.isfinite(i.created) or i.created > now for i in pending):
+        if any(type(i.created) not in (int, float) or not math.isfinite(i.created) or i.created > now for i in pending):
             return JournalReport("REFUSED")
+        return self._process(pending, now)
+
+    def run_page(self, *, after=0, through=None, limit=100, now=None):
+        """One finite pass page. Caller persists cursor AFTER effects and replays safely.
+
+        A reviewed row advances this pass; it remains pending for subsequent
+        passes. An index outage keeps the failing row at the next cursor.
+        Exhaustion is a pass boundary, never a declaration that the queue is empty.
+        """
+        if (type(after) is not int or after < 0
+                or (through is not None and (type(through) is not int or through < after))
+                or (through is None and after != 0)
+                or type(limit) is not int or not 1 <= limit <= 999):
+            raise ValueError("invalid worker page")
+        now = time.time() if now is None else now
+        if type(now) not in (int, float) or not math.isfinite(now):
+            raise ValueError("invalid clock")
+        try:
+            with exclusive_write(self.reader.root, blocking=False):
+                high = self.journal.high_watermark()
+                fence = high if through is None else through
+                if fence > high:
+                    raise ValueError("worker pass exceeds journal high watermark")
+                pending = self.journal.pending_page(after=after, through=fence, limit=limit+1)
+                result = self._process(pending[:limit], now)
+                visited = (*result.published, *result.indexed,
+                           *(seq for seq, reason in result.deferred if reason != "INDEX_UNAVAILABLE"))
+                cursor = max((after, *visited))
+                exhausted = result.status == "DONE" and len(pending) <= limit
+                if exhausted:
+                    cursor = fence
+                status = ("PASS_EXHAUSTED" if exhausted else "MORE") if result.status == "DONE" else result.status
+                return JournalPageReport(status, cursor, fence, exhausted, result)
+        except RepositoryBusy:
+            return JournalPageReport("BUSY", after, through, False,
+                                     JournalReport("BUSY"))
+
+    def _process(self, pending, now):
         if getattr(self.index, "embedding_id", None) != self.expected_model_id:
             return JournalReport("INDEX_INCOMPATIBLE")
         index = _GuardedIndex(self.index)
@@ -116,6 +164,9 @@ class JournalUpsertWorker:
         status = "DONE"
         for intent in pending:
             seq = intent.sequence
+            if type(intent.created) not in (int, float) or not math.isfinite(intent.created) or intent.created > now:
+                deferred.append((seq, "INVALID_TIMESTAMP"))
+                continue
             if intent.operation != "UPSERT":
                 deferred.append((seq, "DELETE_REQUIRES_REVIEW"))
                 continue
@@ -174,7 +225,7 @@ class JournalUpsertWorker:
                 deferred.append((seq, "INDEX_UNAVAILABLE"))
                 status = "INDEX_UNAVAILABLE"
                 break
-            except (ValueError, OSError, UnicodeError):
+            except (ValueError, OSError, UnicodeError, InvalidMemory):
                 # No absent inference and no terminal transition on a bad read.
                 deferred.append((seq, "UNVERIFIED"))
         return JournalReport(status, tuple(published), tuple(indexed), tuple(deferred))

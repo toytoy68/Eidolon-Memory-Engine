@@ -2414,3 +2414,15 @@ Qualification CI en cours ; aucune suppression activée.
 G232 confirmé côté Memory sur `e4d38ee` : CI complète 2430 tests et 12 sous-tests,
 19 scénarios expérimentaux, 175 tests Qdrant/worker/scanners réussis, aucun échec.
 Comptes chevauchants. [Preuves et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md).
+
+
+## G233 — Arriérés et orchestration, 14 octobre 2026, 22 h 36 Europe/Paris
+Auteur : Codex/GPT. Suite demandée jusqu’au bout par toytoy ; base Memory `0c23815`.
+Prise en charge : pagination à borne fixe du journal, absence de famine derrière
+les revues, cycle durable scanner/worker/orphelins et conditions de maintenance.
+Qualification isolée puis CI des deux dépôts. Aucun déploiement ni suppression.
+
+G233 implémenté : 246 tests ciblés puis 40 cas du lot réussis avec -W error.
+Arriéré de 1005 revues + une ligne saine, cycle complet et arrêt réel avant commit
+du contrôleur qualifiés en isolation. InvalidMemory ne bloque plus la ligne suivante.
+[Rapport, API et limites](docs/G233-INDEX-MAINTENANCE-2026-10-14.md). CI à confirmer.

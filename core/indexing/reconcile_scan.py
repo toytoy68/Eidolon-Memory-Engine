@@ -23,6 +23,7 @@ import sqlite3
 import stat
 
 from core.persistence import exclusive_write, has_symlink_component, RepositoryBusy
+from core.backend.errors import InvalidMemory
 from .change_journal import ChangeJournal, JournalCapacityExceeded
 from .port import IndexEvidence
 from .worker_canonical import CanonicalReader
@@ -39,6 +40,10 @@ class ScanReport:
 
 class _IndexUnavailable(Exception):
     pass
+
+
+class CanonicalSnapshotUnavailable(ValueError):
+    """A source inventory failed; distinct from an invalid checkpoint/context."""
 
 
 class ReconciliationScan:
@@ -116,6 +121,12 @@ class ReconciliationScan:
             raise _IndexUnavailable from exc
 
     def _snapshot(self):
+        try:
+            return self._capture_snapshot()
+        except (ValueError, OSError, UnicodeError, InvalidMemory) as exc:
+            raise CanonicalSnapshotUnavailable(str(exc)) from exc
+
+    def _capture_snapshot(self):
         entries, consumed = [], 0
         for ident in self.reader.information_ids(max_entries=self.max_entries):
             memory, digest, size = self.reader.read_sized(ident)
@@ -220,7 +231,7 @@ class ReconciliationScan:
             return "FORBIDDEN", None
         try:
             memory, current_digest = self.reader(ident)
-        except (ValueError, OSError, UnicodeError):
+        except (ValueError, OSError, UnicodeError, InvalidMemory):
             return "RESTART_REQUIRED", None
         if (memory.revision, current_digest) != (revision, digest):
             return "RESTART_REQUIRED", None
@@ -242,7 +253,7 @@ class ReconciliationScan:
         read = self.reader if matching else self.reader.read_durable
         try:
             memory, current_digest = read(ident)
-        except (ValueError, OSError, UnicodeError):
+        except (ValueError, OSError, UnicodeError, InvalidMemory):
             return "RESTART_REQUIRED", None
         if ((memory.revision, current_digest) != (revision, digest)
                 or self._index_call("active_generation") != generation):

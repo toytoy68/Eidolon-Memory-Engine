@@ -34,6 +34,7 @@ class OrphanReport:
     state: str
     inspected: int = 0
     observed_candidates: int = 0
+    review_count: int = 0
 
 
 @dataclass(frozen=True)
@@ -183,7 +184,8 @@ class OrphanScan:
     def _report(db, state=None):
         row = db.execute("SELECT phase,seen FROM orphan_scan WHERE singleton=1").fetchone()
         count = db.execute("SELECT count(*) FROM observations WHERE result='DELETE_CANDIDATE'").fetchone()[0]
-        return OrphanReport(state or row[0], row[1], count) if row else OrphanReport(state or "RUNNING")
+        review = db.execute("SELECT count(*) FROM observations WHERE result!='CANONICAL_PRESENT'").fetchone()[0]
+        return OrphanReport(state or row[0], row[1], count, review) if row else OrphanReport(state or "RUNNING")
 
     def run_page(self, *, limit=100, restart=False):
         """Atomically persist one observed page and its cursor, or retry it whole."""
