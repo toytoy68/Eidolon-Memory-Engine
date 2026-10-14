@@ -128,3 +128,19 @@ def test_canonical_reader_fails_after_write_no_false_acknowledgement():
     with pytest.raises(OSError):
         apply_upsert(**operation(index=index, read_canonical=reader))
     assert index.calls == ["doc"]
+
+
+def test_adapter_embedding_mismatch_refused_without_effect():
+    index = FakeIndex()
+    index.embedding_id = "embedding-v2"
+    receipt = apply_upsert(**operation(index=index))
+    assert receipt.state == "REFUSED"
+    assert index.calls == []
+
+
+def test_matching_adapter_embedding_identity_is_accepted():
+    index = FakeIndex()
+    index.embedding_id = "embedding-v1"
+    receipt = apply_upsert(**operation(index=index))
+    assert receipt.state == "ACKNOWLEDGED"
+    assert index.calls == ["doc"]
