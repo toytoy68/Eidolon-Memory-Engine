@@ -8,7 +8,7 @@ SHA = "a" * 64
 def gate(**overrides):
     params = dict(action=Action("INDEX_UPSERT", "doc", 1, 2, "published"),
                   canonical=Canonical(2, SHA), profile_id="owner", model_id="embedding-v1",
-                  permitted=True, expected_revision=2, expected_sha256=SHA)
+                  permitted=True, expected_model_id="embedding-v1", expected_profile_id="owner", expected_revision=2, expected_sha256=SHA)
     params.update(overrides)
     return check_upsert(**params)
 
@@ -25,6 +25,8 @@ def test_matching_canonical_and_permissions_is_verified_candidate():
     {"canonical": Canonical(2, "b" * 64)},
     {"expected_revision": 3},
     {"expected_sha256": "b" * 64},
+    {"expected_model_id": "embedding-v2"},
+    {"expected_profile_id": "other"},
 ])
 def test_mismatched_evidence_is_not_verified(override):
     assert not gate(**override).verified
