@@ -1,3 +1,7 @@
+## G232 — Priorités actives, 14 octobre 2026
+
+Inventaire inverse et revue revalidée livrés, sans suppression ni intention DELETE. [Rapport](docs/G232-ORPHAN-REVIEW-2026-10-14.md). 44 nouveaux tests réussis ; CI à confirmer. Suite : orchestration scanner/worker et politique de revue, contrat complet, serveur Qdrant/corpus réel puis VM/PC.
+
 ## G231 — Priorités actives, 14 octobre 2026
 
 Balayage canonique reprenable livré : checkpoint SQLite, inventaires initial/final, ajout idempotent et pause sur file pleine. [Preuves et limites](docs/G231-RESUMABLE-SCAN-2026-10-14.md). CI confirmée : 2386 tests et 12 sous-tests, 19 scénarios expérimentaux, 131 tests ciblés ; comptes chevauchants. Suite : inventaire inverse des points orphelins, orchestration scanner/worker, contrat complet et recette serveur Qdrant/VM.

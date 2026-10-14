@@ -2398,3 +2398,15 @@ La CI doit confirmer le lot ; le balayage inverse des orphelins reste à traiter
 G231 confirmé sur `855a9eb` : CI Memory 2386 tests et 12 sous-tests réussis,
 19 expérimentaux réussis, Qdrant/worker/scanner 131 réussis. Voir le rapport pour
 les liens CI, les captures complètes sous verrou et les limites de COMPLETE.
+
+
+## G232 — Inventaire inverse, 14 octobre 2026, 21 h 32 Europe/Paris
+Auteur : Codex/GPT. Suite autorisée par toytoy ; base Memory `bef7222`.
+Prise en charge : inventaire Qdrant paginé, absence canonique observée par descripteur,
+checkpoint de reprise et candidats revalidés pour revue. Aucune suppression ni
+intention DELETE produite ; la fin du curseur ne certifie pas un index immuable.
+
+G232 implémenté : 185 tests ciblés puis 44 cas du lot réussis avec -W error,
+avec mort réelle avant/après commit du checkpoint. [Rapport et limites](docs/G232-ORPHAN-REVIEW-2026-10-14.md).
+Fin de curseur distinguée d’un instantané ; revalidation obligatoire pour revue.
+Qualification CI en cours ; aucune suppression activée.

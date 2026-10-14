@@ -27,7 +27,7 @@ from qdrant_client import models
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 from core.indexing.manifest import build_manifest
-from core.indexing.port import IndexEvidence, IndexHit, IndexPort, IndexStatus
+from core.indexing.port import IndexEvidence, IndexHit, IndexPort, IndexStatus, IndexRecord, IndexInventoryPage
 from core.persistence import has_symlink_component
 
 
@@ -152,6 +152,57 @@ class QdrantIndex(IndexPort):
             if self._active_generation() != generation:
                 raise ValueError("index generation changed during observation")
             return generation
+
+    def inventory_page(self, *, generation: str, offset=None, limit=100) -> IndexInventoryPage:
+        """Scroll one concrete generation, without vectors or a hiding kind filter.
+
+        Cursor exhaustion is not a snapshot: concurrent inserts behind the cursor
+        require another pass. Malformed/foreign points refuse the entire page.
+        """
+        if (type(generation) is not str or not generation
+                or type(limit) is not int or not 1 <= limit <= 999):
+            raise ValueError("invalid inventory options")
+        def token(value):
+            if type(value) is not str or str(UUID(value)) != value:
+                raise ValueError("invalid inventory cursor")
+            return UUID(value).int
+        minimum = token(offset) if offset is not None else -1
+        with self._lock:
+            if self.active_generation() != generation:
+                raise ValueError("index generation changed before inventory")
+            records, next_offset = self.client.scroll(
+                generation, offset=offset, limit=limit, with_payload=True, with_vectors=False)
+            if len(records) > limit:
+                raise ValueError("oversized inventory page")
+            entries, previous = [], minimum - 1
+            for record in records:
+                position = token(record.id)
+                if position < minimum or position <= previous:
+                    raise ValueError("unordered inventory page")
+                previous = position
+                if record.id == _META:
+                    continue
+                p = record.payload or {}
+                ident = self._identity(p.get("information_id"))
+                if (len(ident) > 256 or record.id != _point_id(ident)
+                        or p.get("kind") != "information"
+                        or type(p.get("revision")) is not int or p["revision"] < 1):
+                    raise ValueError("invalid inventory point")
+                digest = p.get("canonical_sha256")
+                evidence = None
+                if digest is not None:
+                    if (type(digest) is not str or not re.fullmatch(r"[0-9a-f]{64}", digest)
+                            or p.get("embedding_id") != self.embedding_id
+                            or p.get("generation") != generation):
+                        raise ValueError("invalid inventory provenance")
+                    evidence = IndexEvidence(ident, p["revision"], digest, self.embedding_id, generation)
+                entries.append(IndexRecord(ident, p["revision"], evidence))
+            if next_offset is not None:
+                if not records or token(next_offset) <= max(previous, minimum):
+                    raise ValueError("inventory cursor did not advance")
+            if self.active_generation() != generation:
+                raise ValueError("index generation changed during inventory")
+            return IndexInventoryPage(generation, tuple(entries), next_offset)
 
     def upsert_verified(self, memory: Memory, *, canonical_sha256: str) -> IndexEvidence:
         """Bind trusted canonical bytes to an upsert; caller must read it back."""

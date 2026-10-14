@@ -41,6 +41,21 @@ class IndexEvidence:
     generation: str
 
 
+@dataclass(frozen=True)
+class IndexRecord:
+    """Managed point identity; legacy points may lack verified provenance."""
+    information_id: str
+    revision: int
+    evidence: IndexEvidence | None
+
+
+@dataclass(frozen=True)
+class IndexInventoryPage:
+    generation: str
+    records: tuple[IndexRecord, ...]
+    next_offset: str | None
+
+
 class IndexPort(ABC):
     """Adapters must pass tests/contracts/index_port_contract.py unchanged."""
 

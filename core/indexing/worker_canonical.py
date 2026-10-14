@@ -53,6 +53,37 @@ class CanonicalReader:
     def __call__(self, information_id):
         return self._read(information_id)
 
+    def proven_absent(self, information_id):
+        """Observe a missing leaf, never infer absence from an unreadable source.
+
+        Caller holds the cooperative writer lock. Any directory entry (including
+        a dangling link) means not absent. Errors and replaced roots fail closed.
+        This observation is not a reusable deletion permission.
+        """
+        if type(information_id) is not str or not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
+            raise ValueError("invalid canonical identity")
+        try:
+            with _directory(self.root) as fd:
+                if _identity(os.fstat(fd)) != self._root_identity:
+                    raise ValueError("canonical root changed")
+                def missing():
+                    try:
+                        os.stat(information_id + ".md", dir_fd=fd, follow_symlinks=False)
+                    except FileNotFoundError:
+                        return True
+                    return False
+                absent = missing()
+                with _directory(self.root) as checked_fd:
+                    if _identity(os.fstat(checked_fd)) != self._root_identity:
+                        raise ValueError("canonical root changed during absence check")
+                absent = absent and missing()
+                with _directory(self.root) as checked_fd:
+                    if _identity(os.fstat(checked_fd)) != self._root_identity:
+                        raise ValueError("canonical root changed during absence check")
+                return absent
+        except OSError as exc:
+            raise ValueError("canonical absence unknown; root or leaf unavailable") from exc
+
     def information_ids(self, *, max_entries):
         """Bounded directory inventory through the pinned descriptor; no absence proof.
 

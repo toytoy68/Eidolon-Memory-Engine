@@ -224,3 +224,12 @@ class ChangeJournal:
                                  FROM intents WHERE state IN ('INTENT','PUBLISHED') ORDER BY seq LIMIT ?""",
                               (limit,)).fetchall()
         return tuple(ChangeIntent(*row) for row in rows)
+
+    def has_pending(self, information_id: str) -> bool:
+        """Check one identity without mistaking a bounded pending page for all rows."""
+        if type(information_id) is not str or _ID.fullmatch(information_id) is None:
+            raise ValueError("invalid Information identity")
+        with self._db() as db:
+            return db.execute("""SELECT 1 FROM intents WHERE
+                state IN ('INTENT','PUBLISHED') AND information_id=? LIMIT 1""",
+                              (information_id,)).fetchone() is not None
