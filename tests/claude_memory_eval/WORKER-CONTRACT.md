@@ -3,11 +3,15 @@
 Recette : `tests/claude_memory_eval/test_worker_reference_g214.py` (19 scénarios).
 Référence : `reference_worker.py` (fichier de test, **pas** de production).
 
-Pour lancer la recette contre un autre worker :
+G235 : la copie `core.indexing.worker:IndexWorker` a été supprimée. Le worker
+exécutable est `JournalUpsertWorker`, qualifié par `test_real_worker_contract_g220.py`
+et `tests/test_worker_journal.py`. Les 19 scénarios ci-dessous restent une
+spécification historique sur doubles ; leur interface n'est pas celle du worker réel.
+
+Pour rejouer la référence historique :
 
 ```sh
-EIDOLON_WORKER_FACTORY="core.indexing.worker:IndexWorker" \
-  python -m pytest -q tests/claude_memory_eval/test_worker_reference_g214.py
+python -m pytest -q tests/claude_memory_eval/test_worker_reference_g214.py
 ```
 
 ## 1. Construction

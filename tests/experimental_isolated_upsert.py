@@ -1,3 +1,10 @@
+# ==========================================================
+# Projet      : Eidolon Memory Engine
+# Organisation: Eidolon Core Technologies (ECT)
+# Fichier     : tests/experimental_isolated_upsert.py
+# Description : Ancienne expérience conservée uniquement pour les tests.
+# Standard    : Eidolon Presentation Standard v1
+# ==========================================================
 """Experimental upsert-only worker for a disposable index.
 
 No delete, no journal transition, no live filesystem path. The caller supplies
@@ -7,8 +14,8 @@ snapshot across Markdown and Qdrant: it must not be used in production.
 from __future__ import annotations
 from dataclasses import dataclass
 from core.backend.models import Memory
-from .reconcile_plan import Action, Canonical
-from .worker_gate import check_upsert
+from core.indexing.reconcile_plan import Action, Canonical
+from core.indexing.worker_gate import check_upsert
 
 
 @dataclass(frozen=True)

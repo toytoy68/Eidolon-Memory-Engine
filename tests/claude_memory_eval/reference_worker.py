@@ -24,7 +24,16 @@ from core.indexing.reconcile_preview import preview_reconciliation
 from core.indexing.worker_preflight import preflight
 
 
-from core.indexing.worker import Crash, IndexUnavailable, CanonUnreadable
+class Crash(BaseException):
+    """Test-only simulated process death."""
+
+
+class IndexUnavailable(Exception):
+    pass
+
+
+class CanonUnreadable(Exception):
+    pass
 
 
 @dataclass

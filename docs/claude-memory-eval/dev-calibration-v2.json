@@ -1,0 +1,444 @@
+{
+ "schema": "eidolon-memory-eval/1",
+ "version": "dev-calibration-v2",
+ "author": "Claude",
+ "date": "2026-10-14",
+ "purpose": "Development set to CALIBRATE abstention (G201 Q1, G220-6). Superset of dev-calibration-v1 (24 questions kept verbatim) plus 36 new ones, including near_miss questions that share vocabulary with a document but whose answer is absent. corpus-v1 questions stay the held-out test set: never tune on them.",
+ "rule": "Frozen by SHA-256 before any threshold is tuned. A change needs a new file and version. Expected ids refer to corpus-v1 documents; off_topic and near_miss expect abstention.",
+ "documents": "corpus-v1.json documents (same 30 synthetic documents)",
+ "synthetic": true,
+ "questions": [
+  {
+   "id": "dev-dir-1",
+   "question": "Vers quel disque le NAS copie-t-il les photos ?",
+   "expected": [
+    "tech-nas-backup"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-dir-2",
+   "question": "Quelle voix française utilise Piper ?",
+   "expected": [
+    "tech-voice"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-dir-3",
+   "question": "Combien de threads utilise la dictée Whisper ?",
+   "expected": [
+    "tech-stt"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-dir-4",
+   "question": "Où WireGuard est-il installé ?",
+   "expected": [
+    "tech-wireguard"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-dir-5",
+   "question": "Quelle tisane est-ce que je bois le soir ?",
+   "expected": [
+    "pref-tea"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-dir-6",
+   "question": "Quel est le rôle de Qdrant par rapport au Markdown ?",
+   "expected": [
+    "tech-memory-qdrant"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-dir-7",
+   "question": "Quand le cousin Paul fête-t-il son anniversaire ?",
+   "expected": [
+    "person-paul-cousin"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-dir-8",
+   "question": "À quelle fréquence arroser les tomates ?",
+   "expected": [
+    "routine-garden"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev-par-1",
+   "question": "Quel accès distant permet de joindre le téléphone de l'extérieur ?",
+   "expected": [
+    "tech-wireguard"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-par-2",
+   "question": "Quelle boisson chaude sans sucre je prends en me levant ?",
+   "expected": [
+    "pref-coffee"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-par-3",
+   "question": "Qui doit intervenir pour la plomberie ?",
+   "expected": [
+    "person-paul-plumber"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-par-4",
+   "question": "Quand l'entretien de la voiture est-il programmé ?",
+   "expected": [
+    "routine-car"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-par-5",
+   "question": "Quel composant observe les services sans pouvoir agir ?",
+   "expected": [
+    "tech-darme"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-par-6",
+   "question": "À quelle température faut-il mettre le chauffage en route ?",
+   "expected": [
+    "cond-heating"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-par-7",
+   "question": "Quel métal reste liquide à température ambiante ?",
+   "expected": [
+    "chem-mercure"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-par-8",
+   "question": "Qui faut-il avertir si deux sauvegardes nocturnes ratent ?",
+   "expected": [
+    "cond-backup"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev-off-1",
+   "question": "Quelle est la recette de la tarte aux pommes ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev-off-2",
+   "question": "Combien coûte un abonnement de train Paris-Lyon ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev-off-3",
+   "question": "Quel est le mot de passe du routeur Wi-Fi ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev-off-4",
+   "question": "Quand le dentiste a-t-il programmé le prochain rendez-vous ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev-off-5",
+   "question": "Quel temps fera-t-il demain à Strasbourg ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev-off-6",
+   "question": "Quelle est la taille de l'écran du salon ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev-off-7",
+   "question": "Quel est le nom du chat des voisins ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev-off-8",
+   "question": "Combien de kilomètres a parcouru le vélo ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-dir-1",
+   "question": "Quel jour je ne mange pas de viande ?",
+   "expected": [
+    "pref-no-meat"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-dir-2",
+   "question": "Que traverse le robot Nas dans l'histoire ?",
+   "expected": [
+    "fiction-nas"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-dir-3",
+   "question": "À qui le dieu Mercure apporte-t-il un message ?",
+   "expected": [
+    "fiction-mercure"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-dir-4",
+   "question": "Où ai-je rangé les photos de vacances ?",
+   "expected": [
+    "distract-photos"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-dir-5",
+   "question": "Où le bateau est-il resté pendant la tempête ?",
+   "expected": [
+    "distract-port"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-dir-6",
+   "question": "Qu'est-ce qui est arrivé de la part de grand-mère ?",
+   "expected": [
+    "distract-carte"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-dir-7",
+   "question": "Qu'a recommandé le serveur du restaurant ?",
+   "expected": [
+    "distract-serveur"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-dir-8",
+   "question": "Que faut-il vérifier avant de formater le NAS ?",
+   "expected": [
+    "tech-nas-format"
+   ],
+   "category": "direct"
+  },
+  {
+   "id": "dev2-par-1",
+   "question": "Quelles cartes graphiques faut-il attendre plutôt que la V100 ?",
+   "expected": [
+    "tech-gpu-buy-new"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-par-2",
+   "question": "Quel jour l'électricien passe-t-il finalement ?",
+   "expected": [
+    "date-meeting"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-par-3",
+   "question": "Quelle infusion je prends avant de dormir ?",
+   "expected": [
+    "pref-tea"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-par-4",
+   "question": "Quelle date dois-je retenir pour fêter mon cousin ?",
+   "expected": [
+    "person-paul-cousin"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-par-5",
+   "question": "Quel numéro de port l'API Core n'utilise-t-elle plus ?",
+   "expected": [
+    "tech-core-port-new"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-par-6",
+   "question": "Qui part à la recherche de sa sœur à travers le désert ?",
+   "expected": [
+    "fiction-nas"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-par-7",
+   "question": "Sur quel matériel tourne la reconnaissance vocale ?",
+   "expected": [
+    "tech-stt"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-par-8",
+   "question": "Quelle source fait foi si l'index vectoriel est perdu ?",
+   "expected": [
+    "tech-memory-qdrant"
+   ],
+   "category": "paraphrase"
+  },
+  {
+   "id": "dev2-off-1",
+   "question": "Quelle est la capitale de l'Australie ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-off-2",
+   "question": "Comment faire une pâte à crêpes ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-off-3",
+   "question": "Qui a gagné le dernier match de rugby ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-off-4",
+   "question": "Combien d'habitants compte Lyon ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-off-5",
+   "question": "Quelle est la date de péremption du lait ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-off-6",
+   "question": "Quel film passe ce soir à la télévision ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-off-7",
+   "question": "Comment s'appelle le facteur ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-off-8",
+   "question": "Quelle est la pointure de mes chaussures de randonnée ?",
+   "expected": [],
+   "category": "off_topic"
+  },
+  {
+   "id": "dev2-near-1",
+   "question": "À quelle heure le NAS sauvegarde-t-il les vidéos ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-near-2",
+   "question": "Quel port utilise l'API Memory ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-near-3",
+   "question": "Quelle voix anglaise utilise Piper ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-near-4",
+   "question": "Combien de threads utilise la synthèse vocale ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-near-5",
+   "question": "Quand la révision de la Renault est-elle prévue ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-near-6",
+   "question": "Quand mon cousin Pierre fête-t-il son anniversaire ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-near-7",
+   "question": "Faut-il arroser les courgettes du jardin ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-near-8",
+   "question": "À quelle heure part le bateau de Marseille ?",
+   "expected": [],
+   "category": "near_miss"
+  },
+  {
+   "id": "dev2-cor-1",
+   "question": "L'API Core utilise-t-elle encore le port 8765 ?",
+   "expected": [
+    "tech-core-port-new"
+   ],
+   "category": "corrected"
+  },
+  {
+   "id": "dev2-cor-2",
+   "question": "La réunion avec l'électricien est-elle toujours lundi ?",
+   "expected": [
+    "date-meeting"
+   ],
+   "category": "corrected"
+  },
+  {
+   "id": "dev2-neg-1",
+   "question": "Est-ce que je mets du sucre dans mon café du matin ?",
+   "expected": [
+    "pref-coffee"
+   ],
+   "category": "negation"
+  },
+  {
+   "id": "dev2-neg-2",
+   "question": "Faut-il allumer le chauffage à 20 degrés ?",
+   "expected": [
+    "cond-heating"
+   ],
+   "category": "negation"
+  }
+ ]
+}

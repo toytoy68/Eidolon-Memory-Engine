@@ -122,10 +122,17 @@ def test_text_fingerprint_is_not_a_plain_hash(client, tmp_path):
     secret = "le code du portail est 4831"
     index = make(client)
     index.rebuild(corpus(tmp_path, [("secret", secret)]))
-    # G180 chooses the review's alternative: revision only, no per-text digest.
+    # G235: the private rebuilt point carries the full canonical file digest,
+    # like verified upserts since G229; never a hash of the bare secret text.
     hit = index.query("portail")[0]
     assert "text_sha256" not in hit.ranking
     points, _ = client.scroll(index.alias, limit=10, with_vectors=False)
     payload = next(p.payload for p in points if p.payload.get("kind") == "information")
-    assert set(payload) == {"kind", "information_id", "revision"}
+    assert set(payload) == {"kind", "information_id", "revision", "canonical_sha256",
+                            "embedding_id", "generation", "projection_id"}
+    from core.indexing.worker_canonical import CanonicalReader
+    _, digest = CanonicalReader(tmp_path / "persistent")("secret")
+    assert payload["canonical_sha256"] == digest
+    assert secret not in repr(payload)
+    assert sha256(secret.encode()).hexdigest() not in repr(payload)
     assert sha256(secret.encode()).hexdigest() not in repr(hit)

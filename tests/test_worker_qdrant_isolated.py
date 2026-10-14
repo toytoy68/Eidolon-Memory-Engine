@@ -6,7 +6,7 @@ qdrant = pytest.importorskip("qdrant_client")
 from core.backend.models import Memory
 from core.indexing.qdrant_index import QdrantIndex
 from core.indexing.reconcile_plan import Action
-from core.indexing.worker_isolated import run_isolated_upsert
+from tests.experimental_isolated_upsert import run_isolated_upsert
 
 
 def test_worker_writes_only_to_explicit_disposable_alias():

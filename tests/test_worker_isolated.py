@@ -1,7 +1,7 @@
 """No external Qdrant or canonical corpus is used by these worker tests."""
 from core.backend.models import Memory
 from core.indexing.reconcile_plan import Action
-from core.indexing.worker_isolated import run_isolated_upsert
+from tests.experimental_isolated_upsert import run_isolated_upsert
 
 SHA = "a" * 64
 

@@ -14,7 +14,6 @@ No embedding model is downloaded or selected by this adapter.
 """
 from __future__ import annotations
 
-from hashlib import sha256
 import json
 import math
 from pathlib import Path
@@ -24,12 +23,12 @@ from uuid import UUID, uuid4, uuid5
 
 from qdrant_client import models
 
-from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 from core.indexing.manifest import build_manifest
 from core.indexing.port import (IndexEvidence, IndexHit, IndexPort, IndexStatus,
                                 IndexRecord, IndexInventoryPage, IndexIncompatible)
-from core.persistence import has_symlink_component
+from core.persistence import exclusive_write
+from core.indexing.worker_canonical import CanonicalReader
 
 
 _NAMESPACE = UUID("1328f012-116b-4df9-af89-41204113fe4e")
@@ -341,22 +340,19 @@ class QdrantIndex(IndexPort):
             return sorted(hits, key=lambda h: (-h.score, h.information_id))
 
     def rebuild(self, persistent_root: Path) -> None:
-        with self._lock:
+        # Lock ordering matches the journal worker: canonical root, then adapter.
+        with exclusive_write(Path(persistent_root)), self._lock:
             original_generation = self.active_generation()
             root = Path(persistent_root)
+            reader = CanonicalReader(root)
             manifest = build_manifest(root)
             generation = self._generation()
             for entry in manifest.entries:
-                path = root / (entry.information_id + ".md")
-                if has_symlink_component(path):
-                    raise ValueError("index source changed to symlink")
-                raw = path.read_bytes()
-                if sha256(raw).hexdigest() != entry.file_sha256:
+                memory, digest = reader(entry.information_id)
+                if digest != entry.file_sha256 or memory.revision != entry.revision:
                     raise ValueError("index source changed during rebuild")
-                memory = FilesystemBackend._deserialize(raw.decode("utf-8"))
-                if memory.information_id != entry.information_id or memory.revision != entry.revision:
-                    raise ValueError("index source identity changed")
-                self.client.upsert(generation, points=[self._point(memory)], wait=True)
+                self.client.upsert(generation, points=[self._point(
+                    memory, canonical_sha256=digest, generation=generation)], wait=True)
             if build_manifest(root) != manifest:
                 raise ValueError("index source changed during rebuild")
             self._write_descriptor(generation, manifest.digest)
