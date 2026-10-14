@@ -8,6 +8,9 @@ on:
       - 'tests/**'
       - 'requirements*.txt'
       - '.github/workflows/memory-tests.yml'
+concurrency:
+  group: memory-tests-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   memory:
     runs-on: ubuntu-latest
