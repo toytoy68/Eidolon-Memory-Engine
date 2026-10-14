@@ -11,6 +11,12 @@ from core.indexing.reconcile_plan import Action
 class FakeIndex:
     def __init__(self):
         self.writes = []
+    def revision_for(self, information_id):
+        for ident, revision in reversed(self.writes):
+            if ident == information_id:
+                return revision
+        return None
+
     def upsert(self, memory):
         self.writes.append((memory.information_id, memory.revision))
 
