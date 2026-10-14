@@ -25,10 +25,12 @@ def check_upsert(action: Action, *, canonical: Canonical, profile_id: str,
             or type(action.information_id) is not str or not action.information_id
             or type(action.revision) is not int or action.revision < 1
             or type(expected_revision) is not int or expected_revision < 1
-            or type(expected_sha256) is not str or len(expected_sha256) != 64
+            or type(expected_sha256) is not str or re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None
             or type(profile_id) is not str or not profile_id
             or type(model_id) is not str or not model_id
-            or type(permitted) is not bool or not isinstance(canonical, Canonical)):
+            or type(permitted) is not bool or not isinstance(canonical, Canonical)
+            or type(canonical.revision) is not int or canonical.revision < 1
+            or type(canonical.sha256) is not str or re.fullmatch(r"[0-9a-f]{64}", canonical.sha256) is None):
         raise ValueError("invalid worker gate evidence")
     verified = (permitted and canonical.revision == expected_revision == action.revision
                 and canonical.sha256 == expected_sha256)
