@@ -27,7 +27,9 @@ def run_isolated_upsert(action: Action, *, index, read_canonical, authorize,
     independently verify the file identity, revision and byte hash.
     authorize(profile_id, id) returns an exact bool from a trusted policy.
     """
-    if disposable_test is not True:\n        raise ValueError("isolated worker requires explicit disposable test mode")\n    if (type(action) is not Action or action.kind not in ("INDEX_UPSERT", "ENQUEUE_UPSERT")
+    if disposable_test is not True:
+        raise ValueError("isolated worker requires explicit disposable test mode")
+    if (type(action) is not Action or action.kind not in ("INDEX_UPSERT", "ENQUEUE_UPSERT")
             or not callable(read_canonical) or not callable(authorize)
             or not hasattr(index, "upsert")):
         raise ValueError("unsupported worker operation")
