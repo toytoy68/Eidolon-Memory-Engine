@@ -56,5 +56,19 @@ def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callabl
                              "canonical, model, profile or authorization mismatch")
     # No retry on uncertain acknowledgements: caller must reconcile first.
     index.upsert(memory)
+    # Recheck after an acknowledged write. A change detected here must not
+    # advance the journal or be reported as a successful synchronization.
+    # This is detection, NOT atomicity: a production writer lock is required.
+    after = read_canonical(action.information_id)
+    if (type(after) is not tuple or len(after) != 2
+            or not isinstance(after[0], Memory) or type(after[1]) is not str
+            or after[0].information_id != action.information_id
+            or after[0].revision != memory.revision or after[1] != digest):
+        return UpsertReceipt(action.information_id, action.revision, "STALE",
+                             "canonical changed during index write; reconciliation required")
+    still_permitted = authorize(profile_id, action.information_id, "index.upsert")
+    if still_permitted is not True:
+        return UpsertReceipt(action.information_id, action.revision, "STALE",
+                             "permission changed during index write; reconciliation required")
     return UpsertReceipt(action.information_id, action.revision, "ACKNOWLEDGED",
-                         "index adapter returned successfully; journal unchanged")
+                         "index adapter acknowledged; canonical rechecked; journal unchanged")
