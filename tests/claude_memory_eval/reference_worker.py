@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 
 from core.indexing.reconcile_plan import ABSENT
 from core.indexing.reconcile_preview import preview_reconciliation
+from core.indexing.worker_preflight import preflight
 
 
 class Crash(BaseException):
@@ -85,11 +86,14 @@ class ReferenceWorker:
         except ValueError as exc:                                    # truncated journal, clock behind intents
             return Report("TRUNCATED" if "truncated" in str(exc) else "REFUSED")
         self._point("after_plan")
+        gate = preflight([a for a in preview.actions if a.kind != "WAIT"], allow_upsert=True)   # GPT, 1a7a76f
+        executable = {id(a) for a in gate.proposals}
         for action in preview.actions:
             if action.kind == "WAIT":
                 report.skipped.append((action.information_id, "wait"))
                 continue
-            if action.kind in ("CLOSE_ABANDONED", "INTEGRITY_ALERT"):
+            deletion = action.kind in ("INDEX_DELETE", "ENQUEUE_DELETE")
+            if id(action) not in executable and not deletion:
                 report.review.append((action.kind, action.information_id, action.sequence))
                 continue
             try:
@@ -100,7 +104,7 @@ class ReferenceWorker:
             if not self.rights(self.profile, action.information_id):
                 report.skipped.append((action.information_id, "forbidden"))
                 continue
-            if action.kind in ("INDEX_DELETE", "ENQUEUE_DELETE"):
+            if deletion:                                             # verified, then only PROPOSED
                 if current is ABSENT:
                     report.proposed_deletions.append((action.information_id, action.sequence))
                 else:
@@ -117,11 +121,6 @@ class ReferenceWorker:
         ident, seq = action.information_id, action.sequence
         if action.kind == "MARK_PUBLISHED":
             self.journal.published(seq)
-        elif action.kind == "CLOSE_SUPERSEDED":
-            if current is ABSENT or current.revision < action.revision:
-                report.skipped.append((ident, "newer revision not confirmed"))
-                return
-            self.journal.close_terminal(seq, "SUPERSEDED", "newer canonical revision")
         elif action.kind in ("INDEX_UPSERT", "ENQUEUE_UPSERT"):
             if current is ABSENT or current.revision != action.revision:
                 report.skipped.append((ident, "canon changed since plan"))
