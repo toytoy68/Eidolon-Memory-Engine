@@ -163,3 +163,25 @@ def test_wrong_point_revision_is_unverified():
     receipt = apply_upsert(**operation(index=index))
     assert receipt.state == "UNVERIFIED"
     assert index.calls == ["doc"]
+
+
+def test_canonical_repository_lock_held_during_index_write(tmp_path):
+    from core.persistence import write_lock_held
+    index = FakeIndex()
+    observed = []
+    original = index.upsert
+    def writing(memory):
+        observed.append(write_lock_held(tmp_path))
+        original(memory)
+    index.upsert = writing
+    receipt = apply_upsert(**operation(index=index), canonical_root=tmp_path)
+    assert receipt.state == "ACKNOWLEDGED"
+    assert observed == [True]
+    assert not write_lock_held(tmp_path)
+
+
+def test_missing_canonical_lock_root_rejected_before_write(tmp_path):
+    args = operation()
+    with pytest.raises(ValueError, match="canonical root"):
+        apply_upsert(**args, canonical_root=tmp_path / "missing")
+    assert args["index"].calls == []
