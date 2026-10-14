@@ -1,5 +1,7 @@
 # Eidolon Memory Engine
 
+**État du 14 octobre — G229** : lecteur canonique par descripteur, verrou obligatoire et preuve complète du point Qdrant. [Bilan et limites](docs/G229-INTEGRITY-2026-10-14.md). J2 reste ouvert ; les bilans ci-dessous sont historiques.
+
 **12/10 — G180** : patchs Claude intégrés et tests rejoués sur Core ;
 [état, mesures et limites](docs/G180-CLAUDE-INTEGRATION-2026-10-12.md).
 Qdrant reste optionnel et non branché au rappel actif.

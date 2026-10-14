@@ -3,7 +3,8 @@ import pytest
 
 from core.backend.models import Memory
 from core.indexing.reconcile_plan import Action
-from core.indexing.worker_upsert import apply_upsert
+from core.indexing.worker_upsert import _apply_unlocked as apply_upsert
+from core.indexing.port import IndexEvidence
 
 SHA = "a" * 64
 
@@ -12,6 +13,21 @@ class FakeIndex:
     def __init__(self, fail=False):
         self.calls = []
         self.fail = fail
+
+    def upsert_verified(self, memory, *, canonical_sha256):
+        self.upsert(memory)
+        self.written = IndexEvidence(memory.information_id, memory.revision,
+                                     canonical_sha256, "embedding-v1", "generation-test")
+        return self.written
+
+    def evidence_for(self, information_id):
+        if not callable(self.revision_for):
+            return None
+        revision = self.revision_for(information_id)
+        if revision is None:
+            return None
+        return IndexEvidence(information_id, revision, self.written.canonical_sha256,
+                             "embedding-v1", "generation-test")
 
     def revision_for(self, information_id):
         return 2 if information_id in self.calls else None
@@ -166,6 +182,7 @@ def test_wrong_point_revision_is_unverified():
 
 
 def test_canonical_repository_lock_held_during_index_write(tmp_path):
+    from core.indexing.worker_upsert import apply_upsert
     from core.persistence import write_lock_held
     index = FakeIndex()
     observed = []
@@ -181,6 +198,7 @@ def test_canonical_repository_lock_held_during_index_write(tmp_path):
 
 
 def test_missing_canonical_lock_root_rejected_before_write(tmp_path):
+    from core.indexing.worker_upsert import apply_upsert
     args = operation()
     with pytest.raises(ValueError, match="canonical root"):
         apply_upsert(**args, canonical_root=tmp_path / "missing")

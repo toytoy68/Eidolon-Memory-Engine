@@ -14,6 +14,7 @@ from typing import Callable
 from core.backend.models import Memory
 from core.indexing.reconcile_plan import Action, Canonical
 from core.indexing.worker_gate import check_upsert
+from core.indexing.port import IndexEvidence
 
 
 @dataclass(frozen=True)
@@ -30,7 +31,7 @@ def _apply_unlocked(action: Action, *, read_canonical: Callable, authorize: Call
     """Re-read, verify, then upsert; no delete, no implicit retries."""
     if (type(action) is not Action or action.kind not in ("INDEX_UPSERT", "ENQUEUE_UPSERT")
             or not callable(read_canonical) or not callable(authorize)
-            or not callable(getattr(index, "upsert", None))):
+            or not callable(getattr(index, "upsert_verified", None))):
         raise ValueError("invalid worker operation")
     if (type(expected_sha256) is not str or len(expected_sha256) != 64
             or any(ch not in "0123456789abcdef" for ch in expected_sha256)):
@@ -63,16 +64,22 @@ def _apply_unlocked(action: Action, *, read_canonical: Callable, authorize: Call
         return UpsertReceipt(action.information_id, action.revision, "REFUSED",
                              "canonical, model, profile or authorization mismatch")
     # No retry on uncertain acknowledgements: caller must reconcile first.
-    index.upsert(memory)
+    written = index.upsert_verified(memory, canonical_sha256=digest)
     # Acknowledgement is insufficient without point read-back.
-    read_back = getattr(index, "revision_for", None)
+    read_back = getattr(index, "evidence_for", None)
     if not callable(read_back):
         return UpsertReceipt(action.information_id, action.revision, "UNVERIFIED",
                              "index adapter has no point read-back")
-    observed_revision = read_back(action.information_id)
-    if type(observed_revision) is not int or observed_revision != memory.revision:
+    observed_point = read_back(action.information_id)
+    if (type(written) is not IndexEvidence or type(observed_point) is not IndexEvidence
+            or written != observed_point
+            or written.information_id != memory.information_id
+            or type(written.revision) is not int or written.revision != memory.revision
+            or written.canonical_sha256 != digest
+            or written.embedding_id != expected_model_id
+            or type(written.generation) is not str or not written.generation):
         return UpsertReceipt(action.information_id, action.revision, "UNVERIFIED",
-                             "index point revision differs or is missing")
+                             "index point provenance differs or is missing")
     # Recheck after an acknowledged write. A change detected here must not
     # advance the journal or be reported as a successful synchronization.
     # This is detection, NOT atomicity: a production writer lock is required.
@@ -95,19 +102,18 @@ def apply_upsert(action: Action, *, read_canonical: Callable, authorize: Callabl
                  index, profile_id: str, model_id: str, expected_model_id: str,
                  expected_profile_id: str, expected_sha256: str,
                  canonical_root: Path | None = None) -> UpsertReceipt:
-    """Optionally hold the repository's cooperative writer lock throughout.
+    """Hold the canonical writer lock throughout; no public unlocked fallback.
 
-    A production caller must supply the canonical root and ensure every writer
-    cooperates with the same lock. The unlocked path is retained for isolated
-    contract tests and MUST NOT be used as a production authorization.
+    Every writer must cooperate with the same lock. This remains an experimental
+    single effect, not a journal transaction or a production service.
     """
+    if canonical_root is None:
+        raise ValueError("canonical_root required for worker")
     arguments = dict(read_canonical=read_canonical, authorize=authorize, index=index,
                      profile_id=profile_id, model_id=model_id,
                      expected_model_id=expected_model_id,
                      expected_profile_id=expected_profile_id,
                      expected_sha256=expected_sha256)
-    if canonical_root is None:
-        return _apply_unlocked(action, **arguments)
     root = Path(canonical_root)
     if not root.is_dir():
         raise ValueError("canonical root must be an existing directory")

@@ -6,11 +6,21 @@ from core.backend.models import Memory
 from core.indexing.worker_canonical import CanonicalReader
 from core.indexing.worker_upsert import apply_upsert
 from core.indexing.reconcile_plan import Action
+from core.indexing.port import IndexEvidence
 
 
 class FakeIndex:
     def __init__(self):
         self.writes = []
+    def upsert_verified(self, memory, *, canonical_sha256):
+        self.upsert(memory)
+        self.written = IndexEvidence(memory.information_id, memory.revision,
+                                     canonical_sha256, "embedding-v1", "generation-test")
+        return self.written
+
+    def evidence_for(self, information_id):
+        return self.written if self.written.information_id == information_id else None
+
     def revision_for(self, information_id):
         for ident, revision in reversed(self.writes):
             if ident == information_id:
@@ -34,7 +44,7 @@ def test_canonical_file_reader_and_worker_upsert(tmp_path):
         read_canonical=reader, authorize=lambda *args: True, index=index,
         profile_id="owner", model_id="embedding-v1",
         expected_model_id="embedding-v1", expected_profile_id="owner",
-        expected_sha256=digest)
+        expected_sha256=digest, canonical_root=persistent)
     assert receipt.state == "ACKNOWLEDGED"
     assert index.writes == [("doc", memory.revision)]
 
@@ -61,6 +71,6 @@ def test_canonical_revision_drift_blocks_index(tmp_path):
         read_canonical=reader, authorize=lambda *args: True, index=index,
         profile_id="owner", model_id="embedding-v1",
         expected_model_id="embedding-v1", expected_profile_id="owner",
-        expected_sha256=digest)
+        expected_sha256=digest, canonical_root=persistent)
     assert result.state == "REFUSED"
     assert index.writes == []

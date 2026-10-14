@@ -1,3 +1,7 @@
+## G229 — Priorités actives, 14 octobre 2026
+
+Lecteur sûr, verrou public obligatoire et preuve digest/modèle/génération livrés ; qualification CI à confirmer. Restent P0 : contrat réel des 19 scénarios, reprise journal/index, dérive à révision égale. [Preuves](docs/G229-INTEGRITY-2026-10-14.md).
+
 ## G182 — Checkpoint passages/embeddings, 12 octobre
 
 Passages canoniques sans chevauchement lexical obligatoire : 76 tests ciblés

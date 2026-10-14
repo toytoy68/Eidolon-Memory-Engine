@@ -27,7 +27,7 @@ from qdrant_client import models
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 from core.indexing.manifest import build_manifest
-from core.indexing.port import IndexHit, IndexPort, IndexStatus
+from core.indexing.port import IndexEvidence, IndexHit, IndexPort, IndexStatus
 from core.persistence import has_symlink_component
 
 
@@ -125,7 +125,7 @@ class QdrantIndex(IndexPort):
             raise ValueError("invalid Information identity")
         return identity
 
-    def _point(self, memory):
+    def _point(self, memory, *, canonical_sha256=None, generation=None):
         identity = self._identity(memory.information_id)
         if type(memory.revision) is not int or memory.revision < 1:
             raise ValueError("invalid Information revision")
@@ -133,7 +133,60 @@ class QdrantIndex(IndexPort):
             memory.content, ensure_ascii=False, sort_keys=True, allow_nan=False)
         return models.PointStruct(id=_point_id(identity), vector=self._vector(text), payload={
             "kind": "information", "information_id": identity,
-            "revision": memory.revision})
+            "revision": memory.revision,
+            **({"canonical_sha256": canonical_sha256, "embedding_id": self.embedding_id,
+                "generation": generation} if canonical_sha256 is not None else {})})
+
+    def _active_generation(self):
+        aliases = {a.alias_name: a.collection_name for a in self.client.get_aliases().aliases}
+        generation = aliases.get(self.alias)
+        if not isinstance(generation, str) or not generation.startswith(self.alias + "__"):
+            raise ValueError("unavailable managed index generation")
+        return generation
+
+    def upsert_verified(self, memory: Memory, *, canonical_sha256: str) -> IndexEvidence:
+        """Bind trusted canonical bytes to an upsert; caller must read it back."""
+        if type(canonical_sha256) is not str or not re.fullmatch(r"[0-9a-f]{64}", canonical_sha256):
+            raise ValueError("invalid canonical digest")
+        with self._lock:
+            generation = self._active_generation()
+            self._descriptor()
+            point = self._point(memory, canonical_sha256=canonical_sha256, generation=generation)
+            if self._active_generation() != generation:
+                raise ValueError("index generation changed before write")
+            self._write_descriptor(generation, None)
+            self.client.upsert(generation, points=[point], wait=True)
+            return IndexEvidence(memory.information_id, memory.revision, canonical_sha256,
+                                 self.embedding_id, generation)
+
+    def evidence_for(self, information_id: str) -> IndexEvidence | None:
+        """Read exact provenance; legacy points without a digest stay unverified."""
+        identity = self._identity(information_id)
+        with self._lock:
+            generation = self._active_generation()
+            self._descriptor()
+            records = self.client.retrieve(generation, ids=[_point_id(identity)],
+                                           with_payload=True, with_vectors=False)
+            if self._active_generation() != generation:
+                raise ValueError("index generation changed during read-back")
+            if not records:
+                return None
+            if len(records) != 1:
+                raise ValueError("ambiguous index read-back")
+            record = records[0]
+            p = record.payload or {}
+            if (str(record.id) != _point_id(identity) or p.get("kind") != "information"
+                    or p.get("information_id") != identity
+                    or type(p.get("revision")) is not int or p["revision"] < 1):
+                raise ValueError("invalid index read-back payload")
+            digest = p.get("canonical_sha256")
+            if digest is None:
+                return None
+            if (type(digest) is not str or not re.fullmatch(r"[0-9a-f]{64}", digest)
+                    or p.get("embedding_id") != self.embedding_id
+                    or p.get("generation") != generation):
+                raise ValueError("invalid index provenance")
+            return IndexEvidence(identity, p["revision"], digest, self.embedding_id, generation)
 
     @staticmethod
     def _filter():

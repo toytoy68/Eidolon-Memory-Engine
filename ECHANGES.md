@@ -2357,3 +2357,12 @@ Auteur : Codex/GPT. Base : deff13647a8a5db7ee856966092fc91acf6c1cf4.
 Modèle Qwen3 Embedding 0.6B téléchargé. Suite complète/banc réel lancés mais
 résultats inaccessibles après perte MCP ; aucune amélioration chiffrée annoncée.
 [Checkpoint et reprise](docs/G182-SEMANTIC-CHECKPOINT-2026-10-12.md).
+
+
+## G229 — Consolidation autorisée, 14 octobre 2026, 18 h 18 Europe/Paris
+Auteur : Codex/GPT. Ordre validé par toytoy : cohérence Memory/Qdrant,
+intégration Core, qualification, bilan consolidé puis recette VM/PC.
+Claude annoncé disponible vers 22 h 58 ; aucune réponse présumée.
+Prise en charge : lecteur canonique, preuve Qdrant et chemin verrouillé,
+tests de non-régression ; revue des différences Core/Claude ensuite.
+Bases : Memory 10c974c, Core bb3bef6. Aucun déploiement ni fusion main.

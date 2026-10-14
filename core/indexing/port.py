@@ -31,6 +31,16 @@ class IndexStatus:
     policy: str = "derived_rebuildable"
 
 
+@dataclass(frozen=True)
+class IndexEvidence:
+    """Point provenance observed in one concrete index generation."""
+    information_id: str
+    revision: int
+    canonical_sha256: str
+    embedding_id: str
+    generation: str
+
+
 class IndexPort(ABC):
     """Adapters must pass tests/contracts/index_port_contract.py unchanged."""
 
