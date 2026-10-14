@@ -27,11 +27,16 @@ from qdrant_client import models
 from core.backend.filesystem import FilesystemBackend
 from core.backend.models import Memory
 from core.indexing.manifest import build_manifest
-from core.indexing.port import IndexEvidence, IndexHit, IndexPort, IndexStatus, IndexRecord, IndexInventoryPage
+from core.indexing.port import (IndexEvidence, IndexHit, IndexPort, IndexStatus,
+                                IndexRecord, IndexInventoryPage, IndexIncompatible)
 from core.persistence import has_symlink_component
 
 
 _NAMESPACE = UUID("1328f012-116b-4df9-af89-41204113fe4e")
+# Fixed by this implementation: one content string (or sorted JSON) per document.
+# Passage indexes require a separate adapter/alias and a distinct descriptor.
+DOCUMENT_PROJECTION = "information-content-json-v1"
+
 _META = str(uuid5(_NAMESPACE, "descriptor"))
 
 
@@ -45,6 +50,8 @@ class QdrantIndex(IndexPort):
     ``embedding_id`` must identify model weights AND preprocessing/version.
     Supplying a compatible dimension alone does not establish compatibility.
     ``create=True`` explicitly permits creation of a new isolated index.
+    Schema 2 binds DOCUMENT_PROJECTION; schema 1 is never silently migrated.
+    A legacy index requires a fresh alias and an explicit canonical rebuild.
     """
 
     def __init__(self, client, alias: str, *, embed, dimensions: int,
@@ -82,7 +89,7 @@ class QdrantIndex(IndexPort):
     def _write_descriptor(self, collection, digest):
         self.client.upsert(collection, points=[models.PointStruct(
             id=_META, vector=[1.0] + [0.0] * (self.dimensions - 1), payload={
-                "kind": "descriptor", "schema": 1, "alias": self.alias,
+                "kind": "descriptor", "schema": 2, "projection_id": DOCUMENT_PROJECTION, "alias": self.alias,
                 "dimensions": self.dimensions, "embedding_id": self.embedding_id,
                 "source_digest": digest})], wait=True)
 
@@ -90,22 +97,23 @@ class QdrantIndex(IndexPort):
         records = self.client.retrieve(self.alias, ids=[_META], with_payload=True,
                                        with_vectors=False)
         if len(records) != 1:
-            raise ValueError("missing index descriptor")
+            raise IndexIncompatible("missing index descriptor")
         data = records[0].payload or {}
         if (data.get("kind") != "descriptor" or type(data.get("schema")) is not int
-                or data.get("schema") != 1 or data.get("alias") != self.alias
+                or data.get("schema") != 2
+                or data.get("projection_id") != DOCUMENT_PROJECTION or data.get("alias") != self.alias
                 or type(data.get("dimensions")) is not int
                 or data.get("dimensions") != self.dimensions
                 or data.get("embedding_id") != self.embedding_id):
-            raise ValueError("index embedding or descriptor mismatch")
+            raise IndexIncompatible("index embedding or descriptor mismatch")
         digest = data.get("source_digest")
         if digest is not None and (not isinstance(digest, str)
                                    or not re.fullmatch(r"[0-9a-f]{64}", digest)):
-            raise ValueError("invalid source digest")
+            raise IndexIncompatible("invalid source digest")
         config = self.client.get_collection(self.alias).config.params.vectors
         if (not isinstance(config, models.VectorParams) or config.size != self.dimensions
                 or config.distance != models.Distance.COSINE):
-            raise ValueError("index embedding vector configuration mismatch")
+            raise IndexIncompatible("index embedding vector configuration mismatch")
         return data
 
     def _vector(self, text):
@@ -135,7 +143,7 @@ class QdrantIndex(IndexPort):
             "kind": "information", "information_id": identity,
             "revision": memory.revision,
             **({"canonical_sha256": canonical_sha256, "embedding_id": self.embedding_id,
-                "generation": generation} if canonical_sha256 is not None else {})})
+                "generation": generation, "projection_id": DOCUMENT_PROJECTION} if canonical_sha256 is not None else {})})
 
     def _active_generation(self):
         aliases = {a.alias_name: a.collection_name for a in self.client.get_aliases().aliases}
@@ -193,7 +201,8 @@ class QdrantIndex(IndexPort):
                 if digest is not None:
                     if (type(digest) is not str or not re.fullmatch(r"[0-9a-f]{64}", digest)
                             or p.get("embedding_id") != self.embedding_id
-                            or p.get("generation") != generation):
+                            or p.get("generation") != generation
+                            or p.get("projection_id") != DOCUMENT_PROJECTION):
                         raise ValueError("invalid inventory provenance")
                     evidence = IndexEvidence(ident, p["revision"], digest, self.embedding_id, generation)
                 entries.append(IndexRecord(ident, p["revision"], evidence))
@@ -212,6 +221,7 @@ class QdrantIndex(IndexPort):
             generation = self._active_generation()
             self._descriptor()
             point = self._point(memory, canonical_sha256=canonical_sha256, generation=generation)
+            self._descriptor()
             if self._active_generation() != generation:
                 raise ValueError("index generation changed before write")
             self._write_descriptor(generation, None)
@@ -244,7 +254,8 @@ class QdrantIndex(IndexPort):
                 return None
             if (type(digest) is not str or not re.fullmatch(r"[0-9a-f]{64}", digest)
                     or p.get("embedding_id") != self.embedding_id
-                    or p.get("generation") != generation):
+                    or p.get("generation") != generation
+                    or p.get("projection_id") != DOCUMENT_PROJECTION):
                 raise ValueError("invalid index provenance")
             return IndexEvidence(identity, p["revision"], digest, self.embedding_id, generation)
 
@@ -255,10 +266,12 @@ class QdrantIndex(IndexPort):
 
     def upsert(self, memory: Memory) -> None:
         with self._lock:
-            self._descriptor()
+            generation = self.active_generation()
             point = self._point(memory)
-            self._write_descriptor(self.alias, None)
-            self.client.upsert(self.alias, points=[point], wait=True)
+            if self.active_generation() != generation:
+                raise ValueError("index generation changed before write")
+            self._write_descriptor(generation, None)
+            self.client.upsert(generation, points=[point], wait=True)
 
     def revision_for(self, information_id: str) -> int | None:
         """Read back a specific point, validating its identity and revision.
@@ -298,12 +311,18 @@ class QdrantIndex(IndexPort):
         if not isinstance(text, str) or type(limit) is not int or not 1 <= limit <= 1000:
             raise ValueError("invalid query or limit")
         with self._lock:
+            generation = self.active_generation()
             descriptor = self._descriptor()
             if not text.strip():
                 return []
-            result = self.client.query_points(self.alias, query=self._vector(text),
+            vector = self._vector(text)
+            if self.active_generation() != generation:
+                raise ValueError("index generation changed during query")
+            result = self.client.query_points(generation, query=vector,
                 query_filter=self._filter(), limit=limit, with_payload=True,
                 with_vectors=False)
+            if self.active_generation() != generation:
+                raise ValueError("index generation changed during query")
             hits = []
             for hit in result.points:
                 p = hit.payload or {}
@@ -314,6 +333,7 @@ class QdrantIndex(IndexPort):
                     raise ValueError("invalid candidate payload")
                 hits.append(IndexHit(identity, hit.score, {
                     "policy": "qdrant_cosine_candidates_v1", "embedding_id": self.embedding_id,
+                    "projection_id": DOCUMENT_PROJECTION,
                     "revision": p["revision"], "source_digest": descriptor["source_digest"],
                     "index_freshness": ("FULL_REBUILD_SNAPSHOT" if descriptor["source_digest"]
                                         else "UNVERIFIED_INCREMENTAL"),
@@ -322,7 +342,7 @@ class QdrantIndex(IndexPort):
 
     def rebuild(self, persistent_root: Path) -> None:
         with self._lock:
-            self._descriptor()
+            original_generation = self.active_generation()
             root = Path(persistent_root)
             manifest = build_manifest(root)
             generation = self._generation()
@@ -343,6 +363,8 @@ class QdrantIndex(IndexPort):
             count = self.client.count(generation, count_filter=self._filter(), exact=True).count
             if count != len(manifest.entries):
                 raise ValueError("rebuilt index count mismatch")
+            if self.active_generation() != original_generation:
+                raise ValueError("index generation changed during rebuild")
             self.client.update_collection_aliases([
                 models.DeleteAliasOperation(delete_alias=models.DeleteAlias(alias_name=self.alias)),
                 models.CreateAliasOperation(create_alias=models.CreateAlias(

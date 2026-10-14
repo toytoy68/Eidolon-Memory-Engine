@@ -14,6 +14,7 @@ on:
       - 'tests/test_reconcile_scan.py'
       - 'tests/test_orphan_scan.py'
       - 'tests/test_index_maintenance.py'
+      - 'tests/test_index_projection.py'
       - '.github/workflows/memory-qdrant-contract.yml'
 jobs:
   qdrant:
@@ -34,4 +35,4 @@ jobs:
       - name: Compile
         run: python -m compileall -q core/indexing tests/test_qdrant_index.py tests/test_worker_upsert.py
       - name: In-memory Qdrant and worker tests
-        run: python -m pytest -q -rs -p no:cacheprovider tests/test_qdrant_index.py tests/test_worker_upsert.py tests/test_worker_integrity.py tests/test_worker_canonical.py tests/test_worker_journal.py tests/test_reconcile_integrity.py tests/test_reconcile_scan.py tests/test_orphan_scan.py tests/test_index_maintenance.py --basetemp="$RUNNER_TEMP/qdrant-tests"
+        run: python -m pytest -q -rs -p no:cacheprovider tests/test_qdrant_index.py tests/test_worker_upsert.py tests/test_worker_integrity.py tests/test_worker_canonical.py tests/test_worker_journal.py tests/test_reconcile_integrity.py tests/test_reconcile_scan.py tests/test_orphan_scan.py tests/test_index_maintenance.py tests/test_index_projection.py --basetemp="$RUNNER_TEMP/qdrant-tests"

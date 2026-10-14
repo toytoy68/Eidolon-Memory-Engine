@@ -17,6 +17,10 @@ from pathlib import Path
 from core.backend.models import Memory
 
 
+class IndexIncompatible(ValueError):
+    """The persisted index format cannot be used by this adapter."""
+
+
 @dataclass(frozen=True)
 class IndexHit:
     information_id: str

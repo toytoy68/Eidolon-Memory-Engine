@@ -19,7 +19,7 @@ import time
 from core.persistence import exclusive_write, RepositoryBusy
 from core.backend.errors import InvalidMemory
 from .change_journal import ChangeJournal
-from .port import IndexEvidence
+from .port import IndexEvidence, IndexIncompatible
 from .reconcile_plan import Action
 from .worker_canonical import CanonicalReader
 from .worker_upsert import apply_upsert
@@ -55,12 +55,16 @@ class _GuardedIndex:
     def evidence_for(self, ident):
         try:
             return self.index.evidence_for(ident)
+        except IndexIncompatible:
+            raise
         except Exception as exc:
             raise _IndexUnavailable from exc
 
     def upsert_verified(self, memory, *, canonical_sha256):
         try:
             return self.index.upsert_verified(memory, canonical_sha256=canonical_sha256)
+        except IndexIncompatible:
+            raise
         except Exception as exc:
             raise _IndexUnavailable from exc
 
@@ -71,6 +75,7 @@ class JournalUpsertWorker:
         if (not isinstance(journal, ChangeJournal) or not callable(authorize)
                 or any(type(s) is not str or not s for s in
                        (profile_id, expected_profile_id, expected_model_id))
+                or not callable(getattr(index, "active_generation", None))
                 or not callable(getattr(index, "evidence_for", None))
                 or not callable(getattr(index, "upsert_verified", None))):
             raise ValueError("invalid journal worker configuration")
@@ -145,7 +150,7 @@ class JournalUpsertWorker:
                 pending = self.journal.pending_page(after=after, through=fence, limit=limit+1)
                 result = self._process(pending[:limit], now)
                 visited = (*result.published, *result.indexed,
-                           *(seq for seq, reason in result.deferred if reason != "INDEX_UNAVAILABLE"))
+                           *(seq for seq, reason in result.deferred if reason not in ("INDEX_UNAVAILABLE", "INDEX_INCOMPATIBLE")))
                 cursor = max((after, *visited))
                 exhausted = result.status == "DONE" and len(pending) <= limit
                 if exhausted:
@@ -156,9 +161,24 @@ class JournalUpsertWorker:
             return JournalPageReport("BUSY", after, through, False,
                                      JournalReport("BUSY"))
 
+    def _compatible_now(self):
+        try:
+            self.index.active_generation()
+            return True
+        except IndexIncompatible:
+            raise
+        except Exception as exc:
+            raise _IndexUnavailable from exc
+
     def _process(self, pending, now):
         if getattr(self.index, "embedding_id", None) != self.expected_model_id:
             return JournalReport("INDEX_INCOMPATIBLE")
+        try:
+            self.index.active_generation()
+        except IndexIncompatible:
+            return JournalReport("INDEX_INCOMPATIBLE")
+        except Exception:
+            return JournalReport("INDEX_UNAVAILABLE")
         index = _GuardedIndex(self.index)
         published, indexed, deferred = [], [], []
         status = "DONE"
@@ -185,7 +205,7 @@ class JournalUpsertWorker:
                     # Permission callbacks may change state: re-read after them.
                     if not self._allowed(intent) or not self._canonical(intent, durable=True):
                         deferred.append((seq, "STALE"))
-                    elif self.journal.advance_verified(intent, "PUBLISHED"):
+                    elif self._compatible_now() and self.journal.advance_verified(intent, "PUBLISHED"):
                         published.append(seq)
                     else:
                         deferred.append((seq, "JOURNAL_CHANGED"))
@@ -221,6 +241,10 @@ class JournalUpsertWorker:
                     indexed.append(seq)
                 else:
                     deferred.append((seq, "JOURNAL_CHANGED"))
+            except IndexIncompatible:
+                deferred.append((seq, "INDEX_INCOMPATIBLE"))
+                status = "INDEX_INCOMPATIBLE"
+                break
             except _IndexUnavailable:
                 deferred.append((seq, "INDEX_UNAVAILABLE"))
                 status = "INDEX_UNAVAILABLE"

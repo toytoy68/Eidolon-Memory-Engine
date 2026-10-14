@@ -138,10 +138,8 @@ def test_permission_revoked_during_upsert_never_acknowledged():
 
 def test_canonical_reader_fails_after_write_no_false_acknowledgement():
     index = FakeIndex()
-    reads = {"count": 0}
     def reader(_):
-        reads["count"] += 1
-        if reads["count"] == 2:
+        if index.calls:  # inject after the effect, independent of pre-write read count
             raise OSError("canonical unavailable after write")
         return Memory("doc", revision=2, content="canonical"), SHA
     with pytest.raises(OSError):

@@ -63,6 +63,15 @@ def _apply_unlocked(action: Action, *, read_canonical: Callable, authorize: Call
     if not evidence.verified:
         return UpsertReceipt(action.information_id, action.revision, "REFUSED",
                              "canonical, model, profile or authorization mismatch")
+    # Authorization is a trusted callback but may itself change the canonical
+    # state. Re-read after it, before embedding/writing stale content.
+    current = read_canonical(action.information_id)
+    if (type(current) is not tuple or len(current) != 2
+            or not isinstance(current[0], Memory)
+            or current[0].information_id != memory.information_id
+            or current[0].revision != memory.revision or current[1] != digest):
+        return UpsertReceipt(action.information_id, action.revision, "STALE",
+                             "canonical changed before index write")
     # No retry on uncertain acknowledgements: caller must reconcile first.
     written = index.upsert_verified(memory, canonical_sha256=digest)
     # Acknowledgement is insufficient without point read-back.
