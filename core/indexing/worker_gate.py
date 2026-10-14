@@ -5,6 +5,7 @@ Markdown, Qdrant, filesystem or journal. A real worker must repeat these checks
 immediately before committing an effect.
 """
 from dataclasses import dataclass
+import re
 from .reconcile_plan import Action, Canonical
 
 
