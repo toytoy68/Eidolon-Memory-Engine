@@ -1,6 +1,6 @@
 ## G229 — Priorités actives, 14 octobre 2026
 
-Lecteur sûr, verrou public obligatoire et preuve digest/modèle/génération livrés ; qualification CI à confirmer. Restent P0 : contrat réel des 19 scénarios, reprise journal/index, dérive à révision égale. [Preuves](docs/G229-INTEGRITY-2026-10-14.md).
+Lecteur sûr, verrou public obligatoire et preuve digest/modèle/génération livrés ; CI publiée verte : 2315 tests, 12 sous-tests, 19 scénarios expérimentaux et 60 tests Qdrant (périmètres distincts, non additionnés). Restent P0 : contrat réel des 19 scénarios, reprise journal/index, dérive à révision égale. [Preuves](docs/G229-INTEGRITY-2026-10-14.md).
 
 ## G182 — Checkpoint passages/embeddings, 12 octobre
 
