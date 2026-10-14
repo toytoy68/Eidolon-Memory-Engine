@@ -196,3 +196,24 @@ def test_empty_rebuild(index, tmp_path):
     assert index.status().documents == 0
     assert index.status().source_digest is not None
     assert index.query("fibre") == []
+
+
+def test_worker_upsert_to_disposable_qdrant(index, tmp_path):
+    """End-to-end on the in-memory Qdrant fixture; never a live alias."""
+    from core.indexing.worker_canonical import CanonicalReader
+    from core.indexing.worker_upsert import apply_upsert
+    from core.indexing.reconcile_plan import Action
+    root = tmp_path / "persistent"
+    backend = FilesystemBackend(root, tmp_path / "history")
+    backend.store(Memory("doc", content="robotique"))
+    reader = CanonicalReader(root)
+    canonical, digest = reader("doc")
+    receipt = apply_upsert(
+        Action("ENQUEUE_UPSERT", "doc", None, canonical.revision, "manifest"),
+        read_canonical=reader, authorize=lambda profile, identity, operation: True,
+        index=index, profile_id="owner", model_id="synthetic-hash-v1",
+        expected_model_id="synthetic-hash-v1", expected_profile_id="owner",
+        expected_sha256=digest)
+    assert receipt.state == "ACKNOWLEDGED"
+    assert index.status().documents == 1
+    assert index.query("robotique")[0].information_id == "doc"
