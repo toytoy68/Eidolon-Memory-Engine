@@ -25,6 +25,9 @@ Rules (the canon always wins; the journal only accelerates):
 from dataclasses import dataclass
 from enum import Enum
 import math
+import re
+
+from .port import IndexEvidence
 
 class CanonicalAbsence(Enum):
     PROVEN_ABSENT = "proven_absent"
@@ -78,19 +81,54 @@ def _intent_action(intent, canonical, age, grace_seconds):
     raise ValueError("terminal intents are not pending")
 
 
-def reconcile_plan(pending, canonical, indexed, *, ages=None, grace_seconds=600):
-    """pending: ChangeIntent tuple; canonical: {id: Canonical}; indexed: {id: revision}; ages: {seq: s}."""
+def _point_conflicts(point, current, model, generation):
+    return (point is not None and current is not ABSENT and current is not None
+            and (point.embedding_id != model or point.generation != generation
+                 or (point.revision == current.revision and point.canonical_sha256 != current.sha256)))
+
+
+def reconcile_plan(pending, canonical, indexed, *, ages=None, grace_seconds=600,
+                   indexed_evidence=None, expected_embedding_id=None, expected_generation=None):
+    """Plan from snapshots; optionally require complete point provenance.
+
+    The legacy revision-only mode cannot prove content integrity. In evidence
+    mode missing provenance proposes an upsert; conflicting provenance raises
+    an alert for review, never a silent replacement at the same revision.
+    """
     if type(grace_seconds) not in (int, float) or not math.isfinite(grace_seconds) or grace_seconds < 0:
         raise ValueError("invalid grace delay")
     for value in canonical.values():
         if value is not ABSENT and not isinstance(value, Canonical):
             raise ValueError("canonical values must be Canonical or ABSENT")
+    if indexed_evidence is not None:
+        if (type(indexed_evidence) is not dict
+                or any(type(s) is not str or not s for s in
+                       (expected_embedding_id, expected_generation))):
+            raise ValueError("complete index evidence context required")
+        for ident, point in indexed_evidence.items():
+            if (type(point) is not IndexEvidence or point.information_id != ident
+                    or type(point.revision) is not int or point.revision < 1
+                    or type(point.canonical_sha256) is not str
+                    or re.fullmatch(r"[0-9a-f]{64}", point.canonical_sha256) is None
+                    or any(type(s) is not str or not s for s in
+                           (point.embedding_id, point.generation))
+                    or type(indexed.get(ident)) is not int or indexed[ident] != point.revision):
+                raise ValueError("invalid or inconsistent index evidence")
+    elif expected_embedding_id is not None or expected_generation is not None:
+        raise ValueError("index evidence required with expected context")
     ages = ages or {}
     actions, covered = [], set()
     for intent in sorted(pending, key=lambda i: i.sequence):
         if intent.state in TERMINAL:
             raise ValueError("terminal intents are not pending")
         action = _intent_action(intent, canonical, ages.get(intent.sequence), grace_seconds)
+        if (indexed_evidence is not None and intent.operation == "UPSERT"
+                and action.kind in ("MARK_PUBLISHED", "INDEX_UPSERT")
+                and _point_conflicts(indexed_evidence.get(intent.information_id),
+                                     canonical.get(intent.information_id),
+                                     expected_embedding_id, expected_generation)):
+            action = Action("INTEGRITY_ALERT", intent.information_id, intent.sequence,
+                            intent.revision, "index provenance conflicts with canon/context")
         actions.append(action)
         if action.kind not in ("CLOSE_SUPERSEDED", "CLOSE_ABANDONED"):
             covered.add(intent.information_id)
@@ -103,6 +141,13 @@ def reconcile_plan(pending, canonical, indexed, *, ages=None, grace_seconds=600)
             continue
         if current is None:
             actions.append(Action("ENQUEUE_DELETE", ident, None, revision, "indexed but absent from the canon"))
+        elif indexed_evidence is not None and _point_conflicts(
+                indexed_evidence.get(ident), current, expected_embedding_id, expected_generation):
+            actions.append(Action("INTEGRITY_ALERT", ident, None, current.revision,
+                                  "index digest, embedding or generation conflicts with canon/context"))
+        elif indexed_evidence is not None and ident not in indexed_evidence:
+            actions.append(Action("ENQUEUE_UPSERT", ident, None, current.revision,
+                                  "index provenance missing; revision alone is not proof"))
         elif revision != current.revision:
             actions.append(Action("ENQUEUE_UPSERT", ident, None, current.revision,
                                   "index revision differs and no intent covers it"))

@@ -2366,3 +2366,15 @@ Claude annoncé disponible vers 22 h 58 ; aucune réponse présumée.
 Prise en charge : lecteur canonique, preuve Qdrant et chemin verrouillé,
 tests de non-régression ; revue des différences Core/Claude ensuite.
 Bases : Memory 10c974c, Core bb3bef6. Aucun déploiement ni fusion main.
+
+
+## G230 — Reprise journal/index, 14 octobre 2026, 19 h 55 Europe/Paris
+Auteur : Codex/GPT. Suite autorisée par toytoy ; base `fb82360`.
+Prise en charge : consommateur borné du journal sous verrou canonique, reprise après
+accusé perdu et détection de dérive à révision égale. Tests Markdown/SQLite/Qdrant
+isolés, sans daemon, corpus réel ni suppression. Le contrat global J2 reste ouvert.
+
+G230 implémenté : transitions conditionnelles du journal, récupération sans ré-embedding,
+contrôle d'intégrité dans les plans. [Résultats et limites](docs/G230-JOURNAL-RECOVERY-2026-10-14.md).
+134 tests ciblés réussis, puis 38 nouveaux cas ; suite locale 2346 réussis / 6 échecs
+AF_UNIX connus. Qualification CI en cours, aucune clôture globale J2.

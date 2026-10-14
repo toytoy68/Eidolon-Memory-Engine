@@ -48,6 +48,17 @@ class CanonicalReader:
         self.root = root
 
     def __call__(self, information_id):
+        return self._read(information_id)
+
+    def read_durable(self, information_id):
+        """Revalidate and flush canonical bytes/directory for INTENT recovery.
+
+        Caller must hold the cooperative writer lock. Read-back alone does not
+        prove that a writer flushed its rename before an interruption.
+        """
+        return self._read(information_id, durable=True)
+
+    def _read(self, information_id, *, durable=False):
         if type(information_id) is not str or not re.fullmatch(r"[A-Za-z0-9._-]+", information_id):
             raise ValueError("invalid canonical identity")
         name = information_id + ".md"
@@ -62,7 +73,11 @@ class CanonicalReader:
                     if not stat.S_ISREG(before.st_mode):
                         raise ValueError("canonical file absent or unsafe")
                     raw = handle.read()
+                    if durable:
+                        os.fsync(handle.fileno())
                     after = os.fstat(handle.fileno())
+                if durable:
+                    os.fsync(root_fd)
                 current = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
                 if (_version(before) != _version(after)
                         or _version(after) != _version(current)):

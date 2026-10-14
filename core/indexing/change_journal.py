@@ -125,6 +125,29 @@ class ChangeJournal:
         """Call only after the worker revalidates canonical revision and index ack."""
         self._advance(sequence, "PUBLISHED", "INDEXED")
 
+    def advance_verified(self, expected: ChangeIntent, after: str) -> bool:
+        """Compare the complete observed intent and advance it atomically.
+
+        Evidence is verified by the caller under the canonical writer lock.
+        A changed/removed row returns False, never advances a different intent.
+        This does not make SQLite, Markdown and Qdrant one transaction.
+        """
+        if (type(expected) is not ChangeIntent
+                or (expected.state, after) not in
+                (("INTENT", "PUBLISHED"), ("PUBLISHED", "INDEXED"))
+                or type(expected.sequence) is not int or expected.sequence < 1):
+            raise ValueError("invalid verified journal transition")
+        with self._db() as db:
+            db.execute("BEGIN IMMEDIATE")
+            row = db.execute("""SELECT seq,information_id,revision,operation,
+                                canonical_sha256,state,created FROM intents WHERE seq=?""",
+                             (expected.sequence,)).fetchone()
+            if row is None or ChangeIntent(*row) != expected:
+                return False
+            db.execute("UPDATE intents SET state=?,updated=? WHERE seq=?",
+                       (after, time.time(), expected.sequence))
+            return True
+
     def close_terminal(self, sequence: int, state: str, reason: str) -> None:
         """Close a reconciled intent only on an explicitly migrated v2 journal.
 

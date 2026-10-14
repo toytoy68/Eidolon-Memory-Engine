@@ -24,7 +24,8 @@ class ReconcilePreview:
 
 def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dict,
                            *, now: float | None = None, grace_seconds: float = 600,
-                           limit: int = 100):
+                           limit: int = 100, indexed_evidence=None,
+                           expected_embedding_id=None, expected_generation=None):
     if not isinstance(journal, ChangeJournal):
         raise ValueError("journal required")
     reader = canonical if callable(canonical) else None
@@ -51,7 +52,10 @@ def preview_reconciliation(journal: ChangeJournal, canonical: dict, indexed: dic
         canonical = reader(frozenset(indexed) | {intent.information_id for intent in pending})
         if type(canonical) is not dict:
             raise ValueError("verified snapshots required")
-    actions = reconcile_plan(pending, canonical, indexed, ages=ages, grace_seconds=grace_seconds)
+    actions = reconcile_plan(pending, canonical, indexed, ages=ages, grace_seconds=grace_seconds,
+                             indexed_evidence=indexed_evidence,
+                             expected_embedding_id=expected_embedding_id,
+                             expected_generation=expected_generation)
     unknown_ids = (set(indexed) | {intent.information_id for intent in pending}) - set(canonical)
     review = bool(unknown_ids) or any(action.kind in ("INTEGRITY_ALERT", "CLOSE_ABANDONED", "CLOSE_SUPERSEDED") for action in actions)
     return ReconcilePreview(actions, len(pending), float(now), review)
