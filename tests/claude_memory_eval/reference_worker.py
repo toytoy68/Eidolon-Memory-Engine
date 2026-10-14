@@ -24,16 +24,7 @@ from core.indexing.reconcile_preview import preview_reconciliation
 from core.indexing.worker_preflight import preflight
 
 
-class Crash(BaseException):
-    """Simulated process death at a named point (BaseException: nothing may swallow it)."""
-
-
-class IndexUnavailable(Exception):
-    pass
-
-
-class CanonUnreadable(Exception):
-    pass
+from core.indexing.worker import Crash, IndexUnavailable, CanonUnreadable
 
 
 @dataclass
