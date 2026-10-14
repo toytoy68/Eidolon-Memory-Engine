@@ -217,3 +217,10 @@ def test_worker_upsert_to_disposable_qdrant(index, tmp_path):
     assert receipt.state == "ACKNOWLEDGED"
     assert index.status().documents == 1
     assert index.query("robotique")[0].information_id == "doc"
+
+
+def test_point_readback_reports_revision_and_absence(index):
+    assert index.revision_for("doc") is None
+    index.upsert(Memory("doc", content="robotique", revision=2))
+    assert index.revision_for("doc") == 2
+    assert index.revision_for("unknown") is None
