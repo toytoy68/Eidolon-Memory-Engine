@@ -48,7 +48,7 @@ def test_canonical_revision_drift_blocks_index(tmp_path):
     backend.store(Memory("doc", content="original"))
     reader = CanonicalReader(persistent)
     _, digest = reader("doc")
-    backend.update("doc", content="changed", expected_revision=1)
+    backend.update("doc", Memory("doc", revision=2, content="changed"), previous_revision=1)
     index = FakeIndex()
     result = apply_upsert(
         Action("ENQUEUE_UPSERT", "doc", None, 1, "old manifest"),
