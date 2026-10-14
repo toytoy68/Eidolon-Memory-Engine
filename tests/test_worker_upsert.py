@@ -13,6 +13,9 @@ class FakeIndex:
         self.calls = []
         self.fail = fail
 
+    def revision_for(self, information_id):
+        return 2 if information_id in self.calls else None
+
     def upsert(self, memory):
         self.calls.append(memory.information_id)
         if self.fail:
