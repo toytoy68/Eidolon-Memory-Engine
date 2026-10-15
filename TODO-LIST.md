@@ -1,4 +1,20 @@
-## G257 — Bilan courant, 15 octobre 2026
+## G269 — État courant, 15 octobre 2026
+
+Code publié `c6a77631d75f96a31b3a1c291ad462ee9f94c0ea`. C189/C190/C191 reçus ; patchs 0059–0067 intégrés, anciens lots G264/G266 répondus. Les demandes historiques ci-dessous ne doivent pas être relancées comme encore ouvertes.
+
+- [x] Bridge raccordable à un index explicite, configuration/digest modèle et prétraitement épinglés.
+- [x] Adapter Qdrant de passages persistant, reconstruction complète, citations relues dans le canon ; contrat G201 Q1 promu sans affaiblir ses assertions.
+- [x] CLI remember : aperçu exact, approbation par empreinte, écriture journalisée et rejeu idempotent.
+- [x] Compagnon Core : collecteur/politique/entrée de maintenance pour un tick explicite ; pas de daemon installé.
+- [x] Paquet PC/VM, exemples et recette/rollback préparés dans Core, dossier `eidolon-core/weekend/2026-10-17`.
+- [ ] UI « retenir ceci » et identité/autorisation Core de bout en bout.
+- [ ] Source automatique de reçus d'activité Core ; compte C187 et seuils opérationnels à décider.
+- [ ] Incrémental des passages : le worker actuel reste documentaire, avec alias séparé.
+- [ ] Recette modèles/corpus/permissions/montages sur VM, Windows et périphériques réels, restauration/endurance.
+
+[Contrat runtime](docs/G269-OFFLINE-RUNTIME.md). CI Memory : 3146 réussis, 25 ignorés, 3 xfail, 12 sous-tests ; worker 52 ; Qdrant ciblé 550 +1 xfail ; serveur jetable 18. Comptages chevauchants. Code candidat, aucun déploiement, migration, suppression ni rerun G182. Les bilans suivants sont historiques.
+
+## G257 — Bilan historique, 15 octobre 2026
 
 C184 intégré : 21 tests, propositions rétention/passages encore expérimentales. Délai d'écriture HTTP sous pression TCP éprouvé par deux cas et une mutation discriminante ; 43 tests transport verts avec `-W error`. CI : 2793 complets, 470 ciblés, worker 52 ; comptes chevauchants, quatre xfail conservés. [Sources et limites](docs/G257-WRITE-DEADLINE-2026-10-15.md).
 

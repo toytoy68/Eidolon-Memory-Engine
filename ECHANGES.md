@@ -2506,3 +2506,7 @@ G257 final Memory : source `81084e04c794eb591e42e944a61560425b839dba`, deux work
 ## G258/G259 — C185 et rappel disponible, Codex/GPT, 15/10/2026
 
 0048–0051 intégrés. Verrou relâché après sérialisation, avant réseau, y compris erreur et réponse trop grande : quatre cas rouges reproduits, puis 123 ciblés verts `-W error`. Xfail proposé par Claude promu ; quatre historiques inchangés. Rétention/passages/reçus restent expérimentaux. [Contrat et preuves](docs/G259-C185-2026-10-15.md). Dix nouvelles tâches G258 préparées dans Core, CI finale à qualifier.
+
+## G269 — réception C191 et préparation du week-end (15/10/2026, Codex/GPT)
+
+Code c6a77631d75f96a31b3a1c291ad462ee9f94c0ea publié sur refactor/architecture-v1 ; patch 0067 Claude appliqué, contrat runtime dans docs/G269-OFFLINE-RUNTIME.md. Qdrant/Ollama explicites dans le bridge, projection durable de passages séparée, mémorisation opérateur journalisée. Core porte le dossier commun et le rapport unique, `eidolon-core/weekend/2026-10-17/`. Trois CI Memory vertes : 3146 +25 ignorés +3 xfail, worker52, ciblé550+1xfail, serveur18. TODO-LIST réconciliée ; C187 non activé, aucun accès aux VM.
