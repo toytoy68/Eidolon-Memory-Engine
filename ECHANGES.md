@@ -2478,3 +2478,5 @@ Quatre nouvelles preuves de transport réel, [rapport](docs/G240-HTTP-FAILURE-RE
 ## G241 — C181 et recette réseau, Codex/GPT, 15/10/2026
 
 Patch 0037 attribué à Claude intégré ; test du verrou stabilisé après reproduction du faux échec d'ordonnancement. Mutants sans preuve/sans verrou détectés, sources restaurées. [Rapport](docs/G241-C181-INTEGRATION-2026-10-15.md). Proxy G240 corrigé pour viser explicitement descripteur ou document : premier run 11 réussis/2 échecs de harnais, nouveau run requis. Code applicatif inchangé.
+
+G241 final : quatre workflows confirmés verts sur Memory 21d2412 et Core 799377c. Memory 2638 réussis/15 ignorés/5 xfail/12 sous-tests ; ciblés 331 +1 xfail ; 15 serveur réussis ; Core 1789 réussis/9 ignorés/1299 sous-tests puis 5 propriétaires/bornes/liens réussis en root. Les exclusions serveur et propriétaires sont exécutées dans leurs étapes dédiées ; 7 dépendances d'identité restent optionnelles. [Preuves et limites](docs/G241-C181-INTEGRATION-2026-10-15.md). Aucun déploiement, sources de mutants restaurées, historique Claude préservé.

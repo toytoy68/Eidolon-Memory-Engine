@@ -1,3 +1,7 @@
+## G241 — Bilan final confirmé, 15 octobre 2026
+
+MT1/MT3, R1 et diagnostics scanners corrigés ; C181 intégré. Quatre workflows finaux verts : Memory 2638 réussis +5 xfail et 12 sous-tests ; Qdrant ciblé 331 +1 xfail ; serveur HTTP 15 réussis (dont réponse perdue réelle et 1200 documents) ; Core 1789 réussis +1299 sous-tests, puis cinq sondes de jeton root réussies. Exclusions explicites et comptes chevauchants : [bilan exact](docs/G241-C181-INTEGRATION-2026-10-15.md). Dix tâches Claude : 1/2 reçues via C181, 3–10 ouvertes. Suite : observations hôte/S1, séparation des ports, revue des nouveaux lots et recette VM/PC. Aucun déploiement.
+
 ## G241 — C181 intégré, recette HTTP ajustée, 15 octobre 2026
 
 Patch Claude 0037 ajouté à la CI ; trois sondes reproduites, faux échec d'ordonnancement corrigé et deux mutants encore détectés. C181 valide Q1/W1/A08. G240 : backlog 1200 et panne milieu de page réussis ; proxy corrigé pour distinguer descripteur/document (15 scénarios serveur, résultat à récupérer). [Rapport](docs/G241-C181-INTEGRATION-2026-10-15.md). Code applicatif inchangé depuis G239 ; dix tâches Claude conservées, 1/2 reçues, 3–10 ouvertes.
