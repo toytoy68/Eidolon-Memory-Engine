@@ -224,7 +224,7 @@ def make_handler(recall, token, *, request_timeout=3.0):
     return Handler
 
 
-def build_recall(root, *, read_only_storage=False):
+def build_recall(root, *, read_only_storage=False, index=None):
     """Construct the canonical reader without provisioning in read-only mode.
 
     This does not restrict backend write methods: mount/UID permissions must
@@ -237,7 +237,7 @@ def build_recall(root, *, read_only_storage=False):
         raise ValueError("canonical root contains a symlink")
     backend = FilesystemBackend(root / "memory" / "persistent", root / "memory" / "history",
                                 create_directories=not read_only_storage)
-    recall = ContextualRecall(backend, read_only_locks=read_only_storage)
+    recall = ContextualRecall(backend, read_only_locks=read_only_storage, index=index)
     if read_only_storage:
         # Fail before binding the server; revalidated on every recall as well.
         with recall.storage_snapshot(blocking=False):
@@ -302,14 +302,15 @@ def main():
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--port", type=int)
     parser.add_argument("--reranker-cache", type=Path, help="Optional offline CPU reranker cache")
+    parser.add_argument("--index-config", type=Path, help="Optional pinned local Qdrant/Ollama runtime JSON")
     parser.add_argument("--read-only-storage", action="store_true",
                         help="Linux local storage: require existing directories and lock files; never provision them")
     parser.add_argument("--check-storage", action="store_true",
                         help="Print a read-only canonical storage diagnostic as JSON and exit; no token/model/network")
     args = parser.parse_args()
     if args.check_storage:
-        if args.port is not None or args.reranker_cache is not None:
-            parser.error("--check-storage cannot be combined with --port or --reranker-cache")
+        if args.port is not None or args.reranker_cache is not None or args.index_config is not None:
+            parser.error("--check-storage cannot be combined with --port, --reranker-cache or --index-config")
         result = check_storage(args.root)
         print(json.dumps(result, ensure_ascii=True, sort_keys=True))
         return STORAGE_CHECK_EXIT[result['state']]
@@ -325,9 +326,18 @@ def main():
     root = args.root.resolve(strict=True)
     if not (root / "memory" / "persistent").is_dir() or not (root / "memory" / "history").is_dir():
         parser.error("canonical memory directories must exist")
+    index = None
+    if args.index_config is not None:
+        from core.indexing.runtime import load_runtime, open_index
+        try:
+            index = open_index(load_runtime(args.index_config))
+        except Exception:
+            parser.error("configured index unavailable; no automatic create, rebuild or lexical fallback")
     try:
-        recall = build_recall(root, read_only_storage=args.read_only_storage)
+        recall = build_recall(root, read_only_storage=args.read_only_storage, index=index)
     except (OSError, ValueError, NotImplementedError):
+        if index is not None:
+            index.client.close()
         parser.error("canonical storage unavailable; check existing directories, stable locks and platform support")
     if args.reranker_cache is not None:
         from core.retrieval.reranked import RerankedRecall
@@ -342,7 +352,12 @@ def main():
                 batch_size=8, show_progress_bar=False).tolist() if texts else []
         recall = RerankedRecall(recall, score)
     server = BoundedRecallServer(("127.0.0.1", args.port), make_handler(recall, token))
-    server.serve_forever()
+    try:
+        server.serve_forever()
+    finally:
+        server.server_close()
+        if index is not None:
+            index.client.close()
 
 
 if __name__ == "__main__":

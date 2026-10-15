@@ -46,10 +46,12 @@ def test_unindexed_changes_are_signalled_in_the_result(tmp_path, index):
     assert 'INDEX_STALE' in repr(result) or 'INDEX_PENDING' in repr(result)
 
 
-@pytest.mark.xfail(strict=True, reason='G201 Q1 (passages in production) not built yet: an archive passage '
-                   'found through the production index must carry document, revision/digest and position, '
-                   'and be re-read from the Markdown before citation')
-def test_production_index_returns_verified_archive_passages(tmp_path, index):
+# G269: assertions preserved; the production passage adapter has a separate alias/descriptor.
+def test_production_index_returns_verified_archive_passages(tmp_path, client):
+    from core.indexing.qdrant_passages import QdrantPassageIndex
+    from tests.test_qdrant_index import embed
+    index = QdrantPassageIndex(client, 'eidolon_g201_passages', embed=embed, dimensions=32,
+                               embedding_id='synthetic-hash-v1', create=True)
     data = backend(tmp_path)
     archive = store_archive(data, ['Ne pas acheter la V100 maintenant.', 'Garder la carte actuelle.'])
     index.rebuild(data.persistent_root)

@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Install isolated test dependencies
-        run: python -m pip install pytest==9.1.1 "PyYAML>=6.0.2" 'qdrant-client>=1.12,<2'
+        run: python -m pip install pytest==9.1.1 "PyYAML>=6.0.2" -r requirements-qdrant.txt
       - name: Compile
         run: python -m compileall -q core/indexing tests/test_qdrant_index.py tests/test_worker_upsert.py
       - name: In-memory Qdrant and worker tests

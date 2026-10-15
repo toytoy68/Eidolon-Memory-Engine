@@ -294,8 +294,10 @@ def test_cli_passes_explicit_mode_to_reader(tmp_path, monkeypatch):
             assert seen == [True]
         def serve_forever(self):
             seen.append('served')
+        def server_close(self):
+            seen.append('closed')
     monkeypatch.setattr(memory_bridge, 'build_recall', capture)
     monkeypatch.setattr(memory_bridge, 'BoundedRecallServer', Server)
     deny_writes(monkeypatch, tmp_path)
     memory_bridge.main()
-    assert seen == [True, 'served']
+    assert seen == [True, 'served', 'closed']

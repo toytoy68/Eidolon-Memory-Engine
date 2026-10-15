@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Install test dependencies
-        run: python -m pip install -r requirements.txt -r requirements-dev.txt 'qdrant-client>=1.12,<2'
+        run: python -m pip install -r requirements.txt -r requirements-dev.txt -r requirements-qdrant.txt
       - name: Prepare isolated root
         run: |
           echo "MEMORY_ENGINE_ROOT=$RUNNER_TEMP/eidolon-memory-tests" >> "$GITHUB_ENV"
