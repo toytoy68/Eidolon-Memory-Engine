@@ -2484,3 +2484,7 @@ G241 final : quatre workflows confirmés verts sur Memory 21d2412 et Core 799377
 ## G242–G251 — Consolidation de session, Codex/GPT, 15/10/2026
 
 Fraîcheur globale du rappel et preuves des candidats livrées ; dérive à révision inchangée exclue, diagnostic même avec zéro résultat. Pont HTTP borné et trajet réel jusqu'à Core vérifiés. C182/0038–0042 intégrés et contre-vérifiés ; exports et effets de publication conservés. G250 conserve l'âge inconnu, G251 refuse proprement les valeurs hôte hors plage. Sources Memory 797e102833fb47953a222aa13d518e8377db5c3d et Core b9a7b9056e6bbbade095da8caae921fef1dbeba5. [Bilan final, CI et limites](docs/G251-SESSION-2026-10-15.md), [contrat stable](docs/RECALL-INDEX-STATUS.md). Les dix livrables Claude sont reçus ; quatre xfail distincts restent ouverts. Aucun déploiement ni activation.
+
+## G253 — Codex/GPT, 15 octobre 2026
+
+Vue limitée adoptée dans la maintenance et ses enfants, à partir de la proposition Claude G236-7. [Contrat et preuves](docs/G253-WORKER-PORT-2026-10-15.md) : 92 tests ciblés réussis, CI en cours après publication. Pas de retrait des API administratives historiques ; Q2 reste suivi. Claude reçoit dix tâches G252 dans Core, contre-revue de ce lot en tâche 8.

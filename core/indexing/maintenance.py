@@ -28,6 +28,7 @@ from .port import IndexIncompatible
 from .orphan_scan import OrphanScan
 from .reconcile_scan import ReconciliationScan, CanonicalSnapshotUnavailable
 from .worker_journal import JournalUpsertWorker
+from .worker_port import WorkerIndexView
 
 
 @dataclass(frozen=True)
@@ -59,6 +60,7 @@ class IndexMaintenance:
         identities = [(p.stat().st_dev, p.stat().st_ino) for p in paths if p.exists()]
         if len(set(identities)) != len(identities):
             raise ValueError("maintenance checkpoint files alias each other")
+        index = index if isinstance(index, WorkerIndexView) else WorkerIndexView(index)
         self.journal, self.index = journal, index
         self.page_size, self.retry_seconds, self.cycle_seconds = page_size, retry_seconds, cycle_seconds
         self.window = dict(start=start, end=end, zone=zone, minimum_idle_minutes=minimum_idle_minutes)
