@@ -36,11 +36,28 @@ def point_id(information_id, revision, digest, reference):
     return str(uuid.uuid5(_NAMESPACE, key))
 
 
-class ArchivePassageProjection:
-    """Index side: project one canonical archive into passage points (payload = proof + offsets)."""
+class ProjectionBudgetExceeded(ValueError):
+    def __init__(self, code):
+        super().__init__(code)
+        self.code = code
 
-    def __init__(self, persistent_root, *, score):
+
+def _budget(value):
+    if value is not None and (type(value) is not int or value < 1):
+        raise ValueError("invalid projection budget")
+    return value
+
+
+class ArchivePassageProjection:
+    """Index side: project one canonical archive into passage points (payload = proof + offsets).
+
+    G258-9 budgets, both optional and supplied by the operator: max_passages_per_archive bounds one
+    projection; max_points bounds everything STORED, superseded points included, because nothing here
+    deletes them. A refused projection changes nothing: the previous projection stays served."""
+
+    def __init__(self, persistent_root, *, score, max_points=None, max_passages_per_archive=None):
         self.root, self.score, self.points = persistent_root, score, {}
+        self.max_points, self.max_passages = _budget(max_points), _budget(max_passages_per_archive)
         # information_id -> (revision, digest) of its last successful projection, or None when the last
         # attempt could not read it (revoked, absent, unreadable). Older points are kept, never served.
         self.current = {}
@@ -51,18 +68,29 @@ class ArchivePassageProjection:
         except Exception:
             self.current[information_id] = None
             raise
-        added = []
+        staged = {}
         for chunk in chunk_messages(memory.content, max_chars=1200, overlap=160):
             if not chunk.text.strip():
                 continue  # whitespace carries no evidence to rank
             pid = point_id(information_id, memory.revision, digest, chunk.reference)
-            self.points[pid] = dict(kind="passage", information_id=information_id, revision=memory.revision,
-                                    canonical_sha256=digest, projection_id=PROJECTION_ID,
-                                    passage=dict(chunk.reference),
-                                    _vector_text=sha256(chunk.text.encode()).hexdigest())  # stand-in, no text
-            added.append(pid)
+            staged[pid] = dict(kind="passage", information_id=information_id, revision=memory.revision,
+                               canonical_sha256=digest, projection_id=PROJECTION_ID,
+                               passage=dict(chunk.reference),
+                               _vector_text=sha256(chunk.text.encode()).hexdigest())  # stand-in, no text
+            if self.max_passages is not None and len(staged) > self.max_passages:
+                raise ProjectionBudgetExceeded("PASSAGES_PER_ARCHIVE")
+        new = sum(1 for pid in staged if pid not in self.points)  # re-projecting the same bytes costs nothing
+        if self.max_points is not None and len(self.points) + new > self.max_points:
+            raise ProjectionBudgetExceeded("POINTS")
+        self.points.update(staged)
         self.current[information_id] = (memory.revision, digest)
-        return tuple(added)
+        return tuple(staged)
+
+    def stats(self):
+        """What the operator needs to decide a (reviewed, separate) compaction; nothing is removed here."""
+        served = sum(1 for p in self.points.values() if self._served(p))
+        return dict(points=len(self.points), served=served, superseded=len(self.points) - served,
+                    archives=len(self.current), unservable=sum(1 for v in self.current.values() if v is None))
 
     def _served(self, point):
         return self.current.get(point["information_id"]) == (point["revision"], point["canonical_sha256"])

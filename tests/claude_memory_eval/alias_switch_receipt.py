@@ -83,13 +83,39 @@ def verify_receipt(receipt, *, seen_switch_ids=frozenset()):
     return receipt["switch_id"]
 
 
-def verify_chain(receipts, *, alias, initial_generation):
-    """Every switch of one alias, in order: each starts where the previous ended, time never goes back."""
-    seen, current, last_at = set(), initial_generation, None
+def _anchor(alias, generation):
+    if (type(alias) is not str or not re.fullmatch(r"[a-z][a-z0-9_]{0,62}", alias) or type(generation) is not str
+            or not re.fullmatch(r"[a-z][a-z0-9_]{0,62}__[0-9a-f]{32}", generation)):
+        raise ReceiptRefused("RECEIPT_INVALID")
+    if generation[:-34] != alias:
+        raise ReceiptRefused("RECEIPT_OTHER_ALIAS")
+
+
+def _window(epoch_window):
+    if epoch_window is None:
+        return None
+    if (type(epoch_window) is not tuple or len(epoch_window) != 2
+            or any(type(x) not in (int, float) or not math.isfinite(x) for x in epoch_window)
+            or not 0 <= epoch_window[0] < epoch_window[1]):
+        raise ReceiptRefused("RECEIPT_INVALID")
+    return epoch_window
+
+
+def verify_chain(receipts, *, alias, initial_generation, seen_switch_ids=frozenset(), epoch_window=None):
+    """Every switch of one alias, in order: each starts where the previous ended, time never goes back.
+
+    seen_switch_ids: ids already consumed by an earlier verification (the host's own durable set), so a
+    receipt cannot be replayed into another chain. epoch_window: the SAME plausibility window the host
+    passes to generation_retention.classify; an epoch-0 or millisecond receipt then proves nothing."""
+    _anchor(alias, initial_generation)
+    window = _window(epoch_window)
+    seen, current, last_at = set(seen_switch_ids), initial_generation, None
     for receipt in receipts:
         seen.add(verify_receipt(receipt, seen_switch_ids=seen))
         if receipt["alias"] != alias:
             raise ReceiptRefused("RECEIPT_OTHER_ALIAS")
+        if window is not None and not window[0] <= receipt["switched_at"] <= window[1]:
+            raise ReceiptRefused("RECEIPT_TIME_IMPLAUSIBLE")
         if receipt["previous_generation"] != current:
             raise ReceiptRefused("CHAIN_BROKEN")
         if last_at is not None and receipt["switched_at"] < last_at:
@@ -98,12 +124,15 @@ def verify_chain(receipts, *, alias, initial_generation):
     return current
 
 
-def retirement_facts(receipts, *, alias, initial_generation, observed_target):
+def retirement_facts(receipts, *, alias, initial_generation, observed_target, seen_switch_ids=frozenset(),
+                     epoch_window=None):
     """{generation: (retired_at, switch_id)} for generations retired and never reactivated since.
 
     The chain must end on the alias target read now; otherwise nothing is proven (empty result)."""
     receipts = tuple(receipts)
-    if verify_chain(receipts, alias=alias, initial_generation=initial_generation) != observed_target:
+    _anchor(alias, observed_target)
+    if verify_chain(receipts, alias=alias, initial_generation=initial_generation,
+                    seen_switch_ids=seen_switch_ids, epoch_window=epoch_window) != observed_target:
         return {}
     retired = {}
     for receipt in receipts:
