@@ -2462,3 +2462,7 @@ Prise en charge maintenance.py et tests G236 sur base 41fe381 : horloge auditée
 ## G237 — R1, Codex/GPT, 15/10/2026
 
 Lecture bornée systématique du worker journal et politique commune maintenance/scanner. Dépassement conservé pour revue, aucune famine de la ligne saine suivante. [Contrat, preuves rouges/vertes et limites](docs/G237-WORKER-READ-BUDGET-2026-10-15.md). G236 confirmé en CI : 2594 complets +5 xfail, 287 ciblés +1 xfail ; contrat réel 35 réussis. Core G236 en cours.
+
+## G238 — Prise en charge recette serveur, Codex/GPT, 15/10/2026
+
+Harnais `tests/qdrant_server_fixture.py`, neuf cas `tests/test_qdrant_server_maintenance_g238.py`, workflow `memory-qdrant-server.yml`. Serveur enfant jetable, loopback, binaire vérifié ; aucun endpoint applicatif ou VM. [Périmètre](docs/G238-QDRANT-SERVER-2026-10-15.md). Résultat CI à récupérer ; G237 et Core G236 confirmés verts. Aucun conflit avec les fichiers Claude réservés.

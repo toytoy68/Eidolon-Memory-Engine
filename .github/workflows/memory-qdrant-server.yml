@@ -1,0 +1,53 @@
+name: Memory Qdrant real server
+on:
+  workflow_dispatch:
+  push:
+    branches: [refactor/architecture-v1]
+    paths:
+      - 'core/indexing/**'
+      - 'tests/test_qdrant_server_maintenance_g238.py'
+      - 'tests/qdrant_server_fixture.py'
+      - 'requirements-qdrant.txt'
+      - '.github/workflows/memory-qdrant-server.yml'
+concurrency:
+  group: memory-qdrant-server-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      EIDOLON_TEST_QDRANT_URL: ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned transport dependencies
+        run: python -m pip install pytest==9.1.1 'PyYAML>=6.0.2' -r requirements-qdrant.txt
+      - name: Provision verified disposable Qdrant 1.15.4 binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -m 700 "$RUNNER_TEMP/qdrant-release"
+          cd "$RUNNER_TEMP/qdrant-release"
+          curl --fail --location --retry 2 --max-time 90 --output qdrant.tar.gz https://github.com/qdrant/qdrant/releases/download/v1.15.4/qdrant-x86_64-unknown-linux-gnu.tar.gz
+          echo '8d0f3af71b4606581c6d4d943c0763aa7f368a7ee801b2f01e16ab2376e8f363  qdrant.tar.gz' | sha256sum --check --strict
+          tar --extract --gzip --file qdrant.tar.gz
+          test -x qdrant
+          echo "EIDOLON_TEST_QDRANT_BINARY=$RUNNER_TEMP/qdrant-release/qdrant" >> "$GITHUB_ENV"
+      - name: HTTP maintenance, restart, crash and bounded-read contract
+        run: python -m pytest -q -rs -W error -p no:cacheprovider tests/test_qdrant_server_maintenance_g238.py --basetemp="$RUNNER_TEMP/qdrant-server-tests" --junitxml="$RUNNER_TEMP/qdrant-server-results.xml"
+      - name: Preserve test results and server logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qdrant-server-contract
+          path: |
+            ${{ runner.temp }}/qdrant-server-results.xml
+            ${{ runner.temp }}/qdrant-server-tests/**/server.log
+          if-no-files-found: ignore
+          retention-days: 7

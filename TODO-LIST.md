@@ -1,3 +1,7 @@
+## G238 — Recette serveur isolée en préparation, 15 octobre 2026
+
+Neuf scénarios HTTP/persistance/reprise via serveur jetable possédé par les tests, binaire officiel 1.15.4 vérifié et client épinglé. [Périmètre et limites](docs/G238-QDRANT-SERVER-2026-10-15.md). CI à récupérer ; neuf exclusions locales explicites faute de binaire. Aucun déploiement. G237 confirmé : 2619 tests complets +5 xfail, 312 ciblés +1 xfail ; contrat réel 52 réussis. Suite : résultat serveur, raccordement hôte coordonné avec Claude et recette VM/PC.
+
 ## G237 — R1 corrigé, 15 octobre 2026
 
 Worker journal borné à 8 Mio par fichier par défaut, configurable avec politique partagée par le scanner et liée au contrôleur. Dépassement signalé en revue sans bloquer les lignes saines. [Contrat et preuves](docs/G237-WORKER-READ-BUDGET-2026-10-15.md). 25 tests nouveaux rouges avant correction ; CI G237 à confirmer. G236 confirmé : 2594 tests complets +5 xfail et 12 sous-tests ; 287 ciblés +1 xfail. Suite : raccordement explicite hôte, revue Claude et recette serveur/VM/PC. Aucun déploiement.

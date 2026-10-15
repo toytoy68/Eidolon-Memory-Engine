@@ -47,7 +47,7 @@ par extension de cette correction R1.
 - Croissance pendant read et après effet, limite exacte, reprise sans doublon,
   publication durable, état conservé et ligne saine suivante couverts.
 - Tests ajoutés aux workflows Qdrant ciblé et contrat du vrai worker.
-- Résultats CI à compléter après publication ; aucun test serveur ou VM déduit.
+- CI publiée confirmée : [Memory 38662413157](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38662413157), 2619 réussis +5 xfail et 12 sous-tests (134,04 s), vrai contrat worker 52 réussis (2,40 s) ; [Qdrant 38662413171](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38662413171), 312 réussis +1 xfail (55,61 s). Aucun test serveur ou VM déduit.
 
 G236 est confirmé en CI : workflow Memory 38662055230, **2594 réussis, 5 xfail,
 12 sous-tests**, 114,15 s ; contrat réel **35 réussis**, 1,38 s. Workflow Qdrant
