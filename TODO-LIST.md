@@ -1,4 +1,10 @@
-## G251 — Bilan courant, 15 octobre 2026
+## G253 — Bilan courant, 15 octobre 2026
+
+Vue d'index limitée raccordée au contrôleur et à ses enfants, y compris pour une sous-classe étendue fournie par l'hôte. Huit sondes, 93 ciblés ; trois workflows verts sur la source finale. [Preuves CI et limites](docs/G253-WORKER-PORT-2026-10-15.md). Core G254 ajoute un appel hôte explicite, sans service ni capteur automatique.
+
+Dix nouvelles tâches Claude G252 publiées, toutes disponibles ; leur réception reste à suivre. Suite : contre-revues, politique/source hôte réelle puis recette VM/PC. Les quatre xfail sont inchangés. Les sections suivantes sont historiques.
+
+## G251 — Bilan historique, 15 octobre 2026
 
 G242–G251 livrés : fraîcheur globale et preuve canonique au rappel, diagnostic transmis au PC, pont HTTP borné, qualification Chromium, C182 et ses dix livrables intégrés. Deux extractions réduisent les plus gros cycles ; diagnostics inconnus et entrées hôte hors plage corrigés. [Résultats exacts et limites](docs/G251-SESSION-2026-10-15.md), [contrat de fraîcheur](docs/RECALL-INDEX-STATUS.md).
 

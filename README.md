@@ -1,6 +1,6 @@
 # Eidolon Memory Engine
 
-**État courant — G251, 15 octobre 2026** : fraîcheur du rappel indexé et preuves canoniques vérifiées, pont HTTP borné, dix livrables Claude reçus et intégrés. [Bilan, résultats CI et limites](docs/G251-SESSION-2026-10-15.md). Le raccordement et la recette sur VM/PC restent à faire ; aucune activation automatique.
+**État courant — G253, 15 octobre 2026** : le cycle de maintenance et ses composants utilisent une vue d’index limitée aux opérations prouvées. [Contrat, CI et limites](docs/G253-WORKER-PORT-2026-10-15.md) : 2765 tests complets réussis, 442 ciblés et 18 sur serveur (comptes chevauchants). Quatre xfail historiques conservés. Dix nouvelles tâches Claude G252 publiées dans Core ; aucun service activé.
 
 Les repères suivants sont historiques ; leurs mentions « à terminer » décrivent la situation au moment du lot.
 

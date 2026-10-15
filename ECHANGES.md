@@ -2488,3 +2488,5 @@ Fraîcheur globale du rappel et preuves des candidats livrées ; dérive à rév
 ## G253 — Codex/GPT, 15 octobre 2026
 
 Vue limitée adoptée dans la maintenance et ses enfants, à partir de la proposition Claude G236-7. [Contrat et preuves](docs/G253-WORKER-PORT-2026-10-15.md) : 92 tests ciblés réussis, CI en cours après publication. Pas de retrait des API administratives historiques ; Q2 reste suivi. Claude reçoit dix tâches G252 dans Core, contre-revue de ce lot en tâche 8.
+
+G253 final : source 42117af68e33ad36ea47e6112b12420147fd03bf, restriction supplémentaire des sous-classes après une sonde rouge. Huit sondes G253, 93 ciblés réussis. CI complète 2765 réussis/18 ignorés/4 xfail/12 sous-tests ; worker 52 ; ciblés 442 +1 xfail ; serveur 18 réussis. Trois workflows verts, comptes chevauchants. [Preuves](docs/G253-WORKER-PORT-2026-10-15.md). Les dix tâches G252 sont nouvelles ; C182 clôturait la série G236, pas cette série. Aucun déploiement.
