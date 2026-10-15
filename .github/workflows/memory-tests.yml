@@ -5,6 +5,7 @@ on:
     branches: [refactor/architecture-v1]
     paths:
       - 'core/**'
+      - 'services/memory_bridge.py'
       - 'tests/**'
       - 'requirements*.txt'
       - '.github/workflows/memory-tests.yml'
