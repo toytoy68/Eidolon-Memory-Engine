@@ -1,3 +1,7 @@
+## G236 — MT1/MT3 corrigés, 15 octobre 2026
+
+Reprise explicite/auditée après saut d'horloge, défaut durable et migration du contrôleur schéma 1→2 ; budget d'orphelins réglable et lié au contexte. 72 tests ciblés réussis, dont morts réelles avant/après commit. [Contrat et preuves](docs/G236-MAINTENANCE-RECOVERY-2026-10-15.md). CI à confirmer. Suite : R1 lecture bornée ; dix tâches Claude publiées dans Core. Aucun déploiement.
+
 ## G235 — Contre-revue C179/C180 traitée, 15 octobre 2026
 
 Q1 corrigé (preuves conservées au rebuild, pas de second encodage), W1/W2 traités (worker applicatif unique et sondes réelles en CI). Contributions Claude 0008/0032–0036 intégrées ; 361 tests ciblés passent ; CI complète : 2567 réussis +12 sous-tests, 5 xfail documentés ; contrat réel : 35 réussis. [Rapport et résultats CI](docs/G235-CLAUDE-REVIEW-2026-10-15.md). Prochain lot : remise à zéro d'horloge explicite/auditée MT1 et borne d'orphelins configurable MT3 ; puis hôte/recette serveur. A08 corrigé dans Core. S1/Q2/R1 et dette d'import restent ouverts. Aucune suppression ni activation.

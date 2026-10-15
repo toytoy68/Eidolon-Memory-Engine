@@ -2454,3 +2454,7 @@ Patchs 0008/0032–0036 et jeux de calibration importés ; 361 ciblés +5 xfail 
 A08 corrigé dans Core. Aucun corpus privé ni service de production modifié.
 
 G235 CI Memory confirmée : 2567 réussis, 12 sous-tests, 5 xfail ; contrat réel 35 réussis ; ciblés Qdrant 260 réussis et 1 xfail Q2. Comptes chevauchants.
+
+## G236 — MT1/MT3, Codex/GPT, 15/10/2026
+
+Prise en charge maintenance.py et tests G236 sur base 41fe381 : horloge auditée et borne d'orphelins contextuelle, [contrat et preuves](docs/G236-MAINTENANCE-RECOVERY-2026-10-15.md). 23 rouges avant correction, 72 ciblés verts après ; CI à confirmer. Prochain lot R1. Claude reçoit dix tâches dans le canal Core, sans lancement automatique.

@@ -17,6 +17,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, time, timezone
 import json
 import os
+import re
 from pathlib import Path
 import sqlite3
 import stat
@@ -40,10 +41,11 @@ class MaintenanceReport:
 class IndexMaintenance:
     def __init__(self, checkpoint, journal, *, canonical_checkpoint, orphan_checkpoint,
                  canonical_root, index, authorize, profile_id, expected_profile_id,
-                 expected_model_id, page_size=100, pending_limit=100,
+                 expected_model_id, page_size=100, pending_limit=100, max_points=100000,
                  retry_seconds=30, cycle_seconds=300, start=time(4), end=time(8),
                  zone="Europe/Paris", minimum_idle_minutes=30, minimum_boot_minutes=30):
-        if (any(type(n) is not int or not 1 <= n <= 999 for n in (page_size, pending_limit))
+        if (type(max_points) is not int or max_points < 1
+                or any(type(n) is not int or not 1 <= n <= 999 for n in (page_size, pending_limit))
                 or any(type(n) is not int or n < 1 for n in
                        (retry_seconds, cycle_seconds, minimum_idle_minutes, minimum_boot_minutes))):
             raise ValueError("invalid maintenance budgets")
@@ -66,13 +68,16 @@ class IndexMaintenance:
                       expected_model_id=expected_model_id)
         self.worker = JournalUpsertWorker(journal, **common)
         self.canonical = ReconciliationScan(paths[1], journal, pending_limit=pending_limit, **common)
-        self.orphans = OrphanScan(paths[2], journal, **common)
+        self.orphans = OrphanScan(paths[2], journal, max_points=max_points, **common)
         self.root = self.worker.reader.root
         self.context_options = dict(profile=profile_id, expected_profile=expected_profile_id,
             model=expected_model_id, alias=index.alias, page_size=page_size, pending_limit=pending_limit,
             retry_seconds=retry_seconds, cycle_seconds=cycle_seconds, start=start.isoformat(),
             end=end.isoformat(), zone=zone, minimum_idle_minutes=minimum_idle_minutes,
             minimum_boot_minutes=minimum_boot_minutes)
+        # Omit the historical default so v1 checkpoints retain their exact context.
+        if max_points != 100000:
+            self.context_options["max_points"] = max_points
         self.bound_paths = [self.root, *paths[1:]]
         if not self.path.parent.is_dir() or stat.S_IMODE(self.path.parent.stat().st_mode) & 0o077:
             raise ValueError("maintenance checkpoint requires a private directory")
@@ -91,10 +96,14 @@ class IndexMaintenance:
                 db.execute("CREATE TABLE maintenance (singleton INTEGER PRIMARY KEY CHECK(singleton=1), context TEXT NOT NULL, state TEXT NOT NULL)")
                 db.execute("CREATE TABLE reviews (sequence INTEGER PRIMARY KEY, reason TEXT NOT NULL, observed REAL NOT NULL)")
                 db.execute("INSERT INTO maintenance VALUES (1,?,?)", (self._context(), json.dumps(self._new(1))))
-                db.execute("PRAGMA user_version=1")
-            elif version != 1:
+                version = 1
+            elif version not in (1, 2):
                 raise ValueError("unsupported maintenance checkpoint")
             self._load(db)
+            if version == 1:
+                db.execute("CREATE TABLE clock_fault (singleton INTEGER PRIMARY KEY CHECK(singleton=1), observed_at REAL NOT NULL)")
+                db.execute("CREATE TABLE clock_recoveries (sequence INTEGER PRIMARY KEY AUTOINCREMENT, request_id TEXT NOT NULL UNIQUE, receipt TEXT NOT NULL)")
+                db.execute("PRAGMA user_version=2")
 
     @staticmethod
     def _new(cycle):
@@ -168,7 +177,10 @@ class IndexMaintenance:
             with exclusive_write(self.root, blocking=False), self._db() as db:
                 s = self._load(db)
                 if stamp < s["last_at"]:
-                    return self._report(s, "CLOCK_REVERSED")
+                    db.execute("INSERT OR IGNORE INTO clock_fault VALUES (1,?)", (stamp,))
+                fault = self._clock_fault(db)
+                if fault is not None:
+                    return self._report(s, "CLOCK_REVERSED", dict(review_required=True, clock_fault=fault))
                 if reasons:
                     return self._report(s, "DEFERRED", {"reasons": reasons})
                 if stamp < s["next_at"]:
@@ -297,4 +309,69 @@ class IndexMaintenance:
         """Historical checkpoint status only; does not probe the live index or grant rights."""
         with self._db() as db:
             s = self._load(db)
-            return self._report(s, s["outcome"], dict(last_at=s["last_at"], last_result=s["last_result"]))
+            fault = self._clock_fault(db)
+            detail = dict(last_at=s["last_at"], last_result=s["last_result"])
+            if fault is not None:
+                detail["clock_fault"] = fault
+            return self._report(s, "REVIEW_REQUIRED" if fault is not None else s["outcome"], detail)
+
+    @staticmethod
+    def _clock_fault(db):
+        row = db.execute("SELECT observed_at FROM clock_fault WHERE singleton=1").fetchone()
+        return None if row is None else dict(reason="CLOCK_REVERSED", observed_at=row[0])
+
+    def recover_clock(self, *, at, expected_last_at, expected_cycle, actor, reason, request_id):
+        """Explicit host/operator decision, atomic with its audit receipt.
+
+        The host must authenticate/authorize its operator before calling this API;
+        actor is an audit label, not a credential. No journal timestamp, canonical
+        file or index point is changed. All scans restart on later eligible ticks.
+        The same request may be retried; a different decision needs a new ID.
+        """
+        stamp = _instant(at, "at").timestamp()
+        if (not 0 <= stamp < float("inf")
+                or type(expected_last_at) not in (int, float)
+                or not 0 <= expected_last_at < float("inf")
+                or type(expected_cycle) is not int or expected_cycle < 1
+                or any(type(v) is not str or not v.strip() or len(v) > bound
+                       or any(ord(c) < 32 or ord(c) == 127 for c in v)
+                       for v, bound in ((actor, 128), (reason, 512)))
+                or type(request_id) is not str
+                or re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", request_id) is None):
+            raise ValueError("invalid clock recovery decision")
+        decision = dict(request_id=request_id, actor=actor, reason=reason, at=stamp,
+                        previous_last_at=expected_last_at, previous_cycle=expected_cycle)
+        with exclusive_write(self.root, blocking=False), self._db() as db:
+            s = self._load(db)
+            existing = db.execute("SELECT receipt FROM clock_recoveries WHERE request_id=?", (request_id,)).fetchone()
+            if existing:
+                receipt = json.loads(existing[0])
+                if any(receipt[k] != v for k, v in decision.items()):
+                    raise ValueError("clock recovery request ID already used")
+                return receipt
+            if (self._clock_fault(db) is None or s["last_at"] != expected_last_at
+                    or s["cycle"] != expected_cycle or stamp >= s["last_at"]):
+                raise ValueError("clock recovery requires a current fault and matching state")
+            receipt = dict(decision, cycle=s["cycle"]+1)
+            cursor = db.execute("INSERT INTO clock_recoveries (request_id,receipt) VALUES (?,?)",
+                                (request_id, json.dumps(receipt, allow_nan=False)))
+            receipt["sequence"] = cursor.lastrowid
+            db.execute("UPDATE clock_recoveries SET receipt=? WHERE sequence=?",
+                       (json.dumps(receipt, allow_nan=False), cursor.lastrowid))
+            fresh = self._new(s["cycle"]+1)
+            fresh.update(last_at=stamp, next_at=stamp,
+                         last_result=dict(state="CLOCK_RECOVERED", detail=dict(request_id=request_id)))
+            self._save(db, fresh)
+            db.execute("DELETE FROM clock_fault WHERE singleton=1")
+            return receipt
+
+    def clock_recoveries(self, *, after=0, limit=100):
+        """Bounded historical audit; does not contact the index or authorize work."""
+        if type(after) is not int or after < 0 or type(limit) is not int or not 1 <= limit <= 999:
+            raise ValueError("invalid clock recovery page")
+        with self._db() as db:
+            self._load(db)
+            rows = db.execute("SELECT sequence,receipt FROM clock_recoveries WHERE sequence>? ORDER BY sequence LIMIT ?",
+                              (after, limit+1)).fetchall()
+            return dict(items=[json.loads(row[1]) for row in rows[:limit]],
+                        next_after=rows[limit-1][0] if len(rows) > limit else None)

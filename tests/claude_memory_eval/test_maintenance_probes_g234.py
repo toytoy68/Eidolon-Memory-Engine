@@ -103,22 +103,23 @@ def test_after_a_rebuild_maintenance_recovers_provenance_without_deleting(world)
     assert len(world.client.get_collections().collections) == 2
 
 
-def test_a_forward_clock_jump_stalls_maintenance_until_real_time_catches_up(world):
-    """Characterisation of MT1 for GPT to decide: one tick with a clock one year ahead persists last_at; once the
-    clock is corrected, every tick answers CLOCK_REVERSED, with no documented recovery except waiting a year
-    or replacing the checkpoint. Safe (no effect), but an unbounded availability loss."""
+def test_a_forward_clock_jump_requires_explicit_audited_recovery(world):
+    """G236: original Claude stall probe retained, followed by explicit recovery.
+    The original 0036 patch remains archived in Core; no automatic reset."""
     world.write("doc")
     assert world.tick(at=world.at + timedelta(days=365)).state == "ACTIVE"
     for days in (0, 1, 30):
         assert world.tick(at=world.at + timedelta(days=days)).state == "CLOCK_REVERSED"
     assert world.journal.pending(limit=1) != ()
+    receipt = world.cycle().recover_clock(at=world.at,
+        expected_last_at=(world.at + timedelta(days=365)).timestamp(), expected_cycle=1,
+        actor="claude-probe", reason="G236 explicit clock correction", request_id="mt1")
+    assert receipt["cycle"] == 2 and world.finish().state == "CYCLE_COMPLETE"
 
 
-def test_an_index_larger_than_the_orphan_budget_can_never_complete_a_cycle(world):
-    """Characterisation of MT3: OrphanScan stops at max_points (100 000 by default) with LIMIT_REACHED and
-    persists nothing; IndexMaintenance does not expose max_points, so a larger index ends every cycle in
-    REVIEW_REQUIRED. Shown with OrphanScan(max_points=2) and three points."""
-    import inspect
+def test_orphan_limit_is_reported_and_controller_accepts_a_sufficient_budget(world):
+    """G236: preserve Claude's insufficient-budget probe and verify a configured
+    controller with separate checkpoints completes at the exact sufficient bound."""
     from core.indexing.maintenance import IndexMaintenance
     from core.indexing.orphan_scan import OrphanScan
     for i in range(3):
@@ -129,7 +130,15 @@ def test_an_index_larger_than_the_orphan_budget_can_never_complete_a_cycle(world
     assert "EXHAUSTED" not in states and states[-3:] == ["LIMIT_REACHED"] * 3     # stuck at the same place
     again = [scan.run_page(limit=1, restart=True).state] + [scan.run_page(limit=1).state for _ in range(7)]
     assert "EXHAUSTED" not in again and again[-1] == "LIMIT_REACHED"            # a new pass hits the same wall
-    assert "max_points" not in inspect.signature(IndexMaintenance).parameters
+    cycle = IndexMaintenance(world.base / "bounded-cycle.sqlite3", world.journal,
+        canonical_checkpoint=world.base / "bounded-canonical.sqlite3",
+        orphan_checkpoint=world.base / "bounded-orphan.sqlite3", max_points=3, **world.options)
+    for _ in range(30):
+        result = cycle.tick(at=world.at, last_activity=world.at-timedelta(hours=1),
+                            boot_at=world.at-timedelta(hours=2), load_ok=True)
+        if result.state == "CYCLE_COMPLETE":
+            break
+    assert result.state == "CYCLE_COMPLETE"
 
 
 def test_process_death_after_the_point_write_and_before_indexed_resumes_without_re_embedding(world):
