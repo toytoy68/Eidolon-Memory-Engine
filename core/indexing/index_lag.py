@@ -34,7 +34,11 @@ class LagReport:
 
 
 def _finite(value, name, *, positive=False):
-    if type(value) not in (int, float) or not math.isfinite(value) or value < 0 or (positive and value == 0):
+    try:
+        valid = type(value) in (int, float) and math.isfinite(value) and value >= 0
+    except OverflowError:
+        valid = False
+    if not valid or (positive and value == 0):
         raise ValueError(f"invalid {name}")
     return float(value)
 
