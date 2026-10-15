@@ -13,7 +13,7 @@ removal candidates. Unknowns and declared conflicts remain explicit review items
 Historical mode exposes those current records with warnings, not old revisions.
 """
 from collections import Counter
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field
 
@@ -83,6 +83,24 @@ class ContextualRecall:
         self.storage.persistent_root = backend.persistent_root
         self.storage.threads_root = backend.persistent_root / 'threads'
 
+    @contextmanager
+    def storage_snapshot(self, *, blocking=True):
+        """Coordinate canonical readers/writers in the same lock order.
+
+        This is a cooperative snapshot, not protection from external writers.
+        Read-only mode must be selected on this reader before entering.
+        """
+        if type(blocking) is not bool:
+            raise ValueError('blocking must be boolean')
+        lock_options = {'read_only': True} if self.read_only_locks else {}
+        if not blocking:
+            lock_options['blocking'] = False
+        with ExitStack() as locks:
+            locks.enter_context(exclusive_write(self.backend.persistent_root, **lock_options))
+            if self.storage.threads_root.is_dir():
+                locks.enter_context(exclusive_write(self.storage.threads_root, **lock_options))
+            yield
+
     def recall_payload(self, query, *, max_payload_chars, max_payload_tokens=None,
                        payload_token_counter=None, prefix='', suffix='', **options):
         from core.retrieval.payload import render, validate_limits
@@ -109,11 +127,7 @@ class ContextualRecall:
         selected = {}
         # Snapshot cooperating writers using the same exclusive lock inodes.
         # The explicit read-only mode requires pre-existing locks.
-        lock_options = {'read_only': True} if self.read_only_locks else {}
-        with ExitStack() as locks:
-            locks.enter_context(exclusive_write(self.backend.persistent_root, **lock_options))
-            if self.storage.threads_root.is_dir():
-                locks.enter_context(exclusive_write(self.storage.threads_root, **lock_options))
+        with self.storage_snapshot():
             readiness = check_readiness(self.root)
             if not readiness['ready']:
                 raise OperationConflict('readiness blocks contextual recall; recover or review the engine first')

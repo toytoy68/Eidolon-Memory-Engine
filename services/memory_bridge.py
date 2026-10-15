@@ -25,7 +25,9 @@ import threading
 
 from core.backend.filesystem import FilesystemBackend
 from core.retrieval.contextual import ContextualRecall
-from core.persistence import exclusive_write, has_symlink_component
+from core.persistence import has_symlink_component, require_read_only_lock_support, RepositoryBusy
+from core.backend.errors import InvalidMemory
+from core.operations.readiness import check_readiness
 
 MAX_BODY = 4096
 MAX_RESPONSE = 128 * 1024
@@ -237,24 +239,64 @@ def build_recall(root, *, read_only_storage=False):
                                 create_directories=not read_only_storage)
     recall = ContextualRecall(backend, read_only_locks=read_only_storage)
     if read_only_storage:
-        from contextlib import ExitStack
         # Fail before binding the server; revalidated on every recall as well.
-        with ExitStack() as locks:
-            locks.enter_context(exclusive_write(backend.persistent_root, blocking=False, read_only=True))
-            if recall.storage.threads_root.is_dir():
-                locks.enter_context(exclusive_write(recall.storage.threads_root, blocking=False, read_only=True))
+        with recall.storage_snapshot(blocking=False):
+            pass
     return recall
+
+
+STORAGE_CHECK_EXIT = {'READY': 0, 'BLOCKED': 2, 'BUSY': 3, 'UNAVAILABLE': 4,
+                      'UNSUPPORTED': 5, 'ERROR': 6}
+
+
+def check_storage(root):
+    """Inspect existing storage without provisioning, model loading or network.
+
+    Lock acquisition is nonblocking; the canonical readiness scan has no global
+    wall-clock budget. Output deliberately excludes paths, IDs and exceptions.
+    A READY result is a point-in-time storage check, not deployment approval.
+    """
+    result = {'schema': 'eidolon-memory-storage-check/1',
+              'scope': 'canonical_storage_only', 'state': 'ERROR',
+              'read_only_locks': True, 'issues': None, 'warnings': None}
+    try:
+        require_read_only_lock_support()
+        recall = build_recall(root, read_only_storage=True)
+        with recall.storage_snapshot(blocking=False):
+            report = check_readiness(recall.root)
+            result.update(state='READY' if report['ready'] else 'BLOCKED',
+                          issues=len(report['issues']), warnings=len(report['warnings']))
+    except RepositoryBusy:
+        result['state'] = 'BUSY'
+    except NotImplementedError:
+        result['state'] = 'UNSUPPORTED'
+    except (OSError, ValueError, TypeError, InvalidMemory):
+        result['state'] = 'UNAVAILABLE'
+    except Exception:
+        # Unexpected failures are explicit, without disclosing private records.
+        result['state'] = 'ERROR'
+    return result
 
 
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True, type=Path)
-    parser.add_argument("--port", type=int, default=18765)
+    parser.add_argument("--port", type=int)
     parser.add_argument("--reranker-cache", type=Path, help="Optional offline CPU reranker cache")
     parser.add_argument("--read-only-storage", action="store_true",
                         help="Linux local storage: require existing directories and lock files; never provision them")
+    parser.add_argument("--check-storage", action="store_true",
+                        help="Print a read-only canonical storage diagnostic as JSON and exit; no token/model/network")
     args = parser.parse_args()
+    if args.check_storage:
+        if args.port is not None or args.reranker_cache is not None:
+            parser.error("--check-storage cannot be combined with --port or --reranker-cache")
+        result = check_storage(args.root)
+        print(json.dumps(result, ensure_ascii=True, sort_keys=True))
+        return STORAGE_CHECK_EXIT[result['state']]
+    if args.port is None:
+        args.port = 18765
     if not 1024 <= args.port <= 65535:
         parser.error("invalid port")
     token = os.environ.get("EIDOLON_MEMORY_BRIDGE_TOKEN", "")
@@ -286,4 +328,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
