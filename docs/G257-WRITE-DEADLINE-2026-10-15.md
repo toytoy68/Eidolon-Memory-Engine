@@ -18,4 +18,16 @@ Il s'agit d'une qualification d'une protection existante, pas d'un correctif app
 
 Patchs Claude 0045–0047 intégrés : **21 tests réussis avec -W error**, après correction d'un fichier non fermé dans le test de rétention (`Path.read_text` à la place d'un `open(...).read()` sans fermeture). Assertions inchangées, patch original intact dans Core. Les tests de rappel, manifeste, transport et vue de worker restent des contre-revues ; rétention et passages restent des expériences sous `tests/claude_memory_eval`, sans suppression ni adaptation Qdrant de production. Les mutations décrites par Claude lui sont attribuées, non réexécutées ici.
 
-Les dix livrables G252 sont reçus. Les dix nouvelles tâches G256 sont publiées dans Core, dont la contre-revue de ce lot. Quatre xfail historiques conservés ; aucune qualification VM/PC ou corpus privé, aucun service activé. Résultats CI à compléter après publication.
+Les dix livrables G252 sont reçus. Les dix nouvelles tâches G256 sont publiées dans Core, dont la contre-revue de ce lot. Quatre xfail historiques conservés ; aucune qualification VM/PC ou corpus privé, aucun service activé. Les résultats CI de la source publiée sont consignés ci-dessous.
+
+## Qualification finale Memory
+
+Source `81084e04c794eb591e42e944a61560425b839dba` :
+
+| Workflow | Résultat |
+| --- | --- |
+| [Suite complète](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38707295169) | 2793 réussis, 18 ignorés, 4 xfail, 12 sous-tests ; 166,89 s |
+| Contrat worker, même workflow | 52 réussis ; 2,30 s |
+| [Suite ciblée](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38707295039) | 470 réussis, 1 xfail ; 33,59 s |
+
+Les comptes se chevauchent. Les deux workflows déclenchés sont verts. Les 18 exclusions serveur ont leur dernière preuve dédiée sur Memory `42117af68e33ad36ea47e6112b12420147fd03bf`, [18 tests réussis](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38692288647) ; code applicatif, harnais et workflow serveur identiques vérifiés par Git. Aucun nouveau run serveur n'est revendiqué pour ce lot. Core épingle cette source sur `4f9d05addf4a5ecaa3d80de798bff936610a780f`.

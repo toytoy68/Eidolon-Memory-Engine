@@ -2500,3 +2500,5 @@ G255 final : Memory `99aa52eee334fdd984f55fd571356c9b7e2948f9`, deux workflows d
 ## G256/G257 — C184 et écriture HTTP, Codex/GPT, 15/10/2026
 
 C184 0045–0047 intégré : 21 sondes réussies avec `-W error`, fermeture de fichier corrigée dans une sonde sans changer ses assertions. G257 : deux preuves de vraie pression TCP, aucun lecteur/lecteur lent, timeout observé puis capacité et rappel récupérés. Une mutation unique sans délai fait échouer les deux ; source restaurée, 43 tests transport réussis. [Rapport](docs/G257-WRITE-DEADLINE-2026-10-15.md). Aucun changement applicatif ; dix nouvelles tâches G256 publiées dans Core. CI à récupérer.
+
+G257 final Memory : source `81084e04c794eb591e42e944a61560425b839dba`, deux workflows verts. Suite complète 2793 réussis/18 ignorés/4 xfail/12 sous-tests, worker 52, ciblée 470 +1 xfail ; comptes chevauchants. Deux nouveaux cas réseau verts dans les deux suites. [Rapport](docs/G257-WRITE-DEADLINE-2026-10-15.md). Rétention/passages restent expérimentaux, aucune activation.

@@ -1,4 +1,10 @@
-## G255 — Bilan courant, 15 octobre 2026
+## G257 — Bilan courant, 15 octobre 2026
+
+C184 intégré : 21 tests, propositions rétention/passages encore expérimentales. Délai d'écriture HTTP sous pression TCP éprouvé par deux cas et une mutation discriminante ; 43 tests transport verts avec `-W error`. CI : 2793 complets, 470 ciblés, worker 52 ; comptes chevauchants, quatre xfail conservés. [Sources et limites](docs/G257-WRITE-DEADLINE-2026-10-15.md).
+
+Dix livrables G252 reçus ; dix nouvelles tâches G256 disponibles dans Core. Suite : contre-revues, contrats explicites de politique/source hôte, recette VM/PC. MCP encore en erreur interne ; aucun service ni déploiement. Les bilans suivants sont historiques.
+
+## G255 — Bilan historique, 15 octobre 2026
 
 C183 intégré : cinq sondes rappel/pont, 2770 tests complets et 447 ciblés réussis. [Source exacte, CI et limites](docs/G255-C183-2026-10-15.md). Code applicatif Memory inchangé depuis G253 ; Core intègre les dates sentinelles et épingle cette source. Les dix tâches G252 restent ouvertes, distinctes de C183. Quatre xfail et recette VM/PC toujours suivis, aucun service activé.
 

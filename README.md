@@ -1,6 +1,6 @@
 # Eidolon Memory Engine
 
-**État courant — G255, 15 octobre 2026** : vue d'index limitée G253 conservée, cinq sondes Claude C183 ajoutées au rappel et au pont HTTP. [Preuves et limites](docs/G255-C183-2026-10-15.md) : 2770 tests complets réussis, 447 ciblés ; dernière recette serveur inchangée, 18 réussis (comptes chevauchants). Quatre xfail historiques conservés. Dix nouvelles tâches Claude G252 publiées dans Core ; aucun service activé.
+**État courant — G257, 15 octobre 2026** : C184 intégré, vingt et une nouvelles sondes ; deux tests prouvent le délai d'écriture HTTP face à un client bloqué ou lent, avec reprise du service. [Preuves, CI et limites](docs/G257-WRITE-DEADLINE-2026-10-15.md) : 2793 tests complets réussis et 470 ciblés (comptes chevauchants). Aucun changement applicatif dans ce lot. Quatre xfail conservés, dix nouvelles tâches Claude G256 publiées dans Core ; aucun service activé.
 
 Les repères suivants sont historiques ; leurs mentions « à terminer » décrivent la situation au moment du lot.
 
