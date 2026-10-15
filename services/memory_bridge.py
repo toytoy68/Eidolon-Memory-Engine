@@ -206,12 +206,16 @@ def make_handler(recall, token, *, request_timeout=3.0):
                 payload = {"schema": "eidolon-memory-recall/1", "result": asdict(result)}
                 encoded = json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf-8")
                 if len(encoded) > MAX_RESPONSE:
-                    return self.respond(503, {"error": "RESPONSE_TOO_LARGE"})
-                return self.respond_bytes(200, encoded)
+                    code, encoded = 503, b'{"error": "RESPONSE_TOO_LARGE"}'
+                else:
+                    code = 200
             except Exception:
-                return self.respond(503, {"error": "RECALL_UNAVAILABLE"})
+                code, encoded = 503, b'{"error": "RECALL_UNAVAILABLE"}'
             finally:
                 lock.release()
+            # Freeze the bounded response under the recall lock, then send it
+            # outside: a slow reader must not serialize unrelated recalls.
+            return self.respond_bytes(code, encoded)
 
     return Handler
 
