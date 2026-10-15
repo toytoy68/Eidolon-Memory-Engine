@@ -48,3 +48,15 @@ def test_view_observes_external_generation_change_instead_of_caching(world):
     world.index.rebuild(world.root)
     assert view.active_generation() == world.index.active_generation() != old
     assert view.evidence_for('a').canonical_sha256 == world.index.evidence_for('a').canonical_sha256
+
+
+def test_an_extended_view_cannot_reintroduce_admin_methods_into_the_cycle(world):
+    from core.indexing.worker_port import WorkerIndexView
+    class ExtendedView(WorkerIndexView):
+        def delete(self, information_id):
+            return self._adapter.delete(information_id)
+    supplied = ExtendedView(world.index)
+    assert callable(supplied.delete)
+    cycle = world.cycle(index=supplied)
+    assert all(not hasattr(index, 'delete') for index in
+               (cycle.index, cycle.worker.index, cycle.canonical.index, cycle.orphans.index))
