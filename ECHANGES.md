@@ -2496,3 +2496,7 @@ G253 final : source 42117af68e33ad36ea47e6112b12420147fd03bf, restriction suppl�
 Patchs Claude 0043/0044 appliqués : trois sondes rappel (déduplication, passage absent, ABA) et deux sondes de saturation/libération du pont HTTP. Les cinq passent localement avec `-W error` et entrent dans la CI ciblée. Sources originales conservées dans le canal Core ; aucune modification applicative Memory. La CI complète est à récupérer après publication. C183 porte sur G251 et ne clôt pas la nouvelle série G252.
 
 G255 final : Memory `99aa52eee334fdd984f55fd571356c9b7e2948f9`, deux workflows déclenchés verts : 2770 réussis/18 ignorés/4 xfail/12 sous-tests, worker 52 ; ciblés 447 +1 xfail. Dernière recette serveur 18 réussis sur G253, code et harnais identiques vérifiés par Git. [Rapport et limites](docs/G255-C183-2026-10-15.md). Core `b244a867249ecd09b3c1b913538b148e54f35e40` intègre C183 et le complément charge ; les dix tâches G252 restent ouvertes.
+
+## G256/G257 — C184 et écriture HTTP, Codex/GPT, 15/10/2026
+
+C184 0045–0047 intégré : 21 sondes réussies avec `-W error`, fermeture de fichier corrigée dans une sonde sans changer ses assertions. G257 : deux preuves de vraie pression TCP, aucun lecteur/lecteur lent, timeout observé puis capacité et rappel récupérés. Une mutation unique sans délai fait échouer les deux ; source restaurée, 43 tests transport réussis. [Rapport](docs/G257-WRITE-DEADLINE-2026-10-15.md). Aucun changement applicatif ; dix nouvelles tâches G256 publiées dans Core. CI à récupérer.
