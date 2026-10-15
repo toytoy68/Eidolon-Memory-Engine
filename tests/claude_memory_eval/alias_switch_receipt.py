@@ -60,9 +60,13 @@ def _check_body(body):
             raise ReceiptRefused("RECEIPT_INVALID")
     if type(body["switch_id"]) is not str or not re.fullmatch(r"[0-9a-f]{32}", body["switch_id"]):
         raise ReceiptRefused("RECEIPT_INVALID")
-    if type(body["switched_at"]) not in (int, float) or not math.isfinite(body["switched_at"]) \
-            or body["switched_at"] < 0:
-        raise ReceiptRefused("RECEIPT_INVALID")
+    try:
+        if type(body["switched_at"]) not in (int, float) or not math.isfinite(body["switched_at"]) \
+                or body["switched_at"] < 0:
+            raise ReceiptRefused("RECEIPT_INVALID")
+    except OverflowError:
+        # Match epoch_window: unrepresentable integers use the public refusal.
+        raise ReceiptRefused("RECEIPT_INVALID") from None
 
 
 def make_receipt(**fields):
@@ -73,6 +77,10 @@ def make_receipt(**fields):
 
 def verify_receipt(receipt, *, seen_switch_ids=frozenset()):
     """Return the receipt's switch id; refuse incomplete, altered, unobserved or replayed receipts."""
+    return _verify(receipt, _seen(seen_switch_ids))
+
+
+def _verify(receipt, seen_switch_ids):
     _check_body(receipt)
     if "receipt_sha256" not in receipt:
         raise ReceiptRefused("RECEIPT_INCOMPLETE")
@@ -94,11 +102,24 @@ def _anchor(alias, generation):
 def _window(epoch_window):
     if epoch_window is None:
         return None
-    if (type(epoch_window) is not tuple or len(epoch_window) != 2
-            or any(type(x) not in (int, float) or not math.isfinite(x) for x in epoch_window)
-            or not 0 <= epoch_window[0] < epoch_window[1]):
-        raise ReceiptRefused("RECEIPT_INVALID")
+    try:
+        if (type(epoch_window) is not tuple or len(epoch_window) != 2
+                or any(type(x) not in (int, float) or not math.isfinite(x) for x in epoch_window)
+                or not 0 <= epoch_window[0] < epoch_window[1]):
+            raise ReceiptRefused("RECEIPT_INVALID")
+    except OverflowError:                 # math.isfinite(10**400): an integer too large for a float
+        raise ReceiptRefused("RECEIPT_INVALID") from None
     return epoch_window
+
+
+def _seen(value):
+    """G262-9: the host's consumed ids must be a real, re-readable collection of valid ids. A string would
+    otherwise become a set of characters and silently disable replay detection."""
+    if type(value) not in (set, frozenset, list, tuple):
+        raise ReceiptRefused("RECEIPT_INVALID_SEEN")
+    if any(type(item) is not str or not re.fullmatch(r"[0-9a-f]{32}", item) for item in value):
+        raise ReceiptRefused("RECEIPT_INVALID_SEEN")
+    return frozenset(value)
 
 
 def verify_chain(receipts, *, alias, initial_generation, seen_switch_ids=frozenset(), epoch_window=None):
@@ -109,9 +130,9 @@ def verify_chain(receipts, *, alias, initial_generation, seen_switch_ids=frozens
     passes to generation_retention.classify; an epoch-0 or millisecond receipt then proves nothing."""
     _anchor(alias, initial_generation)
     window = _window(epoch_window)
-    seen, current, last_at = set(seen_switch_ids), initial_generation, None
+    seen, current, last_at = set(_seen(seen_switch_ids)), initial_generation, None
     for receipt in receipts:
-        seen.add(verify_receipt(receipt, seen_switch_ids=seen))
+        seen.add(_verify(receipt, seen))
         if receipt["alias"] != alias:
             raise ReceiptRefused("RECEIPT_OTHER_ALIAS")
         if window is not None and not window[0] <= receipt["switched_at"] <= window[1]:
@@ -140,3 +161,4 @@ def retirement_facts(receipts, *, alias, initial_generation, observed_target, se
         retired[receipt["previous_generation"]] = (receipt["switched_at"], receipt["switch_id"])
     retired.pop(observed_target, None)  # reactivated: its older retirement no longer counts
     return retired
+

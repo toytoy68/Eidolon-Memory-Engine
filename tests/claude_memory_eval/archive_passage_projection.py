@@ -68,8 +68,28 @@ class ArchivePassageProjection:
         except Exception:
             self.current[information_id] = None
             raise
+        if self.current.get(information_id) == (memory.revision, digest):
+            # Same bytes already projected: nothing new to stage, so no chunking work at all.
+            return tuple(pid for pid, p in self.points.items() if p["information_id"] == information_id
+                         and (p["revision"], p["canonical_sha256"]) == (memory.revision, digest))
+        # G262-8: every point of a new revision is new, so the budgets bound the chunking itself. The
+        # chunker stops at `bound` chunks instead of materialising the whole archive before a refusal.
+        # Whitespace-only chunks count toward the bound: the refusal can be conservative, never permissive.
+        limits = [10000]
+        if self.max_passages is not None:
+            limits.append(self.max_passages + 1)
+        if self.max_points is not None:
+            limits.append(max(self.max_points - len(self.points), 0) + 1)
+        bound = min(limits)
+        try:
+            chunks = chunk_messages(memory.content, max_chars=1200, overlap=160, max_chunks=bound)
+        except ValueError as exc:
+            if bound < 10000 and "chunk limit" in str(exc):
+                raise ProjectionBudgetExceeded("PASSAGES_PER_ARCHIVE" if self.max_passages is not None
+                                               and bound == self.max_passages + 1 else "POINTS") from None
+            raise
         staged = {}
-        for chunk in chunk_messages(memory.content, max_chars=1200, overlap=160):
+        for chunk in chunks:
             if not chunk.text.strip():
                 continue  # whitespace carries no evidence to rank
             pid = point_id(information_id, memory.revision, digest, chunk.reference)
@@ -77,10 +97,9 @@ class ArchivePassageProjection:
                                canonical_sha256=digest, projection_id=PROJECTION_ID,
                                passage=dict(chunk.reference),
                                _vector_text=sha256(chunk.text.encode()).hexdigest())  # stand-in, no text
-            if self.max_passages is not None and len(staged) > self.max_passages:
-                raise ProjectionBudgetExceeded("PASSAGES_PER_ARCHIVE")
-        new = sum(1 for pid in staged if pid not in self.points)  # re-projecting the same bytes costs nothing
-        if self.max_points is not None and len(self.points) + new > self.max_points:
+        if self.max_passages is not None and len(staged) > self.max_passages:
+            raise ProjectionBudgetExceeded("PASSAGES_PER_ARCHIVE")
+        if self.max_points is not None and len(self.points) + len(staged) > self.max_points:
             raise ProjectionBudgetExceeded("POINTS")
         self.points.update(staged)
         self.current[information_id] = (memory.revision, digest)
