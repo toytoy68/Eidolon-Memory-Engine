@@ -40,3 +40,10 @@ serveur dédiée. Résultats CI de ce lot à confirmer.
 
 G242 : CI Qdrant ciblée et serveur réussies au moment de cette publication ;
 suite complète encore en cours. Aucun corpus privé, modèle sémantique ou VM.
+
+Premier passage serveur : 15 réussis et 3 échecs de harnais (client Qdrant 1.15.1
+sans protocole context manager). Les trois nouveaux scénarios n'avaient donc pas
+encore exécuté leurs assertions. Fermeture corrigée avec contextlib.closing ;
+aucune modification applicative. CI ciblée G243 : 406 réussis +1 xfail Q2.
+G242 confirmé complet : 2673 réussis, 15 ignorés, 4 xfail, 12 sous-tests ;
+52 worker, 393 ciblés +1 xfail, 15 serveur. Comptes chevauchants.

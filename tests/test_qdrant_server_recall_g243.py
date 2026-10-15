@@ -5,6 +5,7 @@
 # Description : Freshness and verified candidates through owned real HTTP Qdrant.
 # Standard    : Eidolon Presentation Standard v1
 # ==========================================================
+from contextlib import closing
 from uuid import uuid4
 
 import pytest
@@ -25,7 +26,7 @@ def make_index(client, alias, *, create=False):
 def test_empty_then_stale_then_rebuild_match_survives_server_restart(tmp_path, qdrant_server):
     data = backend(tmp_path)
     alias = 'eidolon_recall_' + uuid4().hex
-    with qdrant_server.client() as client:
+    with closing(qdrant_server.client()) as client:
         index = make_index(client, alias, create=True)
         index.rebuild(data.persistent_root)
         store(data, 'new')
@@ -37,7 +38,7 @@ def test_empty_then_stale_then_rebuild_match_survives_server_restart(tmp_path, q
         proof = result.items[0].ranking['index']['canonical_sha256']
     qdrant_server.stop()
     qdrant_server.start()
-    with qdrant_server.client() as client:
+    with closing(qdrant_server.client()) as client:
         index = make_index(client, alias)
         result = ContextualRecall(data, index=index).recall('power')
         assert result.index_status.state == 'INDEX_SNAPSHOT_MATCH'
@@ -47,7 +48,7 @@ def test_empty_then_stale_then_rebuild_match_survives_server_restart(tmp_path, q
 def test_same_revision_change_excluded_until_rebuild_on_server(tmp_path, qdrant_server):
     data = backend(tmp_path)
     store(data, 'one')
-    with qdrant_server.client() as client:
+    with closing(qdrant_server.client()) as client:
         index = make_index(client, 'eidolon_recall_' + uuid4().hex, create=True)
         index.rebuild(data.persistent_root)
         path = data.persistent_root / 'one.md'
@@ -64,7 +65,7 @@ def test_same_revision_change_excluded_until_rebuild_on_server(tmp_path, qdrant_
 def test_corrupted_candidate_proof_is_refused_over_http(tmp_path, qdrant_server):
     data = backend(tmp_path)
     store(data, 'one')
-    with qdrant_server.client() as client:
+    with closing(qdrant_server.client()) as client:
         index = make_index(client, 'eidolon_recall_' + uuid4().hex, create=True)
         index.rebuild(data.persistent_root)
         client.set_payload(index.alias, {'generation': 'foreign-generation'},
