@@ -1,3 +1,9 @@
+## G251 — Bilan courant, 15 octobre 2026
+
+G242–G251 livrés : fraîcheur globale et preuve canonique au rappel, diagnostic transmis au PC, pont HTTP borné, qualification Chromium, C182 et ses dix livrables intégrés. Deux extractions réduisent les plus gros cycles ; diagnostics inconnus et entrées hôte hors plage corrigés. [Résultats exacts et limites](docs/G251-SESSION-2026-10-15.md), [contrat de fraîcheur](docs/RECALL-INDEX-STATUS.md).
+
+Suite : contre-revue des nouveaux contrats, raccordement explicite aux observations et à la politique hôte, choix des ports puis recette VM/PC. Quatre xfail historiques restent ouverts ; seuils et estimations globales inchangés. Aucun déploiement. Les bilans suivants sont historiques.
+
 ## G242 — Fraîcheur du rappel, 15 octobre 2026
 
 Diagnostic explicite même sans candidat : instantané concordant, canon modifié ou vérification inconnue/bornée. Sonde Claude G201 Q2 promue ; 141 ciblés réussis et 2 xfail distincts. [Contrat et limites](docs/G242-RECALL-FRESHNESS-2026-10-15.md). CI à confirmer ; aucune activation.

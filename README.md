@@ -1,5 +1,9 @@
 # Eidolon Memory Engine
 
+**État courant — G251, 15 octobre 2026** : fraîcheur du rappel indexé et preuves canoniques vérifiées, pont HTTP borné, dix livrables Claude reçus et intégrés. [Bilan, résultats CI et limites](docs/G251-SESSION-2026-10-15.md). Le raccordement et la recette sur VM/PC restent à faire ; aucune activation automatique.
+
+Les repères suivants sont historiques ; leurs mentions « à terminer » décrivent la situation au moment du lot.
+
 **G235 — 15 octobre** : relecture Claude intégrée, reconstruction Qdrant avec preuve conservée, worker applicatif unique et tests du vrai chemin en CI. Plus de second encodage provoqué par le rebuild. [Preuves et points encore ouverts](docs/G235-CLAUDE-REVIEW-2026-10-15.md). Maintenance MT1/MT3 et recette serveur restent à terminer.
 
 **G234 — 14 octobre** : projection de l'index explicitée et contrôle avant reprise du journal. CI Memory : 2502 tests +12 sous-tests, 247 ciblés, 19 expérimentaux (comptes chevauchants). **Ancien schéma 1 refusé : reconstruction explicite sous nouvel alias nécessaire avant activation.** [Rapport, preuves et écarts du contrat réel](docs/G234-PROJECTION-CONTRACT-2026-10-14.md). Contrat complet J2 et recette serveur/VM restent ouverts.
@@ -21,10 +25,10 @@ Qdrant reste optionnel et non branché au rappel actif.
 Moteur de mémoire en fichiers pour Eidolon. Les Informations et Threads sous
 `memory/` sont la source de vérité ; un port d’index reconstructible et sa
 référence sans dépendance externe existent. Un premier adaptateur Qdrant optionnel est livré et testé sur un serveur isolé ;
-son activation dans le rappel réel reste à faire. Voir le
+son activation sur l’hôte reste à qualifier. Voir le
 [bilan G179 du 12 octobre](docs/QDRANT-G179-2026-10-12.md).
 La branche `refactor/architecture-v1` est en cours de
-développement. Sa suite de tests passe sur la VM. Un corpus ChatGPT réel a été importé et
+développement. Les validations VM antérieures sont datées dans les rapports ; elles ne qualifient pas le code actuel, testé en CI isolée. Un corpus ChatGPT réel a été importé et
 rappelé avec références exactes le 04/10 ; la pertinence sémantique, la recette
 complète sur données réelles et le déploiement restent à valider.
 
