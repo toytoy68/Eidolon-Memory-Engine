@@ -25,7 +25,7 @@ from core.operations.errors import OperationRepositoryError
 from core.persistence import exclusive_write
 from core.information.writes import FilesystemInformationWrites, fingerprint
 from core.operations.models import OperationType, OperationStatus
-from core.migration.converter import _atomic_bytes
+from core.persistence import atomic_write_bytes as _atomic_bytes
 from core.storage_format import decode_json_value
 
 

@@ -107,7 +107,7 @@ def write_lock_held(root):
 
 def durable_replace(source, destination):
     """Publish a flushed file, then persist its directory entry on POSIX."""
-    from core.operations.read_phase import invalidate_publication
+    from core.operations.publication_phase import invalidate_publication
     invalidate_publication(destination)
     os.replace(source, destination)
     if os.name != "nt":
@@ -116,6 +116,27 @@ def durable_replace(source, destination):
             os.fsync(descriptor)
         finally:
             os.close(descriptor)
+
+
+def atomic_write_bytes(path: Path, data: bytes) -> None:
+    """Flush bytes to a temporary sibling, rename it atomically, then persist the directory entry."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with NamedTemporaryFile(dir=path.parent, prefix=f".{path.name}.", delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def atomic_write_text(path: Path, content: str) -> None:

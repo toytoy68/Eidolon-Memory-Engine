@@ -20,7 +20,7 @@ import os
 
 from core.persistence import write_lock_held, has_symlink_component
 
-_phase = ContextVar('settled_read_phase', default=None)
+from core.operations.publication_phase import _phase, invalidate_publication  # noqa: F401 (re-export)
 
 
 def _matching(root):
@@ -48,14 +48,6 @@ def remember_readiness(root, report):
 def has_settled_audit(root):
     phase = _matching(root)
     return phase is not None and phase['readiness'] is not None
-
-
-def invalidate_publication(path):
-    phase = _phase.get()
-    if phase is not None:
-        destination = Path(os.path.abspath(path))
-        if any(destination == root or root in destination.parents for root in phase['sources']):
-            phase['readiness'] = None
 
 
 @contextmanager

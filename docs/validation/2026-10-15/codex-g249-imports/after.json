@@ -1,0 +1,115 @@
+{
+ "modules": 147,
+ "imports": 611,
+ "lazy_imports": 103,
+ "cycles": [
+  {
+   "size": 13,
+   "modules": [
+    "core.dossiers.projects",
+    "core.lifecycle.service",
+    "core.migration.converter",
+    "core.migration.core_copy",
+    "core.migration.inventory",
+    "core.migration.preflight",
+    "core.migration.simulation",
+    "core.operations.readiness",
+    "core.retrieval.contextual",
+    "core.routing.execution",
+    "core.routing.information_execution",
+    "core.sources.commitments",
+    "core.sources.store"
+   ],
+   "lazy_edges_inside": [
+    "core.dossiers.projects -> core.operations.readiness",
+    "core.lifecycle.service -> core.operations.readiness",
+    "core.migration.inventory -> core.sources.commitments",
+    "core.migration.inventory -> core.sources.store",
+    "core.operations.readiness -> core.lifecycle.service",
+    "core.operations.readiness -> core.routing.execution",
+    "core.routing.execution -> core.lifecycle.service",
+    "core.routing.execution -> core.operations.readiness",
+    "core.routing.execution -> core.retrieval.contextual",
+    "core.routing.execution -> core.routing.information_execution",
+    "core.routing.information_execution -> core.lifecycle.service",
+    "core.routing.information_execution -> core.routing.execution",
+    "core.sources.commitments -> core.sources.store",
+    "core.sources.store -> core.migration.converter",
+    "core.sources.store -> core.migration.core_copy",
+    "core.sources.store -> core.operations.readiness",
+    "core.sources.store -> core.sources.commitments"
+   ]
+  },
+  {
+   "size": 12,
+   "modules": [
+    "core.backend.filesystem",
+    "core.information.batch",
+    "core.information.compaction",
+    "core.information.references",
+    "core.information.reservation_index",
+    "core.information.write_journal",
+    "core.information.writes",
+    "core.operations.thread_delete",
+    "core.operations.thread_status",
+    "core.operations.thread_update",
+    "core.sources.chatgpt_import",
+    "core.threads.storage"
+   ],
+   "lazy_edges_inside": [
+    "core.backend.filesystem -> core.sources.chatgpt_import",
+    "core.information.batch -> core.information.writes",
+    "core.information.compaction -> core.information.batch",
+    "core.information.compaction -> core.information.writes",
+    "core.information.references -> core.backend.filesystem",
+    "core.information.references -> core.information.write_journal",
+    "core.information.references -> core.operations.thread_status",
+    "core.information.references -> core.operations.thread_update",
+    "core.information.reservation_index -> core.information.writes",
+    "core.information.write_journal -> core.backend.filesystem",
+    "core.information.write_journal -> core.information.writes",
+    "core.information.writes -> core.information.batch",
+    "core.information.writes -> core.information.compaction",
+    "core.information.writes -> core.information.reservation_index",
+    "core.operations.thread_delete -> core.operations.thread_update",
+    "core.operations.thread_status -> core.operations.thread_update",
+    "core.threads.storage -> core.backend.filesystem",
+    "core.threads.storage -> core.operations.thread_delete"
+   ]
+  }
+ ],
+ "top_fan_in": [
+  [
+   "core.persistence",
+   55
+  ],
+  [
+   "core.backend.filesystem",
+   39
+  ],
+  [
+   "core.backend.errors",
+   35
+  ],
+  [
+   "core.operations.errors",
+   32
+  ],
+  [
+   "core.storage_format",
+   30
+  ],
+  [
+   "core.threads.storage",
+   22
+  ],
+  [
+   "core.operations.models",
+   22
+  ],
+  [
+   "core.backend.models",
+   21
+  ]
+ ]
+}

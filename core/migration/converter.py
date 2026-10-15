@@ -21,27 +21,7 @@ from core.backend.filesystem import FilesystemBackend
 from core.migration.preflight import inspect_legacy_information
 from core.migration.inventory import classify
 from core.migration.simulation import _candidate_issues, preview_legacy_information
-from core.persistence import has_symlink_component
-
-
-def _atomic_bytes(path: Path, data: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = None
-    try:
-        with NamedTemporaryFile(dir=path.parent, prefix=f".{path.name}.", delete=False) as stream:
-            temporary = Path(stream.name)
-            stream.write(data)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(temporary, path)
-        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
-        try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
+from core.persistence import has_symlink_component, atomic_write_bytes as _atomic_bytes  # noqa: F401 (re-export)
 
 
 def operational_import_blockers(source: Path) -> list[dict]:
