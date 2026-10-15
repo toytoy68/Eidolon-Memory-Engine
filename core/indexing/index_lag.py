@@ -46,6 +46,8 @@ def evaluate_lag(pending, *, now, threshold_seconds, index_available, index_comp
     pending: iterable of objects with ``created`` (seconds since epoch, or None when unknown).
     An intent dated in the future beyond ``clock_skew_seconds`` makes ages untrustworthy: CLOCK_AHEAD is reported
     and no ageing verdict is given. A missing date is AGE_UNKNOWN, never "fresh".
+    With unknown dates, oldest_age_seconds is unknown and lagging counts only known
+    old intents: it is a lower bound, not an exhaustive count.
     """
     now = _finite(now, "clock")
     threshold = _finite(threshold_seconds, "lag threshold", positive=True)
@@ -65,7 +67,7 @@ def evaluate_lag(pending, *, now, threshold_seconds, index_available, index_comp
             continue
         ages.append(max(0.0, now - created))
     clock_trusted = "CLOCK_AHEAD" not in reasons
-    oldest = max(ages) if ages and clock_trusted else None
+    oldest = max(ages) if ages and clock_trusted and "AGE_UNKNOWN" not in reasons else None
     lagging = sum(age > threshold for age in ages) if clock_trusted else 0
     if not index_available:
         state = "INDEX_UNAVAILABLE"
