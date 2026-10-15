@@ -63,8 +63,7 @@ permission de suppression ; les revues restent revalidées.
   ID réutilisé, budget insuffisant, migration et absence d'effets couverts.
 - Sondes MT1/MT3 de Claude promues en régressions : scénarios de limite conservés,
   reprise explicite et borne suffisante ajoutées. Patch original 0036 conservé Core.
-- Nouveau fichier de tests ajouté au workflow Qdrant ciblé. CI publiée à compléter
-  après récupération des résultats, sans confondre local et distant.
+- Nouveau fichier de tests ajouté au workflow Qdrant ciblé. CI publiée confirmée : [Memory 38662055230](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38662055230), 2594 réussis +5 xfail et 12 sous-tests (114,15 s), contrat réel 35 réussis (1,38 s) ; [Qdrant 38662055164](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38662055164), 287 réussis +1 xfail Q2 (26,81 s). Comptes chevauchants.
 
 Suite Codex : R1 lecture bornée du worker journal. Dix tâches distinctes confiées
 à Claude dans Core G236 ; aucune réponse supplémentaire observée à cette étape.

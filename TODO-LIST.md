@@ -1,3 +1,7 @@
+## G237 — R1 corrigé, 15 octobre 2026
+
+Worker journal borné à 8 Mio par fichier par défaut, configurable avec politique partagée par le scanner et liée au contrôleur. Dépassement signalé en revue sans bloquer les lignes saines. [Contrat et preuves](docs/G237-WORKER-READ-BUDGET-2026-10-15.md). 25 tests nouveaux rouges avant correction ; CI G237 à confirmer. G236 confirmé : 2594 tests complets +5 xfail et 12 sous-tests ; 287 ciblés +1 xfail. Suite : raccordement explicite hôte, revue Claude et recette serveur/VM/PC. Aucun déploiement.
+
 ## G236 — MT1/MT3 corrigés, 15 octobre 2026
 
 Reprise explicite/auditée après saut d'horloge, défaut durable et migration du contrôleur schéma 1→2 ; budget d'orphelins réglable et lié au contexte. 72 tests ciblés réussis, dont morts réelles avant/après commit. [Contrat et preuves](docs/G236-MAINTENANCE-RECOVERY-2026-10-15.md). CI à confirmer. Suite : R1 lecture bornée ; dix tâches Claude publiées dans Core. Aucun déploiement.

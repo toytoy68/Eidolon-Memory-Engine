@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import sys
 
 from core.backend.filesystem import FilesystemBackend
 
@@ -37,9 +38,13 @@ def _version(info):
     return (_identity(info), info.st_size, info.st_mtime_ns, info.st_ctime_ns)
 
 
+class CanonicalTooLarge(ValueError):
+    """A bounded read exceeded policy; never an absence or corruption proof."""
+
+
 class CanonicalReader:
     def __init__(self, persistent_root, *, max_bytes=None):
-        if max_bytes is not None and (type(max_bytes) is not int or max_bytes < 1):
+        if max_bytes is not None and (type(max_bytes) is not int or not 1 <= max_bytes < sys.maxsize):
             raise ValueError("invalid canonical byte limit")
         self.max_bytes = max_bytes
         root = Path(persistent_root).absolute()
@@ -134,10 +139,10 @@ class CanonicalReader:
                     if not stat.S_ISREG(before.st_mode):
                         raise ValueError("canonical file absent or unsafe")
                     if self.max_bytes is not None and before.st_size > self.max_bytes:
-                        raise ValueError("canonical file exceeds byte limit")
+                        raise CanonicalTooLarge("canonical file exceeds byte limit")
                     raw = handle.read() if self.max_bytes is None else handle.read(self.max_bytes + 1)
                     if self.max_bytes is not None and len(raw) > self.max_bytes:
-                        raise ValueError("canonical file exceeds byte limit")
+                        raise CanonicalTooLarge("canonical file exceeds byte limit")
                     if durable:
                         os.fsync(handle.fileno())
                     after = os.fstat(handle.fileno())

@@ -42,9 +42,10 @@ class IndexMaintenance:
     def __init__(self, checkpoint, journal, *, canonical_checkpoint, orphan_checkpoint,
                  canonical_root, index, authorize, profile_id, expected_profile_id,
                  expected_model_id, page_size=100, pending_limit=100, max_points=100000,
+                 max_file_bytes=8 * 1024 * 1024,
                  retry_seconds=30, cycle_seconds=300, start=time(4), end=time(8),
                  zone="Europe/Paris", minimum_idle_minutes=30, minimum_boot_minutes=30):
-        if (type(max_points) is not int or max_points < 1
+        if (any(type(n) is not int or n < 1 for n in (max_points, max_file_bytes))
                 or any(type(n) is not int or not 1 <= n <= 999 for n in (page_size, pending_limit))
                 or any(type(n) is not int or n < 1 for n in
                        (retry_seconds, cycle_seconds, minimum_idle_minutes, minimum_boot_minutes))):
@@ -66,8 +67,9 @@ class IndexMaintenance:
         common = dict(canonical_root=canonical_root, index=index, authorize=authorize,
                       profile_id=profile_id, expected_profile_id=expected_profile_id,
                       expected_model_id=expected_model_id)
-        self.worker = JournalUpsertWorker(journal, **common)
-        self.canonical = ReconciliationScan(paths[1], journal, pending_limit=pending_limit, **common)
+        self.worker = JournalUpsertWorker(journal, max_file_bytes=max_file_bytes, **common)
+        self.canonical = ReconciliationScan(paths[1], journal, pending_limit=pending_limit,
+                                            max_file_bytes=max_file_bytes, **common)
         self.orphans = OrphanScan(paths[2], journal, max_points=max_points, **common)
         self.root = self.worker.reader.root
         self.context_options = dict(profile=profile_id, expected_profile=expected_profile_id,
@@ -78,6 +80,8 @@ class IndexMaintenance:
         # Omit the historical default so v1 checkpoints retain their exact context.
         if max_points != 100000:
             self.context_options["max_points"] = max_points
+        if max_file_bytes != 8 * 1024 * 1024:
+            self.context_options["max_file_bytes"] = max_file_bytes
         self.bound_paths = [self.root, *paths[1:]]
         if not self.path.parent.is_dir() or stat.S_IMODE(self.path.parent.stat().st_mode) & 0o077:
             raise ValueError("maintenance checkpoint requires a private directory")

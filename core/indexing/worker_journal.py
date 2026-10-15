@@ -21,7 +21,7 @@ from core.backend.errors import InvalidMemory
 from .change_journal import ChangeJournal
 from .port import IndexEvidence, IndexIncompatible
 from .reconcile_plan import Action
-from .worker_canonical import CanonicalReader
+from .worker_canonical import CanonicalReader, CanonicalTooLarge
 from .worker_upsert import apply_upsert
 
 
@@ -71,15 +71,16 @@ class _GuardedIndex:
 
 class JournalUpsertWorker:
     def __init__(self, journal, *, canonical_root, index, authorize,
-                 profile_id, expected_profile_id, expected_model_id):
-        if (not isinstance(journal, ChangeJournal) or not callable(authorize)
+                 profile_id, expected_profile_id, expected_model_id, max_file_bytes=8 * 1024 * 1024):
+        if (type(max_file_bytes) is not int or max_file_bytes < 1
+                or not isinstance(journal, ChangeJournal) or not callable(authorize)
                 or any(type(s) is not str or not s for s in
                        (profile_id, expected_profile_id, expected_model_id))
                 or not callable(getattr(index, "active_generation", None))
                 or not callable(getattr(index, "evidence_for", None))
                 or not callable(getattr(index, "upsert_verified", None))):
             raise ValueError("invalid journal worker configuration")
-        self.reader = CanonicalReader(canonical_root)
+        self.reader = CanonicalReader(canonical_root, max_bytes=max_file_bytes)
         self.journal, self.index, self.authorize = journal, index, authorize
         self.profile_id, self.expected_profile_id = profile_id, expected_profile_id
         self.expected_model_id = expected_model_id
@@ -249,6 +250,8 @@ class JournalUpsertWorker:
                 deferred.append((seq, "INDEX_UNAVAILABLE"))
                 status = "INDEX_UNAVAILABLE"
                 break
+            except CanonicalTooLarge:
+                deferred.append((seq, "CANONICAL_TOO_LARGE"))
             except (ValueError, OSError, UnicodeError, InvalidMemory):
                 # No absent inference and no terminal transition on a bad read.
                 deferred.append((seq, "UNVERIFIED"))

@@ -36,4 +36,4 @@ jobs:
       - name: Full isolated suite
         run: python -m pytest -q -rs -p no:cacheprovider --basetemp="${{ runner.temp }}/pytest-memory"
       - name: Real journal worker contract (Markdown and isolated Qdrant)
-        run: python -m pytest -q -p no:cacheprovider tests/test_worker_journal.py tests/claude_memory_eval/test_real_worker_contract_g220.py tests/claude_memory_eval/test_preflight_separation_g220.py --basetemp="$RUNNER_TEMP/pytest-worker"
+        run: python -m pytest -q -p no:cacheprovider tests/test_worker_journal.py tests/test_worker_read_budget_g237.py tests/claude_memory_eval/test_real_worker_contract_g220.py tests/claude_memory_eval/test_preflight_separation_g220.py --basetemp="$RUNNER_TEMP/pytest-worker"
