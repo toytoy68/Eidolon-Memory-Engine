@@ -1,4 +1,8 @@
-## G253 — Bilan courant, 15 octobre 2026
+## G255 — Bilan courant, 15 octobre 2026
+
+C183 intégré : cinq sondes rappel/pont, 2770 tests complets et 447 ciblés réussis. [Source exacte, CI et limites](docs/G255-C183-2026-10-15.md). Code applicatif Memory inchangé depuis G253 ; Core intègre les dates sentinelles et épingle cette source. Les dix tâches G252 restent ouvertes, distinctes de C183. Quatre xfail et recette VM/PC toujours suivis, aucun service activé.
+
+## G253 — Bilan historique, 15 octobre 2026
 
 Vue d'index limitée raccordée au contrôleur et à ses enfants, y compris pour une sous-classe étendue fournie par l'hôte. Huit sondes, 93 ciblés ; trois workflows verts sur la source finale. [Preuves CI et limites](docs/G253-WORKER-PORT-2026-10-15.md). Core G254 ajoute un appel hôte explicite, sans service ni capteur automatique.
 

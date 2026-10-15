@@ -1,6 +1,6 @@
 # Eidolon Memory Engine
 
-**État courant — G253, 15 octobre 2026** : le cycle de maintenance et ses composants utilisent une vue d’index limitée aux opérations prouvées. [Contrat, CI et limites](docs/G253-WORKER-PORT-2026-10-15.md) : 2765 tests complets réussis, 442 ciblés et 18 sur serveur (comptes chevauchants). Quatre xfail historiques conservés. Dix nouvelles tâches Claude G252 publiées dans Core ; aucun service activé.
+**État courant — G255, 15 octobre 2026** : vue d'index limitée G253 conservée, cinq sondes Claude C183 ajoutées au rappel et au pont HTTP. [Preuves et limites](docs/G255-C183-2026-10-15.md) : 2770 tests complets réussis, 447 ciblés ; dernière recette serveur inchangée, 18 réussis (comptes chevauchants). Quatre xfail historiques conservés. Dix nouvelles tâches Claude G252 publiées dans Core ; aucun service activé.
 
 Les repères suivants sont historiques ; leurs mentions « à terminer » décrivent la situation au moment du lot.
 
