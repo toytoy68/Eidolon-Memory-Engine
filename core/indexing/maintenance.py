@@ -24,6 +24,7 @@ import stat
 
 from core.maintenance.window import preview_window, _instant
 from core.persistence import exclusive_write, has_symlink_component, RepositoryBusy
+from .port import IndexIncompatible
 from .orphan_scan import OrphanScan
 from .reconcile_scan import ReconciliationScan, CanonicalSnapshotUnavailable
 from .worker_journal import JournalUpsertWorker
@@ -201,11 +202,12 @@ class IndexMaintenance:
                     generation = self.index.active_generation()
                     if type(generation) is not str or not generation:
                         raise ValueError("invalid generation")
-                except Exception:
+                except Exception as exc:
+                    failure = "INDEX_INCOMPATIBLE" if isinstance(exc, IndexIncompatible) else "INDEX_UNAVAILABLE"
                     s["next_at"] = stamp+self.retry_seconds
-                    s["last_result"] = {"state": "INDEX_UNAVAILABLE", "detail": {}}
+                    s["last_result"] = {"state": failure, "detail": {}}
                     self._save(db, s)
-                    return self._report(s, "INDEX_UNAVAILABLE")
+                    return self._report(s, failure)
                 if s["generation"] is not None and s["generation"] != generation:
                     s = self._new(s["cycle"] + 1)
                     s.update(generation=generation, last_at=stamp)

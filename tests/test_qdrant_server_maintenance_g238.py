@@ -136,6 +136,8 @@ def test_server_descriptor_incompatibility_never_publishes_intent(world):
     result = JournalUpsertWorker(world.journal, **world.options).run_once()
     assert result.status == 'INDEX_INCOMPATIBLE'
     assert world.journal.intent(seq).state == 'INTENT' and world.writes == 0
+    assert world.tick().state == 'INDEX_INCOMPATIBLE'
+    assert world.journal.intent(seq).state == 'INTENT' and world.writes == 0
 
 
 def test_server_budget_and_orphan_review_never_delete(world):

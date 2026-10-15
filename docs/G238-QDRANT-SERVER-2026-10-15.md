@@ -52,8 +52,7 @@ il ne devient pas une exclusion silencieuse. Résultat JUnit et seuls logs serve
 conservés sept jours, pas les configurations contenant les clés temporaires.
 
 Collecte initiale rouge (harnais absent), puis neuf cas correctement collectés et
-explicitement ignorés ici, où aucun binaire serveur n'est disponible. **La recette
-réelle n'est pas encore déclarée réussie : résultat CI à récupérer.** Ce lot
+explicitement ignorés ici, où aucun binaire serveur n'est disponible. **Recette réelle confirmée ensuite : [workflow 38662940807](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38662940807), job 116188206027, 9 tests réussis en 13,17 s avec -W error ; archive officielle vérifiée.** Ce lot
 n'a pas de modification du code applicatif. Le canal MCP a été revérifié une
 fois et renvoie encore une erreur interne ; aucune commande VM exécutée.
 

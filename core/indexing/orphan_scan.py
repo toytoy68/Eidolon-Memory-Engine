@@ -25,7 +25,7 @@ from uuid import UUID
 
 from core.persistence import exclusive_write, has_symlink_component, RepositoryBusy
 from .change_journal import ChangeJournal
-from .port import IndexEvidence, IndexInventoryPage, IndexRecord
+from .port import IndexEvidence, IndexInventoryPage, IndexRecord, IndexIncompatible
 from .worker_canonical import CanonicalReader
 
 
@@ -141,6 +141,8 @@ class OrphanScan:
     def _index_call(self, method, *args, **kwargs):
         try:
             return getattr(self.index, method)(*args, **kwargs)
+        except IndexIncompatible:
+            raise
         except Exception as exc:
             raise _IndexUnavailable from exc
 
@@ -226,6 +228,8 @@ class OrphanScan:
                                (page.next_offset, "EXHAUSTED" if page.next_offset is None else "RUNNING",
                                 row[4] + len(observed)))
                     return self._report(db)
+                except IndexIncompatible:
+                    return self._report(db, "INDEX_INCOMPATIBLE")
                 except _IndexUnavailable:
                     return self._report(db, "INDEX_UNAVAILABLE")
         except RepositoryBusy:
@@ -259,6 +263,8 @@ class OrphanScan:
                     if self._generation() != row[1]:
                         return OrphanReview("RESTART_REQUIRED")
                     return OrphanReview("REVIEW", tuple(items), items[-1].position if len(entries) > limit else None)
+                except IndexIncompatible:
+                    return OrphanReview("INDEX_INCOMPATIBLE")
                 except _IndexUnavailable:
                     return OrphanReview("INDEX_UNAVAILABLE")
         except RepositoryBusy:

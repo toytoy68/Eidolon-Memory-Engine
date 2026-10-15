@@ -2466,3 +2466,7 @@ Lecture bornée systématique du worker journal et politique commune maintenance
 ## G238 — Prise en charge recette serveur, Codex/GPT, 15/10/2026
 
 Harnais `tests/qdrant_server_fixture.py`, neuf cas `tests/test_qdrant_server_maintenance_g238.py`, workflow `memory-qdrant-server.yml`. Serveur enfant jetable, loopback, binaire vérifié ; aucun endpoint applicatif ou VM. [Périmètre](docs/G238-QDRANT-SERVER-2026-10-15.md). Résultat CI à récupérer ; G237 et Core G236 confirmés verts. Aucun conflit avec les fichiers Claude réservés.
+
+## G239 — Incompatibilité des scanners, Codex/GPT, 15/10/2026
+
+ReconciliationScan, OrphanScan et contrôleur conservent INDEX_INCOMPATIBLE, sans avancer la partie incertaine ni autoriser un effet. 13 rouges avant correction, 133 ciblés verts. [Rapport](docs/G239-SCAN-DIAGNOSTICS-2026-10-15.md). G238 serveur : 9 réussis, -W error, 13,17 s. Prochaine validation G240 réservée : réponse HTTP réellement coupée et backlog serveur >1000, dans tests du harnais uniquement.

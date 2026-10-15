@@ -25,7 +25,7 @@ import stat
 from core.persistence import exclusive_write, has_symlink_component, RepositoryBusy
 from core.backend.errors import InvalidMemory
 from .change_journal import ChangeJournal, JournalCapacityExceeded
-from .port import IndexEvidence
+from .port import IndexEvidence, IndexIncompatible
 from .worker_canonical import CanonicalReader
 
 
@@ -117,6 +117,8 @@ class ReconciliationScan:
     def _index_call(self, method, *args):
         try:
             return getattr(self.index, method)(*args)
+        except IndexIncompatible:
+            raise
         except Exception as exc:
             raise _IndexUnavailable from exc
 
@@ -214,6 +216,8 @@ class ReconciliationScan:
                             queued.append(seq)
                     db.execute("UPDATE scan SET phase='VERIFYING' WHERE cursor=total")
                     return self._report(db, queued=queued)
+                except IndexIncompatible:
+                    return self._report(db, "INDEX_INCOMPATIBLE", queued)
                 except _IndexUnavailable:
                     # Commit already processed entries, retry the uncertain one.
                     return self._report(db, "INDEX_UNAVAILABLE", queued)

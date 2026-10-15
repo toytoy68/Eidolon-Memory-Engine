@@ -1,3 +1,7 @@
+## G239 — Diagnostics scanners corrigés, 15 octobre 2026
+
+Incompatibilité de descripteur conservée dans scans/revue/contrôleur, progression sûre inchangée ; 13 rouges avant correction, 133 ciblés verts. [Contrat et preuves](docs/G239-SCAN-DIAGNOSTICS-2026-10-15.md). G238 serveur confirmé : 9 réussis, 13,17 s avec -W error. Suite Codex : perte réelle de réponse HTTP et arriéré >1000 sur serveur ; CI G239 à récupérer. Dix tâches Claude maintenues. Aucun déploiement.
+
 ## G238 — Recette serveur isolée en préparation, 15 octobre 2026
 
 Neuf scénarios HTTP/persistance/reprise via serveur jetable possédé par les tests, binaire officiel 1.15.4 vérifié et client épinglé. [Périmètre et limites](docs/G238-QDRANT-SERVER-2026-10-15.md). CI à récupérer ; neuf exclusions locales explicites faute de binaire. Aucun déploiement. G237 confirmé : 2619 tests complets +5 xfail, 312 ciblés +1 xfail ; contrat réel 52 réussis. Suite : résultat serveur, raccordement hôte coordonné avec Claude et recette VM/PC.
