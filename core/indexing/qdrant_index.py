@@ -25,6 +25,7 @@ from qdrant_client import models
 
 from core.backend.models import Memory
 from core.indexing.manifest import build_manifest
+from core.indexing.query_snapshot import IndexQuerySnapshot
 from core.indexing.port import (IndexEvidence, IndexHit, IndexPort, IndexStatus,
                                 IndexRecord, IndexInventoryPage, IndexIncompatible)
 from core.persistence import exclusive_write
@@ -307,21 +308,33 @@ class QdrantIndex(IndexPort):
                 points=[_point_id(identity)]), wait=True)
 
     def query(self, text: str, *, limit: int = 5) -> list[IndexHit]:
+        return list(self.query_snapshot(text, limit=limit).hits)
+
+    def query_snapshot(self, text: str, *, limit: int = 5) -> IndexQuerySnapshot:
+        """Bind candidates (including an empty batch) to a checked descriptor.
+
+        A generation/digest change during the query is refused. This does not
+        serialize other adapter instances: the single-writer contract remains.
+        """
         if not isinstance(text, str) or type(limit) is not int or not 1 <= limit <= 1000:
             raise ValueError("invalid query or limit")
         with self._lock:
             generation = self.active_generation()
             descriptor = self._descriptor()
             if not text.strip():
-                return []
+                if (self.active_generation() != generation or self._descriptor() != descriptor
+                        or self._active_generation() != generation):
+                    raise ValueError("index snapshot changed during query")
+                return IndexQuerySnapshot((), generation, descriptor["source_digest"])
             vector = self._vector(text)
             if self.active_generation() != generation:
                 raise ValueError("index generation changed during query")
             result = self.client.query_points(generation, query=vector,
                 query_filter=self._filter(), limit=limit, with_payload=True,
                 with_vectors=False)
-            if self.active_generation() != generation:
-                raise ValueError("index generation changed during query")
+            if (self.active_generation() != generation or self._descriptor() != descriptor
+                        or self._active_generation() != generation):
+                raise ValueError("index snapshot changed during query")
             hits = []
             for hit in result.points:
                 p = hit.payload or {}
@@ -337,7 +350,8 @@ class QdrantIndex(IndexPort):
                     "index_freshness": ("FULL_REBUILD_SNAPSHOT" if descriptor["source_digest"]
                                         else "UNVERIFIED_INCREMENTAL"),
                     "canonical_revalidation_required": True}))
-            return sorted(hits, key=lambda h: (-h.score, h.information_id))
+            return IndexQuerySnapshot(tuple(sorted(hits, key=lambda h: (-h.score, h.information_id))),
+                                      generation, descriptor["source_digest"])
 
     def rebuild(self, persistent_root: Path) -> None:
         # Lock ordering matches the journal worker: canonical root, then adapter.

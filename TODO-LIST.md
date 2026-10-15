@@ -1,3 +1,7 @@
+## G242 — Fraîcheur du rappel, 15 octobre 2026
+
+Diagnostic explicite même sans candidat : instantané concordant, canon modifié ou vérification inconnue/bornée. Sonde Claude G201 Q2 promue ; 141 ciblés réussis et 2 xfail distincts. [Contrat et limites](docs/G242-RECALL-FRESHNESS-2026-10-15.md). CI à confirmer ; aucune activation.
+
 ## G241 — Bilan final confirmé, 15 octobre 2026
 
 MT1/MT3, R1 et diagnostics scanners corrigés ; C181 intégré. Quatre workflows finaux verts : Memory 2638 réussis +5 xfail et 12 sous-tests ; Qdrant ciblé 331 +1 xfail ; serveur HTTP 15 réussis (dont réponse perdue réelle et 1200 documents) ; Core 1789 réussis +1299 sous-tests, puis cinq sondes de jeton root réussies. Exclusions explicites et comptes chevauchants : [bilan exact](docs/G241-C181-INTEGRATION-2026-10-15.md). Dix tâches Claude : 1/2 reçues via C181, 3–10 ouvertes. Suite : observations hôte/S1, séparation des ports, revue des nouveaux lots et recette VM/PC. Aucun déploiement.

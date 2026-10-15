@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from hashlib import sha256
 import json
 import re
+import sys
 from pathlib import Path
 
 from core.backend.filesystem import FilesystemBackend
@@ -109,5 +110,48 @@ def _build_manifest(persistent_root: Path, *, on_source=None) -> IndexManifest:
         entries.append(entry)
         if on_source is not None:
             on_source(entry, memory)
+    frozen = tuple(entries)
+    return IndexManifest(frozen, _digest(frozen))
+
+
+@dataclass(frozen=True)
+class ManifestBudget:
+    """Read budgets, not a network timeout or a process-memory guarantee."""
+    max_entries: int = 10000
+    max_file_bytes: int = 8 * 1024 * 1024
+    max_total_bytes: int = 32 * 1024 * 1024
+
+    def __post_init__(self):
+        if any(type(value) is not int or not 1 <= value < sys.maxsize for value in
+               (self.max_entries, self.max_file_bytes, self.max_total_bytes)):
+            raise ValueError("invalid manifest budget")
+
+
+def build_bounded_manifest(persistent_root: Path, *, budget=None) -> IndexManifest:
+    """Observe all canonical sources under the caller's cooperative writer lock.
+
+    No partial digest is returned. Directory entries (including non-Markdown
+    entries), each source and total source bytes are bounded. The extra byte
+    read by CanonicalReader only detects concurrent growth. No bodies are kept.
+    A second inventory detects added/removed names; uncooperative writers are
+    not covered by an atomic filesystem snapshot.
+    """
+    from core.indexing.worker_canonical import CanonicalReader
+    budget = ManifestBudget() if budget is None else budget
+    if not isinstance(budget, ManifestBudget):
+        raise ValueError("invalid manifest budget")
+    reader = CanonicalReader(persistent_root, max_bytes=budget.max_file_bytes)
+    identities = reader.information_ids(max_entries=budget.max_entries)
+    entries, consumed = [], 0
+    for identity in identities:
+        remaining = budget.max_total_bytes - consumed
+        if remaining < 1:
+            raise ValueError("canonical snapshot exceeds total byte limit")
+        reader.max_bytes = min(budget.max_file_bytes, remaining)
+        memory, digest, size = reader.read_sized(identity)
+        consumed += size
+        entries.append(SourceEntry(identity, memory.revision, digest))
+    if reader.information_ids(max_entries=budget.max_entries) != identities:
+        raise ValueError("canonical inventory changed during snapshot")
     frozen = tuple(entries)
     return IndexManifest(frozen, _digest(frozen))

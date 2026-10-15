@@ -18,6 +18,8 @@ from copy import deepcopy
 from dataclasses import asdict, dataclass, field
 
 from core.dossiers.projects import ProjectDossiers
+from core.indexing.manifest import ManifestBudget
+from core.indexing.query_snapshot import RecallIndexStatus
 from core.operations.errors import OperationConflict
 from core.operations.readiness import check_readiness
 from core.persistence import exclusive_write
@@ -52,10 +54,14 @@ class RecallBundle:
     excluded_counts: dict
     dossier_status: str | None = None
     policy_version: str = 'contextual-recall/0.1'
+    index_status: RecallIndexStatus | None = None
 
 
 class ContextualRecall:
-    def __init__(self, backend, *, index=None, candidate_limit=100):
+    def __init__(self, backend, *, index=None, candidate_limit=100, freshness_budget=None):
+        if freshness_budget is not None and not isinstance(freshness_budget, ManifestBudget):
+            raise ValueError("invalid freshness budget")
+        self.freshness_budget = freshness_budget
         if type(candidate_limit) is not int or not 1 <= candidate_limit <= 1000:
             raise ValueError("invalid candidate limit")
         if index is not None and not callable(getattr(index, "query", None)):
@@ -159,7 +165,8 @@ class ContextualRecall:
             if self.index is not None:
                 from core.retrieval.indexed import CanonicalIndexCandidates
                 search_backend = CanonicalIndexCandidates(
-                    self.backend, self.index, self.candidate_limit, excluded)
+                    self.backend, self.index, self.candidate_limit, excluded,
+                    freshness_budget=self.freshness_budget)
             bundle = ContextAssembler(search_backend).assemble(
                 query, max_items=max_items, max_chars=max_chars, max_item_chars=max_item_chars,
                 max_tokens=max_tokens, token_counter=token_counter, ranking='lexical_v1',
@@ -173,4 +180,5 @@ class ContextualRecall:
                                         context=deepcopy(memory.metadata.get('context', {})), temporal=memory.temporal,
                                         verification=memory.verification, relations=tuple(memory.relations)))
             return RecallBundle(query, mode, scope, at, tuple(items), bundle.used_chars,
-                                bundle.used_tokens, dict(sorted(excluded.items())), dossier_status)
+                                bundle.used_tokens, dict(sorted(excluded.items())), dossier_status,
+                                index_status=search_backend.index_status if self.index is not None else None)

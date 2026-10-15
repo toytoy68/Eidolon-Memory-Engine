@@ -17,21 +17,41 @@ import re
 
 from core.backend.models import SearchResult
 from core.indexing.port import IndexHit
+from core.indexing.manifest import build_bounded_manifest
+from core.indexing.query_snapshot import IndexQuerySnapshot, RecallIndexStatus
+from core.backend.errors import InvalidMemory
 
 
 class CanonicalIndexCandidates:
     """One candidate snapshot per recall; do not reuse across recall calls."""
 
-    def __init__(self, backend, index, limit, excluded):
+    def __init__(self, backend, index, limit, excluded, *, freshness_budget=None):
         self.backend = backend
         self.index = index
         self.limit = limit
         self.excluded = excluded
         self._results = None
+        self.freshness_budget = freshness_budget
+        self.index_status = RecallIndexStatus("INDEX_UNVERIFIED", "SNAPSHOT_NOT_SUPPORTED")
 
     def search(self, query, options):
         if self._results is None:
-            hits = self.index.query(query, limit=self.limit)
+            snapshot_query = getattr(self.index, "query_snapshot", None)
+            snapshot = None
+            if callable(snapshot_query):
+                snapshot = snapshot_query(query, limit=self.limit)
+                if (not isinstance(snapshot, IndexQuerySnapshot)
+                        or not isinstance(snapshot.hits, tuple)
+                        or len(snapshot.hits) > self.limit
+                        or not isinstance(snapshot.generation, str)
+                        or not re.fullmatch(r'[A-Za-z0-9_-]{1,256}', snapshot.generation)
+                        or (snapshot.source_digest is not None and
+                            (not isinstance(snapshot.source_digest, str) or not
+                             re.fullmatch(r'[0-9a-f]{64}', snapshot.source_digest)))):
+                    raise ValueError('invalid index query snapshot')
+                hits = list(snapshot.hits)
+            else:
+                hits = self.index.query(query, limit=self.limit)
             if not isinstance(hits, list) or len(hits) > self.limit:
                 raise ValueError('invalid index candidate batch')
             # Validate the entire bounded batch before adopting any candidate.
@@ -89,6 +109,24 @@ class CanonicalIndexCandidates:
                     metadata['index_passage'] = deepcopy(hit.ranking['passage'])
                 results.append(SearchResult(memory, hit.score, metadata))
                 seen.add(hit.information_id)
+            if snapshot is not None:
+                if snapshot.source_digest is None:
+                    self.index_status = RecallIndexStatus(
+                        "INDEX_UNVERIFIED", "NO_FULL_SOURCE_DIGEST", snapshot.generation)
+                else:
+                    try:
+                        manifest = build_bounded_manifest(self.backend.persistent_root,
+                                                          budget=self.freshness_budget)
+                    except (ValueError, OSError, UnicodeError, InvalidMemory):
+                        self.index_status = RecallIndexStatus(
+                            "INDEX_UNVERIFIED", "CANONICAL_CHECK_INCOMPLETE",
+                            snapshot.generation, snapshot.source_digest)
+                    else:
+                        match = snapshot.source_digest == manifest.digest
+                        self.index_status = RecallIndexStatus(
+                            "INDEX_SNAPSHOT_MATCH" if match else "INDEX_STALE",
+                            "FULL_SOURCE_DIGEST_MATCH" if match else "FULL_SOURCE_DIGEST_MISMATCH",
+                            snapshot.generation, snapshot.source_digest, manifest.digest)
             self._results = results
         offset, limit = options['offset'], options['limit']
         return self._results[offset:offset + limit]

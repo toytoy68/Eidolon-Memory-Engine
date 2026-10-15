@@ -36,8 +36,7 @@ def test_calibration_set_is_frozen_and_disjoint_from_the_held_out_corpus():
     assert all(q['expected'] == [] for q in dev if q['category'] == 'off_topic')
 
 
-@pytest.mark.xfail(strict=True, reason='G201 Q2 not built yet: changes after the last indexing must be '
-                   'signalled (INDEX_STALE or INDEX_PENDING), never silently absent from semantic recall')
+# G242: original failure reproduced with --runxfail; assertions preserved.
 def test_unindexed_changes_are_signalled_in_the_result(tmp_path, index):
     data = backend(tmp_path)
     store(data, 'first')
