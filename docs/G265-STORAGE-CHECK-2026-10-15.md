@@ -40,3 +40,16 @@ La commande est une inspection ponctuelle, pas une réservation durable ni un fe
 22 nouveaux tests `tests/test_storage_check_g265.py`. CLI réellement lancée dans des processus Python indépendants sans jeton : READY, BUSY sur chacun des deux verrous puis reprise, BLOCKED sur journal interrompu et Markdown corrompu, UNAVAILABLE sur prérequis manquants ou lien. Contrôle de l'exclusion interprocessus pendant le scan, des empreintes inchangées, de la confidentialité, de la libération sur erreur et d'un verrou perdu entre construction et scan. Refus de plateforme simulé séparément ; dépendances modèle/réseau instrumentées pour interdire leur utilisation. Refus EROFS injecté sur ouvertures en écriture et mkdir. Le comportement serveur exige encore un jeton valide.
 
 Régression ciblée, `-W error` : 139 réussis, 1 ignoré (test G263 de permissions sous UID ordinaire dans ce runtime root), 5 sous-tests. Modules : G265, G263, persistence_atomic/leaf_g249, contextual_recall, settled_read_phase, threads/test_serialization, bridge/limits/freshness/write_deadline, verrou G259 et sondes Claude G259. Qualification complète CI à consigner après publication. Pas de recette VM ou modèle réel revendiquée.
+
+## Qualification finale Memory
+
+Source exacte **`5cfb648ddebd4294bfb591364b4f34ff370e0b7d`** ; journaux GitHub lus le 15/10/2026. Les trois workflows Memory sont verts.
+
+| Validation | Résultat | Preuve |
+| --- | --- | --- |
+| Suite complète Linux CI / Python 3.13 | 2944 réussis, 18 ignorés, 4 xfail, 12 sous-tests ; 186,59 s | [38740843909](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38740843909), job 116441824384 |
+| Contrat worker | 52 réussis ; 2,87 s | même workflow |
+| Qdrant isolé | 550 réussis, 1 xfail ; 36,06 s | [38740844131](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38740844131), job 116441825075 |
+| Qdrant 1.15.4 réel jetable | 18 réussis ; 69,75 s | [38740843747](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38740843747), job 116441823643 |
+
+Les 22 nouveaux tests G265 réussissent, ainsi que les 26 G263 incluant les permissions sous UID ordinaire. Les 18 exclusions de la suite générale correspondent aux scénarios du workflow serveur dédié, tous réussis. Les quatre xfail historiques restent suivis ; les comptes se chevauchent. Aucun montage readonly réel, VM, compte de service ou modèle qualifié par ce lot.
