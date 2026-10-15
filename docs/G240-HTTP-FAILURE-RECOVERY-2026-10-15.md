@@ -36,3 +36,7 @@ Le choix de 1200 reprend l'arriéré local déjà testé par Claude : il ne qual
 pas une charge de production, un modèle réel, les limites RAM globales ou la
 concurrence multi-écrivains. Tous les fichiers, vecteurs, clés et serveurs sont
 synthétiques et temporaires dans le job GitHub. Aucun accès à la VM ou G182.
+
+## Première exécution et correction du harnais
+
+Le workflow 38663756814 donne 11 réussis et 2 échecs (68,93 s). Backlog 1200 et panne milieu de page réussis. Le proxy coupait le premier PUT de descripteur, avant le point attendu : défaut du scénario, pas échec de reprise constaté du worker. G241 distingue les réponses descriptor/information et leurs coûts de reprise, avec 15 cas au total. [Détail et preuves](G241-C181-INTEGRATION-2026-10-15.md). Résultat corrigé encore attendu.

@@ -2474,3 +2474,7 @@ ReconciliationScan, OrphanScan et contrôleur conservent INDEX_INCOMPATIBLE, san
 ## G240 — Recette réseau et arriéré, Codex/GPT, 15/10/2026
 
 Quatre nouvelles preuves de transport réel, [rapport](docs/G240-HTTP-FAILURE-RECOVERY-2026-10-15.md). Proxy et serveur possédés par le harnais, cible loopback fixe, aucun service existant. Treize cas collectés/ignorés localement faute de binaire ; résultat du workflow serveur requis avant validation. Code applicatif inchangé depuis G239.
+
+## G241 — C181 et recette réseau, Codex/GPT, 15/10/2026
+
+Patch 0037 attribué à Claude intégré ; test du verrou stabilisé après reproduction du faux échec d'ordonnancement. Mutants sans preuve/sans verrou détectés, sources restaurées. [Rapport](docs/G241-C181-INTEGRATION-2026-10-15.md). Proxy G240 corrigé pour viser explicitement descripteur ou document : premier run 11 réussis/2 échecs de harnais, nouveau run requis. Code applicatif inchangé.

@@ -1,3 +1,7 @@
+## G241 — C181 intégré, recette HTTP ajustée, 15 octobre 2026
+
+Patch Claude 0037 ajouté à la CI ; trois sondes reproduites, faux échec d'ordonnancement corrigé et deux mutants encore détectés. C181 valide Q1/W1/A08. G240 : backlog 1200 et panne milieu de page réussis ; proxy corrigé pour distinguer descripteur/document (15 scénarios serveur, résultat à récupérer). [Rapport](docs/G241-C181-INTEGRATION-2026-10-15.md). Code applicatif inchangé depuis G239 ; dix tâches Claude conservées, 1/2 reçues, 3–10 ouvertes.
+
 ## G240 — Dernière recette réseau en cours, 15 octobre 2026
 
 Proxy de test coupant réellement une réponse HTTP après effet acquitté (déconnexion et timeout), panne réelle au milieu d'une page et arriéré de 1200 documents sur serveur. [Scénarios et limites](docs/G240-HTTP-FAILURE-RECOVERY-2026-10-15.md). Quatre nouveaux cas, treize avec G238 ; CI à récupérer, aucun code applicatif modifié. Intégration Core épinglée G239. Aucun déploiement.

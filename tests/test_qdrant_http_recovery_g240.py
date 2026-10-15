@@ -15,9 +15,10 @@ from tests.qdrant_response_proxy import drop_point_response
 
 
 @pytest.mark.parametrize('mode', ['disconnect', 'timeout'])
-def test_real_response_loss_after_server_write_recovers_without_second_embedding(world, mode):
+@pytest.mark.parametrize('point_kind', ['descriptor', 'information'])
+def test_real_response_loss_recovers_at_the_correct_effect_boundary(world, mode, point_kind):
     seq = world.write()
-    with drop_point_response(world.server, mode=mode) as proxy:
+    with drop_point_response(world.server, mode=mode, point_kind=point_kind) as proxy:
         client = proxy.client()
         try:
             index = QdrantIndex(client, world.alias, embed=world.embed, dimensions=2,
@@ -29,10 +30,12 @@ def test_real_response_loss_after_server_write_recovers_without_second_embedding
             assert result.status == 'INDEX_UNAVAILABLE'
             assert proxy.dropped == 1 and proxy.acknowledged
             assert world.journal.intent(seq).state == 'PUBLISHED'
-            assert world.index.evidence_for('doc') is not None  # direct connection, actual server write
+            assert (world.index.evidence_for('doc') is not None) == (point_kind == 'information')
             assert world.writes == 1
             assert worker.run_once().indexed == (seq,)
-            assert world.writes == 1
+            # Descriptor invalidation precedes the point: only a written point
+            # can be adopted without another embedding on retry.
+            assert world.writes == (1 if point_kind == 'information' else 2)
         finally:
             client.close()
 

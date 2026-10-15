@@ -16,10 +16,10 @@ from urllib.parse import urlsplit
 
 
 class ResponseLoss:
-    def __init__(self, upstream, mode):
-        if mode not in ('disconnect', 'timeout'):
+    def __init__(self, upstream, mode, point_kind):
+        if mode not in ('disconnect', 'timeout') or point_kind not in ('descriptor', 'information'):
             raise ValueError('invalid response-loss mode')
-        self.upstream, self.mode = upstream, mode
+        self.upstream, self.mode, self.point_kind = upstream, mode, point_kind
         self.armed, self.dropped, self.acknowledged = False, 0, False
         self.release = threading.Event()
         self.url = None
@@ -31,11 +31,11 @@ class ResponseLoss:
 
 
 @contextmanager
-def drop_point_response(upstream, *, mode):
+def drop_point_response(upstream, *, mode, point_kind="information"):
     target = urlsplit(upstream.url)
     if target.scheme != 'http' or target.hostname != '127.0.0.1' or not target.port:
         raise ValueError('owned loopback server required')
-    state = ResponseLoss(upstream, mode)
+    state = ResponseLoss(upstream, mode, point_kind)
 
     class Handler(BaseHTTPRequestHandler):
         protocol_version = 'HTTP/1.1'
@@ -59,7 +59,9 @@ def drop_point_response(upstream, *, mode):
                 if len(payload) > 4*1024*1024:
                     raise ValueError('oversized test response')
                 if (state.armed and self.command == 'PUT'
-                        and urlsplit(self.path).path.endswith('/points') and response.status == 200):
+                        and urlsplit(self.path).path.endswith('/points') and response.status == 200
+                        and any(point.get('payload', {}).get('kind') == state.point_kind
+                                for point in json.loads(body).get('points', []))):
                     state.armed = False
                     state.dropped += 1
                     state.acknowledged = json.loads(payload).get('result', {}).get('status') == 'completed'
