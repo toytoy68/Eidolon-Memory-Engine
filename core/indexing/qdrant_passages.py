@@ -45,7 +45,7 @@ def passage_id(identity,revision,digest,reference):
 class PassageStatus:
     points: int
     source_digest: str | None
-    policy: str="derived_passages_full_rebuild_only"
+    policy: str="derived_passages_copy_on_write_incremental"
 
 class QdrantPassageIndex(QdrantIndex):
     projection_id=PROJECTION
@@ -60,22 +60,86 @@ class QdrantPassageIndex(QdrantIndex):
     evidence_for=_refuse_incremental
 
     def rebuild(self,persistent_root):
+        return self._publish(persistent_root, reuse=False)
+
+    def sync(self, persistent_root, *, authorize=None, should_continue=None):
+        """Embed changed documents only, publish a complete copy-on-write snapshot.
+
+        Existing vectors are copied, never re-embedded. Canonical inventory and
+        vector copying remain O(N); this is not a constant-time document worker.
+        Single cooperating writer and stable canonical lock are required, as for
+        rebuild. Failed generations are retained and never become visible.
+        """
+        return self._publish(persistent_root, reuse=True, authorize=authorize, should_continue=should_continue)
+
+    def _publish(self,persistent_root, *, reuse, authorize=None, should_continue=None):
+        def check_idle():
+            if should_continue is not None and should_continue() is not True:
+                raise InterruptedError("maintenance activity resumed; old alias preserved")
         root=Path(persistent_root)
+        check_idle()
         with exclusive_write(root),self._lock:
             original=self.active_generation()
             manifest=build_bounded_manifest(root)
+            if authorize is not None and any(not authorize(e.information_id) for e in manifest.entries):
+                raise PermissionError("passage source is outside operator allow-list")
+            descriptor = self._descriptor()
+            if reuse and descriptor["source_digest"] == manifest.digest:
+                return {"state": "UNCHANGED", "embedded_documents": 0, "copied_points": 0}
             reader=CanonicalReader(root)
+            previous = {}
+            if reuse:
+                offset = None
+                count = 0
+                while True:
+                    points, offset = self.client.scroll(original, scroll_filter=self._filter(),
+                        limit=256, offset=offset, with_payload=True, with_vectors=True)
+                    count += len(points)
+                    if count > MAX_POINTS:
+                        raise ValueError("passage point budget")
+                    for point in points:
+                        payload = point.payload or {}
+                        previous.setdefault(payload.get("information_id"), []).append(point)
+                    if offset is None:
+                        break
+            embedded, copied = 0, 0
             generation=self._generation()
             total=0
             for entry in manifest.entries:
+                check_idle()
                 memory,digest=reader(entry.information_id)
                 if memory.revision!=entry.revision or digest!=entry.file_sha256:
                     raise ValueError("canonical source changed during passage rebuild")
+                old = previous.get(entry.information_id, [])
+                expected = ({passage_id(entry.information_id, entry.revision, digest, c.reference)
+                             for c in chunk_messages(memory.content, max_chars=1200, overlap=160, max_chunks=10000)}
+                            if is_conversation_archive(memory) else {_point_id(entry.information_id)})
+                reusable = old and {str(p.id) for p in old} == expected and all(
+                    p.payload.get("revision") == entry.revision and p.payload.get("canonical_sha256") == digest
+                    and p.payload.get("embedding_id") == self.embedding_id
+                    and p.payload.get("projection_id") == self.projection_id
+                    and p.payload.get("generation") == original for p in old)
+                if reusable:
+                    if total + len(old) > MAX_POINTS:
+                        raise ValueError("passage point budget")
+                    for point in old:
+                        check_idle()
+                        vector = point.vector
+                        if (type(vector) is not list or len(vector) != self.dimensions or
+                            any(type(v) not in (int, float) or not math.isfinite(v) for v in vector)):
+                            raise ValueError("invalid retained vector")
+                        self.client.upsert(generation, points=[models.PointStruct(id=point.id,
+                            vector=vector, payload=dict(point.payload, generation=generation))], wait=True)
+                    total += len(old)
+                    copied += len(old)
+                    continue
+                embedded += 1
                 if is_conversation_archive(memory):
                     chunks=chunk_messages(memory.content,max_chars=1200,overlap=160,max_chunks=10000)
                     if total+len(chunks)>MAX_POINTS:
                         raise ValueError("passage point budget")
                     for chunk in chunks:
+                        check_idle()
                         point=models.PointStruct(id=passage_id(entry.information_id,entry.revision,digest,chunk.reference),
                             vector=self._vector(chunk.text),payload={"kind":"information",
                                 "information_id":entry.information_id,"revision":entry.revision,
@@ -96,9 +160,11 @@ class QdrantPassageIndex(QdrantIndex):
                 raise ValueError("passage count mismatch")
             if self.active_generation()!=original:
                 raise ValueError("alias changed during passage rebuild")
+            check_idle()
             self.client.update_collection_aliases([
                 models.DeleteAliasOperation(delete_alias=models.DeleteAlias(alias_name=self.alias)),
                 models.CreateAliasOperation(create_alias=models.CreateAlias(collection_name=generation,alias_name=self.alias))])
+            return {"state": "PUBLISHED", "embedded_documents": embedded, "copied_points": copied}
 
     def query_snapshot(self,text,*,limit=5):
         if type(text) is not str or type(limit) is not int or not 1<=limit<=1000:

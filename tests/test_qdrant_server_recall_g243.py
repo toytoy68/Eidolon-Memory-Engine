@@ -72,3 +72,26 @@ def test_corrupted_candidate_proof_is_refused_over_http(tmp_path, qdrant_server)
             points=[_point_id('one')], wait=True)
         with pytest.raises(ValueError, match='proof'):
             ContextualRecall(data, index=index).recall('power')
+
+
+def test_passage_delta_survives_real_server_restart(tmp_path, qdrant_server):
+    from core.indexing.qdrant_passages import QdrantPassageIndex
+    from core.backend.models import Memory
+    from tests.test_archive_chunks import store_archive
+    data = backend(tmp_path); store_archive(data, ['V100 hardware.'])
+    alias = 'eidolon_delta_' + uuid4().hex
+    def make(client, **kwargs):
+        return QdrantPassageIndex(client, alias, embed=lambda _: [1.,0.], dimensions=2,
+                                  embedding_id='passages-server-g270', **kwargs)
+    with closing(qdrant_server.client()) as client:
+        index = make(client, create=True); index.rebuild(data.persistent_root)
+        data.store(Memory('new', content='V100 cooling.'))
+        assert index.sync(data.persistent_root) == {'state':'PUBLISHED','embedded_documents':1,'copied_points':1}
+        generation = index.active_generation()
+    qdrant_server.stop(); qdrant_server.start()
+    with closing(qdrant_server.client()) as client:
+        index = make(client)
+        assert index.active_generation() == generation
+        bundle = ContextualRecall(data,index=index).recall('V100')
+        assert bundle.index_status.state == 'INDEX_SNAPSHOT_MATCH'
+        assert {i.information_id for i in bundle.items} == {'archive','new'}

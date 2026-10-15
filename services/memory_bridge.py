@@ -5,7 +5,7 @@
 # Description : Bridge de rappel local, authentifie et borne
 # Standard    : Eidolon Presentation Standard v1
 # ==========================================================
-"""Experimental loopback-only recall bridge; no write endpoints.
+"""Loopback recall bridge; optional separately authenticated explicit remembering.
 
 The default backend may create lock files during reads. --read-only-storage
 opens existing lock inodes without writing, on Linux local storage only. All
@@ -142,12 +142,18 @@ def _invalid_constant(value):
     raise ValueError("nonfinite request value")
 
 
-def make_handler(recall, token, *, request_timeout=3.0):
+def make_handler(recall, token, *, request_timeout=3.0, remember=None, write_token=None, profile_id=None, profile_check=None):
     request_timeout = _timeout(request_timeout)
     if (type(token) is not str or not 32 <= len(token) <= 4096
             or any(ord(c) < 33 or ord(c) > 126 for c in token)
             or not callable(getattr(recall, "recall", None))):
         raise ValueError("invalid bridge credentials or recall provider")
+    if remember is not None and (not callable(remember) or type(write_token) is not str
+            or not 32 <= len(write_token) <= 4096 or write_token == token
+            or any(ord(c) < 33 or ord(c) > 126 for c in write_token)):
+        raise ValueError("a distinct write credential is required")
+    if profile_id is not None and (type(profile_id) is not str or not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", profile_id)):
+        raise ValueError("invalid bridge profile")
     lock = threading.Lock()
 
     class Handler(BaseHTTPRequestHandler):
@@ -176,11 +182,12 @@ def make_handler(recall, token, *, request_timeout=3.0):
                 pass  # A disconnected client cannot require a second response.
 
         def do_POST(self):
-            if self.path != "/v1/recall":
+            writing = self.path == "/v1/remember" and remember is not None
+            if self.path != "/v1/recall" and not writing:
                 return self.respond(404, {"error": "NOT_FOUND"})
             authorizations = self.headers.get_all("Authorization", [])
             if (len(authorizations) != 1 or not authorizations[0].isascii()
-                    or not hmac.compare_digest(authorizations[0], "Bearer " + token)):
+                    or not hmac.compare_digest(authorizations[0], "Bearer " + (write_token if writing else token))):
                 return self.respond(401, {"error": "UNAUTHORIZED"})
             try:
                 lengths = self.headers.get_all("Content-Length", [])
@@ -189,7 +196,7 @@ def make_handler(recall, token, *, request_timeout=3.0):
                 if len(lengths) != 1 or not re.fullmatch(r"[0-9]{1,10}", lengths[0]):
                     return self.respond(413, {"error": "INVALID_LENGTH"})
                 length = int(lengths[0])
-                if not 1 <= length <= MAX_BODY:
+                if not 1 <= length <= (128 * 1024 if writing else MAX_BODY):
                     return self.respond(413, {"error": "INVALID_LENGTH"})
                 body = bytearray()
                 while len(body) < length:
@@ -197,8 +204,9 @@ def make_handler(recall, token, *, request_timeout=3.0):
                     if not chunk:
                         return self.respond(400, {"error": "INVALID_REQUEST"})
                     body.extend(chunk)
-                request = validate_request(json.loads(body, object_pairs_hook=_unique_object,
-                                                      parse_constant=_invalid_constant))
+                request = json.loads(body, object_pairs_hook=_unique_object, parse_constant=_invalid_constant)
+                if not writing:
+                    request = validate_request(request)
             except TimeoutError:
                 return self.respond(408, {"error": "REQUEST_TIMEOUT"})
             except (ValueError, UnicodeError, OSError, RecursionError):
@@ -206,8 +214,15 @@ def make_handler(recall, token, *, request_timeout=3.0):
             if not lock.acquire(blocking=False):
                 return self.respond(503, {"error": "BUSY"})
             try:
-                result = recall.recall(**request, at=datetime.now(timezone.utc).isoformat())
-                payload = {"schema": "eidolon-memory-recall/1", "result": asdict(result)}
+                if profile_check is not None:
+                    profile_check()
+                if writing:
+                    payload = {"schema": "eidolon-memory-write/1", "result": remember(request)}
+                else:
+                    result = recall.recall(**request, at=datetime.now(timezone.utc).isoformat())
+                    payload = {"schema": "eidolon-memory-recall/1", "result": asdict(result)}
+                if profile_id is not None:
+                    payload["profile_id"] = profile_id
                 encoded = json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf-8")
                 if len(encoded) > MAX_RESPONSE:
                     code, encoded = 503, b'{"error": "RESPONSE_TOO_LARGE"}'
@@ -305,9 +320,17 @@ def main():
     parser.add_argument("--index-config", type=Path, help="Optional pinned local Qdrant/Ollama runtime JSON")
     parser.add_argument("--read-only-storage", action="store_true",
                         help="Linux local storage: require existing directories and lock files; never provision them")
+    parser.add_argument("--profile-id", help="Fixed isolated root identity for authenticated recall")
+    parser.add_argument("--remember-profile", help="Enable explicit writes for this isolated profile; distinct write token required")
     parser.add_argument("--check-storage", action="store_true",
                         help="Print a read-only canonical storage diagnostic as JSON and exit; no token/model/network")
     args = parser.parse_args()
+    if args.remember_profile is not None and args.profile_id != args.remember_profile:
+        parser.error("remember-profile must equal the explicit profile-id")
+    if args.check_storage and args.profile_id is not None:
+        parser.error("profile-id is a server option")
+    if args.remember_profile is not None and (args.check_storage or args.read_only_storage):
+        parser.error("remember writes cannot use storage check or read-only storage")
     if args.check_storage:
         if args.port is not None or args.reranker_cache is not None or args.index_config is not None:
             parser.error("--check-storage cannot be combined with --port, --reranker-cache or --index-config")
@@ -326,6 +349,12 @@ def main():
     root = args.root.resolve(strict=True)
     if not (root / "memory" / "persistent").is_dir() or not (root / "memory" / "history").is_dir():
         parser.error("canonical memory directories must exist")
+    if args.profile_id is not None:
+        from services.profile_binding import require_binding
+        try:
+            require_binding(root, args.profile_id)
+        except (ValueError, OSError):
+            parser.error("isolated profile root binding missing or mismatched")
     index = None
     if args.index_config is not None:
         from core.indexing.runtime import load_runtime, open_index
@@ -351,7 +380,20 @@ def main():
             return encoder.predict([(query, text) for text in texts],
                 batch_size=8, show_progress_bar=False).tolist() if texts else []
         recall = RerankedRecall(recall, score)
-    server = BoundedRecallServer(("127.0.0.1", args.port), make_handler(recall, token))
+    remember, write_token = None, None
+    if args.remember_profile is not None:
+        from services.remember_bridge import RememberEndpoint
+        write_token = os.environ.get("EIDOLON_MEMORY_WRITE_TOKEN", "")
+        try:
+            remember = RememberEndpoint(root, args.remember_profile)
+            handler = make_handler(recall, token, remember=remember, write_token=write_token, profile_id=args.profile_id,
+                profile_check=(lambda: require_binding(root, args.profile_id)) if args.profile_id else None)
+        except ValueError:
+            parser.error("invalid isolated remember profile or distinct write token")
+    else:
+        handler = make_handler(recall, token, profile_id=args.profile_id,
+                profile_check=(lambda: require_binding(root, args.profile_id)) if args.profile_id else None)
+    server = BoundedRecallServer(("127.0.0.1", args.port), handler)
     try:
         server.serve_forever()
     finally:

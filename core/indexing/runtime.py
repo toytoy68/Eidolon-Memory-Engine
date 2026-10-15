@@ -168,6 +168,8 @@ def main(argv=None):
     rebuild.add_argument("--persistent-root", type=Path, required=True)
     rebuild.add_argument("--stopped-copy", action="store_true", required=True)
     rebuild.add_argument("--create-alias", action="store_true")
+    sync = commands.add_parser("sync")
+    sync.add_argument("--persistent-root", type=Path, required=True)
     args = parser.parse_args(argv)
     index = None
     try:
@@ -177,6 +179,10 @@ def main(argv=None):
                       "services_checked": False}
         else:
             index = open_index(config, create=getattr(args, "create_alias", False))
+            if args.command == "sync":
+                if config.projection != "archive_passages":
+                    raise ValueError("sync requires archive_passages")
+                index.sync(args.persistent_root)
             if args.command == "rebuild":
                 index.rebuild(args.persistent_root)
             from dataclasses import asdict
@@ -184,7 +190,7 @@ def main(argv=None):
         print(json.dumps(result, sort_keys=True))
         return 0
     except Exception:
-        print(json.dumps({"state": "UNAVAILABLE", "effects": "UNKNOWN" if args.command == "rebuild" else "NONE"}))
+        print(json.dumps({"state": "UNAVAILABLE", "effects": "UNKNOWN" if args.command in ("rebuild", "sync") else "NONE"}))
         return 2
     finally:
         if index is not None:
