@@ -7,6 +7,8 @@ on:
       - 'core/indexing/**'
       - 'tests/test_qdrant_server_maintenance_g238.py'
       - 'tests/qdrant_server_fixture.py'
+      - 'tests/test_qdrant_http_recovery_g240.py'
+      - 'tests/qdrant_response_proxy.py'
       - 'requirements-qdrant.txt'
       - '.github/workflows/memory-qdrant-server.yml'
 concurrency:
@@ -40,7 +42,7 @@ jobs:
           test -x qdrant
           echo "EIDOLON_TEST_QDRANT_BINARY=$RUNNER_TEMP/qdrant-release/qdrant" >> "$GITHUB_ENV"
       - name: HTTP maintenance, restart, crash and bounded-read contract
-        run: python -m pytest -q -rs -W error -p no:cacheprovider tests/test_qdrant_server_maintenance_g238.py --basetemp="$RUNNER_TEMP/qdrant-server-tests" --junitxml="$RUNNER_TEMP/qdrant-server-results.xml"
+        run: python -m pytest -q -rs -W error -p no:cacheprovider tests/test_qdrant_server_maintenance_g238.py tests/test_qdrant_http_recovery_g240.py --basetemp="$RUNNER_TEMP/qdrant-server-tests" --junitxml="$RUNNER_TEMP/qdrant-server-results.xml"
       - name: Preserve test results and server logs
         if: always()
         uses: actions/upload-artifact@v4

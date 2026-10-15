@@ -2470,3 +2470,7 @@ Harnais `tests/qdrant_server_fixture.py`, neuf cas `tests/test_qdrant_server_mai
 ## G239 — Incompatibilité des scanners, Codex/GPT, 15/10/2026
 
 ReconciliationScan, OrphanScan et contrôleur conservent INDEX_INCOMPATIBLE, sans avancer la partie incertaine ni autoriser un effet. 13 rouges avant correction, 133 ciblés verts. [Rapport](docs/G239-SCAN-DIAGNOSTICS-2026-10-15.md). G238 serveur : 9 réussis, -W error, 13,17 s. Prochaine validation G240 réservée : réponse HTTP réellement coupée et backlog serveur >1000, dans tests du harnais uniquement.
+
+## G240 — Recette réseau et arriéré, Codex/GPT, 15/10/2026
+
+Quatre nouvelles preuves de transport réel, [rapport](docs/G240-HTTP-FAILURE-RECOVERY-2026-10-15.md). Proxy et serveur possédés par le harnais, cible loopback fixe, aucun service existant. Treize cas collectés/ignorés localement faute de binaire ; résultat du workflow serveur requis avant validation. Code applicatif inchangé depuis G239.

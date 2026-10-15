@@ -56,16 +56,17 @@ def world(tmp_path, qdrant_server):
             return seq
 
         def cycle(self, **kwargs):
-            return IndexMaintenance(self.base/'cycle.sqlite3', self.journal,
-                canonical_checkpoint=self.base/'canonical.sqlite3', orphan_checkpoint=self.base/'orphans.sqlite3',
-                page_size=2, pending_limit=2, **self.options, **kwargs)
+            options = dict(canonical_checkpoint=self.base/'canonical.sqlite3',
+                orphan_checkpoint=self.base/'orphans.sqlite3', page_size=2, pending_limit=2, **self.options)
+            options.update(kwargs)
+            return IndexMaintenance(self.base/'cycle.sqlite3', self.journal, **options)
 
         def tick(self, **kwargs):
             return self.cycle(**kwargs).tick(at=self.at, last_activity=self.at-timedelta(hours=1),
                 boot_at=self.at-timedelta(hours=2), load_ok=True)
 
         def finish(self, **kwargs):
-            for _ in range(100):
+            for _ in range(400):
                 result = self.tick(**kwargs)
                 if result.state in ('CYCLE_COMPLETE', 'REVIEW_REQUIRED'):
                     return result

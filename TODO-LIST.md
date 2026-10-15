@@ -1,3 +1,7 @@
+## G240 — Dernière recette réseau en cours, 15 octobre 2026
+
+Proxy de test coupant réellement une réponse HTTP après effet acquitté (déconnexion et timeout), panne réelle au milieu d'une page et arriéré de 1200 documents sur serveur. [Scénarios et limites](docs/G240-HTTP-FAILURE-RECOVERY-2026-10-15.md). Quatre nouveaux cas, treize avec G238 ; CI à récupérer, aucun code applicatif modifié. Intégration Core épinglée G239. Aucun déploiement.
+
 ## G239 — Diagnostics scanners corrigés, 15 octobre 2026
 
 Incompatibilité de descripteur conservée dans scans/revue/contrôleur, progression sûre inchangée ; 13 rouges avant correction, 133 ciblés verts. [Contrat et preuves](docs/G239-SCAN-DIAGNOSTICS-2026-10-15.md). G238 serveur confirmé : 9 réussis, 13,17 s avec -W error. Suite Codex : perte réelle de réponse HTTP et arriéré >1000 sur serveur ; CI G239 à récupérer. Dix tâches Claude maintenues. Aucun déploiement.
