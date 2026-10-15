@@ -343,7 +343,18 @@ class QdrantIndex(IndexPort):
                         or type(p.get("revision")) is not int or p["revision"] < 1
                         or not math.isfinite(hit.score)):
                     raise ValueError("invalid candidate payload")
+                proof = {}
+                proof_keys = {'canonical_sha256', 'embedding_id', 'generation', 'projection_id'}
+                if descriptor["source_digest"] is not None or proof_keys.intersection(p):
+                    digest = p.get('canonical_sha256')
+                    if (not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest)
+                            or p.get('embedding_id') != self.embedding_id
+                            or p.get('generation') != generation
+                            or p.get('projection_id') != DOCUMENT_PROJECTION):
+                        raise ValueError("invalid candidate proof")
+                    proof = {'canonical_sha256': digest, 'generation': generation}
                 hits.append(IndexHit(identity, hit.score, {
+                    **proof,
                     "policy": "qdrant_cosine_candidates_v1", "embedding_id": self.embedding_id,
                     "projection_id": DOCUMENT_PROJECTION,
                     "revision": p["revision"], "source_digest": descriptor["source_digest"],

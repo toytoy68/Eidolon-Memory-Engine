@@ -17,7 +17,7 @@ import re
 
 from core.backend.models import SearchResult
 from core.indexing.port import IndexHit
-from core.indexing.manifest import build_bounded_manifest
+from core.indexing.manifest import ManifestBudget, build_bounded_manifest
 from core.indexing.query_snapshot import IndexQuerySnapshot, RecallIndexStatus
 from core.backend.errors import InvalidMemory
 
@@ -66,6 +66,10 @@ class CanonicalIndexCandidates:
                         or type(hit.ranking.get('revision')) is not int
                         or hit.ranking['revision'] < 1):
                     raise ValueError('invalid index candidate identity, score or revision')
+                if 'canonical_sha256' in hit.ranking and (
+                        not isinstance(hit.ranking['canonical_sha256'], str) or not
+                        re.fullmatch(r'[0-9a-f]{64}', hit.ranking['canonical_sha256'])):
+                    raise ValueError('invalid index candidate proof')
                 if 'passage' in hit.ranking:
                     from core.retrieval.archive_chunks import validate_reference
                     validate_reference(hit.ranking['passage'])
@@ -81,6 +85,18 @@ class CanonicalIndexCandidates:
                 if memory.revision != hit.ranking['revision']:
                     self.excluded['INDEX_REVISION_MISMATCH'] += 1
                     continue
+                if 'canonical_sha256' in hit.ranking:
+                    from core.indexing.worker_canonical import CanonicalReader
+                    budget = self.freshness_budget or ManifestBudget()
+                    try:
+                        observed, digest = CanonicalReader(self.backend.persistent_root,
+                            max_bytes=budget.max_file_bytes)(hit.information_id)
+                    except (ValueError, OSError, UnicodeError, InvalidMemory):
+                        self.excluded['INDEX_CANONICAL_UNVERIFIED'] += 1
+                        continue
+                    if observed != memory or digest != hit.ranking['canonical_sha256']:
+                        self.excluded['INDEX_DIGEST_MISMATCH'] += 1
+                        continue
                 from core.sources.chatgpt_import import is_conversation_archive
                 from core.retrieval.archive_chunks import validate_canonical_reference
                 if 'passage' in hit.ranking:
@@ -102,7 +118,8 @@ class CanonicalIndexCandidates:
                            'canonical_revision': memory.revision,
                            'index': {key: deepcopy(hit.ranking[key]) for key in
                                      ('policy', 'embedding_id', 'revision',
-                                      'source_digest', 'index_freshness')
+                                      'source_digest', 'index_freshness', 'canonical_sha256',
+                                      'generation', 'projection_id')
                                      if key in hit.ranking}}
                 metadata = {'ranking': ranking}
                 if 'passage' in hit.ranking:

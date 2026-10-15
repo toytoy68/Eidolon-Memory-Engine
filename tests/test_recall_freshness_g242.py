@@ -91,7 +91,8 @@ def test_incomplete_bounded_diagnostic_never_claims_match(tmp_path, index, limit
     assert result.index_status.state == 'INDEX_UNVERIFIED'
     assert result.index_status.reason == 'CANONICAL_CHECK_INCOMPLETE'
     assert result.index_status.canonical_digest is None
-    assert result.items  # Diagnostic failure does not erase separately reread evidence.
+    # G243 also bounds proof reads; only that per-file refusal excludes hits.
+    assert bool(result.items) == ('max_file_bytes' not in limits)
     assert str(tmp_path) not in json.dumps(asdict(result.index_status))
 
 
