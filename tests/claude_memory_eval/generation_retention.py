@@ -41,7 +41,10 @@ def _flag(value):
 
 
 def _seconds(value):
-    return type(value) in (int, float) and math.isfinite(value)
+    try:
+        return type(value) in (int, float) and math.isfinite(value)
+    except OverflowError:                 # an int too large for a float (G266-7): not a usable time
+        return False
 
 
 def _audit(value):

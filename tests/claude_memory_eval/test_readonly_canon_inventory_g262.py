@@ -180,8 +180,9 @@ def test_the_permission_case_was_executed_somewhere():
     """Under root this file re-runs its permission tests under nobody, so they are never silently skipped."""
     if UNPRIVILEGED:
         return
-    if not os.path.exists("/usr/bin/setpriv"):
-        pytest.skip("no setpriv to drop privileges")
+    refused = _privilege_drop_refused()
+    if refused:
+        pytest.skip(refused)
     import shutil
     import tempfile
     copy = Path(tempfile.mkdtemp(prefix="g262-ro-"))
@@ -200,3 +201,16 @@ def test_the_permission_case_was_executed_somewhere():
         assert r.returncode == 0 and "2 passed" in r.stdout, r.stdout + r.stderr
     finally:
         shutil.rmtree(copy, ignore_errors=True)
+
+
+def _privilege_drop_refused():
+    """None when `setpriv` can really switch to nobody here; otherwise the reason (e.g. a root runtime
+    without CAP_SETUID returns `setresuid: Invalid argument`). The caller SKIPS with it, never passes."""
+    import shutil
+    if not shutil.which("setpriv"):
+        return "no setpriv to drop privileges"
+    probe = subprocess.run(["setpriv", "--reuid=65534", "--regid=65534", "--clear-groups", "id", "-u"],
+                           capture_output=True, text=True, timeout=30)
+    if probe.returncode != 0 or probe.stdout.strip() != "65534":
+        return f"this runtime cannot drop privileges: {(probe.stderr or probe.stdout).strip()[:200]}"
+    return None

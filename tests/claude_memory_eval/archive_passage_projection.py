@@ -18,6 +18,7 @@ from core.indexing.worker_canonical import CanonicalReader
 from core.retrieval.archive_chunks import chunk_messages, validate_reference
 
 PROJECTION_ID = "archive-passage-v1:1200:160"
+CHUNKER_CEILING = 10000   # chunk_messages' own maximum: a ceiling of the chunker, not an operator budget
 _NAMESPACE = uuid.UUID("5b7f0a52-6a8e-4c39-9f5e-2b3c1d7e9a10")
 
 
@@ -72,22 +73,27 @@ class ArchivePassageProjection:
             # Same bytes already projected: nothing new to stage, so no chunking work at all.
             return tuple(pid for pid, p in self.points.items() if p["information_id"] == information_id
                          and (p["revision"], p["canonical_sha256"]) == (memory.revision, digest))
-        # G262-8: every point of a new revision is new, so the budgets bound the chunking itself. The
-        # chunker stops at `bound` chunks instead of materialising the whole archive before a refusal.
-        # Whitespace-only chunks count toward the bound: the refusal can be conservative, never permissive.
-        limits = [10000]
+        # G262-8: the budgets bound the chunking itself. G266-8: only bytes NEVER projected before produce
+        # new points; returning to an older (revision, digest) reuses stored points and costs nothing.
+        # Whitespace-only chunks count toward the bound: a refusal can be conservative, never permissive.
+        known = any(p["information_id"] == information_id
+                    and (p["revision"], p["canonical_sha256"]) == (memory.revision, digest)
+                    for p in self.points.values())
+        limits = {"CHUNKER_CEILING": CHUNKER_CEILING}
         if self.max_passages is not None:
-            limits.append(self.max_passages + 1)
-        if self.max_points is not None:
-            limits.append(max(self.max_points - len(self.points), 0) + 1)
-        bound = min(limits)
+            limits["PASSAGES_PER_ARCHIVE"] = self.max_passages + 1
+        if self.max_points is not None and not known:
+            limits["POINTS"] = max(self.max_points - len(self.points), 0) + 1
+        bound = min(limits.values())
         try:
             chunks = chunk_messages(memory.content, max_chars=1200, overlap=160, max_chunks=bound)
         except ValueError as exc:
-            if bound < 10000 and "chunk limit" in str(exc):
-                raise ProjectionBudgetExceeded("PASSAGES_PER_ARCHIVE" if self.max_passages is not None
-                                               and bound == self.max_passages + 1 else "POINTS") from None
-            raise
+            if "chunk limit" not in str(exc):
+                raise
+            # Name the binding limit; a budget wins over the ceiling when both are equal.
+            binding = [code for code in ("PASSAGES_PER_ARCHIVE", "POINTS", "CHUNKER_CEILING")
+                       if limits.get(code) == bound][0]
+            raise ProjectionBudgetExceeded(binding) from None
         staged = {}
         for chunk in chunks:
             if not chunk.text.strip():
@@ -99,7 +105,8 @@ class ArchivePassageProjection:
                                _vector_text=sha256(chunk.text.encode()).hexdigest())  # stand-in, no text
         if self.max_passages is not None and len(staged) > self.max_passages:
             raise ProjectionBudgetExceeded("PASSAGES_PER_ARCHIVE")
-        if self.max_points is not None and len(self.points) + len(staged) > self.max_points:
+        new = sum(1 for pid in staged if pid not in self.points)
+        if self.max_points is not None and len(self.points) + new > self.max_points:
             raise ProjectionBudgetExceeded("POINTS")
         self.points.update(staged)
         self.current[information_id] = (memory.revision, digest)

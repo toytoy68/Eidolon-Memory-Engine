@@ -10,7 +10,7 @@ Depuis le code et son environnement Python préparés, sur une arborescence de r
 python -B -m services.memory_bridge --root /chemin/recette --check-storage
 ```
 
-La commande produit une seule ligne JSON `eidolon-memory-storage-check/1`, puis termine. Elle ne demande pas de jeton, ne charge pas le reranker et n'ouvre pas de serveur ou connexion réseau. Elle ne crée ni répertoire ni verrou. Elle impose le mode G263 de verrous préexistants ouverts en lecture seule sur Linux local. `--read-only-storage` est redondant mais accepté ; `--port` et `--reranker-cache` sont refusés dans ce mode. Les erreurs de syntaxe CLI restent les erreurs argparse (stderr, code 2), sans rapport JSON.
+La commande produit une seule ligne JSON `eidolon-memory-storage-check/1`, puis termine. Elle ne demande pas de jeton, ne charge pas le reranker et n'ouvre pas de serveur ou connexion réseau. Elle ne crée ni répertoire ni verrou. Elle impose le mode G263 de verrous préexistants ouverts en lecture seule sur Linux local. `--read-only-storage` est redondant mais accepté ; `--port` et `--reranker-cache` sont refusés dans ce mode. Depuis G268, les erreurs de syntaxe en mode diagnostic utilisent stderr et le code **64 (EX_USAGE)**, sans rapport JSON ; elles sont distinctes de BLOCKED (2). Le mode serveur garde les erreurs argparse au code 2. L'aide reste au code 0.
 
 Le diagnostic ne configure pas le prochain lancement. Un service qui doit utiliser le mode readonly doit toujours recevoir explicitement `--read-only-storage` lors de son propre démarrage. Le mode serveur conserve le port par défaut 18765, les vérifications du jeton et son comportement de chargement des modèles.
 

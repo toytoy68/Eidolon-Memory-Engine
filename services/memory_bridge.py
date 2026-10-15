@@ -280,7 +280,25 @@ def check_storage(root):
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser()
+    import sys
+
+    # Recognize diagnostic intent before parsing: required/typed argument errors
+    # occur before Namespace exists. Preserve argparse's unique long abbreviations.
+    tokens = sys.argv[1:]
+    if "--" in tokens:
+        tokens = tokens[:tokens.index("--")]
+    diagnostic = any(token.startswith("--") and len(token) > 2
+                     and "--check-storage".startswith(token.partition("=")[0])
+                     for token in tokens)
+
+    class BridgeParser(argparse.ArgumentParser):
+        def error(self, message):
+            if diagnostic:
+                self.print_usage(sys.stderr)
+                self.exit(64, f"{self.prog}: error: {message}\n")
+            super().error(message)
+
+    parser = BridgeParser()
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--port", type=int)
     parser.add_argument("--reranker-cache", type=Path, help="Optional offline CPU reranker cache")

@@ -184,7 +184,7 @@ def test_platform_refusal_before_storage_probe(tmp_path, monkeypatch):
 @pytest.mark.parametrize('args', [('--port', '18765'), ('--reranker-cache', '/unused')])
 def test_check_rejects_server_only_arguments(tmp_path, args):
     result = check_cli(tmp_path, *args)
-    assert result.returncode == 2 and result.stdout == ''
+    assert result.returncode == 64 and result.stdout == ''  # G268: usage, not BLOCKED
     assert 'cannot be combined' in result.stderr
     assert list(tmp_path.iterdir()) == []
 
