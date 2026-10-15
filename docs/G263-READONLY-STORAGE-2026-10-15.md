@@ -27,3 +27,16 @@ Trois couples interprocessus réellement exécutés : lecteur/écrivain, écriva
 Régression ciblée avec `-W error` : **117 réussis, 1 ignoré, 5 sous-tests**, 5,58 s. Modules : readonly G263, persistence_atomic, persistence_leaf_g249, contextual_recall, settled_read_phase, threads/test_serialization, memory_bridge, limits_g245, freshness_g245, write_deadline_g257, bridge_recall_lock_g259 et sondes Claude lock_g259. L'exclusion correspond au test chmod sous UID ordinaire : CI nécessaire. Aucun résultat de VM, de montage readonly réel ni de modèle revendiqué.
 
 Qualification complète après publication : à consigner avec les SHA et journaux CI effectifs. Compte de service C187 toujours proposé ; dix tâches G262 restent attribuées à Claude, notamment contre-revue du verrou et préflight de l'UID.
+
+## Qualification finale sur la source publiée
+
+Source exacte : **`86950c87fbff54169010042fa1e8887c9bf7465e`**. Trois workflows verts, journaux lus le 15/10/2026.
+
+| Validation | Résultat | Preuve |
+| --- | --- | --- |
+| Suite Memory complète, Linux CI / Python 3.13 | 2922 réussis, 18 ignorés, 4 xfail, 12 sous-tests ; 181,32 s | [run 38736188196](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38736188196), job 116425965057 |
+| Contrat worker, même source/workflow | 52 réussis ; 2,90 s | même job |
+| Contrat Qdrant isolé | 550 réussis, 1 xfail ; 32,50 s | [run 38736188211](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38736188211), job 116425965248 |
+| Serveur Qdrant 1.15.4 jetable, HTTP/reprise/crash | 18 réussis ; 59,96 s | [run 38736188225](https://github.com/toytoy68/Eidolon-Memory-Engine/actions/runs/38736188225), job 116425965226 |
+
+Les **26 nouveaux cas G263 sont réussis en CI**, y compris le refus DAC sous UID ordinaire et le rappel sur fichiers/répertoires non inscriptibles. Les 18 exclusions de la suite générale correspondent aux scénarios exécutés verts dans le workflow serveur. Les quatre xfail historiques restent suivis, comptes chevauchants. Le serveur est jetable en CI ; aucune VM existante ni montage systemd de production n'est qualifié par ce résultat.
