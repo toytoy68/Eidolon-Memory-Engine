@@ -15,6 +15,8 @@ from contextlib import contextmanager
 from functools import wraps
 import errno
 import os
+import stat
+import sys
 import time
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -28,6 +30,35 @@ class RepositoryBusy(BlockingIOError):
 _held_locks = local()
 
 
+def require_read_only_lock_support():
+    """The existing-inode read-only mode is qualified for Linux local storage."""
+    if not sys.platform.startswith("linux"):
+        raise NotImplementedError("read-only repository locks require Linux local storage")
+
+
+def _check_lock_identity(path, handle):
+    opened = os.fstat(handle.fileno())
+    current = path.lstat()
+    if (not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(current.st_mode)
+            or (opened.st_dev, opened.st_ino) != (current.st_dev, current.st_ino)
+            or has_symlink_component(path.parent)):
+        raise ValueError("repository lock must remain the same regular file")
+
+
+@contextmanager
+def _open_read_only_lock(path):
+    # No creation/fallback. O_NONBLOCK avoids hanging on a substituted FIFO.
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+    try:
+        handle = os.fdopen(descriptor, "rb")
+    except BaseException:
+        os.close(descriptor)
+        raise
+    with handle:
+        _check_lock_identity(path, handle)
+        yield handle
+
+
 def has_symlink_component(path: Path) -> bool:
     """Inspect the path as written, without resolving away linked ancestors."""
     path = Path(path).absolute()
@@ -35,12 +66,13 @@ def has_symlink_component(path: Path) -> bool:
 
 
 @contextmanager
-def _exclusive_write(root, *, blocking=True):
+def _exclusive_write(root, *, blocking=True, read_only=False):
     # Keep the lock file: unlinking it could split waiters across two inodes.
     lock_path = root / ".write.lock"
     if lock_path.is_symlink():
         raise ValueError("writer lock file is a symlink")
-    with lock_path.open("a+b") as handle:
+    opener = _open_read_only_lock(lock_path) if read_only else lock_path.open("a+b")
+    with opener as handle:
         if os.name == "nt":
             import msvcrt
             # Windows permits byte-range locks beyond EOF; do not initialize
@@ -71,16 +103,28 @@ def _exclusive_write(root, *, blocking=True):
             except BlockingIOError as exc:
                 raise RepositoryBusy('repository writer is busy') from exc
             try:
+                if read_only:
+                    # Recheck after waiting: never read under an obsolete inode.
+                    _check_lock_identity(lock_path, handle)
                 yield
             finally:
                 fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 @contextmanager
-def exclusive_write(root, *, blocking=True):
-    """Reentrant within a thread; other threads/processes still acquire the OS lock."""
+def exclusive_write(root, *, blocking=True, read_only=False):
+    """Exclusive cooperative lock, reentrant within a thread.
+
+    read_only affects only opening the lock file, not flock exclusivity. It
+    requires an existing stable inode on Linux local storage and never creates
+    one. It is not a filesystem sandbox; callers still need OS permissions.
+    """
     if type(blocking) is not bool:
         raise ValueError('blocking must be boolean')
+    if type(read_only) is not bool:
+        raise ValueError('read_only must be boolean')
+    if read_only:
+        require_read_only_lock_support()
     root = Path(root)
     if has_symlink_component(root) or (root / ".write.lock").is_symlink():
         raise ValueError("writer lock path contains a symlink")
@@ -88,16 +132,27 @@ def exclusive_write(root, *, blocking=True):
     held = getattr(_held_locks, "roots", None)
     if held is None:
         held = _held_locks.roots = set()
+    readonly = getattr(_held_locks, "readonly_roots", None)
+    if readonly is None:
+        readonly = _held_locks.readonly_roots = set()
     if key in held:
+        if key in readonly and not read_only:
+            raise ValueError("cannot promote a read-only repository lock to a writer")
         yield
         return
-    lock = _exclusive_write(root) if blocking else _exclusive_write(root, blocking=False)
+    if read_only:
+        lock = _exclusive_write(root, blocking=blocking, read_only=True)
+    else:
+        lock = _exclusive_write(root) if blocking else _exclusive_write(root, blocking=False)
     with lock:
         held.add(key)
+        if read_only:
+            readonly.add(key)
         try:
             yield
         finally:
             held.remove(key)
+            readonly.discard(key)
 
 
 def write_lock_held(root):

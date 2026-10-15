@@ -7,8 +7,9 @@
 # ==========================================================
 """Experimental loopback-only recall bridge; no write endpoints.
 
-The canonical backend may create lock files during reads. Do not mount the
-underlying filesystem read-only without validating the existing engine contract.
+The default backend may create lock files during reads. --read-only-storage
+opens existing lock inodes without writing, on Linux local storage only. All
+canonical directories and locks must be prepared before starting this mode.
 """
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -24,6 +25,7 @@ import threading
 
 from core.backend.filesystem import FilesystemBackend
 from core.retrieval.contextual import ContextualRecall
+from core.persistence import exclusive_write, has_symlink_component
 
 MAX_BODY = 4096
 MAX_RESPONSE = 128 * 1024
@@ -220,23 +222,53 @@ def make_handler(recall, token, *, request_timeout=3.0):
     return Handler
 
 
+def build_recall(root, *, read_only_storage=False):
+    """Construct the canonical reader without provisioning in read-only mode.
+
+    This does not restrict backend write methods: mount/UID permissions must
+    enforce the deployment boundary. Model caches are configured separately.
+    """
+    if type(read_only_storage) is not bool:
+        raise ValueError("read_only_storage must be boolean")
+    root = Path(root)
+    if has_symlink_component(root):
+        raise ValueError("canonical root contains a symlink")
+    backend = FilesystemBackend(root / "memory" / "persistent", root / "memory" / "history",
+                                create_directories=not read_only_storage)
+    recall = ContextualRecall(backend, read_only_locks=read_only_storage)
+    if read_only_storage:
+        from contextlib import ExitStack
+        # Fail before binding the server; revalidated on every recall as well.
+        with ExitStack() as locks:
+            locks.enter_context(exclusive_write(backend.persistent_root, blocking=False, read_only=True))
+            if recall.storage.threads_root.is_dir():
+                locks.enter_context(exclusive_write(recall.storage.threads_root, blocking=False, read_only=True))
+    return recall
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--port", type=int, default=18765)
     parser.add_argument("--reranker-cache", type=Path, help="Optional offline CPU reranker cache")
+    parser.add_argument("--read-only-storage", action="store_true",
+                        help="Linux local storage: require existing directories and lock files; never provision them")
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("invalid port")
     token = os.environ.get("EIDOLON_MEMORY_BRIDGE_TOKEN", "")
     if not 32 <= len(token) <= 4096 or any(ord(c) < 33 or ord(c) > 126 for c in token):
         parser.error("EIDOLON_MEMORY_BRIDGE_TOKEN must be a nonempty strong printable secret (32 to 4096 chars)")
+    if has_symlink_component(args.root):
+        parser.error("canonical root contains a symlink")
     root = args.root.resolve(strict=True)
     if not (root / "memory" / "persistent").is_dir() or not (root / "memory" / "history").is_dir():
         parser.error("canonical memory directories must exist")
-    backend = FilesystemBackend(root / "memory" / "persistent", root / "memory" / "history")
-    recall = ContextualRecall(backend)
+    try:
+        recall = build_recall(root, read_only_storage=args.read_only_storage)
+    except (OSError, ValueError, NotImplementedError):
+        parser.error("canonical storage unavailable; check existing directories, stable locks and platform support")
     if args.reranker_cache is not None:
         from core.retrieval.reranked import RerankedRecall
         from sentence_transformers import CrossEncoder

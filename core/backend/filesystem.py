@@ -47,7 +47,13 @@ class FilesystemBackend(MemoryBackend):
         self,
         persistent_root: Path | None = None,
         history_root: Path | None = None,
+        *,
+        create_directories: bool = True,
     ) -> None:
+        if type(create_directories) is not bool:
+            raise ValueError("create_directories must be boolean")
+        if not create_directories and (persistent_root is None or history_root is None):
+            raise ValueError("existing storage requires explicit roots")
         if persistent_root is None or history_root is None:
             ensure_directories()
 
@@ -68,8 +74,11 @@ class FilesystemBackend(MemoryBackend):
         if (has_symlink_component(self.persistent_root)
                 or has_symlink_component(self.pending_delete_root)):
             raise InvalidMemory("Information storage directory is a symlink")
-        self.persistent_root.mkdir(parents=True, exist_ok=True)
-        self.pending_delete_root.mkdir(parents=True, exist_ok=True)
+        if create_directories:
+            self.persistent_root.mkdir(parents=True, exist_ok=True)
+            self.pending_delete_root.mkdir(parents=True, exist_ok=True)
+        elif not self.persistent_root.is_dir() or not self.pending_delete_root.is_dir():
+            raise ValueError("canonical storage directories must already exist")
         if (has_symlink_component(self.persistent_root)
                 or has_symlink_component(self.pending_delete_root)):
             raise InvalidMemory("Information storage directory is a symlink")

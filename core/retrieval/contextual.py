@@ -22,7 +22,7 @@ from core.indexing.manifest import ManifestBudget
 from core.indexing.query_snapshot import RecallIndexStatus
 from core.operations.errors import OperationConflict
 from core.operations.readiness import check_readiness
-from core.persistence import exclusive_write
+from core.persistence import exclusive_write, require_read_only_lock_support
 from core.retrieval.context import ContextAssembler, ContextItem
 from core.routing.policy import applicability, _instant
 from core.threads.storage import ThreadStorage
@@ -58,7 +58,13 @@ class RecallBundle:
 
 
 class ContextualRecall:
-    def __init__(self, backend, *, index=None, candidate_limit=100, freshness_budget=None):
+    def __init__(self, backend, *, index=None, candidate_limit=100, freshness_budget=None,
+                 read_only_locks=False):
+        if type(read_only_locks) is not bool:
+            raise ValueError("read_only_locks must be boolean")
+        if read_only_locks:
+            require_read_only_lock_support()
+        self.read_only_locks = read_only_locks
         if freshness_budget is not None and not isinstance(freshness_budget, ManifestBudget):
             raise ValueError("invalid freshness budget")
         self.freshness_budget = freshness_budget
@@ -101,12 +107,13 @@ class ContextualRecall:
         scope = deepcopy(query_scope) if query_scope is not None else {}
         excluded = Counter()
         selected = {}
-        # Snapshot cooperating canonical writers. Existing lock inodes may be
-        # created, but no memory, journal, dossier or receipt is modified.
+        # Snapshot cooperating writers using the same exclusive lock inodes.
+        # The explicit read-only mode requires pre-existing locks.
+        lock_options = {'read_only': True} if self.read_only_locks else {}
         with ExitStack() as locks:
-            locks.enter_context(exclusive_write(self.backend.persistent_root))
+            locks.enter_context(exclusive_write(self.backend.persistent_root, **lock_options))
             if self.storage.threads_root.is_dir():
-                locks.enter_context(exclusive_write(self.storage.threads_root))
+                locks.enter_context(exclusive_write(self.storage.threads_root, **lock_options))
             readiness = check_readiness(self.root)
             if not readiness['ready']:
                 raise OperationConflict('readiness blocks contextual recall; recover or review the engine first')
