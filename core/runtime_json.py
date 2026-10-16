@@ -162,6 +162,16 @@ def read_json_snapshot(directory, name, *, max_bytes, max_depth=4):
                 raise SnapshotRefused("SNAPSHOT_TOO_LARGE")
             if _after_read is not None:
                 _after_read()
+            # A same-size rewrite can retain both timestamps on coarse clocks.
+            # Compare bounded bytes again; metadata alone is not a content version.
+            os.lseek(fd, 0, os.SEEK_SET)
+            again_chunks, again_total = [], 0
+            while again_total <= max_bytes:
+                part = os.read(fd, max_bytes + 1 - again_total)
+                if not part: break
+                again_chunks.append(part); again_total += len(part)
+            if b"".join(again_chunks) != data:
+                raise SnapshotRefused("SNAPSHOT_CHANGED")
             after = os.fstat(fd)
             try:
                 current = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
