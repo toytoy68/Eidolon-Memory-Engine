@@ -143,6 +143,7 @@ def _invalid_constant(value):
 
 
 def make_handler(recall, token, *, request_timeout=3.0, remember=None, write_token=None, profile_id=None, profile_check=None):
+    from services.remember_bridge import RememberValidationError
     request_timeout = _timeout(request_timeout)
     if (type(token) is not str or not 32 <= len(token) <= 4096
             or any(ord(c) < 33 or ord(c) > 126 for c in token)
@@ -228,8 +229,12 @@ def make_handler(recall, token, *, request_timeout=3.0, remember=None, write_tok
                     code, encoded = 503, b'{"error": "RESPONSE_TOO_LARGE"}'
                 else:
                     code = 200
+            except RememberValidationError:
+                code, encoded = ((400, b'{"error": "REMEMBER_INVALID_REQUEST", "effects": "NONE"}')
+                                 if writing else (503, b'{"error": "RECALL_UNAVAILABLE"}'))
             except Exception:
-                code, encoded = 503, b'{"error": "RECALL_UNAVAILABLE"}'
+                code, encoded = (503, b'{"error": "REMEMBER_UNAVAILABLE", "effects": "UNKNOWN"}'
+                                 if writing else b'{"error": "RECALL_UNAVAILABLE"}')
             finally:
                 lock.release()
             # Freeze the bounded response under the recall lock, then send it

@@ -5,7 +5,8 @@
 # Description : Explicit reviewed memory command with durable idempotency
 # Standard    : Eidolon Presentation Standard v1
 # ==========================================================
-"""Operator-only explicit remembering. No HTTP endpoint or inferred approval.
+"""Explicit reviewed remembering through the operator CLI or authenticated bridge.
+No inferred approval; the bridge adds its own profile and credential checks.
 
 Preview validates a complete stable command without constructing a writer.
 Apply requires the exact preview SHA-256, then delegates journaled idempotency

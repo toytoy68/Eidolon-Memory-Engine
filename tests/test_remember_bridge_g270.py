@@ -44,7 +44,7 @@ def test_recall_credential_cannot_write_and_actor_is_server_bound(tmp_path):
     try:
         assert call('r'*40,command)[0] == 401
         assert not list((tmp_path/'memory/persistent').glob('*.md'))
-        assert call('w'*40,dict(command,actor='bob'))[0] == 503
+        assert call('w'*40,dict(command,actor='bob')) == (400, {'error':'REMEMBER_INVALID_REQUEST','effects':'NONE'})
         status,result=call('w'*40,command)
         assert status == 200 and result['profile_id'] == 'alice' and result['result']['state'] == 'COMMITTED'
         assert call('w'*40,command) == (status,result)

@@ -15,8 +15,12 @@ from pathlib import Path
 import re
 from core.backend.filesystem import FilesystemBackend
 from core.information.writes import FilesystemInformationWrites
-from core.information.remember import apply
+from core.information.remember import apply, prepare
 from core.persistence import has_symlink_component
+
+
+class RememberValidationError(ValueError):
+    """A request rejected before constructing a writer; never an execution failure."""
 
 
 class RememberEndpoint:
@@ -34,7 +38,13 @@ class RememberEndpoint:
         if (type(request) is not dict or set(request) != {"command", "approved_sha256"}
                 or type(request["command"]) is not dict
                 or request["command"].get("actor") != self.profile):
-            raise ValueError("invalid profile-bound write")
+            raise RememberValidationError("invalid profile-bound write")
+        try:
+            expected = prepare(request["command"])[2]
+            if type(request["approved_sha256"]) is not str or request["approved_sha256"] != expected:
+                raise ValueError("approval mismatch")
+        except (ValueError, TypeError, OverflowError) as exc:
+            raise RememberValidationError("invalid reviewed write") from exc
         def writer():
             from services.profile_binding import require_binding
             require_binding(self.root, self.profile)

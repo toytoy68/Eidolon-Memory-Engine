@@ -8,8 +8,8 @@
 """Staged archive passage projection, separate from the document-worker index.
 
 Reuses Qdrant descriptor/generation transport, with a distinct projection identity.
-Supports query and explicit full reconstruction only. Incremental workers,
-upsert and delete are refused. Old/failed generations are retained. One writer
+Supports query, full reconstruction and explicit sync with embedding reuse.
+The document journal worker and direct upsert/delete remain refused. Old/failed generations are retained. One writer
 and a stopped canonical copy are required; alias observation is not a lease.
 The query limit counts passages; recall selects at most one passage per document.
 """
