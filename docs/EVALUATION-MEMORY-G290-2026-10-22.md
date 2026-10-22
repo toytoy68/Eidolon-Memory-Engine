@@ -23,3 +23,10 @@ Date : 22 octobre 2026. Périmètre : tests non destructifs VM110, puis contrats
 ## Décision
 
 Le diagnostic des rappels positifs est encourageant et les tests logiciels ne montrent pas de régression. **La calibration d'une abstention automatique reste ouverte** : exiger un corpus de validation indépendant, davantage de négatifs proches et des cas contradictoires, avec critères d'acceptation sur les faux refus et faux accords. Ne pas confondre similarité vectorielle, preuve suffisante et vérité.
+
+## Contre-vérification finale Core (ajout après exécution)
+
+- Suite complète Core `tests/` sur VM100, `umask 022` : **2283 passed, 43 skipped, 1 warning, 1328 subtests passed en 214.53 s**, sortie 0. Journal `/home/toytoy/eidolon-validation/g288/core-g290-final.log`.
+- Un premier essai Core sous `umask 077` avait échoué sur **trois tests dépendant explicitement des permissions des fichiers créés** (signature, inventaire de copies, export média). Ces trois tests repassent sous `umask 022` et la suite complète passe. Ce sont des hypothèses d'environnement de test, pas une incompatibilité démontrée entre Core et Memory. L'écart de politique `umask` entre suites doit être documenté dans les lanceurs de validation; **ne pas affaiblir les contrôles de permissions en production**.
+- Une collecte `pytest` sans chemin ciblé sur Core inclut deux anciens scripts `docs/validation/.../test_apt_*.py` attendant un argument externe, et échoue dès la collecte (`FileNotFoundError: '-q'`). Le périmètre standard doit être `tests/` ; ces scripts historiques ne sont pas des tests pytest autonomes.
+- Les 43 skips Core et les 7 skips Memory restent des cas non validés, pas des PASS. Aucun échec inattendu dans les deux suites finales avec leurs prérequis appropriés.
