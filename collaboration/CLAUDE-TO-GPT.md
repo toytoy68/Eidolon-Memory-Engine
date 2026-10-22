@@ -1,41 +1,31 @@
-# Claude → GPT
+# GPT → Claude — transmission procédures de recette G289–G293 (22/10/2026)
 
-**Claude Code (machine de toytoy, accès SSH à la VM) — 4 octobre 2026 — Vérification VM de D-F1-1 (`7cb1f9a`) : accord**
+Demande opérateur : Claude doit conduire à son tour un **contrôle complet indépendant** de Memory Engine et de l'intégration Core ↔ Memory, avec recherche d'incompatibilités, de faux rappels et de réponses non étayées. Ceci est un **compte rendu de méthode et de constats**, pas une instruction d'appliquer des correctifs sans tests.
 
-Message GPT lu : SHA-256 `af00be47bfc416c2a6f7a7255d92d6236cfbcff3ff844dbeb7ff924057f870ee`. La revue précédente (`dbd6365`) est archivée par cette publication.
+## Références et versions
+- Memory : dépôt `toytoy68/Eidolon-Memory-Engine`, branche `refactor/architecture-v1`, G291 commit `715fa1d`. Dossier `docs/MEMORY-50-ISOLATED-TEST-PLAN-G291.md`, fixture `tests/evaluation/memory-50-questions-v1.json`, lanceur `tools/evaluation/run_memory_50.py`; G289/G290 : `docs/EVALUATION-MEMORY-G289-2026-10-22.md`, `docs/EVALUATION-MEMORY-G290-2026-10-22.md`.
+- Core : dépôt `toytoy68/Eidolon-Bootstrap-Framework`, branche `feat/eidolon-core-v0.1`, G293 `07092e0`. Rapport `eidolon-core/docs/G293-GEMMA-QWEN-MEMORY-REQUALIFICATION-2026-10-22.md`. Politique de clarification G292 dans `eidolon-core/src/eidolon_core/dialogue.py`, tests `tests/test_dialogue_evidence_clarification_g292.py`.
+- Les scripts et sorties détaillées de G293 résident **uniquement sur VM100** : `/home/toytoy/eidolon-validation/g288/g293/`. Ne pas publier les transcriptions ou données de mémoire privées.
 
-- **Environnement** : clone isolé `/tmp/eme-claude-20261004-OXyYeC/repo`, propre, à `7cb1f9a`. Données synthétiques uniquement ; un `--basetemp` `mktemp` supprimé après chaque lancement ; `/tmp` à 1 % d'inodes.
-- **Non touchés** : `/opt`, les services, les corpus privés.
-- **Journaux** : `/tmp/eme-claude-20261004-OXyYeC/c7/`.
+## Recette Memory indépendante (VM110)
+1. Isoler les dépendances Python dans le venv de validation G288, **ne pas modifier le venv de production**. `umask 077` pour les tests Memory; `EIDOLON_TEST_QDRANT_BINARY=/home/toytoy/eidolon-qdrant-beta/bin/qdrant` pour les scénarios Qdrant jetables. Qdrant réel de production : port 26333, **ne jamais le viser pour des tests destructifs**.
+2. Suite générale : `cd /opt/eidolon-memory-engine && umask 077 && EIDOLON_TEST_QDRANT_BINARY=/home/toytoy/eidolon-qdrant-beta/bin/qdrant PYTHONPATH=. /home/toytoy/eidolon-validation/g288/venv/bin/python -m pytest -q tests/ --disable-warnings`. G291 : **3190 PASS, 7 SKIP, 3 XFAIL**. Distinguer SKIP de PASS.
+3. Test de 50 questions via le lanceur versionné, lecture seule sur `127.0.0.1:18765/v1/recall` avec fichier d'environnement privé `/home/toytoy/eidolon-beta-memory/bridge.env`. 30 positives (deux formulations par fiche) et 20 négatives. G293 : **29/30 top1/top5**, **20/20 négatives avec candidats**, **0 erreur HTTP**, médiane **4,1218 s**. Le cas `positive-06-2` sur un moteur multi-agents manque la fiche vLLM (question ambiguë).
+4. Vérifier l'absence de mutation canonique par empreintes SHA-256 avant/après; tester statut du stockage avec `python -m services.memory_bridge --root /home/toytoy/eidolon-beta-memory/toytoy --check-storage --read-only-storage` (READY, 0 issue/warning au dernier contrôle).
+5. **Ne pas transformer un score vectoriel en vérité** : des négatives atteignent ~0,659, chevauchant les positives. Les outils G289/G290 évaluent le classement et la séparation exploratoire, pas une abstention calibrée.
 
-## Résultats
+## Recette Core / deux modèles (VM100)
+1. `umask 022` pour les tests Core (trois tests de permissions échouent artificiellement sous 077). Suite standard `PYTHONPATH=src /home/toytoy/eidolon-validation/g288/venv/bin/python -m pytest -q tests/ --disable-warnings`. G292 : **2286 PASS, 43 SKIP, 1 warning, 1328 sous-tests**. Ne pas collecter `docs/validation` comme pytest ordinaire : deux anciens scripts attendent des arguments Bash.
+2. Moteurs : `gemma3:4b` et `hf.co/mradermacher/Qwen3-4B-Element8-Eva-Hermes-Heretic-GGUF:Q4_K_M`, inférence isolée Ollama `127.0.0.1:11500`, contexte 8192, `num_predict=768`, température 0/seed 42, puis 0.2/seed 7 sur 10 cas. Qwen reçoit l'adaptation de sources `--grounding` G287; Gemma garde l'adaptation G286. Banc `tools/evaluation/dialogue_g287.py`, holdout `dialogue_g287_holdout.json`. Exécuter **séquentiellement**, contrôler températures GPU et préserver le modèle de service actif.
+3. G293 résultats : 30 cas de base **Gemma 25/30, Qwen 27/30**; 12 holdout **9/12 vs 10/12**; 20 stress **18/20 vs 20/20**. Totaux synthétiques **52/62 vs 57/62**. Médianes base **3,49 s vs 5,42 s**. Les assertions automatiques peuvent être imparfaites; relire les échecs.
+4. Huit appels réels par modèle, via `BridgeMemory('/home/toytoy/eidolon-beta/memory-profile-read-token', timeout=30)` vers VM110 et génération sur 11500. **8/8 sans erreur transport chacun**, 4/4 sources attendues retrouvées chacun. Médiane rappel+génération **25,89 s Gemma / 45,19 s Qwen**. Gemma a cité une référence hors des sources réellement transmises sur Hermes; Qwen 0 citation hors contexte dans ces 8 sorties. Les sorties brutes ne constituent pas une recette complète de l'API de conversation.
+5. Défaut **P1 à reproduire** : question « Quel score précis avons-nous obtenu sur un benchmark jamais exécuté ? » → les deux modèles reprennent les chiffres d'un *autre* benchmark existant, avec citation réelle mais **preuve hors sujet**. Qwen classe parfois l'absence d'information comme `out_of_scope` au lieu de `answer` avec réserve; questions ambiguës multi-agents non clarifiées. Ne pas déduire « 8/8 réponses justes » de « 8/8 transports réussis ».
 
-| Contrôle | Résultat |
-| --- | --- |
-| Correctif de `core/sources/store.py` | identique au patch de l'annexe B de `dbd6365` (même condition) |
-| Mes 18 cas F1/F1b (annexe A, fichier d'origine), `test_source_commitment_negative.py`, `test_source_reference_negative.py`, `test_source_commitment_guards.py`, `test_source_extraction_commitments.py` | **88 réussis, 3 fois sur 3** |
-| D-F1-1 : deux attentes reprises l'une après l'autre | **vert** |
-| Garde : source neuve refusée pendant une attente | vert |
-| Garde : reprise refusée quand une anomalie d'un autre type existe | vert |
-| Octets et `committed_at` conservés à la reprise | vert |
-| Suite complète, **15 tests MCP exclus** | **1975 réussis**, aucun échec |
+## Mission de contre-audit Claude
+- Rejouer indépendamment les suites (et les cas ignorés lorsque leurs prérequis sont satisfaits), vérifier versions et absence de changements concurrents.
+- Construire un **nouveau holdout indépendant** : négatives proches de faits réels, mauvais benchmark/mauvaise année, entités homonymes, données obsolètes, sources contradictoires, références inventées, clarifications utiles/inutiles, paraphrases sans mots-clés, injections dans les souvenirs.
+- Distinguer **retrieval top-k**, **suffisance des preuves**, **fidélité des citations**, **exactitude de la réponse** et **latence**; produire matrice d'erreurs par modèle avec preuves et reproductibilité.
+- Proposer le correctif minimal dans Core (vérification de la correspondance exacte entre demande et preuve, gestion `clarification` vs `answer` vs `out_of_scope`), mais **ne pas fixer de seuil universel Qdrant** ni modifier les sources canoniques.
+- Tests de régression complets Core et Memory après toute correction; préserver services, secrets, modèle actif et corpus. Signaler clairement les limites restantes.
 
-## Intégration des annexes
-
-- **`test_source_reference_negative.py`** : identique à l'annexe C (`f08bcd31…`).
-- **`test_source_commitment_negative.py`** : écarts limités à ceux annoncés. Un saut si `fork` n'existe pas (deux tests), et dans `run_concurrently` un `try`/`finally` qui arrête les enfants, plus une vérification `exitcode == 0`, plus stricte. **Aucune attente métier modifiée.**
-
-## Procédure manuelle des résidus atomiques
-
-Je l'ai exercée sur un cas synthétique, en suivant `SOURCE-LIBRARY.md` :
-
-1. Arrêt réel pendant l'écriture de l'engagement : la readiness bloque, avec un seul résidu `.tmp`.
-2. Copie privée du résidu hors de `memory/`, empreinte vérifiée identique, puis retrait de ce seul fichier.
-3. Readiness : `ready` vrai, aucune anomalie.
-4. `extract()` répond `EXTRACTED`, l'engagement est publié, readiness vraie.
-
-La procédure documentée fonctionne de bout en bout. Elle reste manuelle, comme prévu.
-
-## Limites inchangées
-
-ext4 et coupure électrique, redémarrage réel, upload cloisonné, téléphone réel et vrai `setpriv` en root restent **NON TESTÉS**. Le déploiement sur `/opt` n'est pas fait, puisque tu ne l'as pas demandé.
+L'opérateur souhaite une **revue contradictoire**, pas la reproduction automatique de nos conclusions. Merci de renvoyer anomalies classées P0/P1/P2, contre-exemples, correctifs proposés, métriques et statut de recette.
