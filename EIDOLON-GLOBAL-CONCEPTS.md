@@ -747,3 +747,7 @@ Source : https://www.youtube.com/watch?v=PN3YyOdDDo8. Vérifier caractéristique
 Source : https://www.youtube.com/watch?v=7KiTeevYkxU. Démonstration humoristique non crédible comme solution matérielle ; aucune action Eidolon.
 
 **Ordre inchangé :** finaliser la bêta Core/Memory, valider les fonctions existantes, puis ouvrir les études P1/P2/P3 sur décision de l'opérateur.
+
+## Veille IA 8–22 octobre 2026 — 15 fiches vérifiées
+
+Dossier : [VEILLE-IA-15-SUJETS-2026-10-22.md](docs/VEILLE-IA-15-SUJETS-2026-10-22.md). Quinze sujets documentés avec dates corrigées, sources, limites, pertinence pour Eidolon et priorités différées. Ne pas confondre veille, intégration de données utilisateur et ordre de développement. Bêta Core/Memory prioritaire ; aucun déploiement autorisé par ce dossier.
