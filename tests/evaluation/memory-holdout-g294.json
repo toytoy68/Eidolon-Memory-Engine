@@ -1,0 +1,27 @@
+{
+  "schema": "eidolon-memory-holdout/1",
+  "author": "Claude, G294, 22/10/2026",
+  "scope": "Written against the public text of docs/VEILLE-IA-15-SUJETS-2026-10-22.md before any run. 'trap_id' names the related note a retriever is expected to return although it does NOT answer; it is an annotation, not an expected answer.",
+  "cases": [
+    {"id": "nn-mlperf-score", "kind": "near_negative", "query": "Quel score avons-nous obtenu sur MLPerf Agents ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-10"},
+    {"id": "nn-nemotron-v100", "kind": "near_negative", "query": "Quel débit Nemotron Bolt atteint-il sur nos V100 ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-01"},
+    {"id": "nn-liquid-volta", "kind": "near_negative", "query": "Combien de tokens par seconde LFM2.5 fait-il sur Volta ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-02"},
+    {"id": "nn-granite-fr", "kind": "near_negative", "query": "Quel taux d'erreur la transcription française de Granite Switch obtient-elle ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-03"},
+    {"id": "nn-vllm-installed", "kind": "near_negative", "query": "Quelle version de vLLM est installée sur VM100 ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-06"},
+    {"id": "nn-hermes-023", "kind": "near_negative", "query": "Que corrige Hermes Agent 0.23 ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-07"},
+    {"id": "nn-cve-llamacpp", "kind": "near_negative", "query": "Quel est le score CVSS de la faille de llama.cpp ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-11"},
+    {"id": "nn-dcgm-vm100", "kind": "near_negative", "query": "VM100 est-elle affectée par la faille DCGM ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-11"},
+    {"id": "nn-bitnet-recall", "kind": "near_negative", "query": "De combien BitNet Embeddings améliore-t-il notre rappel ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-09"},
+    {"id": "nn-mojo-13", "kind": "near_negative", "query": "Quand Mojo 1.3 est-il sorti ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-13"},
+    {"id": "nn-kata-price", "kind": "near_negative", "query": "Combien coûte une licence Kata Containers ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-15"},
+    {"id": "nn-otari-deployed", "kind": "near_negative", "query": "Depuis quand Otari route-t-il nos requêtes ?", "expected_id": null, "trap_id": "remember-veille-ia-20261022-08"},
+    {"id": "pk-01", "kind": "paraphrase_no_keyword", "query": "Quel grand modèle mélange couches à état et attention, compressé à deux bits ?", "expected_id": "remember-veille-ia-20261022-01"},
+    {"id": "pk-02", "kind": "paraphrase_no_keyword", "query": "Quel modèle n'active que deux milliards de paramètres sur vingt-quatre ?", "expected_id": "remember-veille-ia-20261022-02"},
+    {"id": "pk-04", "kind": "paraphrase_no_keyword", "query": "Quel outil écrit la parole au fil de l'eau et distingue qui parle ?", "expected_id": "remember-veille-ia-20261022-04"},
+    {"id": "pk-08", "kind": "paraphrase_no_keyword", "query": "Quelle passerelle gère des clés révocables et des budgets pour plusieurs fournisseurs ?", "expected_id": "remember-veille-ia-20261022-08"},
+    {"id": "pk-11", "kind": "paraphrase_no_keyword", "query": "Quel exportateur de métriques GPU expose un point de profilage vulnérable ?", "expected_id": "remember-veille-ia-20261022-11"},
+    {"id": "pk-12", "kind": "paraphrase_no_keyword", "query": "Quelle analyse automatique des demandes de fusion complète l'outil de requêtes de code ?", "expected_id": "remember-veille-ia-20261022-12"},
+    {"id": "pk-14", "kind": "paraphrase_no_keyword", "query": "Quels travaux relient vision, pointage et prédiction d'actions robotiques ?", "expected_id": "remember-veille-ia-20261022-14"},
+    {"id": "pk-15", "kind": "paraphrase_no_keyword", "query": "Quelle technologie isole des conteneurs dans de petites machines virtuelles ?", "expected_id": "remember-veille-ia-20261022-15"}
+  ]
+}
