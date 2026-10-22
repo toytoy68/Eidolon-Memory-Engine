@@ -137,6 +137,19 @@ def test_two_processes_in_the_external_space_exclude_each_other(tmp_path):
         assert out.stdout.strip() == "busy", out.stderr
 
 
+def test_recycled_inode_and_timestamp_do_not_accept_an_empty_replacement(tmp_path, monkeypatch):
+    root, state = canon(tmp_path, lock=False), tmp_path / "state"
+    state.mkdir(mode=0o700)
+    lock = lc.prepare_external(root, state)
+    original = lc._fingerprint(lock.stat())
+    lock.unlink()
+    lock.touch()
+    monkeypatch.setattr(lc, "_fingerprint", lambda st: original)
+    with pytest.raises(lc.LockRefused, match="LOCK_SUBSTITUTED"):
+        with lc.locked(root):
+            pass
+
+
 @pytest.mark.parametrize("body", ['{"schema": "x"}', "not json", '{"schema": "eidolon-lockspace/1", "path": "rel",'
                                   ' "dev": 1, "ino": 2, "ctime_ns": 3}'])
 def test_an_invalid_manifest_is_refused(tmp_path, body):

@@ -14,7 +14,7 @@ resolved from the canon itself, never from a reader's own configuration:
   flock). A read-only reader opens the PRE-EXISTING file O_RDONLY and flocks it: flock needs no write
   access, and the lock is shared with writers through the inode, across a read-only bind mount.
 - EXTERNAL (manifest ``<canon>/.lockspace.json`` written once at preparation): the lock lives in a state
-  directory; the manifest records its path and (st_dev, st_ino, st_ctime_ns). Everyone verifies it.
+  directory; the v2 manifest records its path, metadata and a random file marker. Everyone verifies it.
 
 After flock, the path must still name the locked inode; otherwise LOCK_SUBSTITUTED. A reader never
 creates a lock (LOCK_ABSENT) and never proceeds unlocked. Proposal:
@@ -26,6 +26,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import secrets
 
 MANIFEST = ".lockspace.json"
 _after_open = None   # test hook: runs between open and flock
@@ -67,12 +68,15 @@ def resolve(canon_root):
     try:
         value = json.loads(raw)
         path, mark = Path(value["path"]), (value["dev"], value["ino"], value["ctime_ns"])
-        if (set(value) != {"schema", "path", "dev", "ino", "ctime_ns"} or value["schema"] != "eidolon-lockspace/1"
-                or not path.is_absolute() or ".." in path.parts or any(type(x) is not int for x in mark)):
+        marker = value["marker"]
+        if (set(value) != {"schema", "path", "dev", "ino", "ctime_ns", "marker"} or value["schema"] != "eidolon-lockspace/2"
+                or not path.is_absolute() or ".." in path.parts or any(type(x) is not int for x in mark)
+                or not isinstance(marker, str) or len(marker) != 64
+                or any(c not in "0123456789abcdef" for c in marker)):
             raise ValueError
     except (ValueError, KeyError, TypeError):
         raise LockRefused("LOCK_MANIFEST_INVALID") from None
-    return "external", path, mark
+    return "external", path, (*mark, marker)
 
 
 def prepare_external(canon_root, state_dir):
@@ -81,10 +85,14 @@ def prepare_external(canon_root, state_dir):
     if (canon / MANIFEST).exists():
         raise LockRefused("LOCK_ALREADY_PREPARED")
     fd = os.open(lock, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
-    st = os.fstat(fd)
-    os.close(fd)
-    body = json.dumps({"schema": "eidolon-lockspace/1", "path": str(lock), "dev": st.st_dev, "ino": st.st_ino,
-                       "ctime_ns": st.st_ctime_ns})
+    marker = secrets.token_hex(32)
+    with os.fdopen(fd, "wb") as handle:
+        handle.write(marker.encode("ascii"))
+        handle.flush()
+        os.fsync(handle.fileno())
+        st = os.fstat(handle.fileno())
+    body = json.dumps({"schema": "eidolon-lockspace/2", "path": str(lock), "dev": st.st_dev, "ino": st.st_ino,
+                       "ctime_ns": st.st_ctime_ns, "marker": marker})
     (canon / MANIFEST).write_text(body)
     return lock
 
@@ -103,7 +111,10 @@ def locked(canon_root, *, blocking=True):
         raise
     try:
         st = os.fstat(fd)
-        if not stat.S_ISREG(st.st_mode) or (expected is not None and _fingerprint(st) != expected):
+        # Fast unlink/create can recycle both the inode and its timestamp on a real VM.
+        # The marker also distinguishes a newly created empty lock in that case.
+        if not stat.S_ISREG(st.st_mode) or (expected is not None and (
+                _fingerprint(st) != expected[:3] or os.pread(fd, 65, 0) != expected[3].encode("ascii"))):
             raise LockRefused("LOCK_SUBSTITUTED")
         if _after_open is not None:
             _after_open()

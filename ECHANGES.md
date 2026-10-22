@@ -2519,3 +2519,12 @@ F006 : refus avant writer distingué (400 REMEMBER_INVALID_REQUEST, effects NONE
 échec après début d’exécution conservé prudent (503 REMEMBER_UNAVAILABLE, UNKNOWN).
 Sondes HTTP : erreur après écriture puis reprise idempotente, validation sans writer.
 Aucun corpus réel, VM, compte, déploiement ni changement de sémantique d’index.
+
+## G288 — audit et synchronisation, Codex/GPT, 22/10/2026
+
+Demande toytoy : contrôle complet du code et synchronisation GitHub. Base fd53ce6.
+Reproduction sur VM d'un défaut du prototype de verrou EXCLUSIVEMENT dans les
+tests Claude G262 : inode et ctime recyclés acceptaient un fichier recréé vide.
+Marqueur aléatoire et manifeste expérimental v2 ajoutés ; aucune activation dans
+core.persistence ni migration de verrous de production. Les idées locales vidéo
+du 21/10 sont préservées. Suites complètes isolées et bilan dans le rapport Core G288.

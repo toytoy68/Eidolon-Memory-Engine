@@ -713,3 +713,37 @@ sous-projet réel, il doit recevoir sa propre spécification/roadmap dans le dé
 approprié.
 
 Les tâches propres au Memory Engine restent exclusivement dans `TODO-LIST.md`.
+
+## Veille vidéos — priorités différées (21/10/2026)
+
+**Statut : idées à étudier après bêta opérationnelle Core/Memory.** Cette section ne déclenche aucune tâche, installation, changement de priorité de recette ou modification de roadmap. Les fonctionnalités et chiffres des vidéos sont des annonces à vérifier auprès des projets.
+
+### P1 — Hermes Agent 0.22 : supervision des sous-agents
+
+Source : https://www.youtube.com/watch?v=M4S-qBmWTvs. Comparer à l'existant Eidolon la visibilité des sous-agents (mission, durée, journal/conversation, état), les interventions humaines (arrêt, correction, reprise) et les permissions. Prototyper uniquement après bêta, avec critères de sécurité et tests d'interruption/reprise.
+
+### P1 — Mises à jour atomiques et retour arrière
+
+Même source. Étudier pour le client Windows et les services la préparation d'une nouvelle version sans écraser la version fonctionnelle, tests de santé, activation contrôlée et rollback. Vérifier les mécanismes déjà présents avant tout développement.
+
+### P2 — Gestion des secrets et authentification
+
+Même source. Étudier coffre chiffré, intégrations Bitwarden/1Password, permissions par agent, journal d'accès, rotation et absence de secrets dans les prompts/logs. Évaluer la reprise humaine du navigateur lors d'une MFA, sans automatiser le contournement des contrôles.
+
+### P2 — Tâches longues, contexte et choix du modèle local
+
+Même source. Comparer reprise après interruption, compaction du contexte, conservation des preuves et routage automatique selon VRAM, latence, capacité et disponibilité. Mesurer les tokens et la qualité ; ne pas remplacer le moteur d'inférence avant la bêta.
+
+### P2 — Memory Engine comme second cerveau multi-utilisateur
+
+Source : https://www.youtube.com/watch?v=8tpL8k-mUb4. Étudier une éventuelle déclinaison professionnelle : séparation des utilisateurs/organisations, provenance, droits d'accès, suppression, sauvegarde et qualité du rappel. Aucun engagement commercial ni changement des règles canoniques de Memory Engine.
+
+### P3 — Veille Sipeed MS Station / NPU à mémoire unifiée
+
+Source : https://www.youtube.com/watch?v=PN3YyOdDDo8. Vérifier caractéristiques, disponibilité, SDK, kernels, compatibilité vLLM/SGLang, performances réelles, consommation à la prise et coût complet. Comparer aux 2× V100 32 Go ; aucun achat envisagé sur la seule base de la vidéo.
+
+### Hors priorité — GT 610 « 1 To VRAM »
+
+Source : https://www.youtube.com/watch?v=7KiTeevYkxU. Démonstration humoristique non crédible comme solution matérielle ; aucune action Eidolon.
+
+**Ordre inchangé :** finaliser la bêta Core/Memory, valider les fonctions existantes, puis ouvrir les études P1/P2/P3 sur décision de l'opérateur.
