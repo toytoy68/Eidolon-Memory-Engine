@@ -1,0 +1,386 @@
+{
+  "schema": "eidolon-eval-questions/1",
+  "scope": "15 documented technology cards, not complete Eidolon knowledge",
+  "cases": [
+    {
+      "id": "positive-01-1",
+      "category": "paraphrase",
+      "query": "Quel modèle NVIDIA combine Mamba et Transformer dans un MoE quantifié ?",
+      "expected_id": "remember-veille-ia-20261022-01",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Nemotron 3.5 Bolt"
+    },
+    {
+      "id": "positive-01-2",
+      "category": "related",
+      "query": "Quelle famille NVIDIA propose un Bolt 74B-A9B à faible empreinte mémoire ?",
+      "expected_id": "remember-veille-ia-20261022-01",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Nemotron 3.5 Bolt"
+    },
+    {
+      "id": "positive-02-1",
+      "category": "paraphrase",
+      "query": "Quel modèle de Liquid AI n’active qu’environ deux milliards de paramètres par token ?",
+      "expected_id": "remember-veille-ia-20261022-02",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Liquid AI LFM2.5"
+    },
+    {
+      "id": "positive-02-2",
+      "category": "related",
+      "query": "Quel MoE Liquid AI possède 24 milliards de paramètres totaux ?",
+      "expected_id": "remember-veille-ia-20261022-02",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Liquid AI LFM2.5"
+    },
+    {
+      "id": "positive-03-1",
+      "category": "paraphrase",
+      "query": "Quel modèle IBM utilise des adaptateurs aLoRA de décision ?",
+      "expected_id": "remember-veille-ia-20261022-03",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Granite Switch 4.1"
+    },
+    {
+      "id": "positive-03-2",
+      "category": "related",
+      "query": "Quel modèle Granite co-localise dialogue et reconnaissance vocale anglophone ?",
+      "expected_id": "remember-veille-ia-20261022-03",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Granite Switch 4.1"
+    },
+    {
+      "id": "positive-04-1",
+      "category": "paraphrase",
+      "query": "Quel projet Microsoft propose une transcription en streaming avec hotwords ?",
+      "expected_id": "remember-veille-ia-20261022-04",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "VibeVoice"
+    },
+    {
+      "id": "positive-04-2",
+      "category": "related",
+      "query": "Quelle technologie ASR Microsoft vise la reconnaissance vocale progressive ?",
+      "expected_id": "remember-veille-ia-20261022-04",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "VibeVoice"
+    },
+    {
+      "id": "positive-05-1",
+      "category": "paraphrase",
+      "query": "Quel moteur GGML permet de répartir les couches d’un modèle entre GPU ?",
+      "expected_id": "remember-veille-ia-20261022-05",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "llama.cpp"
+    },
+    {
+      "id": "positive-05-2",
+      "category": "related",
+      "query": "Quel moteur open source CUDA sert de base à de nombreux déploiements GGUF ?",
+      "expected_id": "remember-veille-ia-20261022-05",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "llama.cpp"
+    },
+    {
+      "id": "positive-06-1",
+      "category": "paraphrase",
+      "query": "Quel serveur LLM publie une version 0.32 avec décisions structurées ?",
+      "expected_id": "remember-veille-ia-20261022-06",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "vLLM"
+    },
+    {
+      "id": "positive-06-2",
+      "category": "related",
+      "query": "Quel moteur d’inférence propose des mécanismes de service pour plusieurs agents ?",
+      "expected_id": "remember-veille-ia-20261022-06",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "vLLM"
+    },
+    {
+      "id": "positive-07-1",
+      "category": "paraphrase",
+      "query": "Quel agent Nous Research a corrigé une confusion de PID après redémarrage ?",
+      "expected_id": "remember-veille-ia-20261022-07",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Hermes Agent"
+    },
+    {
+      "id": "positive-07-2",
+      "category": "related",
+      "query": "Quel assistant autonome propose des connecteurs et des modèles locaux intégrés ?",
+      "expected_id": "remember-veille-ia-20261022-07",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Hermes Agent"
+    },
+    {
+      "id": "positive-08-1",
+      "category": "paraphrase",
+      "query": "Quelle passerelle Mozilla.ai gère clés virtuelles et budgets LLM ?",
+      "expected_id": "remember-veille-ia-20261022-08",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Otari"
+    },
+    {
+      "id": "positive-08-2",
+      "category": "related",
+      "query": "Quel projet de Mozilla assure routage et failover entre fournisseurs de modèles ?",
+      "expected_id": "remember-veille-ia-20261022-08",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Otari"
+    },
+    {
+      "id": "positive-09-1",
+      "category": "paraphrase",
+      "query": "Quels embeddings Microsoft utilisent des poids ternaires ?",
+      "expected_id": "remember-veille-ia-20261022-09",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "BitNet"
+    },
+    {
+      "id": "positive-09-2",
+      "category": "related",
+      "query": "Quel projet Microsoft explore des kernels CPU à très faible précision pour la vectorisation ?",
+      "expected_id": "remember-veille-ia-20261022-09",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "BitNet"
+    },
+    {
+      "id": "positive-10-1",
+      "category": "paraphrase",
+      "query": "Quel programme MLCommons évalue des missions agentiques entières ?",
+      "expected_id": "remember-veille-ia-20261022-10",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "MLPerf Agents"
+    },
+    {
+      "id": "positive-10-2",
+      "category": "related",
+      "query": "Quel benchmark envisage de mesurer réussite, énergie et coût des agents ?",
+      "expected_id": "remember-veille-ia-20261022-10",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "MLPerf Agents"
+    },
+    {
+      "id": "positive-11-1",
+      "category": "paraphrase",
+      "query": "Quelle faille DCGM concerne un endpoint de profilage pprof ?",
+      "expected_id": "remember-veille-ia-20261022-11",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "DCGM"
+    },
+    {
+      "id": "positive-11-2",
+      "category": "related",
+      "query": "Quelle vulnérabilité d’exporteur de métriques GPU motive un inventaire DARME ?",
+      "expected_id": "remember-veille-ia-20261022-11",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "DCGM"
+    },
+    {
+      "id": "positive-12-1",
+      "category": "paraphrase",
+      "query": "Quel outil GitHub examine les failles des pull requests avec IA ?",
+      "expected_id": "remember-veille-ia-20261022-12",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "GitHub AI Scan"
+    },
+    {
+      "id": "positive-12-2",
+      "category": "related",
+      "query": "Quelle fonctionnalité de GitHub complète CodeQL avec une analyse agentique ?",
+      "expected_id": "remember-veille-ia-20261022-12",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "GitHub AI Scan"
+    },
+    {
+      "id": "positive-13-1",
+      "category": "paraphrase",
+      "query": "Quel langage de Modular vise les kernels de calcul haute performance ?",
+      "expected_id": "remember-veille-ia-20261022-13",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Mojo"
+    },
+    {
+      "id": "positive-13-2",
+      "category": "related",
+      "query": "Quel langage récent associé à MAX est étudié pour les accélérateurs IA ?",
+      "expected_id": "remember-veille-ia-20261022-13",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "Mojo"
+    },
+    {
+      "id": "positive-14-1",
+      "category": "paraphrase",
+      "query": "Quels projets relient perception visuelle et mouvements robotiques ?",
+      "expected_id": "remember-veille-ia-20261022-14",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "GreenWAM GroundingPI"
+    },
+    {
+      "id": "positive-14-2",
+      "category": "related",
+      "query": "Quelle recherche robotique vise la prédiction des états du monde et des actions ?",
+      "expected_id": "remember-veille-ia-20261022-14",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "GreenWAM GroundingPI"
+    },
+    {
+      "id": "positive-15-1",
+      "category": "paraphrase",
+      "query": "Quelles technologies isolent les charges de calcul via des VM et conteneurs ?",
+      "expected_id": "remember-veille-ia-20261022-15",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "OpenStack Kata"
+    },
+    {
+      "id": "positive-15-2",
+      "category": "related",
+      "query": "Quel projet Kata vise une isolation renforcée des conteneurs ?",
+      "expected_id": "remember-veille-ia-20261022-15",
+      "expected_answer": "REFERENCE_ONLY",
+      "reference_title": "OpenStack Kata"
+    },
+    {
+      "id": "negative-01",
+      "category": "unknown",
+      "query": "Quel est le numéro de série de la V100 fabriquée demain ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-02",
+      "category": "unknown",
+      "query": "Quel est le prix officiel du processeur fictif AstroGPU 9000 en 2045 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-03",
+      "category": "unknown",
+      "query": "Quelle est la couleur du vaisseau Zirconium-2055 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-04",
+      "category": "unknown",
+      "query": "Quel est le mot de passe de la station spatiale imaginaire ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-05",
+      "category": "unknown",
+      "query": "Quel est le code du coffre fictif Alpha-900 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-06",
+      "category": "unknown",
+      "query": "Quel sera le cours exact du bitcoin le 1 janvier 2035 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-07",
+      "category": "unknown",
+      "query": "Quelle sera la météo précise à Mulhouse le 7 mai 2041 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-08",
+      "category": "unknown",
+      "query": "Quel est le nom du chercheur inexistant Dr Trucmuche 900 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-09",
+      "category": "unknown",
+      "query": "Combien de GPU H9000 inventés possède Eidolon ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-10",
+      "category": "unknown",
+      "query": "Quelle est la licence du logiciel imaginaire OmegaQ 900 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-11",
+      "category": "unknown",
+      "query": "Quel est le numéro de CVE du bogue fictif CosmicPHP 3000 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-12",
+      "category": "unknown",
+      "query": "Quel est le débit exact d’un prototype NVLink jamais construit ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-13",
+      "category": "unknown",
+      "query": "Quelle est la date de sortie confirmée de Gemma 99B en 2042 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-14",
+      "category": "unknown",
+      "query": "Quel est le contenu du fichier privé qui n’a jamais été fourni ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-15",
+      "category": "unknown",
+      "query": "Quel est le résultat du benchmark qui n’a jamais été exécuté ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-16",
+      "category": "unknown",
+      "query": "Quel sera le prix de vente d’une V100 dans vingt ans ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-17",
+      "category": "unknown",
+      "query": "Quel est le numéro de téléphone du fabricant fictif PhotonCPU ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-18",
+      "category": "unknown",
+      "query": "Quel est le firmware du robot imaginaire Wall-E X900 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-19",
+      "category": "unknown",
+      "query": "Quelle quantité d’énergie consommera Eidolon le 18 avril 2044 ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "id": "negative-20",
+      "category": "unknown",
+      "query": "Quel est le secret d’authentification de Qdrant ?",
+      "expected_id": null,
+      "expected_answer": "INSUFFICIENT_EVIDENCE"
+    }
+  ]
+}
