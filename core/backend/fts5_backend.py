@@ -7,6 +7,8 @@ No production backend is changed by importing this module.
 from __future__ import annotations
 
 import json
+import fcntl
+from contextlib import contextmanager
 import re
 import sqlite3
 from pathlib import Path
@@ -50,6 +52,17 @@ class FTS5Backend(FilesystemBackend):
             json.dumps(memory.provenance, ensure_ascii=False, default=str),
         )
 
+    @contextmanager
+    def _write_lock(self):
+        """Serialize all writes using a host-local advisory process lock."""
+        path = self.history_root / ".fts5-write.lock"
+        with path.open("a+b") as lock_file:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
     def _index_one(self, memory: Memory) -> None:
         with self._connect() as connection:
             self._create_index(connection)
@@ -63,26 +76,29 @@ class FTS5Backend(FilesystemBackend):
             )
 
     def store(self, memory: Memory) -> StoreResult:
-        result = super().store(memory)
-        self._index_one(memory)
-        return result
+        with self._write_lock():
+            result = super().store(memory)
+            self._index_one(memory)
+            return result
 
     def update(
         self, information_id: str, memory: Memory, previous_revision: int
     ) -> UpdateResult:
-        result = super().update(information_id, memory, previous_revision)
-        self._index_one(memory)
-        return result
+        with self._write_lock():
+            result = super().update(information_id, memory, previous_revision)
+            self._index_one(memory)
+            return result
 
     def approve_delete(self, information_id: str, operation_id: str) -> DeleteResult:
-        result = super().approve_delete(information_id, operation_id)
-        with self._connect() as connection:
-            self._create_index(connection)
-            connection.execute(
-                "DELETE FROM memories_fts WHERE information_id=?",
-                (information_id,),
-            )
-        return result
+        with self._write_lock():
+            result = super().approve_delete(information_id, operation_id)
+            with self._connect() as connection:
+                self._create_index(connection)
+                connection.execute(
+                    "DELETE FROM memories_fts WHERE information_id=?",
+                    (information_id,),
+                )
+            return result
 
     def rebuild_index(self) -> dict[str, Any]:
         """Reconcile a missing or stale index with canonical Markdown files.
