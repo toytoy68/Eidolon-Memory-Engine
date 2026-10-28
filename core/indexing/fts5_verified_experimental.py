@@ -13,8 +13,8 @@ from uuid import uuid4
 from core.indexing.fts5_index import SqliteFts5Index
 from core.indexing.port import IndexEvidence, IndexRecord, IndexInventoryPage, IndexIncompatible
 
-_DIGEST = re.compile(r"[0-9a-f]{64}\\Z")
-_ID = re.compile(r"[A-Za-z0-9._-]{1,256}\\Z")
+_DIGEST = re.compile(r"[0-9a-f]{64}\Z")
+_ID = re.compile(r"[A-Za-z0-9._-]{1,256}\Z")
 
 
 class VerifiedSqliteFts5Index(SqliteFts5Index):
