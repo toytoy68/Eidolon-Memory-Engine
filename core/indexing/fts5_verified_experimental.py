@@ -6,6 +6,7 @@ owns canonical verification, the journal lock, authorization and replay.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from hashlib import sha256
 import re
 import fcntl
@@ -15,6 +16,7 @@ from functools import wraps
 from uuid import uuid4
 
 from core.indexing.fts5_index import SqliteFts5Index
+from core.indexing.manifest import build_manifest
 from core.indexing.port import IndexEvidence, IndexRecord, IndexInventoryPage, IndexIncompatible
 
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
@@ -46,6 +48,15 @@ def _generation_serialized(method):
             finally:
                 os.close(fd)
     return guarded
+
+
+
+@dataclass(frozen=True)
+class PublishReceipt:
+    state: str
+    generation: str | None
+    source_digest: str | None
+    error: str | None = None
 
 
 class VerifiedSqliteFts5Index(SqliteFts5Index):
@@ -167,3 +178,31 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
     def rebuild(self, persistent_root):
         super().rebuild(persistent_root)
         self._ensure_verified_schema()  # New generation, no evidence from obsolete index.
+
+    @_generation_serialized
+    def rebuild_with_receipt(self, persistent_root):
+        """Observe actual publish result, including an exception after os.replace.
+
+        PUBLISHED_UNCONFIRMED means file visibility was confirmed but durable
+        directory sync may have failed. Caller must not treat it as durable.
+        """
+        wanted = build_manifest(persistent_root).digest
+        prior = self.active_generation()
+        try:
+            self.rebuild(persistent_root)
+        except Exception as exc:
+            try:
+                self._ensure_verified_schema()
+                observed = self.active_generation()
+                digest = self.status().source_digest
+                if observed != prior and digest == wanted:
+                    return PublishReceipt("PUBLISHED_UNCONFIRMED", observed, digest, type(exc).__name__)
+                if observed == prior:
+                    return PublishReceipt("NOT_PUBLISHED", observed, digest, type(exc).__name__)
+                return PublishReceipt("UNKNOWN", observed, digest, type(exc).__name__)
+            except Exception:
+                return PublishReceipt("UNKNOWN", None, None, type(exc).__name__)
+        digest = self.status().source_digest
+        if digest != wanted:
+            return PublishReceipt("UNKNOWN", self.active_generation(), digest, "digest_mismatch")
+        return PublishReceipt("PUBLISHED", self.active_generation(), digest)
