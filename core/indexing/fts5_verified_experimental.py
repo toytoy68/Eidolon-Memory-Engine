@@ -59,8 +59,18 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
             revision, digest, written_generation = row
             if type(revision) is not int or revision < 1 or not _DIGEST.fullmatch(digest) or written_generation != gen:
                 raise IndexIncompatible("invalid point evidence")
-            if not db.execute("SELECT 1 FROM documents WHERE information_id=?", (information_id,)).fetchone():
+            document = db.execute("SELECT memory FROM documents WHERE information_id=?", (information_id,)).fetchone()
+            if document is None:
                 raise IndexIncompatible("orphaned evidence")
+            import json
+            try:
+                payload = json.loads(document[0])
+            except (ValueError, TypeError) as exc:
+                raise IndexIncompatible("invalid indexed document") from exc
+            if (type(payload) is not dict or payload.get("information_id") != information_id
+                    or type(payload.get("revision")) is not int
+                    or payload["revision"] != revision):
+                raise IndexIncompatible("evidence does not match indexed document revision")
             return IndexEvidence(information_id, revision, digest, self.embedding_id, gen)
 
     def upsert_verified(self, memory, *, canonical_sha256):
