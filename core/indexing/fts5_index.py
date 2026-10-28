@@ -158,6 +158,21 @@ class SqliteFts5Index(IndexPort):
                         raise InvalidMemory("index source identity changed")
                     self._put(db, memory)
                 db.execute("INSERT OR REPLACE INTO meta VALUES ('source_digest', ?)", (manifest.digest,))
+            # Publish only a standalone complete SQLite image. An outstanding WAL
+            # is not part of an atomic rename of the main database file.
+            with sqlite3.connect(staging) as validation:
+                mode = validation.execute("PRAGMA journal_mode").fetchone()[0]
+                if mode == "wal":
+                    checkpoint = validation.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+                    if checkpoint[0] != 0:
+                        raise OSError("FTS5 staging WAL checkpoint busy")
+                if validation.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                    raise OSError("FTS5 staging integrity failed")
+            descriptor = os.open(staging, os.O_RDONLY | os.O_NOFOLLOW)
+            try:
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
             os.replace(staging, self.path)                       # atomic swap, old index kept on failure
             if os.name != "nt":                                  # persist the directory entry
                 descriptor = os.open(self.path.parent, os.O_RDONLY | os.O_DIRECTORY)
