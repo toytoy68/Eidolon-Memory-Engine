@@ -8,6 +8,10 @@ from __future__ import annotations
 
 from hashlib import sha256
 import re
+import fcntl
+import os
+import threading
+from functools import wraps
 from uuid import uuid4
 
 from core.indexing.fts5_index import SqliteFts5Index
@@ -15,6 +19,33 @@ from core.indexing.port import IndexEvidence, IndexRecord, IndexInventoryPage, I
 
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _ID = re.compile(r"[A-Za-z0-9._-]{1,256}\Z")
+
+
+
+def _generation_serialized(method):
+    """Local RLock plus cross-process flock; nested calls reuse the outer lease."""
+    @wraps(method)
+    def guarded(self, *args, **kwargs):
+        with self._thread_lock:
+            if getattr(self._lock_depth, "value", 0):
+                self._lock_depth.value += 1
+                try:
+                    return method(self, *args, **kwargs)
+                finally:
+                    self._lock_depth.value -= 1
+            fd = os.open(str(self.path) + ".generation.lock",
+                         os.O_CREAT | os.O_RDWR | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX)
+                self._lock_depth.value = 1
+                try:
+                    return method(self, *args, **kwargs)
+                finally:
+                    self._lock_depth.value = 0
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+            finally:
+                os.close(fd)
+    return guarded
 
 
 class VerifiedSqliteFts5Index(SqliteFts5Index):
@@ -25,6 +56,8 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
         if not re.fullmatch(r"eidolon_[a-z0-9_]{1,90}", alias):
             raise ValueError("invalid managed alias")
         self.alias = alias
+        self._thread_lock = threading.RLock()
+        self._lock_depth = threading.local()
         super().__init__(path, **kwargs)
         self._ensure_verified_schema()
 
@@ -40,6 +73,7 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
             if row is None:
                 db.execute("INSERT INTO meta VALUES ('generation', ?)", (self.alias + "__" + uuid4().hex,))
 
+    @_generation_serialized
     def active_generation(self):
         with self._open(self.path) as db:
             alias = db.execute("SELECT value FROM meta WHERE key='worker_alias'").fetchone()
@@ -48,6 +82,7 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
                 raise IndexIncompatible("invalid FTS5 generation")
             return gen[0]
 
+    @_generation_serialized
     def evidence_for(self, information_id):
         if not isinstance(information_id, str) or not _ID.fullmatch(information_id):
             raise ValueError("invalid identity")
@@ -73,6 +108,7 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
                 raise IndexIncompatible("evidence does not match indexed document revision")
             return IndexEvidence(information_id, revision, digest, self.embedding_id, gen)
 
+    @_generation_serialized
     def upsert_verified(self, memory, *, canonical_sha256):
         if not _ID.fullmatch(memory.information_id) or type(memory.revision) is not int or memory.revision < 1:
             raise ValueError("invalid memory identity/revision")
@@ -85,6 +121,7 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
             db.execute("DELETE FROM meta WHERE key='source_digest'")
         return IndexEvidence(memory.information_id, memory.revision, canonical_sha256, self.embedding_id, gen)
 
+    @_generation_serialized
     def inventory_page(self, *, generation, offset=None, limit=100):
         if generation != self.active_generation():
             raise IndexIncompatible("generation changed")
@@ -110,6 +147,7 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
                 raise IndexIncompatible("generation changed during inventory")
             return IndexInventoryPage(generation, tuple(result), next_offset)
 
+    @_generation_serialized
     def delete(self, information_id):
         with self._open(self.path) as db:
             db.execute("DELETE FROM verified WHERE information_id=?", (information_id,))
@@ -117,6 +155,7 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
             db.execute("DELETE FROM documents WHERE information_id=?", (information_id,))
             db.execute("DELETE FROM meta WHERE key='source_digest'")
 
+    @_generation_serialized
     def upsert(self, memory):
         # Ordinary writes do not claim canonical verification.
         with self._open(self.path) as db:
@@ -124,6 +163,7 @@ class VerifiedSqliteFts5Index(SqliteFts5Index):
             db.execute("DELETE FROM verified WHERE information_id=?", (memory.information_id,))
             db.execute("DELETE FROM meta WHERE key='source_digest'")
 
+    @_generation_serialized
     def rebuild(self, persistent_root):
         super().rebuild(persistent_root)
         self._ensure_verified_schema()  # New generation, no evidence from obsolete index.
