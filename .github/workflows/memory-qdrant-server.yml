@@ -1,11 +1,15 @@
 name: Memory Qdrant real server
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [refactor/architecture-v1]
   push:
     branches: [refactor/architecture-v1]
     paths:
-      - 'core/indexing/**'
-      - 'core/retrieval/**'
+      - 'core/**'
+      - 'services/**'
+      - 'tests/**'
+      - 'tools/**'
       - 'tests/test_qdrant_server_recall_g243.py'
       - 'tests/test_qdrant_server_maintenance_g238.py'
       - 'tests/qdrant_server_fixture.py'
