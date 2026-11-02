@@ -1,0 +1,535 @@
+{
+  "scope": "retrieval of evidence documents; no generated answers scored",
+  "measurements": [
+    {
+      "documents": 10,
+      "adapter": "reference",
+      "quality": {
+        "all_answerable": {
+          "queries": 90,
+          "recall_at_1": 0.9055555555555556,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9611111111111111
+        },
+        "exact": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "paraphrase": {
+          "queries": 10,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.95
+        },
+        "temporal": {
+          "queries": 10,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.7
+        },
+        "obsolete": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "calculation": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "local_detail": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "method": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "limitation": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "cross_document": {
+          "queries": 5,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "rare_marker": {
+          "queries": 5,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        }
+      },
+      "unknown_queries": 10,
+      "unknown_with_candidates": 10,
+      "unknown_note": "Candidate presence does not measure false answers or abstention."
+    },
+    {
+      "documents": 10,
+      "adapter": "fts5_verified",
+      "quality": {
+        "all_answerable": {
+          "queries": 90,
+          "recall_at_1": 0.9055555555555556,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9611111111111111
+        },
+        "exact": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "paraphrase": {
+          "queries": 10,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.95
+        },
+        "temporal": {
+          "queries": 10,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.7
+        },
+        "obsolete": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "calculation": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "local_detail": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "method": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "limitation": {
+          "queries": 10,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "cross_document": {
+          "queries": 5,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "rare_marker": {
+          "queries": 5,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        }
+      },
+      "unknown_queries": 10,
+      "unknown_with_candidates": 10,
+      "unknown_note": "Candidate presence does not measure false answers or abstention."
+    },
+    {
+      "documents": 50,
+      "adapter": "reference",
+      "quality": {
+        "all_answerable": {
+          "queries": 450,
+          "recall_at_1": 0.8366666666666667,
+          "recall_at_5": 0.9822222222222222,
+          "all_evidence_at_5": 0.9822222222222222,
+          "reciprocal_rank": 0.9024814814814814
+        },
+        "exact": {
+          "queries": 50,
+          "recall_at_1": 0.98,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.99
+        },
+        "paraphrase": {
+          "queries": 50,
+          "recall_at_1": 0.94,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9666666666666667
+        },
+        "temporal": {
+          "queries": 50,
+          "recall_at_1": 0.24,
+          "recall_at_5": 0.86,
+          "all_evidence_at_5": 0.86,
+          "reciprocal_rank": 0.4156666666666667
+        },
+        "obsolete": {
+          "queries": 50,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "calculation": {
+          "queries": 50,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9333333333333333
+        },
+        "local_detail": {
+          "queries": 50,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9333333333333333
+        },
+        "method": {
+          "queries": 50,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.98,
+          "all_evidence_at_5": 0.98,
+          "reciprocal_rank": 0.96
+        },
+        "limitation": {
+          "queries": 50,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9333333333333333
+        },
+        "cross_document": {
+          "queries": 25,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "rare_marker": {
+          "queries": 25,
+          "recall_at_1": 0.96,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.98
+        }
+      },
+      "unknown_queries": 50,
+      "unknown_with_candidates": 50,
+      "unknown_note": "Candidate presence does not measure false answers or abstention."
+    },
+    {
+      "documents": 50,
+      "adapter": "fts5_verified",
+      "quality": {
+        "all_answerable": {
+          "queries": 450,
+          "recall_at_1": 0.8366666666666667,
+          "recall_at_5": 0.9822222222222222,
+          "all_evidence_at_5": 0.9822222222222222,
+          "reciprocal_rank": 0.9024814814814814
+        },
+        "exact": {
+          "queries": 50,
+          "recall_at_1": 0.98,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.99
+        },
+        "paraphrase": {
+          "queries": 50,
+          "recall_at_1": 0.94,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9666666666666667
+        },
+        "temporal": {
+          "queries": 50,
+          "recall_at_1": 0.24,
+          "recall_at_5": 0.86,
+          "all_evidence_at_5": 0.86,
+          "reciprocal_rank": 0.4156666666666667
+        },
+        "obsolete": {
+          "queries": 50,
+          "recall_at_1": 1.0,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "calculation": {
+          "queries": 50,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9333333333333333
+        },
+        "local_detail": {
+          "queries": 50,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9333333333333333
+        },
+        "method": {
+          "queries": 50,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.98,
+          "all_evidence_at_5": 0.98,
+          "reciprocal_rank": 0.96
+        },
+        "limitation": {
+          "queries": 50,
+          "recall_at_1": 0.9,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.9333333333333333
+        },
+        "cross_document": {
+          "queries": 25,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "rare_marker": {
+          "queries": 25,
+          "recall_at_1": 0.96,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.98
+        }
+      },
+      "unknown_queries": 50,
+      "unknown_with_candidates": 50,
+      "unknown_note": "Candidate presence does not measure false answers or abstention."
+    },
+    {
+      "documents": 100,
+      "adapter": "reference",
+      "quality": {
+        "all_answerable": {
+          "queries": 900,
+          "recall_at_1": 0.7388888888888889,
+          "recall_at_5": 0.8333333333333334,
+          "all_evidence_at_5": 0.8333333333333334,
+          "reciprocal_rank": 0.7904814814814815
+        },
+        "exact": {
+          "queries": 100,
+          "recall_at_1": 0.98,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.99
+        },
+        "paraphrase": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9633333333333334
+        },
+        "temporal": {
+          "queries": 100,
+          "recall_at_1": 0.18,
+          "recall_at_5": 0.46,
+          "all_evidence_at_5": 0.46,
+          "reciprocal_rank": 0.2643333333333333
+        },
+        "obsolete": {
+          "queries": 100,
+          "recall_at_1": 0.09,
+          "recall_at_5": 0.1,
+          "all_evidence_at_5": 0.1,
+          "reciprocal_rank": 0.095
+        },
+        "calculation": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9566666666666667
+        },
+        "local_detail": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9566666666666667
+        },
+        "method": {
+          "queries": 100,
+          "recall_at_1": 0.9,
+          "recall_at_5": 0.98,
+          "all_evidence_at_5": 0.98,
+          "reciprocal_rank": 0.9366666666666666
+        },
+        "limitation": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9566666666666667
+        },
+        "cross_document": {
+          "queries": 50,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "rare_marker": {
+          "queries": 50,
+          "recall_at_1": 0.98,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.99
+        }
+      },
+      "unknown_queries": 100,
+      "unknown_with_candidates": 100,
+      "unknown_note": "Candidate presence does not measure false answers or abstention."
+    },
+    {
+      "documents": 100,
+      "adapter": "fts5_verified",
+      "quality": {
+        "all_answerable": {
+          "queries": 900,
+          "recall_at_1": 0.7388888888888889,
+          "recall_at_5": 0.8333333333333334,
+          "all_evidence_at_5": 0.8333333333333334,
+          "reciprocal_rank": 0.7904814814814815
+        },
+        "exact": {
+          "queries": 100,
+          "recall_at_1": 0.98,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.99
+        },
+        "paraphrase": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9633333333333334
+        },
+        "temporal": {
+          "queries": 100,
+          "recall_at_1": 0.18,
+          "recall_at_5": 0.46,
+          "all_evidence_at_5": 0.46,
+          "reciprocal_rank": 0.2643333333333333
+        },
+        "obsolete": {
+          "queries": 100,
+          "recall_at_1": 0.09,
+          "recall_at_5": 0.1,
+          "all_evidence_at_5": 0.1,
+          "reciprocal_rank": 0.095
+        },
+        "calculation": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9566666666666667
+        },
+        "local_detail": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9566666666666667
+        },
+        "method": {
+          "queries": 100,
+          "recall_at_1": 0.9,
+          "recall_at_5": 0.98,
+          "all_evidence_at_5": 0.98,
+          "reciprocal_rank": 0.9366666666666666
+        },
+        "limitation": {
+          "queries": 100,
+          "recall_at_1": 0.94,
+          "recall_at_5": 0.99,
+          "all_evidence_at_5": 0.99,
+          "reciprocal_rank": 0.9566666666666667
+        },
+        "cross_document": {
+          "queries": 50,
+          "recall_at_1": 0.5,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 1.0
+        },
+        "rare_marker": {
+          "queries": 50,
+          "recall_at_1": 0.98,
+          "recall_at_5": 1.0,
+          "all_evidence_at_5": 1,
+          "reciprocal_rank": 0.99
+        }
+      },
+      "unknown_queries": 100,
+      "unknown_with_candidates": 100,
+      "unknown_note": "Candidate presence does not measure false answers or abstention."
+    }
+  ],
+  "ranking_parity": {
+    "10": {
+      "queries": 100,
+      "different_ordered_top5": 0
+    },
+    "50": {
+      "queries": 500,
+      "different_ordered_top5": 0
+    },
+    "100": {
+      "queries": 1000,
+      "different_ordered_top5": 0
+    }
+  }
+}
