@@ -1,3 +1,5 @@
+> État vérifié au 02/11/2026 : [bilan et limites](docs/ETAT-ACTUEL-2026-11-02.md). Les entrées ci-dessous conservent leur contexte historique.
+
 ## G269 — État courant, 15 octobre 2026
 
 Code publié `c6a77631d75f96a31b3a1c291ad462ee9f94c0ea`. C189/C190/C191 reçus ; patchs 0059–0067 intégrés, anciens lots G264/G266 répondus. Les demandes historiques ci-dessous ne doivent pas être relancées comme encore ouvertes.
