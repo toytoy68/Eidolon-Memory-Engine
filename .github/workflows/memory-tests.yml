@@ -1,11 +1,18 @@
 name: Memory isolated tests
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [refactor/architecture-v1]
   push:
     branches: [refactor/architecture-v1]
     paths:
       - 'core/**'
-      - 'services/memory_bridge.py'
+      - 'services/**'
+      - 'tools/**'
+      - 'deployment/**'
+      - 'pyproject.toml'
+      - 'pytest.ini'
+      - 'conftest.py'
       - 'tests/**'
       - 'requirements*.txt'
       - '.github/workflows/memory-tests.yml'
@@ -33,8 +40,17 @@ jobs:
           mkdir -p "$RUNNER_TEMP/eidolon-memory-tests"
           chmod 700 "$RUNNER_TEMP/eidolon-memory-tests"
       - name: Compile
-        run: python -m compileall -q core tests
+        run: python -m compileall -q core services tools tests
       - name: Full isolated suite
-        run: python -m pytest -q -rs -p no:cacheprovider --basetemp="${{ runner.temp }}/pytest-memory"
+        run: python -m pytest -q -rs -p no:cacheprovider --basetemp="${{ runner.temp }}/pytest-memory" --junitxml="${{ runner.temp }}/memory-results.xml"
       - name: Real journal worker contract (Markdown and isolated Qdrant)
         run: python -m pytest -q -p no:cacheprovider tests/test_worker_journal.py tests/test_worker_read_budget_g237.py tests/claude_memory_eval/test_real_worker_contract_g220.py tests/claude_memory_eval/test_preflight_separation_g220.py --basetemp="$RUNNER_TEMP/pytest-worker"
+
+      - name: Preserve suite results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-isolated-results
+          path: ${{ runner.temp }}/memory-results.xml
+          if-no-files-found: warn
+          retention-days: 14

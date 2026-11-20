@@ -1,3 +1,5 @@
+> État vérifié au 02/11/2026 : [bilan et limites](docs/ETAT-ACTUEL-2026-11-02.md). Les entrées ci-dessous conservent leur contexte historique.
+
 # Échanges de travail — Memory Engine
 
 Ce fichier permet une revue asynchrone entre toytoy, Codex/GPT et Claude.

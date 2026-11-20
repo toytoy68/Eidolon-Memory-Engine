@@ -1,0 +1,129 @@
+{
+  "schema": "eidolon-fr100-retrieval/1",
+  "results": [
+    {
+      "documents": 10,
+      "adapter": "reference",
+      "queries": 100,
+      "ingestion_s": 0.028077867998945294,
+      "rebuild_s": 0.002563019999797689,
+      "query_p50_ms": 13.25061300303787,
+      "query_p95_ms": 13.997801001096377,
+      "query_total_s": 1.3305689159969916,
+      "duplicate_identity_rejections": 10,
+      "restore_sha_equal": true,
+      "restore_retrieval_checks": 10,
+      "canonical_unchanged": true,
+      "index_status": {
+        "documents": 10,
+        "source_digest": "d97ba3807fcd2601019b6da080ca0ec1c50842c980deffb2d192d6c157001189",
+        "policy": "derived_rebuildable"
+      }
+    },
+    {
+      "documents": 10,
+      "adapter": "fts5_verified",
+      "queries": 100,
+      "ingestion_s": 0.028077867998945294,
+      "rebuild_s": 0.032398010000179056,
+      "query_p50_ms": 15.12881900271168,
+      "query_p95_ms": 16.11420599874691,
+      "query_total_s": 1.512991258969123,
+      "duplicate_identity_rejections": 10,
+      "restore_sha_equal": true,
+      "restore_retrieval_checks": 10,
+      "canonical_unchanged": true,
+      "index_status": {
+        "documents": 10,
+        "source_digest": "d97ba3807fcd2601019b6da080ca0ec1c50842c980deffb2d192d6c157001189",
+        "policy": "derived_rebuildable"
+      },
+      "index_bytes": 561152
+    },
+    {
+      "documents": 50,
+      "adapter": "reference",
+      "queries": 500,
+      "ingestion_s": 0.14777870699981577,
+      "rebuild_s": 0.011474405000626575,
+      "query_p50_ms": 66.87115599925164,
+      "query_p95_ms": 69.69371399827651,
+      "query_total_s": 33.36322503400879,
+      "duplicate_identity_rejections": 50,
+      "restore_sha_equal": true,
+      "restore_retrieval_checks": 10,
+      "canonical_unchanged": true,
+      "index_status": {
+        "documents": 50,
+        "source_digest": "66a158ee1e468455e18c65563ad582ec8204da62cded41a44a3112c06a4edcd7",
+        "policy": "derived_rebuildable"
+      }
+    },
+    {
+      "documents": 50,
+      "adapter": "fts5_verified",
+      "queries": 500,
+      "ingestion_s": 0.14777870699981577,
+      "rebuild_s": 0.08980596000037622,
+      "query_p50_ms": 72.1289449975302,
+      "query_p95_ms": 75.69279199742596,
+      "query_total_s": 36.067156740959035,
+      "duplicate_identity_rejections": 50,
+      "restore_sha_equal": true,
+      "restore_retrieval_checks": 10,
+      "canonical_unchanged": true,
+      "index_status": {
+        "documents": 50,
+        "source_digest": "66a158ee1e468455e18c65563ad582ec8204da62cded41a44a3112c06a4edcd7",
+        "policy": "derived_rebuildable"
+      },
+      "index_bytes": 2342912
+    },
+    {
+      "documents": 100,
+      "adapter": "reference",
+      "queries": 1000,
+      "ingestion_s": 0.29577623500154004,
+      "rebuild_s": 0.022476583999377908,
+      "query_p50_ms": 132.47250600034022,
+      "query_p95_ms": 139.1309979990183,
+      "query_total_s": 132.5970196920025,
+      "duplicate_identity_rejections": 100,
+      "restore_sha_equal": true,
+      "restore_retrieval_checks": 10,
+      "canonical_unchanged": true,
+      "index_status": {
+        "documents": 100,
+        "source_digest": "b4e072f7f79138ab855374f606d67f1b54afced911ee02798beb91c38e87be31",
+        "policy": "derived_rebuildable"
+      }
+    },
+    {
+      "documents": 100,
+      "adapter": "fts5_verified",
+      "queries": 1000,
+      "ingestion_s": 0.29577623500154004,
+      "rebuild_s": 0.1663932070005103,
+      "query_p50_ms": 143.33362000252237,
+      "query_p95_ms": 150.81946099962806,
+      "query_total_s": 143.56637810406028,
+      "duplicate_identity_rejections": 100,
+      "restore_sha_equal": true,
+      "restore_retrieval_checks": 10,
+      "canonical_unchanged": true,
+      "index_status": {
+        "documents": 100,
+        "source_digest": "b4e072f7f79138ab855374f606d67f1b54afced911ee02798beb91c38e87be31",
+        "policy": "derived_rebuildable"
+      },
+      "index_bytes": 4341760
+    }
+  ],
+  "scope": "whole-document lexical retrieval; no LLM, vector model or abstention policy",
+  "question_sha256": "0a32e4610672c895753270261ea4a3a71f255ef884a76d15afeadd6d110f3c06",
+  "manifest_sha256": "b0efe3c685ec915e24f7f6f53cfcb6be9339f550f95ee69af4a4cdb1081acc43",
+  "git_sha": "204026e2e33b5c3ceece1150a12838eeb2f00d99",
+  "elapsed_s": 354.3749849220003,
+  "process_peak_rss_kib": 44024,
+  "completed": true
+}
