@@ -58,7 +58,7 @@ def collections(client, alias):
 
 # --- Ce qui est déjà correct ---------------------------------------------------------------------------
 
-def test_failed_rebuild_keeps_the_served_generation_and_leaves_one_orphan(client, tmp_path):
+def test_failed_rebuild_keeps_served_generation_and_removes_unpublished_staging(client, tmp_path):
     index = make(client)
     index.rebuild(corpus(tmp_path / "a", [("a", "robotique durable")]))
     before = index.status()
@@ -69,7 +69,7 @@ def test_failed_rebuild_keeps_the_served_generation_and_leaves_one_orphan(client
     index.embed = embed
     assert index.status() == before                               # alias untouched, old answers still served
     assert [h.information_id for h in index.query("robotique")] == ["a"]
-    assert len(collections(client, index.alias)) == len(served) + 1   # documented: no purge, orphan kept
+    assert collections(client, index.alias) == served  # Codex 2026-11-20: only never-published staging removed
 
 
 def test_hits_never_carry_content(client, tmp_path):

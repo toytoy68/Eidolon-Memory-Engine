@@ -8,8 +8,9 @@
 """Candidate identities only; callers must revalidate canonical data and access.
 
 An alias requires a single externally coordinated writer. Rebuild requires a
-stopped canonical snapshot. Old and failed generations are retained deliberately:
-an ambiguous network timeout must never delete a collection an alias may use.
+stopped canonical snapshot. Old and ambiguously published generations are retained deliberately. Failed
+unpublished staging can be removed; a lost alias acknowledgement never triggers
+cleanup of a collection that readers may use.
 No embedding model is downloaded or selected by this adapter.
 """
 from __future__ import annotations
@@ -375,24 +376,38 @@ class QdrantIndex(IndexPort):
             reader = CanonicalReader(root)
             manifest = build_manifest(root)
             generation = self._generation()
-            for entry in manifest.entries:
-                memory, digest = reader(entry.information_id)
-                if digest != entry.file_sha256 or memory.revision != entry.revision:
+            publication_attempted = False
+            try:
+                for entry in manifest.entries:
+                    memory, digest = reader(entry.information_id)
+                    if digest != entry.file_sha256 or memory.revision != entry.revision:
+                        raise ValueError("index source changed during rebuild")
+                    self.client.upsert(generation, points=[self._point(
+                        memory, canonical_sha256=digest, generation=generation)], wait=True)
+                if build_manifest(root) != manifest:
                     raise ValueError("index source changed during rebuild")
-                self.client.upsert(generation, points=[self._point(
-                    memory, canonical_sha256=digest, generation=generation)], wait=True)
-            if build_manifest(root) != manifest:
-                raise ValueError("index source changed during rebuild")
-            self._write_descriptor(generation, manifest.digest)
-            count = self.client.count(generation, count_filter=self._filter(), exact=True).count
-            if count != len(manifest.entries):
-                raise ValueError("rebuilt index count mismatch")
-            if self.active_generation() != original_generation:
-                raise ValueError("index generation changed during rebuild")
-            self.client.update_collection_aliases([
-                models.DeleteAliasOperation(delete_alias=models.DeleteAlias(alias_name=self.alias)),
-                models.CreateAliasOperation(create_alias=models.CreateAlias(
-                    collection_name=generation, alias_name=self.alias))])
+                self._write_descriptor(generation, manifest.digest)
+                count = self.client.count(generation, count_filter=self._filter(), exact=True).count
+                if count != len(manifest.entries):
+                    raise ValueError("rebuilt index count mismatch")
+                if self.active_generation() != original_generation:
+                    raise ValueError("index generation changed during rebuild")
+                publication_attempted = True
+                self.client.update_collection_aliases([
+                    models.DeleteAliasOperation(delete_alias=models.DeleteAlias(alias_name=self.alias)),
+                    models.CreateAliasOperation(create_alias=models.CreateAlias(
+                        collection_name=generation, alias_name=self.alias))])
+            except Exception as exc:
+                # A staged generation is private until the first publication attempt.
+                # Keep all previous generations and every ambiguous alias result.
+                if not publication_attempted:
+                    try:
+                        aliases = self.client.get_aliases().aliases
+                        if not any(a.collection_name == generation for a in aliases):
+                            self.client.delete_collection(generation)
+                    except Exception:
+                        exc.add_note("staging cleanup unconfirmed; generation retained for review")
+                raise
 
     def status(self) -> IndexStatus:
         with self._lock:
