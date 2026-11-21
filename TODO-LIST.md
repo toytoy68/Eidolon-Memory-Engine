@@ -1346,3 +1346,9 @@ Validation locale D-F1-1 : 77 tests ciblés verts ; suite complète 1985 réussi
 - Revue et recette synthétique de cette tranche terminées. Preuves rapportées,
   non revérifiées VM par GPT ; pas de mise à jour /opt ou restart de service.
 - Déploiement et preuves opérationnelles restantes distincts ; global 45 % gelé.
+
+### Git / pont de collaboration — 21 novembre 2026
+
+- Validé en test : synchronisation à récupération unique, SHA figé et diagnostic Git sans secret ; 62 ciblés, suite complète 3250 réussis.
+- Reste opérationnel : identifier le checkout/service NAS, relever la cause précise, sauvegarder et déployer le correctif, vérifier les outils du pont. Ne pas clore cet incident sur le seul résultat GitHub.
+- Rapport et preuves : docs/GIT-FIABILISATION-20261121.md.

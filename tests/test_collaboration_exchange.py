@@ -154,3 +154,90 @@ def test_invalid_active_remote_file_blocks_writes(setup, contents):
     with pytest.raises(ExchangeError):
         exchange.write_claude_message("Must not be published")
     assert (exchange.repo / CLAUDE).read_bytes() == b"Previous\r\n"
+
+
+def test_remote_advance_after_fetch_uses_pinned_snapshot(setup,monkeypatch):
+    exchange,seed,_=setup
+    original=exchange.git
+    advanced=[]
+    def racing(*args):
+        result=original(*args)
+        if args[0]=="fetch" and not advanced:
+            advanced.append(True)
+            (seed/GPT).write_text("remote advanced after fetch")
+            git(seed,"add",GPT);git(seed,"commit","-m","race");git(seed,"push","origin",BRANCH)
+        return result
+    monkeypatch.setattr(exchange,"git",racing)
+    before=git(exchange.repo,"rev-parse","HEAD")
+    first=exchange.read_gpt_message()
+    assert first["commit"]==before
+    assert first["message"]=="GPT demande é\n"
+    assert exchange.read_gpt_message()["message"]=="remote advanced after fetch"
+
+
+def test_classified_git_failure_never_discloses_stderr(setup,monkeypatch):
+    exchange,_,_=setup
+    original=subprocess.run
+    def failed(args,**kwargs):
+        if "fetch" in args:
+            raise subprocess.CalledProcessError(128,args,stderr=b"Permission denied (publickey). SECRET_SENTINEL token=PRIVATE")
+        return original(args,**kwargs)
+    monkeypatch.setattr(subprocess,"run",failed)
+    status=exchange.get_exchange_status()
+    assert status["ready"] is False
+    assert status["diagnostic"]==dict(operation="fetch",code="AUTHENTICATION",returncode=128)
+    assert "SECRET_SENTINEL" not in json.dumps(status)
+    assert "PRIVATE" not in (exchange.state/"audit.jsonl").read_text()
+
+
+@pytest.mark.parametrize("stderr,code",[
+    (b"Host key verification failed. PRIVATE","SSH_HOST_KEY"),
+    (b"fatal: detected dubious ownership in repository PRIVATE","UNSAFE_OWNERSHIP"),
+    (b"Could not resolve host: PRIVATE","DNS"),
+    (b"SSL certificate problem: PRIVATE","TLS_CERTIFICATE"),
+    (b"Failed to connect: PRIVATE","NETWORK_CONNECT"),
+    (b"Unable to create PRIVATE/index.lock: File exists.","INDEX_LOCKED"),
+    (b"Permission denied PRIVATE","FILESYSTEM_PERMISSION"),
+    (b"repository not found PRIVATE","REPOSITORY_UNAVAILABLE"),
+    (b"rejected non-fast-forward PRIVATE","PUSH_REJECTED"),
+    (b"unclassified PRIVATE","COMMAND_FAILED"),
+])
+def test_git_failure_categories_are_bounded(setup,monkeypatch,stderr,code):
+    exchange,_,_=setup
+    def failed(*a,**kw):raise subprocess.CalledProcessError(128,["git"],stderr=stderr)
+    monkeypatch.setattr(subprocess,"run",failed)
+    with pytest.raises(ExchangeError) as error:exchange.git("fetch","origin",BRANCH)
+    assert error.value.diagnostic["code"]==code
+    assert "PRIVATE" not in str(error.value)
+    assert "PRIVATE" not in (exchange.state/"audit.jsonl").read_text()
+
+
+def test_real_index_lock_is_reported_and_preserved(setup):
+    exchange,seed,_=setup
+    (seed/GPT).write_text("remote next");git(seed,"add",GPT);git(seed,"commit","-m","next");git(seed,"push","origin",BRANCH)
+    head=git(exchange.repo,"rev-parse","HEAD")
+    lock=exchange.repo/".git/index.lock";lock.write_text("SYNTHETIC_LOCK")
+    status=exchange.get_exchange_status()
+    assert status["diagnostic"]["code"]=="INDEX_LOCKED"
+    assert status["diagnostic"]["operation"]=="merge"
+    assert lock.read_text()=="SYNTHETIC_LOCK"
+    assert git(exchange.repo,"rev-parse","HEAD")==head
+    lock.unlink()  # Test owns this synthetic lock; application never removes it.
+    assert exchange.get_exchange_status()["ready"]
+
+
+def test_concurrent_remote_push_preserves_both_histories(setup,monkeypatch):
+    exchange,seed,remote=setup
+    original=exchange.git
+    def racing(*args):
+        if args[0]=="push":
+            (seed/GPT).write_text("concurrent GPT edit");git(seed,"add",GPT)
+            git(seed,"commit","-m","concurrent");git(seed,"push","origin",BRANCH)
+        return original(*args)
+    monkeypatch.setattr(exchange,"git",racing)
+    with pytest.raises(ExchangeError,match="not confirmed"):
+        exchange.write_claude_message("Preserve this local reply")
+    assert (exchange.repo/CLAUDE).read_text()=="Preserve this local reply"
+    assert git(remote,"show",f"refs/heads/{BRANCH}:{GPT}")=="concurrent GPT edit"
+    assert not exchange.get_exchange_status()["ready"]
+    assert "PUSH_REJECTED" in (exchange.state/"audit.jsonl").read_text()

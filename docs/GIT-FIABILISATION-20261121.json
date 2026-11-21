@@ -1,0 +1,20 @@
+{
+  "base_commit": "6636cbe0f4f257c1f026e8d03ca7d17abb18b17c",
+  "red_before_fix": "two failing regressions: double-fetch race and missing safe diagnostic",
+  "targeted": "62 passed",
+  "full": "3250 passed, 26 skipped, 2 xfailed, 12 subtests passed",
+  "seconds": 151.96,
+  "source_sha256": {
+    "services/collaboration/exchange.py": "64e1aadb9beb61b0911b667200362ac4f1d2cd068c23ee73cbce54a1fe0932e7",
+    "tests/test_collaboration_exchange.py": "2bfcd7390f29084663a4c462bffd38123f23cd2de87074833b7a9d74dc5634a8"
+  },
+  "evidence_sha256": {
+    "git-targeted.xml": "84f274f2b92373f885026b1076772647a01eab7c7c74ac5afa9be133ff21085f",
+    "memory-git-tests.xml": "1f8b9c913bc0eca3774e20775bbb5f55014122537491393a2f5202bdfad344b2",
+    "memory-git-tests.log": "179e3597a0147127ffacf128916e7b43145257e580906d1949034ac4eab9c73f"
+  },
+  "evidence_directory": "/srv/eidolon/ssd/work/maintenance-darme-20261121",
+  "nas_deployed": false,
+  "nas_incident_root_cause": "UNKNOWN: no access to active checkout or local Git diagnostic",
+  "nas_protocol_sha256": "1a7fb9b3e91060404379679afb58831c97abfb46b54a3d22b617015ffb9828fc"
+}

@@ -17,8 +17,9 @@ Chaque opération prend un verrou Linux `flock` non bloquant partagé par les
 instances utilisant le même répertoire d'état, vérifie checkout autonome,
 branche, origine de lecture/écriture, fichiers suivis et chemins sans symlink,
 refuse les modifications suivies ou non suivies, récupère la branche distante,
-refuse tout commit local non publié/divergence et fait `git pull --ff-only`.
-Une modification distante pendant la synchronisation impose une relance.
+refuse tout commit local non publié/divergence et avance uniquement vers le commit
+récupéré (`git merge --ff-only --no-edit <commit>`). Une seule récupération réseau
+est effectuée : un push distant ultérieur sera observé au prochain appel.
 Les lectures synchronisent aussi ; statut `ready=false` en cas de blocage Git.
 Les fichiers ignorés par Git ne sont pas un indicateur de saleté ; aucun
 opérateur ne doit modifier ce checkout pendant que le service fonctionne.
@@ -26,7 +27,7 @@ opérateur ne doit modifier ce checkout pendant que le service fonctionne.
 Une écriture archive les octets de la réponse précédente sous un UUID, remplace
 atomiquement le fichier actif, ajoute seulement ces deux chemins, commite et
 pousse explicitement la branche. Les hooks et signatures Git automatiques sont
-désactivés pour les commandes du service. Aucun merge, reset ou push forcé.
+désactivés pour les commandes du service. Aucun commit de fusion, reset ou push forcé ; seule une avance rapide est permise.
 La publication est annoncée seulement après vérification de la référence distante.
 Les anciennes réponses ne sont jamais écrasées ; les archives peuvent croître.
 Aucun archivage global d'ECHANGES.md ni ordonnanceur automatique ajouté.
@@ -231,3 +232,34 @@ Lors de la préparation initiale du 03/10, `sudo -n` confirme qu'un mot de passe
 nécessaire. Le paquet peut être préparé et testé ici ; installation système
 et activation nécessitaient ce droit et les paramètres alors manquants.
 L’activation ultérieure est décrite dans Déploiement réel ci-dessus.
+
+## Diagnostic Git et fiabilisation — 21 novembre 2026
+
+Les erreurs de sous-processus exposent uniquement une opération fixe, un code de
+catégorie et un code de retour : AUTHENTICATION, SSH_HOST_KEY, UNSAFE_OWNERSHIP,
+INDEX_LOCKED, DNS, TLS_CERTIFICATE, NETWORK_CONNECT, FILESYSTEM_PERMISSION,
+REPOSITORY_UNAVAILABLE, PUSH_REJECTED, TIMEOUT, EXECUTABLE_OR_DIRECTORY_MISSING,
+OUTPUT_ENCODING ou COMMAND_FAILED. Statut et audit ne contiennent ni stderr brut,
+arguments variables, URL privée, environnement ni credential. Ces catégories guident
+l'enquête ; elles ne remplacent pas la vérification locale. Git est exécuté en
+locale C. Aucun certificat ou contrôle de clé hôte n'est désactivé.
+
+Une course fetch/pull a été reproduite avec un vrai remote bare : un commit distant
+poussé après fetch provoquait une erreur. Le service utilise maintenant le SHA déjà
+récupéré et lit cet instantané cohérent. Le push d'une réponse reste soumis au contrôle
+Git normal : une avance concurrente le refuse, les deux historiques sont préservés,
+aucune republication automatique.
+
+Arbres sales, branches inattendues, origines différentes et commits locaux non
+publiés restent bloqués. Un index.lock réel est classifié et conservé. Le service
+ne supprime jamais de verrou ni de contribution pour afficher ready=true.
+
+Le déploiement NAS actif n'est pas réparé par la seule fusion du code. Au 21/11,
+son outil renvoie l'ancien message générique ; checkout et journaux du service
+ne sont pas accessibles dans la session. Identifier conteneur/service et ses
+EIDOLON_EXCHANGE_REPO / EIDOLON_EXCHANGE_STATE, contrôler l'état avant intervention,
+sauvegarder, déployer le module revu puis vérifier get_exchange_status et
+read_gpt_message. Ne jamais imprimer l'environnement complet ni les clés. Premier
+relevé NAS sans secret : liste des conteneurs actifs (noms et statut uniquement).
+
+Rapport : [GIT-FIABILISATION-20261121.md](GIT-FIABILISATION-20261121.md).

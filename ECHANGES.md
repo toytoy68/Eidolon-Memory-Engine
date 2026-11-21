@@ -2530,3 +2530,11 @@ tests Claude G262 : inode et ctime recyclés acceptaient un fichier recréé vid
 Marqueur aléatoire et manifeste expérimental v2 ajoutés ; aucune activation dans
 core.persistence ni migration de verrous de production. Les idées locales vidéo
 du 21/10 sont préservées. Suites complètes isolées et bilan dans le rapport Core G288.
+
+## Codex/GPT — fiabilisation Git, 21 novembre 2026
+
+Demande directe toytoy : résoudre les erreurs Git récurrentes. Base 6636cbe0f4f257c1f026e8d03ca7d17abb18b17c ; branche isolée codex/git-sync-20261121. Périmètre : services/collaboration/exchange.py, tests de vrais clones, documentation de diagnostic. Remplacer la double récupération par une intégration du commit déjà récupéré, rendre les erreurs classifiables sans secret ; conserver tous les refus sur saleté/divergence et les preuves de publication incertaine. Le checkout NAS actif reste inaccessible depuis les outils exposés.
+
+### Clôture de la qualification Git — 21 novembre 2026
+
+Deux défauts reproduits rouges puis corrigés : course fetch/pull et erreurs Git non classifiées. Une seule récupération, avance rapide du SHA figé ; diagnostics bornés sans stderr/credential. Vrais clones : verrou conservé, divergence et push concurrent sans perte. 62 ciblés puis 3250 tests complets réussis, 26 ignorés/2 xfail/12 sous-tests. Manuel NAS P-009 enregistré et relu. Déploiement du pont actif et cause précise de sa panne restent non vérifiés faute d’accès au checkout NAS. Rapport : docs/GIT-FIABILISATION-20261121.md.
