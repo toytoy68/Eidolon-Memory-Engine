@@ -62,8 +62,7 @@ def test_production_index_returns_verified_archive_passages(tmp_path, client):
     assert item.content.startswith('Ne pas')                     # negation kept (A5-02, P3)
 
 
-@pytest.mark.xfail(strict=True, reason='G201 Q3 not built yet: a failed rebuild must not leave an unreferenced '
-                   'generation, and any cleanup must spare the aliased generation and readers in flight')
+# Codex 2026-11-20: reproduced failure, staged cleanup fixed; assertions preserved.
 def test_retention_never_removes_the_live_generation_and_leaves_no_orphan(tmp_path, index, client):
     data = backend(tmp_path)
     store(data, 'item')
