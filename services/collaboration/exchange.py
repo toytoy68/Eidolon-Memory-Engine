@@ -28,6 +28,46 @@ class ExchangeError(RuntimeError):
     """Public error contains no Git output or credentials."""
 
 
+class GitFailure(ExchangeError):
+    """Only fixed labels and an integer status leave the subprocess boundary."""
+    def __init__(self, operation, code, returncode=None):
+        self.diagnostic = dict(operation=operation, code=code, returncode=returncode)
+        super().__init__(f"Git failed [{operation}/{code}]; operator intervention required")
+
+
+def _git_failure(args, exc):
+    operations = {"rev-parse", "symbolic-ref", "remote", "status", "ls-files", "fetch",
+                  "rev-list", "merge", "diff", "add", "commit", "push", "ls-remote"}
+    operation = next((arg for arg in args if arg in operations), "other")
+    returncode = exc.returncode if isinstance(exc, subprocess.CalledProcessError) else None
+    if isinstance(exc, subprocess.TimeoutExpired):
+        code = "TIMEOUT"
+    elif isinstance(exc, FileNotFoundError):
+        code = "EXECUTABLE_OR_DIRECTORY_MISSING"
+    elif isinstance(exc, PermissionError):
+        code = "FILESYSTEM_PERMISSION"
+    elif isinstance(exc, UnicodeError):
+        code = "OUTPUT_ENCODING"
+    else:
+        raw = getattr(exc, "stderr", b"") or b""
+        detail = (raw.decode("utf-8", errors="replace") if isinstance(raw, bytes) else raw).lower()
+        categories = [
+            ("SSH_HOST_KEY", ("host key verification failed", "remote host identification has changed")),
+            ("AUTHENTICATION", ("permission denied (publickey", "authentication failed", "could not read username", "terminal prompts disabled")),
+            ("UNSAFE_OWNERSHIP", ("dubious ownership", "unsafe repository")),
+            ("DNS", ("could not resolve host", "could not resolve hostname")),
+            ("TLS_CERTIFICATE", ("ssl certificate problem", "certificate verification failed")),
+            ("NETWORK_CONNECT", ("connection refused", "connection timed out", "failed to connect", "network is unreachable")),
+            ("FILESYSTEM_PERMISSION", ("permission denied", "read-only file system")),
+            ("REPOSITORY_UNAVAILABLE", ("repository not found", "does not appear to be a git repository", "not a git repository")),
+            ("PUSH_REJECTED", ("non-fast-forward", "pre-receive hook declined", "fetch first")),
+        ]
+        code = next((name for name, patterns in categories if any(p in detail for p in patterns)), "COMMAND_FAILED")
+        if "index.lock" in detail and "file exists" in detail:
+            code = "INDEX_LOCKED"
+    return GitFailure(operation, code, returncode)
+
+
 class Exchange:
     def __init__(self, repo: Path, state: Path, expected_origin: str = ORIGIN):
         self.repo = repo.resolve(strict=True)
@@ -41,15 +81,20 @@ class Exchange:
             self.allowed_origins.add("git@github.com:toytoy68/Eidolon-Memory-Engine.git")
 
     def git(self, *args: str) -> str:
-        env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
+        env = dict(os.environ, GIT_TERMINAL_PROMPT="0", LC_ALL="C")
         try:
             result = subprocess.run(
                 ["git", "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false", *args],
                 cwd=self.repo, env=env, capture_output=True, timeout=45, check=True,
             )
-        except (subprocess.SubprocessError, OSError) as exc:
-            raise ExchangeError("Git operation failed; operator intervention required") from exc
-        return result.stdout.decode("utf-8", errors="strict").strip()
+            return result.stdout.decode("utf-8", errors="strict").strip()
+        except (subprocess.SubprocessError, OSError, UnicodeError) as exc:
+            failure = _git_failure(args, exc)
+            try:
+                self.audit("git_failed", **failure.diagnostic)
+            except OSError:
+                pass  # An unavailable audit must not replace the safe Git diagnostic.
+            raise failure from exc
 
     @contextmanager
     def locked(self):
@@ -105,12 +150,12 @@ class Exchange:
         local_only = self.git("rev-list", "--count", f"{remote}..HEAD")
         if local_only != "0":
             raise ExchangeError("Local commits unpublished or divergent; operator intervention required")
-        self.git("pull", "--ff-only", "origin", BRANCH)
+        self.git("merge", "--ff-only", "--no-edit", remote)
         self.check_local()
         self.snapshot()
         if self.git("rev-parse", "HEAD") != remote:
-            # Remote changed between fetch and pull; never publish against a stale snapshot.
-            raise ExchangeError("Remote changed during synchronization; retry")
+            # Only the fetched commit is integrated; a concurrent push is seen next time.
+            raise ExchangeError("Local checkout changed during synchronization; inspect checkout")
 
     def snapshot(self):
         values = {}
@@ -138,7 +183,10 @@ class Exchange:
                 self.sync()
                 return {"ready": True, **self.snapshot()}
             except ExchangeError as exc:
-                return {"ready": False, "branch": BRANCH, "reason": str(exc)}
+                result = {"ready": False, "branch": BRANCH, "reason": str(exc)}
+                if isinstance(exc, GitFailure):
+                    result["diagnostic"] = exc.diagnostic
+                return result
 
     def write_claude_message(self, message: str):
         try:
